@@ -30,6 +30,22 @@ five minutes:
 
 The main call to action will be: **Run the end-to-end demo.**
 
+## Landing-page workspaces
+
+Each public presentation has a dedicated drafting area:
+
+| Presentation | Draft workspace | Intended destination |
+| --- | --- | --- |
+| SNode.C organization | [SNode.C-orga](SNode.C-orga/README.md) | `SNodeC/.github/profile/README.md` |
+| SNode.C | [SNode.C](SNode.C/README.md) | `SNodeC/snode.c/README.md` |
+| MQTTSuite | [MQTTSuite](MQTTSuite/README.md) | `SNodeC/mqttsuite/README.md` |
+| AISuite | [AISuite](AISuite/README.md) | `SNodeC/AISuite/README.md` |
+| CodexUI | [CodexUI](CodexUI/README.md) | `SNodeC/CodexUI/README.md` |
+
+Shared positioning, visual assets, compatibility information, and launch
+decisions should stay consistent across these workspaces. Product-specific
+drafts can evolve independently until they pass the roadmap review gates.
+
 ## Current baseline
 
 The initial audit on 28 August 2026 found:
