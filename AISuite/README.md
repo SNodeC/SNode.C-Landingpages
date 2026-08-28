@@ -1,8 +1,15 @@
 # AISuite Repository Presentation
 
-Drafting area for the AISuite repository landing page, typed C++ and TypeScript
-examples, multi-client bridge story, architecture, compatibility matrix,
-version and release presentation, screenshots, and supporting launch assets.
+> **Draft landing page.** This file is developed and reviewed here before it is
+> copied to `SNodeC/AISuite/README.md`.
 
-The approved result will replace or revise the canonical AISuite root
-`README.md` through a reviewed change.
+[← Launch roadmap](../README.md) · [Presentation proposal](PROPOSAL.md)
+
+This working README will become the AISuite repository landing page. It will
+explain the typed C++ and TypeScript integration, stateless multi-client bridge,
+minimal working examples, supported schema and compatibility, architecture,
+security boundaries, release status, and contribution routes.
+
+Development follows the accompanying [content and design proposal](PROPOSAL.md).
+The final presentation will be written directly in this file so it can be
+reviewed on GitHub before publication.

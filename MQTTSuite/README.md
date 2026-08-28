@@ -1,8 +1,15 @@
 # MQTTSuite Repository Presentation
 
-Drafting area for the MQTTSuite repository landing page, five-application suite
-diagram, MQTT quick start, integration scenario, transport and compatibility
-matrices, Web UI screenshots, limitations, and supporting launch assets.
+> **Draft landing page.** This file is developed and reviewed here before it is
+> copied to `SNodeC/mqttsuite/README.md`.
 
-The approved result will replace or revise the canonical MQTTSuite root
-`README.md` through a reviewed change.
+[← Launch roadmap](../README.md) · [Presentation proposal](PROPOSAL.md)
+
+This working README will become the MQTTSuite repository landing page. It will
+show the five-application suite, a concrete IoT integration scenario, the
+fastest MQTT quick start, transport and compatibility matrices, Web UI proof,
+limitations, deployment paths, and contribution routes.
+
+Development follows the accompanying [content and design proposal](PROPOSAL.md).
+The final presentation will be written directly in this file so it can be
+reviewed on GitHub before publication.

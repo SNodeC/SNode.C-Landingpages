@@ -1,8 +1,15 @@
 # CodexUI Repository Presentation
 
-Drafting area for the CodexUI repository landing page, native and browser hero
-images, workflow demo, installation choices, security and trust boundaries,
-native/web compatibility, limitations, release presentation, and launch assets.
+> **Draft landing page.** This file is developed and reviewed here before it is
+> copied to `SNodeC/CodexUI/README.md`.
 
-The approved result will replace or revise the canonical CodexUI root
-`README.md` through a reviewed change.
+[← Launch roadmap](../README.md) · [Presentation proposal](PROPOSAL.md)
+
+This working README will become the CodexUI repository landing page. It will
+lead with native and browser hero images, demonstrate the primary thread/turn
+workflow, explain installation and architecture, define security and parity
+boundaries, publish exact compatibility, and route support and contributions.
+
+Development follows the accompanying [content and design proposal](PROPOSAL.md).
+The final presentation will be written directly in this file so it can be
+reviewed on GitHub before publication.

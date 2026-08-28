@@ -1,8 +1,15 @@
 # SNode.C Repository Presentation
 
-Drafting area for the SNode.C repository landing page, shared visual assets,
-quick-start narrative, capability and compatibility summaries, architecture,
-verified claims, and links to detailed documentation.
+> **Draft landing page.** This file is developed and reviewed here before it is
+> copied to `SNodeC/snode.c/README.md`.
 
-The approved result will replace or revise the canonical SNode.C root
-`README.md` through a reviewed change.
+[← Launch roadmap](../README.md) · [Presentation proposal](PROPOSAL.md)
+
+This working README will become the SNode.C repository landing page. It will
+lead with a small compelling networking example, then explain the event-driven
+architecture, capabilities, tested platforms, ecosystem role, quick start,
+evidence, support, and contribution paths.
+
+Development follows the accompanying [content and design proposal](PROPOSAL.md).
+The final presentation will be written directly in this file so it can be
+reviewed on GitHub before publication.

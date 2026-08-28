@@ -3,13 +3,13 @@
 This repository is the drafting and implementation workspace for the professional
 presentation and coordinated launch of the **SNode.C ecosystem**:
 
-- [SNode.C](https://github.com/SNodeC/snode.c) — event-driven C++ networking
+- [SNode.C](SNode.C/README.md) — event-driven C++ networking
   framework;
-- [MQTTSuite](https://github.com/SNodeC/mqttsuite) — MQTT broker, integration,
+- [MQTTSuite](MQTTSuite/README.md) — MQTT broker, integration,
   bridge, CLI, and storage applications;
-- [AISuite](https://github.com/SNodeC/AISuite) — typed asynchronous C++ and
+- [AISuite](AISuite/README.md) — typed asynchronous C++ and
   TypeScript integration for the Codex app-server;
-- [CodexUI](https://github.com/SNodeC/CodexUI) — native Qt and browser interfaces
+- [CodexUI](CodexUI/README.md) — native Qt and browser interfaces
   built on AISuite.
 
 The objective is not merely to improve documentation. The organization profile
@@ -32,19 +32,22 @@ The main call to action will be: **Run the end-to-end demo.**
 
 ## Landing-page workspaces
 
-Each public presentation has a dedicated drafting area:
+Each presentation has a working README and a detailed specification. All
+development happens here; approved READMEs are copied to their production
+repositories only after review.
 
-| Presentation | Draft workspace | Intended destination |
-| --- | --- | --- |
-| SNode.C organization | [SNode.C-orga](SNode.C-orga/README.md) | `SNodeC/.github/profile/README.md` |
-| SNode.C | [SNode.C](SNode.C/README.md) | `SNodeC/snode.c/README.md` |
-| MQTTSuite | [MQTTSuite](MQTTSuite/README.md) | `SNodeC/mqttsuite/README.md` |
-| AISuite | [AISuite](AISuite/README.md) | `SNodeC/AISuite/README.md` |
-| CodexUI | [CodexUI](CodexUI/README.md) | `SNodeC/CodexUI/README.md` |
+| Presentation | Working landing page | Content and design proposal | Eventual destination |
+| --- | --- | --- | --- |
+| SNode.C organization | [Open draft](SNode.C-orga/README.md) | [Open proposal](SNode.C-orga/PROPOSAL.md) | `SNodeC/.github/profile/README.md` |
+| SNode.C | [Open draft](SNode.C/README.md) | [Open proposal](SNode.C/PROPOSAL.md) | `SNodeC/snode.c/README.md` |
+| MQTTSuite | [Open draft](MQTTSuite/README.md) | [Open proposal](MQTTSuite/PROPOSAL.md) | `SNodeC/mqttsuite/README.md` |
+| AISuite | [Open draft](AISuite/README.md) | [Open proposal](AISuite/PROPOSAL.md) | `SNodeC/AISuite/README.md` |
+| CodexUI | [Open draft](CodexUI/README.md) | [Open proposal](CodexUI/PROPOSAL.md) | `SNodeC/CodexUI/README.md` |
 
 Shared positioning, visual assets, compatibility information, and launch
-decisions should stay consistent across these workspaces. Product-specific
-drafts can evolve independently until they pass the roadmap review gates.
+decisions should stay consistent across these workspaces. The working READMEs
+must not depend on unpublished files in the production repositories. Product-
+specific drafts can evolve independently until they pass the roadmap gates.
 
 ## Current baseline
 
