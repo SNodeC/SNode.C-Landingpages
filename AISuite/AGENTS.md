@@ -6,18 +6,18 @@ directory's [proposal](PROPOSAL.md).
 
 ## What it solves
 
-AISuite reduces the work required to integrate C++ clients with the Codex
-app-server protocol. Current master provides typed asynchronous C++ access,
-transport adaptation, and one multi-client bridge so consumers do not each need
-to implement raw JSON-RPC, routing, correlation, and protocol generation
-independently. TypeScript support is future-facing until it reaches master.
+AISuite reduces the work required to integrate C++ and browser clients with the
+Codex app-server protocol. Current master provides typed asynchronous C++
+access, a framework-neutral TypeScript SDK, transport adaptation, and one
+multi-client bridge so consumers do not each need to implement raw JSON-RPC,
+routing, correlation, and protocol generation independently.
 
 ## Project focus
 
 Focus on developer integration and the bridge's clearly bounded role. Lead with
-the benefit of typed C++ access, then show a successful bridge and
-client interaction. Explain multi-client controller/observer behavior,
-generation, and authority boundaries in plain technical language.
+typed C++ and TypeScript access, then show a successful bridge and client
+interaction. Explain multi-client controller/observer behavior, shared
+generation, browser delivery, and authority boundaries in plain language.
 
 Use CodexUI as the primary visual consumer example, but do not let UI behavior
 dominate the AISuite page.
@@ -30,8 +30,9 @@ dominate the AISuite page.
 - Client applications own presentation and local interaction state.
 - AISuite must not be described as another conversation database, semantic
   authority, or official OpenAI SDK.
-- Keep CodexUI widgets, state presentation, and native/browser UX on the CodexUI
-  page.
+- Keep CodexUI widgets, state presentation, and native UX on the CodexUI page.
+  AISuite may document its browser SDK and static listener without claiming that
+  it builds or releases a CodexWebUI application.
 
 ## Reader outcome
 
@@ -46,7 +47,7 @@ A qualified visitor should be able to:
 
 ## Audience priority
 
-1. C++ developers integrating Codex into tools or applications.
+1. C++ and browser developers integrating Codex into tools or applications.
 2. Systems engineers operating one provider connection for multiple clients.
 3. Protocol, code-generation, security, and CodexUI contributors.
 
@@ -54,8 +55,8 @@ A qualified visitor should be able to:
 
 - Product: **AISuite**.
 - CMake target/component: `AISuite::OpenAICodex`.
-- Future TypeScript package: `@snodec/codex-frontend`; do not present it as a
-  master capability until it is merged and re-audited.
+- TypeScript source package: `@snodec/codex-frontend`; distinguish its manifest
+  version, tested source contents, packability, and registry publication.
 - Services/tools: `codex-bridge` and `codex-bridge-client`.
 - Use **Codex app-server** on first reference and define its role.
 - Use **provider**, **controller**, **observer**, **typed view**, **frontend
@@ -78,7 +79,8 @@ A qualified visitor should be able to:
 
 - Primary CTA: build `codex-bridge` and connect a client.
 - The page leads with developer value before internal authority terminology.
-- Current-master examples use the installed C++ target and reference client.
+- Current-master examples use the installed C++ target/reference client and the
+  tested TypeScript source package without implying registry publication.
 - V1 shows multiple client types converging on the bridge and app-server.
 - V2 proves provider/bridge/client success; V3 shows authority boundaries; V4
   shows the typed-generation and equality-test flow.
@@ -111,7 +113,10 @@ release, pinned schema, tests, and documentation:
 - Routing, framing, callback, reconnect, telemetry, and backpressure behavior.
 - Integrated static-file and `/codex` WebSocket listener using the `codex`
   subprotocol.
-- TypeScript package and Node/browser runtime claims are not on master.
+- TypeScript sources, shared generation, WebSocket lifecycle, and browser-client
+  behavior are on master; public-registry publication is absent.
+- Static Web UI root and `/codex` upgrade behavior; do not infer that AISuite
+  builds or installs the Web UI artifact.
 - Public namespace/header layout and CMake package consumption.
 - Any license claim; do not infer it from related projects.
 
@@ -123,7 +128,8 @@ Use these only as qualification shapes, not approved public copy:
   qualification and `cmake-build-debug` for Debug/test work while the SHA,
   compiler, generator, SNode.C prefix, and CMake options remain unchanged.
 - Keep the SNode.C/AISuite install prefixes and AISuite build outside both live
-  local repositories. Current-master qualification is C++-only.
+  local repositories. Run the TypeScript package commands from the same
+  isolated current-master checkout.
 
 ```sh
 cmake -S . -B "$BUILD_DIR" \
@@ -134,6 +140,8 @@ cmake -S . -B "$BUILD_DIR" \
 cmake --build "$BUILD_DIR" --parallel
 ctest --test-dir "$BUILD_DIR" -L codex --output-on-failure
 cmake --install "$BUILD_DIR" --prefix "$INSTALL_PREFIX"
+npm ci --prefix packages/codex-frontend
+npm test --prefix packages/codex-frontend
 ```
 
 Public commands must use current SNode.C and AISuite master heads and record
@@ -166,7 +174,8 @@ provider-side TLS exists when the current app-server listener has no WSS mode.
 
 - Master source version is `0.7.0`; maturity and release wording remain open.
 - Exact SNode.C release and Codex schema/revision compatibility.
-- Publication status and versioning of `@snodec/codex-frontend`.
+- Release policy and future publication destination for
+  `@snodec/codex-frontend`; public npm publication is currently absent.
 - Exact controller/observer guarantees and terminology for first-time readers.
 - Listener defaults, authentication ownership, TLS/reverse-proxy guidance, and
   remote-exposure policy.

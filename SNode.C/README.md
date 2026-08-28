@@ -38,8 +38,40 @@ The shortest evaluation path builds the supplied IPv4 echo pair. The commands
 use a canonical out-of-tree build and an isolated install directory so the same
 checkout can be rebuilt incrementally.
 
-Prerequisites are a C++20 compiler, CMake 3.18 or newer, Ninja, OpenSSL,
-nlohmann/json, CLI11, and spdlog development packages.
+### Install dependencies
+
+These Debian/Ubuntu package names cover the required baseline build. SNode.C
+requires GCC 12.2 or newer or Clang 13 or newer, CMake 3.18 or newer, OpenSSL,
+nlohmann/json, and `pkg-config`:
+
+```sh
+sudo apt update
+sudo apt install --yes \
+  build-essential ca-certificates cmake git ninja-build pkgconf \
+  libssl-dev nlohmann-json3-dev
+```
+
+Install the following packages for every corresponding optional component and
+maintainer target present in the current CMake graph:
+
+```sh
+# Optional features: Bluetooth L2CAP/RFCOMM, MIME detection, MariaDB,
+# the snodec-control TUI, and TLS certificate generation/inspection.
+sudo apt install --yes \
+  libbluetooth-dev libmagic-dev libmariadb-dev libncurses-dev openssl
+
+# Optional maintainer tools: API documentation/graphs, include analysis,
+# and source/CMake formatting.
+sudo apt install --yes \
+  doxygen graphviz iwyu clang-format cmake-format
+```
+
+`libssl-dev` is mandatory because the TLS source tree is configured
+unconditionally. The other feature packages enable or improve only their named
+components. CLI11 is already vendored as a single header; CMake fetches the
+pinned spdlog source on the first configure, so neither needs a system
+development package. Installing IWYU does not make it part of this fast path:
+the configure command below explicitly keeps `CHECK_INCLUDES` off.
 
 ```sh
 git clone https://github.com/SNodeC/snode.c.git

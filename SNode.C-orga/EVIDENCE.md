@@ -12,14 +12,15 @@ a substitute for accessible navigation.
 | --- | --- | --- | --- |
 | SNode.C | C++20 networking foundation for event-driven clients and servers | [`SNode.C/EVIDENCE.md`](../SNode.C/EVIDENCE.md) | Build/install plus selected plain and TLS echo paths qualified |
 | MQTTSuite | Five-application MQTT 3.1.1 integration toolkit built on SNode.C | [`MQTTSuite/EVIDENCE.md`](../MQTTSuite/EVIDENCE.md) | Five executables built; broker/CLI QoS 1 flow qualified |
-| AISuite | C++ Codex app-server integration and multi-client bridge | [`AISuite/EVIDENCE.md`](../AISuite/EVIDENCE.md) | 26/26 tests passed; TypeScript excluded on master |
-| CodexUI | Native Qt 6 interface using AISuite and SNode.C | [`CodexUI/EVIDENCE.md`](../CodexUI/EVIDENCE.md) | Build/install and 7/7 tests passed; browser and 1.0 excluded |
+| AISuite | C++/TypeScript Codex app-server integration and multi-client bridge | [`AISuite/EVIDENCE.md`](../AISuite/EVIDENCE.md) | 27/27 C++ and 20/20 TypeScript tests passed; npm publication absent |
+| CodexUI | Native Qt 6 and browser interfaces using AISuite | [`CodexUI/EVIDENCE.md`](../CodexUI/EVIDENCE.md) | Native 7/7 and web 30/30 tests passed; artifact verified; public release gated |
 
 ## Relationship evidence
 
 - MQTTSuite CMake requires SNode.C 2.0.0 components.
 - AISuite CMake requires SNode.C 2.0 components.
-- CodexUI CMake requires AISuite and SNode.C 2.0 components.
+- CodexUI native CMake requires AISuite and SNode.C 2.0 components; CodexWebUI
+  pins the AISuite TypeScript SDK and reaches the same bridge by WebSocket.
 - No source evidence creates an MQTTSuite → AISuite/CodexUI runtime path.
 
 The organization page may therefore show the two approved evaluation tracks,

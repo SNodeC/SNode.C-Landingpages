@@ -10,19 +10,19 @@ visual-placement rules are not duplicated here.
 ## Current-master scope decision
 
 The public page tracks AISuite `master`/`HEAD`. At the 28 August 2026 evidence
-baseline, master is C++-only: it contains no TypeScript package. All TypeScript,
-npm, and browser-listener material below is retained as conditional future
-planning, not approved current public copy. The current implementation uses
-source version `0.7.0`; there is no same-baseline CMake/npm version conflict.
-See [`EVIDENCE.md`](EVIDENCE.md).
+baseline, master contains the C++ implementation, the
+`@snodec/codex-frontend` TypeScript source package, and the bridge's static Web
+UI and `/codex` listener paths. CMake source version `0.7.0` and TypeScript
+package-manifest version `1.0.0` identify different distribution surfaces; they
+are not a same-artifact conflict. The source package is tested and packable but
+was not found in the public npm registry. See [`EVIDENCE.md`](EVIDENCE.md).
 
 ## Purpose
 
 Present AISuite as a usable integration product rather than an internal
-architecture report. The current-master page must explain the value of typed
-asynchronous C++ access to the Codex app-server, the role of the stateless
-multi-client bridge, exact compatibility, and the quickest path to a successful
-request.
+architecture report. The current-master page must explain typed asynchronous
+C++ access, the framework-neutral TypeScript frontend SDK, the stateless
+multi-client bridge, exact compatibility, and the quickest successful request.
 
 ## Audience and jobs to be done
 
@@ -45,13 +45,13 @@ request.
 - Why is the bridge stateless, and where is persistence owned?
 - Which Codex app-server schema/revision is supported?
 - Can multiple controllers and observers connect safely?
-- How do I build, install, and use the C++ API?
+- How do I build, install, and use the C++ or TypeScript API?
 
 ## Positioning
 
 ### Working headline
 
-> Typed asynchronous Codex integration for C++ clients.
+> Typed asynchronous Codex integration for C++ and browser clients.
 
 ### Supporting statement
 
@@ -98,10 +98,10 @@ Use a compact component table:
 | Component | Purpose | Consumer |
 | --- | --- | --- |
 | `AISuite::OpenAICodex` | typed backend/frontend SDK and transport adapters | C++ applications |
-| `@snodec/codex-frontend` | Future package, absent from current master; omit from current page | browser/Node clients |
+| `@snodec/codex-frontend` | framework-neutral TypeScript frontend SDK in source; not publicly published on npm | browser clients |
 | `codex-bridge` | one provider connection exposed to multiple clients | operators and UIs |
 | `codex-bridge-client` | interactive reference client | evaluators/developers |
-| generated protocol views | lossless typed access over recorded schema inputs | C++ SDK |
+| generated protocol views | coordinated typed access over recorded schema inputs | C++ and TypeScript SDKs |
 
 ### 3. Quick start
 
@@ -133,11 +133,12 @@ Show a concise, compilable example demonstrating:
 Link to a complete example and tests. Avoid an example that depends on private
 internal headers or workspace-relative paths.
 
-### 5. Future TypeScript integration — omit until merged to master
+### 5. TypeScript integration from source
 
-Show package installation or workspace consumption, connection construction,
-one typed call, event handling, cleanup, and the required WebSocket subprotocol.
-State browser versus Node assumptions and package publication status.
+Show repository-source installation, connection construction, one typed call,
+event handling, cleanup, and the required WebSocket subprotocol. State that
+Node/npm build and test the package but are not required after a browser bundle
+or Web UI artifact has been built. State public-registry publication status.
 
 ### 6. Architecture and authority
 
@@ -195,9 +196,10 @@ Publish a first-class table:
 | AISuite | SNode.C | Codex schema/revision | TypeScript package | CodexUI | Status |
 | --- | --- | --- | --- | --- | --- |
 
-Current master declares CMake `0.7.0` and has no npm package. Treat future npm
-metadata as a separate branch scope until merged and re-audited. Define how
-protocol updates affect SemVer and supported branches.
+Current master declares CMake `0.7.0` and TypeScript package-source `1.0.0`.
+Treat these as independently versioned surfaces and distinguish source,
+packability, registry publication, and release availability. Define how protocol
+updates affect SemVer and supported branches.
 
 ### 11. Security and trust boundaries
 
@@ -249,10 +251,10 @@ not permitted.
 
 | Slot | Asset | Exact placement | Required content |
 | --- | --- | --- | --- |
-| V1 — Hero | `assets/aisuite-hero.svg` | Immediately below the hero links and independent-project notice | Native C++ controller, observer, and reference clients converging on `codex-bridge`, then the Codex app-server; typed access and multi-client routing are the visual focus |
+| V1 — Hero | `assets/aisuite-hero.svg` | Immediately below the hero links and independent-project notice | Native C++ and browser clients converging on `codex-bridge`, then the Codex app-server; typed access and multi-client routing are the visual focus |
 | V2 — First success | `assets/bridge-terminal.png` | Directly after the bridge/client quick-start expected output | Three panes for provider connection, `codex-bridge` status/routing, and `codex-bridge-client` request/response; show controller/observer or bounded telemetry only when it clarifies success |
 | V3 — Architecture | `assets/authority-boundaries.svg` | After the opening paragraph of `Architecture and authority` | Explicit client, AISuite bridge, and app-server boundaries, labeled with their owned state and responsibilities; show that AISuite is not a second semantic or persistence authority |
-| V4 — Product detail | `assets/typed-generation-flow.svg` | Immediately after `Typed protocol generation` | Recorded schema and operation inputs → generation → C++ views → manifest/equality coverage, with raw JSON access as a secondary escape path |
+| V4 — Product detail | `assets/typed-generation-flow.svg` | Immediately after `Typed protocol generation` | Recorded schema and operation inputs → one generation step → C++ views and TypeScript declarations → manifest/equality coverage, with raw JSON access as a secondary escape path |
 | Social preview | `assets/social-preview.png` | Repository metadata | C++ symbols, bridge topology, approved outcome statement, and protocol-violet accent |
 
 Terminal captures use a neutral synthetic workspace and harmless qualification

@@ -241,12 +241,12 @@ a runtime integration that does not exist.
   programming-model and layer-architecture figures.
 - **MQTTSuite:** five-application hero; broker/subscriber/publisher terminal
   proof; canonical `edge-lab` integration scenario; real broker Web UI evidence.
-- **AISuite:** current-master C++ multi-client bridge hero; bridge/client
-  terminal proof; authority boundaries; C++ typed-generation flow. TypeScript
-  content is conditional until it reaches master.
-- **CodexUI:** real native-product hero; native first-workflow proof; native
-  Qt/socketpair/AISuite architecture; combined state-and-reconnect figure.
-  Browser content is conditional until it reaches master.
+- **AISuite:** current-master C++/TypeScript multi-client bridge hero;
+  bridge/client terminal proof; authority boundaries; shared typed-generation
+  flow. Do not imply npm publication or a built CodexWebUI artifact.
+- **CodexUI:** real native/browser product hero; shared first-workflow proof;
+  native Qt/socketpair and browser/TypeScript paths converging at AISuite;
+  combined state-and-reconnect figure with platform differences labeled.
 - **Organization:** brand-level hero without a fixed project count; reusable
   project identities; layer-based architecture; extensible evaluation routes.
 

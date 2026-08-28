@@ -2,9 +2,9 @@
 
 # AISuite
 
-### Typed C++ access and multi-client routing for the Codex app-server
+### Typed C++ and TypeScript access with multi-client routing for the Codex app-server
 
-Connect native clients through one bounded bridge without making every
+Connect native and browser clients through one bounded bridge without making every
 application implement raw JSON-RPC, correlation, and transport adaptation.
 
 [Quick start](#quick-start) · [Transport model](#two-independent-transport-boundaries) ·
@@ -16,22 +16,26 @@ application implement raw JSON-RPC, correlation, and transport adaptation.
 > [!IMPORTANT]
 > AISuite is an independent open-source project. It is not an official OpenAI
 > SDK or product. Codex and the Codex app-server define the upstream protocol
-> semantics; AISuite adapts and presents that protocol to C++ consumers.
+> semantics; AISuite adapts and presents that protocol to its clients.
 
-Current public `master` is a C++20 implementation. The most recently qualified
-source was [`b6b4635`](https://github.com/SNodeC/AISuite/commit/b6b463575b0f587fe9ed97ddd8509050d05bd4ca),
+Current public `master` contains the C++20 implementation and a framework-neutral
+TypeScript frontend SDK. The most recently qualified source was
+[`c3cce28`](https://github.com/SNodeC/AISuite/commit/c3cce28d813b4f48376a2a0c6ac74131bf443f65),
 whose CMake source version is `0.7.0`, built against SNode.C
 [`bf01683`](https://github.com/SNodeC/snode.c/commit/bf01683a53b48220a840522e8ccaf3b48e58c240).
-There is no tagged AISuite release on this baseline. TypeScript and npm-package
-claims are intentionally excluded because those sources are not on `master`.
+The TypeScript package manifest declares `@snodec/codex-frontend` `1.0.0`.
+These are independent source-version surfaces, not conflicting versions of one
+artifact. Neither a tagged AISuite release nor a public npm package was found
+for this baseline.
 
 ## What AISuite provides
 
 | Surface | Responsibility |
 | --- | --- |
 | `AISuite::OpenAICodex` | Installed CMake target for typed asynchronous C++ integration |
+| `@snodec/codex-frontend` | Source package for typed browser clients and WebSocket lifecycle handling |
 | Generated protocol views | Typed access to recorded protocol shapes while retaining lossless `getRaw()` JSON access |
-| `codex-bridge` | One provider connection, bounded framing/queues, frontend routing, and controller/observer coordination |
+| `codex-bridge` | Provider routing, controller/observer coordination, and optional static Web UI delivery |
 | `codex-bridge-client` | Interactive reference client for inspection, safe reads, thread operations, and raw JSON-RPC escape-path evaluation |
 | Acceptance tests | Deterministic and real-app-server coverage across provider and frontend transports |
 
@@ -41,6 +45,50 @@ routing/correlation state, controller assignment, and the explicitly bounded
 telemetry described in its architecture contract.
 
 ## Quick start
+
+### Install dependencies
+
+These Debian/Ubuntu packages cover AISuite and the required base SNode.C build:
+
+```sh
+sudo apt update
+sudo apt install --yes \
+  build-essential ca-certificates cmake git ninja-build pkgconf \
+  libssl-dev nlohmann-json3-dev
+```
+
+These packages are optional for the C++ build but required for the corresponding
+qualified test, runtime, or TypeScript paths:
+
+```sh
+# Optional for the build; required for generated TLS test certificates.
+sudo apt install --yes openssl
+
+# Optional frontend transport: rebuild SNode.C with this package to expose
+# AISuite's RFCOMM and RFCOMM-TLS instances.
+sudo apt install --yes libbluetooth-dev
+
+# Optional: Node/npm for the TypeScript frontend source package.
+sudo apt install --yes npm
+```
+
+The lock file installs TypeScript `5.9.3` locally; no global TypeScript package
+is required. Node/npm are not required to run the C++ bridge or to serve an
+already built Web UI directory.
+
+The Codex CLI is also optional at CMake configure time, but it is required for
+the real-app-server tests and the interactive bridge run below. With a managed
+Node/npm installation, install it in a user-writable prefix:
+
+```sh
+npm install --global --prefix "$HOME/.local" @openai/codex
+export PATH="$HOME/.local/bin:$PATH"
+codex --version
+```
+
+AISuite's CMake files do not discover Doxygen, IWYU, or source formatters, so
+those are not AISuite dependencies. They remain optional maintainer tools in
+the SNode.C and MQTTSuite builds that actually define those targets.
 
 Build and install SNode.C first. Then build AISuite in a canonical reusable
 directory and run its qualified transport suite:
@@ -60,9 +108,18 @@ ctest --test-dir cmake-build-release --output-on-failure
 cmake --install cmake-build-release
 ```
 
-At the qualified commits, this runs 26 tests. They cover framing, typed frontend
+At the qualified commits, this runs 27 tests. They cover framing, typed frontend
 access, routing, stdio provider behavior, stream and WebSocket frontend paths,
-TLS/WSS frontend paths, and nine real-app-server end-to-end cases.
+TLS/WSS frontend paths, Web UI path selection, and nine real-app-server
+end-to-end cases. To qualify the optional TypeScript source package from the
+same checkout:
+
+```sh
+npm ci --prefix packages/codex-frontend
+npm test --prefix packages/codex-frontend
+```
+
+This separate command passes 20 TypeScript tests.
 
 For an interactive local evaluation, ensure the `codex` executable is on
 `PATH`, then start the bridge in terminal 1:
@@ -130,8 +187,8 @@ does not add application authentication or change controller authority.
 
 ```text
 native C++ client ─┐
-CodexUI ───────────┼─ frontend envelopes ─► codex-bridge
-observer client ───┘                         │
+browser client ────┼─ frontend envelopes ─► codex-bridge
+CodexUI / observer ┘                         │
                                              │ native app-server JSON-RPC
                                              ▼
                                       Codex app-server
@@ -149,12 +206,20 @@ complete security model.
 
 ## Typed protocol access
 
-Generated C++ views are derived from recorded schema and operation inputs.
-Their manifest stores source hashes, and equality tests guard typed/raw
-behavior. Typed APIs are the primary integration path; `getRaw()` preserves the
-original JSON when a consumer needs fields outside a current view. A raw
-JSON-RPC submission path exists as an escape hatch, not as a substitute for the
-typed surface.
+Generated C++ views and TypeScript declarations share recorded schema and
+operation inputs. Cross-language tests check type names, bindings, required
+parameters, counts, and source hashes. The C++ `getRaw()` surface preserves
+original JSON outside a current view; raw JSON-RPC remains an escape hatch.
+
+The TypeScript `CodexBridgeClient`, `ClientConnection`, and
+`WebSocketTransport` implement the browser-facing lifecycle. The transport uses
+the `codex` subprotocol and does not reconnect automatically. The package is
+buildable and packable from source but not published on the public npm registry.
+
+With a WebSocket listener enabled, `codex-bridge` can serve a prebuilt Web UI at
+`/` and upgrade `/codex`. `--bridge-web-root` overrides the install-derived
+default; an empty value disables static delivery. AISuite does not build or
+install the CodexWebUI artifact.
 
 The manifest does not name a universal compatible Codex release. Re-run
 generation and equality/acceptance tests whenever the upstream schema or Codex
@@ -162,32 +227,25 @@ CLI changes.
 
 ## Client integration lifecycle
 
-A native consumer links the installed `AISuite::OpenAICodex` target, creates a
-frontend connection over one selected transport, registers typed response and
-notification handlers, and submits requests only after attachment. Callbacks
-are asynchronous: application state must distinguish admission, transport
-delivery, app-server response, and later notifications instead of treating a
-queued write as completed work.
+A C++ consumer links `AISuite::OpenAICodex`; a browser consumer uses the
+TypeScript SDK. Each selects a transport, registers typed handlers, and sends
+after attachment. Admission, delivery, response, and notifications remain
+distinct. Preserve correlation and unknown fields; discovery loss is not
+deletion.
 
-Use typed views for known operations and retain raw JSON only where forward
-compatibility or diagnostics require it. Preserve correlation identifiers and
-handle unknown fields without rewriting the provider message. On disconnect,
-keep authoritative state until an explicit remove or replacement event says
-otherwise; a temporary loss of discovery is not evidence that the underlying
-thread disappeared.
-
-For multi-client use, design controller changes explicitly. Observers may
-inspect allowed state, but a UI should never hide whether it currently owns
-mutation authority. Test provider loss, frontend loss, reconnect, duplicate
-requests, oversized messages, slow consumers, and shutdown while requests are
-outstanding.
+Design controller changes explicitly: observers may inspect allowed state, but
+clients must expose whether they hold mutation authority. Test provider and
+frontend loss, reconnect, duplicate or oversized requests, slow consumers, and
+shutdown with outstanding work.
 
 ## Qualification and limits
 
 The recorded launch build used Debian GNU/Linux forky/sid, x86-64, GCC 16.2.0,
-CMake 4.3.4, Ninja 1.13.2, and the installed SNode.C head above. All 26
-configured tests passed and both applications installed. This is exact-revision
-evidence, not a broad platform or maturity claim.
+CMake 4.3.4, Ninja 1.13.2, Node 24.19.0, npm 11.16.0, and the installed SNode.C
+head above. All 27 configured C++ tests and all 20 TypeScript tests passed; both
+C++ applications installed, and an npm package dry-run succeeded. This is
+exact-revision evidence, not a broad platform, compatibility, publication, or
+maturity claim.
 
 Remote listener exposure needs an explicit trust design. AISuite does not add a
 bearer-token authentication layer to the frontend protocol. Bind addresses,
@@ -196,23 +254,20 @@ ownership must be reviewed together.
 
 ## Troubleshooting and evaluation hygiene
 
-- If `codex-bridge` cannot create its runtime socket, check runtime-directory
-  ownership and permissions rather than moving the listener to a public bind.
-- If stdio startup closes immediately, run the configured `codex` executable
-  directly and verify that its selected `CODEX_HOME` is writable and valid.
-- If a WebSocket provider does not connect, match the app-server `--listen`
-  address to the selected Unix/IPv4/IPv6 mode; provider-side WSS is not present.
-- If a frontend connects but cannot mutate, inspect controller/observer events
-  before retrying the operation.
-- Use JSON output from the reference client for automation, but sanitize it
-  before retaining logs or attaching evidence.
+- For runtime-socket failure, check directory ownership and permissions; do not
+  move the listener to a public bind as a workaround.
+- For stdio failure, run `codex` directly and verify the selected Codex home.
+- For provider WebSocket failure, match `--listen` and the selected address
+  family; provider-side WSS is absent.
+- For denied mutation, inspect controller/observer events. Sanitize retained
+  JSON output and logs.
 
 ## Project routes
 
 - Read the complete [architecture contract](https://github.com/SNodeC/AISuite/blob/master/src/ai/openai/codex/docs/architecture.md).
 - Inspect [Issues](https://github.com/SNodeC/AISuite/issues) and
   [releases](https://github.com/SNodeC/AISuite/releases).
-- Use [CodexUI](https://github.com/SNodeC/CodexUI) as the native visual client.
+- Use [CodexUI](https://github.com/SNodeC/CodexUI) as the native/browser visual client.
 - Review the dual-license terms: `MIT OR LGPL-3.0-or-later`.
 
 Dedicated public security, support, and contribution policy files are not yet

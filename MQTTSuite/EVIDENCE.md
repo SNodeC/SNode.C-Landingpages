@@ -20,6 +20,7 @@ observed 28 August 2026.
 | MQ-08 | MQTTStore supports raw storage and configured projections through MariaDB | Source-verified | `MariaDbStorage`, `StoragePlan`, projection schema and user guide; SNode.C `db-mariadb` component | MariaDB versions, migration, failure, and retention behavior remain pending |
 | MQ-09 | Build metadata requires SNode.C `2.0.0` and nlohmann/json `3.7.0` | Runtime-qualified for exact heads | per-application CMake `find_package` calls | Current MQTTSuite master built against installed SNode.C `bf01683`; moving heads still require requalification |
 | MQ-10 | License expression is `MIT OR GPL-3.0-or-later` | Source-verified with documentation defect | SPDX line and full `LICENSE-GPL-3.0-or-later`/MIT texts | Fix or avoid the contradictory LGPL sentence inside `LICENSE` |
+| MQ-11 | The complete default build needs the recursive JSON-schema-validator submodule and SNode.C components including MariaDB; documentation, include-analysis, and format tools are optional | Source-verified; Debian package mapping verified | `.gitmodules`, top-level/per-application CMake, `mqttstore/lib/CMakeLists.txt`, and `cmake/{doxygen,iwyu,format}.cmake` | Requalify after changing dependency heads or default transport options |
 
 ## Test and CI evidence
 

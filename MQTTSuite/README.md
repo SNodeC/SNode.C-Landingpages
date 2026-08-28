@@ -43,9 +43,43 @@ the complete suite.
 This local scenario starts one IPv4 broker listener, subscribes to a synthetic
 sensor topic, and publishes one JSON measurement at QoS 1.
 
-Build and install [SNode.C](https://github.com/SNodeC/snode.c) first, then point
-`CMAKE_PREFIX_PATH` at that isolated install. MQTTSuite also uses a recursive
-submodule, so clone it explicitly.
+### Install dependencies
+
+These Debian/Ubuntu packages cover MQTTSuite's complete default build. The
+MariaDB development package is required because MQTTStore requests SNode.C's
+`db-mariadb` component:
+
+```sh
+sudo apt update
+sudo apt install --yes \
+  build-essential ca-certificates cmake git ninja-build \
+  nlohmann-json3-dev libmariadb-dev
+```
+
+Build and install [SNode.C](https://github.com/SNodeC/snode.c) first with its
+required packages. Its install must contain the MQTT, HTTP/Express, WebSocket,
+TLS, and MariaDB components requested by MQTTSuite's default options. The
+following packages are optional for MQTTSuite itself:
+
+```sh
+# Optional transports/runtime tools: rebuild SNode.C with Bluetooth support
+# before enabling MQTTSuite's RFCOMM/L2CAP targets; libmagic improves HTTP
+# MIME detection; openssl supports TLS setup.
+sudo apt install --yes libbluetooth-dev libmagic-dev openssl
+
+# Optional maintainer tools discovered by MQTTSuite's CMake files.
+sudo apt install --yes \
+  doxygen graphviz iwyu clang-format cmake-format jsbeautifier npm
+
+# Optional CSS formatter; installs `prettier` without writing into system paths.
+npm install --global --prefix "$HOME/.local" prettier
+export PATH="$HOME/.local/bin:$PATH"
+```
+
+Doxygen and Graphviz build the API documentation and its diagrams; IWYU checks
+include usage; the remaining tools feed the `format` target. None is required
+to build or run the broker/CLI scenario. MQTTSuite uses a recursive
+`json-schema-validator` submodule, so clone it explicitly.
 
 ```sh
 git clone --recurse-submodules https://github.com/SNodeC/mqttsuite.git

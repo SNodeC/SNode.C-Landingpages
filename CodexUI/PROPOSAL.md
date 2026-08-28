@@ -10,24 +10,24 @@ visual-placement rules are not duplicated here.
 ## Current-master scope decision
 
 The public page tracks CodexUI `master`/`HEAD`. At the 28 August 2026 evidence
-baseline, master contains the native Qt application only and declares no
-project version. Browser, native/web parity, and `1.0` material below is retained
-as conditional future planning, not approved current public copy. See
+baseline, master contains the native Qt application and CodexWebUI, with both
+source manifests declaring `1.0.0`. Native and web qualification pass, but no
+public tag or GitHub release exists and full-audit build-tool findings remain
+for review; the production-dependency audit is clear. See
 [`EVIDENCE.md`](EVIDENCE.md).
 
 ## Purpose
 
-Present CodexUI as a polished, understandable native Qt product—not merely as a
-thread-model implementation. The page must show the
-actual user experience immediately, explain how it connects through AISuite,
-offer a credible installation/evaluation path, and define parity, security,
-compatibility, and project independence without ambiguity.
+Present CodexUI as one polished product with native Qt and browser
+presentations—not merely as a thread-model implementation. Show both real user
+experiences, their shared behavior and honest exceptions, how they connect
+through AISuite, and their release, security, and compatibility boundaries.
 
 ## Audience and jobs to be done
 
 ### Primary audiences
 
-- Codex users seeking a native Linux interface;
+- Codex users seeking a native Linux or browser interface;
 - developers evaluating a multi-client Codex workflow;
 - Qt, C++, and frontend contributors.
 
@@ -41,7 +41,7 @@ compatibility, and project independence without ambiguity.
 ### Visitor questions
 
 - What does CodexUI look like and what workflow does it support?
-- Which native workflows and limitations are qualified?
+- Which native/browser workflows and limitations are qualified?
 - Is this an official OpenAI application?
 - What must be installed and running?
 - Where are conversations and credentials stored?
@@ -52,14 +52,13 @@ compatibility, and project independence without ambiguity.
 
 ### Working headline
 
-> A native interface for typed, multi-client Codex workflows.
+> Native and browser interfaces for typed, multi-client Codex workflows.
 
 ### Supporting statement
 
-> CodexUI provides a Qt 6 desktop application for the AISuite `codex-bridge`,
-> presenting normalized thread, turn, prompt, telemetry,
-> and reconnect model while leaving semantics and persistence with the Codex
-> app-server.
+> CodexUI provides Qt 6 and browser presentations for the AISuite
+> `codex-bridge`, sharing a normalized thread, turn, prompt, telemetry, and
+> reconnect model while leaving semantics and persistence with the app-server.
 
 ### Primary call to action
 
@@ -67,7 +66,7 @@ compatibility, and project independence without ambiguity.
 
 ### Secondary calls to action
 
-- Review the native capability and limitation matrix.
+- Review the native/browser capability and limitation matrix.
 - Understand architecture and privacy boundaries.
 
 ## Narrative principles
@@ -77,7 +76,8 @@ compatibility, and project independence without ambiguity.
 - Explain dependencies progressively: CodexUI → AISuite bridge → Codex
   app-server.
 - Separate application state, presentation state, and app-server persistence.
-- Keep future browser work out of current capability claims.
+- Label behavioral equality, browser-specific representations, and native-only
+  capabilities exactly as the current web contract defines them.
 - Describe independent open-source status prominently and accurately.
 - Avoid implying support for platforms that have not passed release testing.
 
@@ -89,7 +89,7 @@ Include:
 
 - CodexUI wordmark, stable version, and maturity;
 - headline and two-line value statement;
-- a real native screenshot using the qualified theme;
+- a real native/browser product pair using qualified matching state;
 - release, CI, and dual-license badges only;
 - links to `Install`, `See the workflow`, `Browser`, and `Compatibility`;
 - an independent-project notice below, not hidden in the footer.
@@ -150,7 +150,7 @@ Offer paths in user-friendly order:
 1. downloadable release artifacts/packages, if qualified;
 2. source build using current CodexUI, AISuite, and SNode.C master heads with
    exact tested SHAs;
-3. future browser build and deployment only after it reaches master;
+3. qualified static browser artifact when a release destination exists;
 4. developer setup.
 
 The quick start must specify:
@@ -168,16 +168,12 @@ names in end-user installation instructions.
 
 ### 6. Architecture
 
-Show the native path through AISuite:
+Show both paths through AISuite:
 
 ```text
-Qt GUI thread
-      │ bounded presentation JSONL
-      ▼
-SNode.C client thread using AISuite
-      │
-      ▼
-codex-bridge
+Qt GUI ─ bounded JSONL ─ SNode.C/AISuite client ─┐
+                                                 ├─ codex-bridge
+Browser UI ─ AISuite TypeScript SDK/WebSocket ───┘
       │
       ▼
 Codex app-server
@@ -219,7 +215,7 @@ Describe the production artifact and same-origin bridge deployment:
 
 - static routes and `/codex` WebSocket route;
 - required subprotocol;
-- future browser baseline only after browser code reaches master;
+- exact current browser baseline and pinned AISuite SDK revision;
 - Node as build-time only where applicable;
 - bind address, TLS/reverse proxy, authentication, and exposure guidance;
 - cache and asset-version behavior;
@@ -288,7 +284,7 @@ product-page system:
 8. `Privacy, security, and quality evidence`;
 9. `Documentation and project routes`.
 
-The hero precedes these sections. Future browser deployment, ecosystem relationships,
+The hero precedes these sections. Browser deployment, ecosystem relationships,
 support, contribution, and license requirements become concise subsections in
 the appropriate final section so CodexUI does not receive more page weight than
 the other products.
@@ -302,15 +298,15 @@ source-asset rules come from the [page system](../PAGE-SYSTEM.md).
 
 | Slot | Asset | Exact placement | Required content |
 | --- | --- | --- | --- |
-| V1 — Hero | `assets/codexui-hero.png` | Immediately below the hero links and independent-project notice | Real native capture with synthetic thread hierarchy, conversation, composer, connection status, plans/agents, and background activity visible |
-| V2 — First success | `assets/native-first-workflow.png` | Directly after the first-run workflow and expected screen | Native workflow showing connect → select/create thread → submit prompt → observe activity → inspect background work → return to command target, with minimal annotations |
-| V3 — Architecture | `assets/native-architecture.svg` | At the beginning of `Architecture` | Native Qt GUI thread → bounded Unix socketpair → SNode.C/AISuite client thread → bridge → app-server, with process, thread, and persistence boundaries distinguished |
+| V1 — Hero | `assets/codexui-hero.png` | Immediately below the hero links and independent-project notice | Real native/browser diptych with matching synthetic thread, conversation, composer, connection, and activity state; platform labels remain visible |
+| V2 — First success | `assets/first-workflow.png` | Directly after the first-run workflow and expected screen | Shared connect → select/create → prompt → activity → inspect → return workflow, using the clearest qualified presentation and labeling platform-specific controls |
+| V3 — Architecture | `assets/presentation-architecture.svg` | At the beginning of `Architecture` | Native Qt/socketpair/SNode.C path and browser/TypeScript/WebSocket path converging at the bridge, with process, runtime, and persistence boundaries distinguished |
 | V4 — Product detail | `assets/state-and-reconnect.svg` | Between `State and interaction model` and `Connection, controller, and reconnect behavior` | Two coordinated panels: target/active/running/inspected state distinctions and connected → provider loss → visible error → reconnect → resynchronize sequence |
-| Social preview | `assets/social-preview.png` | Repository metadata | Real native product crop, approved outcome statement, and interface-amber accent |
+| Social preview | `assets/social-preview.png` | Repository metadata | Native/browser product pairing, approved outcome statement, and interface-amber accent |
 
 ### Capture specification
 
-- Use the exact qualified current-master native build for screenshots.
+- Use the exact qualified current-master native and browser builds for screenshots.
 - Use the same synthetic repository/thread data and matching theme.
 - Capture at a consistent scale with readable text at GitHub width.
 - Remove usernames, paths, tokens, real prompts, and unrelated applications.
@@ -337,8 +333,8 @@ source-asset rules come from the [page system](../PAGE-SYSTEM.md).
 ## Use of existing documentation
 
 Treat the live README and linked architecture and behavior documents as
-read-only knowledge sources. Treat browser, qualification, and release documents
-as conditional inputs only after their code reaches master. Verify selected behavior
+read-only knowledge sources. Browser, qualification, and release documents are
+current source inputs but do not prove public release. Verify selected behavior
 against the recorded current-master SHA, then rewrite the landing page independently in this
 workspace without preserving the live README's structure or wording.
 
@@ -350,10 +346,10 @@ visitor path. Do not modify the live local repository during this workflow.
 
 ## Evidence checklist
 
-- Explicit source version/maturity wording; no `1.0` claim on current master.
+- Explicit `1.0.0` source-version wording separated from release and maturity.
 - Tested current-master AISuite and SNode.C SHAs.
 - Native clean build/install/runtime test.
-- Native behavior and limitation matrix.
+- Native/browser behavior, equality, and limitation matrix.
 - Connection/controller/reconnect tests.
 - Interaction-state regression tests.
 - Desktop file/icon/application-ID qualification.
@@ -384,10 +380,10 @@ visitor path. Do not modify the live local repository during this workflow.
 
 ## Acceptance criteria
 
-- [ ] The first viewport shows the real native product clearly.
+- [ ] The first viewport shows the real native and browser product clearly.
 - [ ] A new user understands the primary workflow without architecture knowledge.
 - [ ] Install paths use tested compatible master heads.
-- [ ] Native capabilities and limitations are explicit.
+- [ ] Native/browser capabilities and limitations are explicit.
 - [ ] State labels and reconnect behavior match the released application.
 - [ ] Architecture and persistence ownership are accurate.
 - [ ] Security, privacy, listener exposure, and independence are clear.
@@ -400,7 +396,7 @@ visitor path. Do not modify the live local repository during this workflow.
 ## Open decisions
 
 - Initial release artifact/package formats and supported Linux distributions.
-- Future browser baseline, artifact name, and parity gates after browser code
-  reaches master.
+- Final browser distribution route, supported-browser matrix, and dependency
+  audit remediation.
 - Whether a hosted demo is feasible without creating security or cost concerns.
 - Final wording and placement of the independent-project notice.

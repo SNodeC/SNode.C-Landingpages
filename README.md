@@ -7,9 +7,9 @@ presentation and coordinated launch of the **SNode.C ecosystem**:
   framework;
 - [MQTTSuite](MQTTSuite/README.md) — MQTT broker, integration,
   bridge, CLI, and storage applications;
-- [AISuite](AISuite/README.md) — typed asynchronous C++ integration and a
+- [AISuite](AISuite/README.md) — typed C++/TypeScript integration and a
   multi-client bridge for the Codex app-server;
-- [CodexUI](CodexUI/README.md) — native Qt interface built on AISuite.
+- [CodexUI](CodexUI/README.md) — native Qt and browser interfaces built on AISuite.
 
 The objective is not merely to improve documentation. The organization profile
 and every repository README will become a professional GitHub-native landing
@@ -75,7 +75,7 @@ or protocol claims.
 
 ## Current baseline
 
-The initial audit on 28 August 2026 found:
+The coordinated audit on 28 August 2026 found:
 
 - the SNodeC organization has no public organization profile README;
 - its public pins do not yet present the complete four-product system;
@@ -83,10 +83,11 @@ The initial audit on 28 August 2026 found:
   READMEs function more like manuals than product landing pages;
 - AISuite has no public GitHub release, topics, website, or repository
   description;
-- CodexUI has no public release or declared project version; current master is
-  native-only and cannot carry a `1.0` or browser claim;
-- AISuite master declares `0.7.0` and contains no TypeScript package; the
-  separate development-branch package is excluded from the current baseline;
+- CodexUI master now declares native/web source version `1.0.0` and contains a
+  qualified browser artifact, but has no public tag or GitHub release;
+- AISuite master declares CMake source version `0.7.0` and contains the tested,
+  packable `@snodec/codex-frontend` source package at `1.0.0`; the package is
+  not currently published in the public npm registry;
 - historical Codex UI versions exist beside the new canonical CodexUI product,
   so canonical naming and links must be unambiguous.
 
@@ -104,8 +105,8 @@ Working ecosystem statement:
 | --- | --- | --- | --- |
 | SNode.C | Event-driven C++ networking framework | C++ and systems developers | Build a first network app |
 | MQTTSuite | MQTT broker, bridge, integration, CLI, and storage suite | IoT and edge engineers | Run the MQTT quick start |
-| AISuite | Typed asynchronous C++ bridge | AI tooling and C++ developers | Build and call the bridge |
-| CodexUI | Native Qt interface | Codex users and UI developers | See the workflow and install |
+| AISuite | Typed C++/TypeScript bridge | AI tooling and client developers | Build and call the bridge |
+| CodexUI | Native Qt and browser interfaces | Codex users and UI developers | See the workflow and install |
 
 Claims such as “production-ready,” performance superiority, small footprint,
 protocol coverage, and supported platforms must be linked to reproducible tests
@@ -113,9 +114,26 @@ or measurements.
 
 ## Roadmap
 
+### Approved execution cadence
+
+For this launch, **Day 0 is the two-day execution and publication window of
+28–29 August 2026**, performed by the maintainer and Codex together. During that
+window, phases 0–4 produce and publish the release candidates, complete GitHub
+landing-page system, aligned documentation, demo, Discussion setup, and
+channel-ready material. The short schedule does not turn missing evidence into
+a claim: unresolved release, security, compatibility, or screenshot gates
+remain visible and are either fixed during Day 0 or excluded from launch.
+
+**Hard milestone:** all five landing-page READMEs are complete and review-ready
+by the afternoon of 29 August 2026 at the latest. Later articles and community
+work must not delay this publication surface.
+
+Public communication then follows the Day 0 through Week 6 sequence under
+Phase 6. It is a staged feedback loop, not additional preparation time.
+
 ### Phase 0 — Ownership and launch decisions
 
-**Estimated duration:** 2–3 days
+**Timing:** Day 0 execution window
 
 - Identify the canonical repository, default branch, maintainer, documentation
   owner, and release owner for every product.
@@ -136,18 +154,19 @@ to action are fixed.
 
 ### Phase 1 — Product and release readiness
 
-**Estimated duration:** 1–2 weeks
+**Timing:** Day 0 execution window
 
 #### Version normalization
 
 - Inventory versions in CMake, package manifests, headers, generated files,
   documentation, CLI output, install metadata, and dependency pins.
 - Establish exactly one version source of truth per repository.
-- Current master establishes AISuite source version `0.7.0`; TypeScript package
-  `1.0.0` exists only outside master and is excluded from current public copy.
-- CodexUI master has no project version and is native-only. A future `1.0` or
-  browser claim requires the relevant code, installation, compatibility, and
-  acceptance evidence to reach master first.
+- Current AISuite master establishes CMake source version `0.7.0` and TypeScript
+  package-source version `1.0.0`. They are independently versioned surfaces,
+  and neither number establishes a public release or maturity level.
+- CodexUI master declares native/web source version `1.0.0` and contains the
+  browser implementation. Public `1.0` release wording still requires a tag,
+  artifacts, dependency-audit resolution, installation, and acceptance gates.
 - Create annotated or signed `vX.Y.Z` tags and GitHub Releases.
 - Maintain human-readable changelogs and release notes.
 - Publish the compatibility matrix, including CodexUI, AISuite, SNode.C, and
@@ -163,7 +182,7 @@ combination, including:
 - Debian stable and current Ubuntu;
 - GCC and Clang where supported;
 - x86-64 and an ARM target for advertised edge support;
-- native Qt CodexUI builds; browser builds only after they reach master;
+- native Qt and CodexWebUI builds, with platform-specific behavior labeled;
 - OpenWrt if it remains a launch claim.
 
 #### Qualified evaluation tracks
@@ -201,7 +220,7 @@ tester can complete the quick start without help.
 
 ### Phase 2 — Brand and visual system
 
-**Estimated duration:** 4–7 days, overlapping late Phase 1
+**Timing:** Day 0 execution window, parallel with release qualification
 
 Create one restrained design system rather than four unrelated presentations:
 
@@ -224,7 +243,7 @@ accessibility, technical precision, and fast loading.
 - **MQTTSuite:** broker Web UI, client/topic view, and a complete integration
   scenario.
 - **AISuite:** bridge telemetry and a multi-client flow diagram.
-- **CodexUI:** polished native hero plus a representative thread/turn workflow.
+- **CodexUI:** polished native/browser hero plus a representative shared workflow.
 - **Launch:** a 60–90 second narrated demo and a silent 10–20 second social clip.
 
 Use consistent resolution, theme, window treatment, synthetic test data, crop,
@@ -236,7 +255,7 @@ GitHub light and dark themes.
 
 ### Phase 3 — GitHub landing pages
 
-**Estimated duration:** 1–2 weeks
+**Timing:** Day 0 execution window
 
 #### Organization profile
 
@@ -287,11 +306,11 @@ Nothing in this workspace modifies the live local repositories.
   precise relationship to Node.js without implying API compatibility.
 - **MQTTSuite:** five-application diagram, runnable IoT scenario, MQTT 3.1.1
   scope, transport matrix, Web UI screenshot, and explicit MQTT 5 limitations.
-- **AISuite:** benefits before internal implementation terminology, typed C++
-  access, multi-client bridge, recorded schema, minimal example, and lifecycle
-  limitations.
-- **CodexUI:** native screenshot and workflow, prerequisites, security
-  boundaries, install artifacts, and exact compatibility.
+- **AISuite:** benefits before internal implementation terminology, typed
+  C++/TypeScript access, multi-client bridge, recorded schema, minimal examples,
+  and lifecycle limitations.
+- **CodexUI:** native/browser screenshots and workflow, prerequisites, security
+  boundaries, install artifacts, equality limits, and exact compatibility.
 
 For every repository, configure its description, website, topics, social
 preview, releases, support routing, and accurate cross-links.
@@ -302,7 +321,7 @@ quick starts.
 
 ### Phase 4 — Launch content package
 
-**Estimated duration:** 1 week
+**Timing:** Day 0 execution window
 
 Create reusable facts, then write native content for each audience:
 
@@ -324,23 +343,24 @@ OpenAI products wherever the Codex naming might cause confusion.
 **Gate:** A second reviewer checks technical accuracy, terminology, grammar,
 links, licensing, attribution, images, and disclosures.
 
-### Phase 5 — Community warm-up
+### Phase 5 — Community readiness
 
-**Estimated duration:** 2–4 weeks before launch
+**Timing:** prepare during Day 0; continue during rollout
 
 - Enable and seed GitHub Discussions with Welcome, Help, Ideas, and Show and
   Tell categories.
 - Triage existing issues and publish genuinely approachable `good first issue`
   tasks.
-- Participate constructively in target communities before announcing.
-- Ask 5–10 relevant people to test privately and provide honest feedback; never
-  ask for coordinated votes or comments.
-- Publish one educational technical article before the announcement.
+- Check the first two target communities and their current posting rules before
+  Day 0; engage constructively when the staged rollout reaches each audience.
+- Invite relevant people to test privately as soon as the demo is ready and ask
+  for honest feedback; never ask for coordinated votes or comments.
+- Prepare the educational maintainer article for Day 1.
 - Prepare response owners and answers for predictable questions.
 
 ### Phase 6 — Staggered public launch
 
-**Estimated duration:** 2 weeks, followed by technical content
+**Timing:** Day 0 through Week 2, followed by Weeks 3–6 technical content
 
 #### Tier 1 — Owned and high-intent channels
 
@@ -379,7 +399,8 @@ Disclose affiliation, and make the answer useful without requiring the link.
 
 #### Suggested launch sequence
 
-- **Day 0:** releases, landing pages, documentation, demo, Discussion.
+- **Day 0 — 28–29 August 2026:** releases, complete GitHub landing-page system,
+  aligned documentation, demo, and Discussion.
 - **Day 1:** maintainer article and LinkedIn.
 - **Days 2–4:** first best-fit technical community and active responses.
 - **Days 5–7:** second audience using a different use case and article.

@@ -2,14 +2,15 @@
 
 # CodexUI
 
-### A native Qt interface for visible, multi-client Codex workflows
+### Native Qt and browser interfaces for visible, multi-client Codex workflows
 
 Navigate threads and turns, submit prompts, follow tool activity and plans,
 inspect Git changes, and keep connection state visible while work continues.
 
-[First run](#build-and-first-run) · [Workflow](#the-native-workflow) ·
+[First run](#build-and-first-run) · [Workflow](#one-workflow-two-presentations) ·
 [Bridge transports](#select-the-bridge-transport-from-the-command-line) ·
-[UI behavior](https://github.com/SNodeC/CodexUI/blob/master/docs/ui-behavior.md)
+[Native behavior](https://github.com/SNodeC/CodexUI/blob/master/docs/ui-behavior.md) ·
+[Web contract](https://github.com/SNodeC/CodexUI/blob/master/docs/web-1.0-contract.md)
 
 </div>
 
@@ -19,18 +20,23 @@ inspect Git changes, and keep connection state visible while work continues.
 > `codex-bridge`, which in turn communicates with the Codex app-server.
 
 This page follows current public `master`. The last qualified source was
-[`3632adc`](https://github.com/SNodeC/CodexUI/commit/3632adcf63b287aeec4bfa9da4b2f8881d526d34),
-built with AISuite
-[`b6b4635`](https://github.com/SNodeC/AISuite/commit/b6b463575b0f587fe9ed97ddd8509050d05bd4ca)
+[`8791923`](https://github.com/SNodeC/CodexUI/commit/8791923e5475e39222ea4fc7674ca623bc02b4de),
+with the native build qualified against AISuite
+[`c3cce28`](https://github.com/SNodeC/AISuite/commit/c3cce28d813b4f48376a2a0c6ac74131bf443f65)
 and SNode.C
 [`bf01683`](https://github.com/SNodeC/snode.c/commit/bf01683a53b48220a840522e8ccaf3b48e58c240).
-CodexUI currently declares no project version and has no public tag. Current
-master is native Qt only; browser and `1.0` claims are excluded.
+CodexWebUI pins AISuite SDK
+[`5aeedb2`](https://github.com/SNodeC/AISuite/commit/5aeedb2c21d7da0d611219365294cc3fb052cddf).
+Native CMake and the private CodexWebUI manifest declare source version `1.0.0`,
+but no public tag or GitHub release exists. The browser artifact is reproducibly
+buildable from source; this evidence does not make it a published release.
 
-## The native workflow
+## One workflow, two presentations
 
-CodexUI presents one normalized view of the app-server state and the local
-interaction state needed to use it:
+The native Qt application and CodexWebUI present the same normalized app-server
+and local interaction model. The native application connects through SNode.C;
+the browser uses AISuite's TypeScript SDK over the bridge's `/codex` WebSocket.
+Both let a user:
 
 1. connect to a bridge and see whether the client is controller or observer;
 2. select an existing thread or create a new one with explicit runtime options;
@@ -40,15 +46,49 @@ interaction state needed to use it:
    command target accidentally;
 6. reconnect and resynchronize after a provider or transport interruption.
 
-The UI distinguishes the command **target**, the target's **active turn**,
+Each presentation distinguishes the command **target**, the target's **active turn**,
 threads with **running** background work, and the currently
 **selected/inspected** item. Those states may refer to different threads. This
 prevents navigation from silently redirecting an action.
 
 ## Build and first run
 
-Build and install current SNode.C and AISuite first. CodexUI requires C++20,
-Qt 6 Widgets, Threads, libgit2, CMake, and the installed dependency prefix.
+### Install dependencies
+
+These Debian/Ubuntu packages cover CodexUI's direct CMake requirements and the
+base packages consumed through installed AISuite and SNode.C targets:
+
+```sh
+sudo apt update
+sudo apt install --yes \
+  build-essential ca-certificates cmake git ninja-build pkgconf \
+  libssl-dev nlohmann-json3-dev qt6-base-dev libgit2-dev
+```
+
+The Git dependency is **libgit2**, supplied by `libgit2-dev`; there is no
+`libgit3-dev` requirement. `qt6-base-dev` supplies Qt 6 Widgets and pulls its
+matching base development tools. CMake's Threads package is provided by the
+compiler and system C library rather than a separate Debian package.
+
+The following packages are optional for compiling CodexUI, but required when
+the associated end-to-end path is selected:
+
+```sh
+# Optional bridge transport/runtime tools. Rebuild SNode.C and AISuite after
+# adding Bluetooth support; openssl supports TLS certificate setup.
+sudo apt install --yes libbluetooth-dev openssl
+
+# Optional for the CodexUI build; required behind codex-bridge for a real
+# app-server workflow. Use a managed Node/npm installation.
+sudo apt install --yes npm
+npm install --global --prefix "$HOME/.local" @openai/codex
+export PATH="$HOME/.local/bin:$PATH"
+codex --version
+```
+
+Build and install current SNode.C and AISuite first, using the same dependency
+prefix or listing both prefixes in `CMAKE_PREFIX_PATH`. CodexUI's CMake files do
+not discover Doxygen or IWYU, so neither is a CodexUI build dependency.
 
 ```sh
 git clone https://github.com/SNodeC/CodexUI.git
@@ -81,6 +121,26 @@ At the qualified commits, the build passed all seven CTest targets: socketpair
 contract, presentation pipeline, conversation projection, conversation cards,
 application layout, live Git changes, and shell integration. Installation
 produced `codex-ui`, the scalable application icon, and the desktop entry.
+
+## CodexWebUI artifact
+
+`web/` contains the React/TypeScript browser presentation and records its exact
+AISuite SDK revision. Its release task builds TypeScript, runs seven web test
+files, profiles the presentation model, creates a relocatable Vite bundle, and
+verifies the artifact. At the qualified head, all 30 Node test cases passed and
+`web/app-dist/` contained a generated entry page plus two non-empty assets.
+
+CMake can install that prebuilt directory at `share/codexui/web`.
+`codex-bridge` then serves the static files and `/codex` WebSocket from one
+listener; no Node process runs in the installed deployment. The browser has no
+bridge router, controller authority, persistent Codex state, or implied access
+to provider-side paths. The exact build layout, native/browser contract, and
+exceptions are maintained in the linked web documentation.
+
+This is release-candidate evidence, not proof of a downloadable or hosted
+release. A full npm audit reports five build-tool findings—four high and one
+moderate—while `npm audit --omit=dev` reports none for production dependencies.
+The build-tool findings still require review before release.
 
 ## Select the bridge transport from the command line
 
@@ -153,23 +213,18 @@ way to define startup behavior.
 ## Architecture
 
 ```text
-Qt GUI thread
-    │ normalized bounded JSONL
-    ▼
-nonblocking Unix socketpair
-    │
-    ▼
-SNode.C client thread ── selected transport ──► AISuite codex-bridge
-                                                     │
-                                                     ▼
-                                              Codex app-server
+Native Qt: GUI ── bounded JSONL ── SNode.C/AISuite client ─┐
+                                                           ├─► codex-bridge
+Browser: React presentation ── AISuite TypeScript SDK ─────┘        │
+                                                                    ▼
+                                                             Codex app-server
 ```
 
-Qt owns widgets and presentation state. The SNode.C thread owns the external
-transport and AISuite frontend connection. A bounded, nonblocking Unix
-socketpair separates the two ownership graphs inside the process. The external
-transport can be Unix, IP stream, TLS, WebSocket, WSS, or RFCOMM where compiled;
-changing it does not change normalized UI semantics.
+In the native process, Qt owns widgets and presentation state while a SNode.C
+thread owns the external transport and AISuite connection; a bounded,
+nonblocking Unix socketpair separates them. The browser owns its React
+presentation and connects directly to the same bridge through AISuite's typed
+WebSocket lifecycle. It does not reproduce the native process boundary.
 
 AISuite owns typed protocol adaptation and bridge routing. The app-server owns
 conversation semantics and persistence. CodexUI does not maintain an implicit
@@ -178,14 +233,14 @@ history.
 
 ## Behavior, privacy, and limits
 
-| Area | Current native behavior | Boundary |
+| Area | Qualified behavior | Boundary |
 | --- | --- | --- |
 | Threads and turns | Normalized hierarchy, target/active/running/selected distinctions | Provider data remains authoritative |
 | Prompt admission | Local pending state makes accepted submissions visible | Delivery or completion is not invented when disconnected |
 | Activity | Plans, agents, requests, tool output, diagnostics, and Git changes have dedicated presentation paths | Rendering depends on messages actually received |
 | Reconnect | Visible failure/retrying states and explicit resynchronization | Reconnect is not local conversation persistence |
 | Multi-client use | Controller/observer state comes from AISuite bridge events | Observers cannot be described as equivalent controllers |
-| Browser | Not present on current master | No native/browser parity or hosted deployment claim |
+| Browser | Shared normalization, presentation, prompt, settings, request, reconnect, and viewport behavior covered by seven web test files | Equality is behavioral, not pixel identity; native-only exceptions remain documented |
 
 There is no CodexUI-specific bearer-token layer for bridge access. Loopback or
 Unix defaults reduce exposure but do not replace endpoint permissions, TLS
@@ -194,52 +249,39 @@ Screenshots and bug reports must exclude private prompts, repository secrets,
 tokens, personal paths, and conversation history.
 
 The recorded build used Debian GNU/Linux forky/sid, x86-64, GCC 16.2.0, Qt
-6.10.2, and libgit2 1.9.7. This does not establish a broad Linux distribution,
-desktop, architecture, or package support matrix.
+6.10.2, libgit2 1.9.7, Node 24.19.0, and npm 11.16.0. The native 7/7 and web
+30/30 tests passed. This does not establish a broad platform, browser, or
+package support matrix.
 
 ## Interaction and recovery model
 
-A prompt card becomes locally pending when CodexUI admits the submission. It
-remains distinguishable from provider-confirmed user input and from a completed
-turn. If a submission is rejected or the connection fails, the UI reports that
-state instead of synthesizing a successful response. Tool requests and other
-items that require attention remain visible in their owning thread.
+A locally pending prompt remains distinct from provider-confirmed input and a
+completed turn; rejection or disconnect never becomes synthetic success.
+Inspection also remains separate from the command target, so viewing background
+work does not redirect the next command.
 
-Selecting a thread is an inspection action. Changing the command target is a
-separate decision, particularly while another thread has a running turn. The
-interface keeps those distinctions visible so a user can inspect background
-work and return without redirecting the next command unintentionally.
-
-Transport loss produces a disconnected, retrying, or failure state. Reconnect
-creates a fresh frontend attachment and resynchronizes from provider data. It
-does not prove that CodexUI persisted missing conversation history locally.
-When the provider reports that items are not loaded or cannot materialize an
-older thread, the UI must surface that limitation.
+Transport loss produces visible disconnected, retrying, or failure state.
+Reconnect creates a fresh attachment and resynchronizes provider data; it is not
+local conversation persistence. Unavailable provider history stays unavailable.
 
 ## Evaluate the real desktop safely
 
-Use a disposable workspace containing synthetic files and a non-sensitive
-prompt. Exercise connect, thread creation/selection, prompt admission, visible
-activity, a Git diff, disconnect, reconnect, and orderly shutdown. Verify that
-the target, active turn, running indicators, and selected inspector remain
-correct throughout.
+Evaluate with synthetic files and a non-sensitive prompt. Exercise connect,
+thread selection, prompt admission, activity, Git change, disconnect, reconnect,
+and shutdown while checking target/active/running/inspected distinctions. Remove
+identities, tokens, personal paths, and unrelated history from captures.
 
-Before taking a launch screenshot, replace account and repository identifiers,
-remove tokens and personal paths, clear unrelated history, and confirm that all
-visible state came from the qualified build. Capture light and dark themes at a
-repeatable window size, but keep every workflow understandable in Markdown when
-the image is unavailable.
-
-If the UI cannot connect, first print the effective configuration with
-`--command-line=standard`. Confirm that exactly one transport is enabled and
-that its path/host/port matches the bridge listener. For TLS/WSS, verify the CA
-and certificate chain; for Unix sockets, verify runtime-directory ownership and
-that no stale listener is being mistaken for a running bridge.
+For connection failures, print `--command-line=standard`, confirm exactly one
+transport and a matching bridge endpoint, then check the TLS chain or Unix
+runtime-directory ownership as applicable.
 
 ## Project routes
 
 - Read the [architecture](https://github.com/SNodeC/CodexUI/blob/master/docs/codex-architecture.md)
   and [UI behavior](https://github.com/SNodeC/CodexUI/blob/master/docs/ui-behavior.md).
+- Review the [web 1.0 contract](https://github.com/SNodeC/CodexUI/blob/master/docs/web-1.0-contract.md),
+  [qualification](https://github.com/SNodeC/CodexUI/blob/master/docs/web-qualification.md),
+  and [release gate](https://github.com/SNodeC/CodexUI/blob/master/docs/web-release.md).
 - Inspect [Issues](https://github.com/SNodeC/CodexUI/issues) and
   [releases](https://github.com/SNodeC/CodexUI/releases).
 - Review AISuite's [bridge contract](https://github.com/SNodeC/AISuite/blob/master/src/ai/openai/codex/docs/architecture.md).

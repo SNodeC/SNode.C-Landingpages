@@ -6,18 +6,16 @@ directory's [proposal](PROPOSAL.md).
 
 ## What it solves
 
-CodexUI gives users a visible native Qt interface for multi-client Codex
-workflows. It organizes threads, turns, prompts, tool activity, connection
-state, and background work so users do not need to operate the bridge or
-app-server solely through raw protocol messages or terminal-oriented tooling.
+CodexUI gives users native Qt and browser interfaces for multi-client Codex
+workflows. Both organize threads, turns, prompts, tool activity, connection
+state, and background work without requiring raw protocol operation.
 
 ## Project focus
 
-Focus on the real user experience. Lead with the current-master native
-interface, the primary thread/turn workflow, and a credible first run. Explain
-state distinctions, controller behavior, reconnect handling, and privacy only
-after visitors understand what the product lets them do. Browser work remains a
-future route until it reaches master.
+Focus on the real user experience across the current-master native and browser
+presentations. Lead with their shared workflow and genuine captures, then state
+native-only and browser-specific boundaries. Explain state distinctions,
+controller behavior, reconnect handling, and privacy after the user outcome.
 
 Use architecture to support the visible product story. Do not lead with reducer,
 model, socketpair, or protocol implementation terminology.
@@ -28,8 +26,8 @@ model, socketpair, or protocol implementation terminology.
   link those details rather than presenting them as CodexUI features.
 - The Codex app-server owns conversation semantics and persistence.
 - CodexUI owns presentation, interaction, and local UI state only where verified.
-- Browser presentation and parity claims are excluded until browser code reaches
-  master and receives a new evidence audit.
+- Browser claims must follow the 1.0 contract and qualification tests; describe
+  behavioral equality without claiming pixel identity or universal parity.
 - Do not present workspace checkout layout, internal review inventories, or
   developer-only assumptions as installation requirements.
 - Do not imply that CodexUI is an official OpenAI application.
@@ -42,7 +40,7 @@ A qualified visitor should be able to:
 2. see how to connect, select or create a thread, submit a prompt, and observe
    work;
 3. distinguish target, active turn, running background work, and inspected state;
-4. understand the native presentation's verified capabilities and limitations;
+4. understand both presentations' verified capabilities and limitations;
 5. find exact installation, compatibility, privacy, security, and support routes.
 
 ## Audience priority
@@ -56,8 +54,7 @@ A qualified visitor should be able to:
 
 - **CodexUI** — product name.
 - `codex-ui` — canonical native executable.
-- `CodexWebUI` — browser artifact only if this remains its verified canonical
-  name.
+- `CodexWebUI` — verified browser artifact name.
 - `codex-bridge` — AISuite service; never describe it as part of CodexUI's
   semantic backend.
 - Define **thread**, **turn**, **target**, **active turn**, **running**,
@@ -81,9 +78,10 @@ A qualified visitor should be able to:
 ## Approved decisions
 
 - Primary CTA: see the workflow, then install CodexUI.
-- V1 is a real native-product capture using synthetic, source-aligned state.
-- V2 proves the native first-run workflow.
-- V3 distinguishes native Qt, socketpair, AISuite, bridge, and app-server paths.
+- V1 is a real native/browser product pair using matching synthetic state.
+- V2 proves the shared first workflow with platform differences labeled.
+- V3 distinguishes native Qt/socketpair and browser/WebSocket paths before they
+  converge at AISuite's bridge.
 - V4 combines state distinctions and the reconnect sequence.
 - Use explicit `supported`, `limited`, `not yet`, and `not applicable` states in
   the native capability matrix.
@@ -117,7 +115,10 @@ release candidates, tests, qualification documents, and installed artifacts:
 - Installation of executable, desktop entry, icon, application ID, and launcher
   integration.
 - Qt, Threads, libgit2, SNode.C, AISuite, Node, and browser requirements.
-- Browser and Node runtime claims are not on master.
+- CodexWebUI source, private `1.0.0` manifest, Node 20 build floor, pinned
+  AISuite SDK, static artifact, and no-Node-runtime deployment are on master.
+- Seven web test files define shared behavior and native-only exceptions. The
+  full audit has build-tool findings; the production-dependency audit is clear.
 - `MIT OR LGPL-3.0-or-later` licensing.
 
 ## Commands and examples
@@ -128,9 +129,8 @@ Use these only as qualification shapes, not approved public copy:
   qualification and `cmake-build-debug` for Debug/test work while the SHA,
   compiler, generator, SNode.C/AISuite prefixes, Qt installation, and CMake
   options remain unchanged.
-- Keep every dependency prefix and the CodexUI build outside all live local
-  repositories. Current-master qualification covers the native Qt application
-  only.
+- Keep every dependency prefix and build outside all live local repositories.
+  Qualify native and web paths in isolated layouts matching their manifests.
 
 ```sh
 cmake -S . -B "$BUILD_DIR" -G Ninja \
@@ -140,6 +140,11 @@ cmake --build "$BUILD_DIR" --parallel
 ctest --test-dir "$BUILD_DIR" --output-on-failure
 cmake --install "$BUILD_DIR" --prefix "$INSTALL_PREFIX"
 ```
+
+The browser qualification uses the exact AISuite SDK revision in
+`web/AISUITE_REVISION`, `npm ci`, `npm run release --prefix web`, and the source
+layout encoded by the lockfile. Do not turn that contributor layout into an
+end-user installation promise; publish a qualified static artifact instead.
 
 Public native commands must use current compatible CodexUI, AISuite, and SNode.C
 master heads, record their exact tested SHAs, avoid sibling-checkout assumptions,
@@ -161,15 +166,15 @@ that encryption is automatic.
   platform parity.
 - Reconnection does not mean CodexUI independently persisted conversation
   history.
-- `1.0` in source material is not an approved launch version until all release
-  gates pass.
+- Source version `1.0.0` is not proof of a public release or maturity level.
 - CodexUI is independent open source, not an official OpenAI product.
 
 ## Open facts
 
-- Qualified release version, maturity, release date, and supported branch.
+- Public release/tag status, maturity, release date, and supported branch.
 - Native packages/artifacts and supported Linux distributions/architectures.
-- Exact browser baseline and canonical browser artifact/product naming.
+- Browser support matrix, final artifact distribution route, and build-tool
+  dependency audit disposition.
 - AISuite, SNode.C, Codex schema/revision, and frontend-package compatibility.
 - Row-by-row native/browser feature and limitation matrix.
 - Authentication, credential, prompt/history, local-state, logging, and telemetry

@@ -33,8 +33,8 @@ evidence lives in each directory's `EVIDENCE.md`.
 | --- | --- | --- | --- | --- |
 | SNode.C | `master`/`HEAD` | [`bf01683`](https://github.com/SNodeC/snode.c/commit/bf01683a53b48220a840522e8ccaf3b48e58c240) | 2026-08-28 | `2.0.0` in CMake |
 | MQTTSuite | `master`/`HEAD` | [`52de563`](https://github.com/SNodeC/mqttsuite/commit/52de5631245c6318bfa5b7cca700f0754014f34d) | 2026-08-28 | `1.0.1` in CMake |
-| AISuite | `master`/`HEAD` | [`b6b4635`](https://github.com/SNodeC/AISuite/commit/b6b463575b0f587fe9ed97ddd8509050d05bd4ca) | 2026-08-25 | `0.7.0` in CMake |
-| CodexUI | `master`/`HEAD` | [`3632adc`](https://github.com/SNodeC/CodexUI/commit/3632adcf63b287aeec4bfa9da4b2f8881d526d34) | 2026-08-28 | No project version declared |
+| AISuite | `master`/`HEAD` | [`c3cce28`](https://github.com/SNodeC/AISuite/commit/c3cce28d813b4f48376a2a0c6ac74131bf443f65) | 2026-08-28 | `0.7.0` in CMake; TypeScript package source `1.0.0` |
+| CodexUI | `master`/`HEAD` | [`8791923`](https://github.com/SNodeC/CodexUI/commit/8791923e5475e39222ea4fc7674ca623bc02b4de) | 2026-08-28 | Native CMake and private web manifest `1.0.0` |
 
 These SHAs identify what was reviewed. Public copy continues to follow
 `master`/`HEAD`; refresh this table whenever a remote head changes.
@@ -45,21 +45,21 @@ These SHAs identify what was reviewed. Public copy continues to follow
 | --- | --- | --- | --- |
 | SNode.C | CMake `2.0.0` | Public tags stop at `v1.0.2`; current master is not tagged | Open; do not infer stability from `2.0.0` |
 | MQTTSuite | CMake `1.0.1` | Tag `v1.0.1` exists, while current master is newer | Open; distinguish source version from released tag |
-| AISuite | CMake `0.7.0` | No public tags found | Pre-1.0 source version is factual; maturity label remains open |
-| CodexUI | No version in CMake | No public tags found | Version and maturity both open; `1.0` is not eligible |
+| AISuite | CMake `0.7.0`; TypeScript package manifest `1.0.0` | No public tags; npm registry lookup returned 404 | Independent source surfaces are factual; release and maturity labels remain open |
+| CodexUI | Native CMake and private CodexWebUI manifest `1.0.0` | No public tags or GitHub release found | Source version is factual; release and maturity remain open |
 
-AISuite's development branch `web/typescript-frontend` contains
-`@snodec/codex-frontend` version `1.0.0`, but that package is absent from
-`master`. This is a branch-scope difference, not a version conflict within the
-selected baseline.
+AISuite master contains `@snodec/codex-frontend` version `1.0.0` beside the
+CMake project version `0.7.0`. They describe different distribution surfaces,
+not conflicting metadata for one artifact. Source build, tests, and package
+contents qualify; public npm publication does not.
 
 ## Cross-project compatibility
 
 | Consumer | Declared dependency | What is proved | Gap before public compatibility wording |
 | --- | --- | --- | --- |
 | MQTTSuite | `find_package(snodec 2.0.0 ...)` | Current MQTTSuite master configured and built all five executables against installed current SNode.C master | Repository CI still has no equivalent application build/test job |
-| AISuite | `find_package(snodec 2.0 ...)` | Current AISuite master built and installed against current SNode.C master; all 26 configured tests passed | Public release compatibility and future moving-head drift remain open |
-| CodexUI | unversioned `find_package(AISuite ...)`; `find_package(snodec 2.0 ...)` | Current CodexUI master built and installed against the qualified AISuite/SNode.C prefix; all 7 tests passed | Public release compatibility, distribution range, and moving-head drift remain open |
+| AISuite | `find_package(snodec 2.0 ...)` | Current AISuite master built and installed against current SNode.C master; all 27 C++ tests and 20 TypeScript tests passed | Public release compatibility, npm publication, and future moving-head drift remain open |
+| CodexUI | unversioned native `find_package(AISuite ...)`; SNode.C 2.0; web pins AISuite SDK `5aeedb2` | Current native master built/installed against all-master dependencies with 7/7 tests; pinned SDK passed 20/20 and web passed 30/30 plus artifact verification | Public release compatibility, browser/distribution range, build-tool audit review, and moving-head drift remain open |
 
 The all-current-master stack is the editorial baseline and passed one recorded
 qualification build on Debian GNU/Linux forky/sid, x86-64, GCC 16.2.0, CMake
@@ -73,11 +73,31 @@ does not establish a general support matrix or release compatibility policy.
 | C++ language level | All four CMake builds request C++20 | `C++20` is source-verified |
 | SNode.C CI | `ubuntu-latest`, default `g++`, Debug build and CTest | One Linux/GCC CI shape is defined; exact compiler and broad platform support remain open |
 | AISuite CI | Ubuntu 24.04 host, `gcc:15.3.0-trixie` container, Debug/Ninja, CTest | GCC 15.3/Linux CI shape is defined |
-| CodexUI CI | Ubuntu 24.04 host, `gcc:15.3.0-trixie`, Qt 6, Debug/Ninja, CTest | Native Linux/GCC/Qt CI shape is defined |
+| CodexUI CI | Native GCC 15.3/Qt 6 CTest plus Node 22 web SDK/test/profile/build/artifact job | Native and web CI shapes are defined; passing state must still be checked at release time |
 | MQTTSuite CI | README maintenance and release-archive workflows only | No build/test platform may be inferred from CI |
 
-ARM, OpenWrt, Android/Termux, distribution, browser, and compiler-range claims
+ARM, OpenWrt, Android/Termux, distribution, supported-browser, and compiler-range claims
 remain project-level open facts until qualification evidence is recorded.
+
+## Current-master dependency audit
+
+The public Debian/Ubuntu commands map the logical dependencies in the selected
+CMake graphs to package names available in the qualified Debian environment.
+They list top-level packages; `apt` resolves their transitive package
+dependencies. Other distributions require an equivalent mapping.
+
+| Project | Required for the documented build | Optional, with scope |
+| --- | --- | --- |
+| SNode.C | C++20 toolchain; CMake ≥ 3.18; Ninja; Git and CA roots for clone/FetchContent; pkg-config; OpenSSL development files; nlohmann/json ≥ 3.11 | BlueZ for L2CAP/RFCOMM; libmagic for MIME detection; MariaDB client development files; Curses for the control TUI; OpenSSL CLI for certificate work; Doxygen + Graphviz, IWYU, clang-format, and cmake-format for maintainer targets |
+| MQTTSuite | C++20 toolchain; CMake ≥ 3.14; Ninja; Git and recursive submodule; nlohmann/json ≥ 3.7; installed SNode.C 2.0 components including `db-mariadb`; MariaDB client development files | SNode.C Bluetooth components, libmagic MIME detection, and OpenSSL CLI for corresponding paths; Doxygen + Graphviz, IWYU, clang-format, cmake-format, js-beautify, and Prettier for maintainer targets |
+| AISuite | C++20 toolchain; CMake ≥ 3.18; Ninja; Git; nlohmann/json ≥ 3.11; installed SNode.C 2.0 base components | OpenSSL CLI enables TLS test certificates; Bluetooth-enabled SNode.C enables RFCOMM; Codex CLI enables real-app-server tests/runtime; Node/npm builds/tests the optional TypeScript source package and installs its locked TypeScript 5.9.3. AISuite defines no Doxygen, IWYU, or format-tool discovery |
+| CodexUI | Native: C++20, CMake ≥ 3.20, Ninja, Git, pkg-config, Qt 6 Widgets, libgit2, Threads, AISuite, and SNode.C 2.0. Web: Node ≥ 20, npm lockfiles, exact AISuite SDK pin | Bluetooth/TLS tooling applies through upstream transports; Codex CLI is behind the bridge; Node is build-time only for the static web artifact. CodexUI defines no Doxygen or IWYU discovery |
+
+For Debian/Ubuntu, the potentially ambiguous mappings are `pkgconf` for
+`pkg-config`, `libgit2-dev` for CMake's `libgit2` module, and `qt6-base-dev` for
+Qt 6 Widgets and its matching base development tools. There is no
+`libgit3-dev` dependency. SNode.C vendors CLI11 and fetches pinned spdlog source
+through CMake, so neither is a required system development package.
 
 ## Licensing
 
@@ -110,8 +130,11 @@ landing-page route block promises them.
 - Current-master cross-project compilation is qualified for the exact recorded
   Debian/GCC environment; release-level compatibility remains open.
 - Maturity and support policies are not established by source version numbers.
-- AISuite TypeScript and CodexUI browser presentations are not on `master`.
-- CodexUI has no source version and cannot carry a `1.0` claim.
+- AISuite's TypeScript browser-facing SDK and CodexWebUI are on `master` and
+  qualified from source. AISuite is not publicly published on npm; CodexUI has
+  no public tag/release; its full audit has build-tool findings while the
+  production-dependency audit reports zero.
+- CodexUI source version `1.0.0` must not be presented as release or maturity.
 - Security, support, contribution, and roadmap destinations need owner-approved
   canonical files or links.
 - Screenshots must come from the same commits that pass qualification.

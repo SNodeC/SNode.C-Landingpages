@@ -110,7 +110,7 @@ documentation, and quick-start actions. The initial directory contains:
 | SNode.C | Foundations | Build event-driven network applications in C++ | minimal running example and CI | Start with SNode.C |
 | MQTTSuite | Protocols and integrations | Deploy and connect practical MQTT workflows | live scenario and Web UI | Run MQTTSuite |
 | AISuite | Protocols and integrations | Integrate Codex with typed asynchronous clients | generated API equality tests and bridge demo | Explore AISuite |
-| CodexUI | Applications and interfaces | Use Codex through native and browser clients | native/web workflow demonstration | See CodexUI |
+| CodexUI | Applications and interfaces | Use Codex through native Qt and browser presentations | qualified native/browser workflow and artifact | See CodexUI |
 
 The directory may distinguish `Featured projects` from `All projects`, but the
 complete catalog must remain discoverable. Adding a project must require only a

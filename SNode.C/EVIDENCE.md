@@ -18,6 +18,7 @@ observed 28 August 2026.
 | SN-06 | HTTP, WebSocket, Express-style routing, and MQTT 3.1.1 components exist | Source-verified | `src/web/http`, `src/web/websocket`, `src/express`, `src/iot/mqtt`; MQTT level constant is `0x04` | Component and unit tests exist; exact advertised matrix must be derived from passing tests |
 | SN-07 | CMake can install component packages for downstream `find_package` use | Source-verified; test-defined | install/export rules and `tests/StagedInstalledConsumerTest.cmake` | Rerun staged install and downstream consumer from master |
 | SN-08 | License is `MIT OR LGPL-3.0-or-later` | Source-verified | `LICENSE`, `LICENSE-MIT`, `LICENSE-LGPL-3.0-or-later` | None beyond legal review of final wording |
+| SN-09 | The default configure requires OpenSSL, nlohmann/json, and pkg-config; BlueZ, libmagic, MariaDB, Curses, Doxygen, IWYU, and format tools are conditional | Source-verified; Debian package mapping verified | top-level and `src` CMake files; TLS, express, MQTT, HTTP, database, network, control-tool, documentation, IWYU, and format modules | Debian package names were checked in the qualification environment; other distributions need their own mapping |
 
 ## Test and CI evidence
 

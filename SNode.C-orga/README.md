@@ -2,7 +2,7 @@
 
 # SNodeC
 
-### Event-driven C++ networking, protocol integration, and native applications
+### Event-driven C++ networking, protocol integration, and user interfaces
 
 Start with the networking foundation, choose the protocol or integration layer
 you need, then evaluate a focused application without adopting a monolithic
@@ -17,7 +17,7 @@ stack.
 SNodeC develops independently versioned open-source projects around an
 event-driven C++ networking foundation. The current catalog covers reusable
 network layers, MQTT 3.1.1 applications, typed Codex app-server integration,
-and a native Qt interface. Each project can be evaluated on its own; ecosystem
+and native/browser interfaces. Each project can be evaluated on its own; ecosystem
 relationships are stated explicitly rather than implied by a shared name.
 
 > [!IMPORTANT]
@@ -30,8 +30,8 @@ relationships are stated explicitly rather than implied by a shared name.
   TLS, connection, HTTP, WebSocket, and application-protocol layers.
 - **MQTT 3.1.1 systems** that separate broker, command-line inspection,
   transformation, broker-to-broker routing, and persistence responsibilities.
-- **Native C++ Codex integrations** with typed protocol views and one bounded
-  bridge for controller and observer clients.
+- **C++ and browser Codex integrations** with generated protocol types and one
+  bounded bridge for controller and observer clients.
 - **Visible desktop workflows** for threads, turns, prompts, plans, agents,
   tool activity, connection state, and Git changes.
 
@@ -72,12 +72,12 @@ payload/topic transformation, broker routing, or MariaDB-backed persistence.
 
 #### [AISuite](https://github.com/SNodeC/AISuite)
 
-Integrate C++ clients with the Codex app-server through generated typed views,
-raw JSON access, bounded framing, and a controller/observer bridge. Choose it
-when several native clients should share one provider connection without each
+Integrate C++ and browser clients with the Codex app-server through generated
+typed surfaces, bounded framing, and a controller/observer bridge. Choose it
+when several clients should share one provider connection without each
 implementing the protocol boundary.
 
-**Best for:** C++ AI-tooling and protocol developers<br>
+**Best for:** C++, browser, AI-tooling, and protocol developers<br>
 **First result:** qualified bridge tests plus a reference-client list request<br>
 [Repository](https://github.com/SNodeC/AISuite) ·
 [Architecture](https://github.com/SNodeC/AISuite/blob/master/src/ai/openai/codex/docs/architecture.md) ·
@@ -87,12 +87,12 @@ implementing the protocol boundary.
 
 #### [CodexUI](https://github.com/SNodeC/CodexUI)
 
-Use a native Qt 6 interface to navigate Codex threads and turns, submit
-prompts, follow activity, inspect Git changes, and keep target, running,
-selected, controller, and connection states visible.
+Use native Qt 6 or browser presentations to navigate Codex threads and turns,
+submit prompts, follow activity, and keep target, running, selected, controller,
+and connection states visible. Native-only integrations remain labeled.
 
-**Best for:** Codex users and Qt/C++ contributors<br>
-**First result:** native build, seven tests, and a bridge-connected desktop UI<br>
+**Best for:** Codex users and Qt/C++/frontend contributors<br>
+**First result:** qualified native build plus a verified static browser artifact<br>
 [Repository](https://github.com/SNodeC/CodexUI) ·
 [UI behavior](https://github.com/SNodeC/CodexUI/blob/master/docs/ui-behavior.md) ·
 [Quick start](https://github.com/SNodeC/CodexUI#build-and-first-run)
@@ -113,14 +113,15 @@ MQTTSuite                                  AISuite
 
 SNode.C supplies networking components to the downstream builds. MQTTSuite is
 the MQTT application track. AISuite is the Codex protocol/integration track;
-CodexUI is a native presentation built on it. The two tracks are separate—there
+CodexUI provides native and browser presentations built on it. The two tracks are separate—there
 is no invented MQTTSuite-to-CodexUI runtime path.
 
 Projects keep independent source versions and release histories. Compatibility
 must be demonstrated with exact revisions. The last coordinated qualification
 on 28 August 2026 built current SNode.C, MQTTSuite, AISuite, and CodexUI heads
 in dependency order on Debian GNU/Linux forky/sid, x86-64, GCC 16.2.0. AISuite
-passed 26 tests and CodexUI passed 7; MQTTSuite's basic broker/CLI flow and
+passed 27 C++ and 20 TypeScript tests; CodexUI passed 7 native and 30 web tests;
+MQTTSuite's basic broker/CLI flow and
 SNode.C's selected echo transports were run directly.
 
 ## Run a demo
@@ -141,7 +142,7 @@ qualification requirements.
 ### Typed Codex client
 
 1. Build and install SNode.C.
-2. Build AISuite and run its [26-test transport qualification](https://github.com/SNodeC/AISuite#quick-start).
+2. Build AISuite and run its [C++ and TypeScript qualification](https://github.com/SNodeC/AISuite#quick-start).
 3. Start `codex-bridge`, then build and launch [CodexUI](https://github.com/SNodeC/CodexUI#build-and-first-run).
 
 This route keeps both transport directions visible: bridge to app-server and
@@ -155,8 +156,8 @@ captures.
 | --- | --- | --- |
 | SNode.C | CMake `2.0.0`; current master newer than latest public tag | Build/install; IPv4, IPv6, Unix-domain, mutual-TLS echo paths |
 | MQTTSuite | CMake `1.0.1`; tested master newer than `v1.0.1` | All five executables built; local QoS 1 broker/CLI flow |
-| AISuite | CMake `0.7.0`; no public tag | Build/install; 26/26 tests, including real app-server transports |
-| CodexUI | No declared project version or public tag | Native build/install; 7/7 tests; CLI transport configuration |
+| AISuite | CMake `0.7.0`; TypeScript source `1.0.0`; no public tag/npm package | Build/install; 27/27 C++ and 20/20 TypeScript tests |
+| CodexUI | Native/web source `1.0.0`; no public tag/release | Native 7/7 and web 30/30 tests; static artifact verified |
 
 These are exact-revision observations, not blanket maturity, support, or
 platform statements. Follow each repository's README and releases before
