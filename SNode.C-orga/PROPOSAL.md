@@ -1,12 +1,18 @@
 # Proposal — SNode.C Organization Profile
 
-[← Working landing page](README.md) · [Launch roadmap](../README.md)
+[← Working landing page](README.md) · [Launch roadmap](../README.md) ·
+[Shared page system](../PAGE-SYSTEM.md)
+
+This proposal defines organization-specific content and visuals within the
+approved shared page system. Shared editorial, accessibility, asset, capture,
+and visual-placement rules are not duplicated here.
 
 ## Purpose
 
 Design the public SNodeC GitHub organization overview as the ecosystem’s front
-door. It must explain four technically different products as one coherent
-system without making visitors learn the repository history first.
+door. It must explain the current technically different products as one coherent
+and extensible system without making visitors learn the repository history
+first.
 
 The page is a decision surface, not a manual. Its job is to help visitors choose
 the correct product, see credible proof, run one useful scenario, and find the
@@ -51,11 +57,11 @@ right support or contribution route.
 
 ### Primary call to action
 
-**Explore the end-to-end demo**
+**Run a demo**
 
 ### Secondary calls to action
 
-- Choose a component.
+- Choose a project.
 - Read the architecture overview.
 - Join GitHub Discussions.
 - Contribute to a good first issue.
@@ -68,7 +74,7 @@ Include:
 
 - organization wordmark or compact banner;
 - headline and two-line value statement;
-- three restrained navigation links: `Explore projects`, `Run the demo`, and
+- three restrained navigation links: `Explore projects`, `Run a demo`, and
   `Read the docs`;
 - one ecosystem architecture graphic below the text.
 
@@ -88,19 +94,29 @@ Use three outcome-oriented cards or compact subsections:
 
 Each use case needs one sentence, one proof link, and one next action.
 
-### 3. Choose your component
+### 3. Explore projects
 
-Present four consistent product cards:
+Use an extensible project directory rather than a layout tied permanently to
+four repositories. Group entries under stable categories, initially
+`Foundations`, `Protocols and integrations`, and `Applications and interfaces`.
+Add `Tools and examples` when it contains at least one maintained project.
 
-| Product | Visitor promise | Evidence | Action |
-| --- | --- | --- | --- |
-| SNode.C | Build event-driven network applications in C++ | minimal running example and CI | Start with SNode.C |
-| MQTTSuite | Deploy and connect practical MQTT workflows | live scenario and Web UI | Run MQTTSuite |
-| AISuite | Integrate Codex with typed asynchronous clients | generated API equality tests and bridge demo | Explore AISuite |
-| CodexUI | Use Codex through native and browser clients | native/web workflow demonstration | See CodexUI |
+Every entry uses the same fields: identity mark, project name, category,
+verified maturity, one-sentence outcome, best-fit audience, and repository,
+documentation, and quick-start actions. The initial directory contains:
 
-Cards must state maturity (`stable`, `preview`, or `experimental`) based on the
-release policy, never based on marketing preference.
+| Project | Category | Visitor promise | Evidence | Action |
+| --- | --- | --- | --- | --- |
+| SNode.C | Foundations | Build event-driven network applications in C++ | minimal running example and CI | Start with SNode.C |
+| MQTTSuite | Protocols and integrations | Deploy and connect practical MQTT workflows | live scenario and Web UI | Run MQTTSuite |
+| AISuite | Protocols and integrations | Integrate Codex with typed asynchronous clients | generated API equality tests and bridge demo | Explore AISuite |
+| CodexUI | Applications and interfaces | Use Codex through native and browser clients | native/web workflow demonstration | See CodexUI |
+
+The directory may distinguish `Featured projects` from `All projects`, but the
+complete catalog must remain discoverable. Adding a project must require only a
+standard entry and identity asset, not a page redesign. Maturity (`stable`,
+`preview`, or `experimental`) is based on the release policy, never marketing
+preference.
 
 ### 4. How the ecosystem fits together
 
@@ -115,19 +131,19 @@ The diagram must distinguish build-time dependencies from runtime connections.
 Use solid arrows for runtime traffic and dashed arrows for package dependencies.
 Provide a text description below the image for accessibility.
 
-### 5. Quick evaluation route
+### 5. Evaluation routes
 
-The organization page should not duplicate four installation manuals. Provide:
+The organization page should not duplicate project installation manuals. Link
+to one `Run a demo` destination with two qualified tracks:
 
-- one recommended ecosystem demo;
-- expected duration and tested platform;
-- exact prerequisites;
-- one command block or a clear link to the maintained demo;
-- expected visible outcome;
-- links to component-specific alternatives.
+1. **Networking and MQTT:** SNode.C → MQTTSuite.
+2. **Typed Codex client:** SNode.C → AISuite → CodexUI.
 
-The route must work from a clean machine and reference released versions rather
-than moving `master` branches.
+Each route states expected duration, tested platform, exact prerequisites, a
+maintained command path, expected visible outcome, and project-specific
+alternatives. Routes must work from clean machines and reference released
+versions rather than moving branches. Do not imply a runtime integration between
+the two tracks.
 
 ### 6. Credibility and proof
 
@@ -162,39 +178,42 @@ Include only essential links: documentation, releases, security, licenses,
 contributing, code of conduct, and contact. Add the independent-project notice
 where Codex/OpenAI naming appears.
 
+## Approved final section map
+
+The detailed requirements above consolidate into seven public H2 sections:
+
+1. `What you can build`;
+2. `Explore projects`;
+3. `How the ecosystem fits together`;
+4. `Run a demo`;
+5. `Evidence and compatibility`;
+6. `Community and contribution`;
+7. `Documentation and project routes`.
+
+The hero precedes these sections. The footer is part of the final project-routes
+section. The organization profile targets 900–1,100 prose words and remains
+shorter and more navigational than the product pages.
+
 ## Visual system
 
-### Art direction
+The shared art direction, diagram grammar, dimensions, accessibility rules, and
+asset-source convention come from the [page system](../PAGE-SYSTEM.md). This
+profile uses the neutral organization palette and the approved product accents.
 
-- Technical, calm, and precise rather than futuristic or promotional.
-- Neutral organization palette with a distinct accent for each product.
-- Strong typographic hierarchy and generous whitespace.
-- Diagrams use the same node, arrow, border, and label system everywhere.
-- All assets work in GitHub light and dark themes.
+### Visual inventory and placement
 
-### Proposed product accents
+| Slot | Asset | Exact placement | Required content |
+| --- | --- | --- | --- |
+| V1 — Hero | `assets/organization-hero.svg` | Immediately below the hero navigation links | Organization mark and wordmark, calm event/signal motif, and the stable categories `Networking foundations`, `Protocols and integrations`, and `Applications and interfaces`; no fixed project count |
+| V2 — Project directory | `assets/product-snodec.svg`, `assets/product-mqttsuite.svg`, `assets/product-aisuite.svg`, `assets/product-codexui.svg` | Within the corresponding standard entries in `Explore projects` | Equal-size identity marks using label, shape, and accent color; a future project follows the same asset contract |
+| V3 — Architecture | `assets/ecosystem-architecture.svg` | Immediately after the opening paragraph of `How the ecosystem fits together` | Stable ecosystem layers with current projects as examples; solid runtime arrows and dashed package dependencies |
+| V4 — Evaluation | `assets/evaluation-routes.svg` | At the beginning of `Evaluation routes` | Separate networking/MQTT and typed Codex-client tracks, each with start, components, and visible outcome; no nonexistent cross-track runtime arrow |
+| Social preview | `assets/social-preview.png` | Repository/organization metadata, not as a dominant README image | Organization mark, approved headline, and category motif without a permanent project list |
 
-Final colors require accessibility testing; initial semantic roles:
-
-- SNode.C: foundation blue;
-- MQTTSuite: IoT green;
-- AISuite: protocol violet;
-- CodexUI: interface amber.
-
-Colors must never be the only way information is distinguished.
-
-### Required assets
-
-- `assets/organization-hero.svg`
-- `assets/ecosystem-architecture.svg`
-- `assets/product-snodec.svg`
-- `assets/product-mqttsuite.svg`
-- `assets/product-aisuite.svg`
-- `assets/product-codexui.svg`
-- `assets/social-preview.png` at 1280×640
-
-Commit editable sources beside exported assets. Optimize SVGs and PNGs, provide
-alt text, and avoid externally hosted tracking images.
+The hero remains valid when the catalog grows. Project identities are modular,
+and navigation stays in accessible Markdown rather than inside the architecture
+image. Commit editable sources under `assets/src/`, optimize exports, provide
+alt text and captions, and avoid externally hosted tracking images.
 
 ## Markdown and layout rules
 
@@ -254,7 +273,7 @@ Test the draft with these visitor tasks:
 2. Build the verified compatibility and proof inventory.
 3. Draft information architecture without visuals.
 4. Produce architecture diagram and product identity assets.
-5. Write product cards and quick-evaluation route.
+5. Write the extensible project directory and two evaluation routes.
 6. Add community, trust, and contribution sections.
 7. Test links, mobile layout, dark mode, and signed-out view.
 8. Review with one representative from each primary audience.
@@ -263,13 +282,17 @@ Test the draft with these visitor tasks:
 
 ## Acceptance criteria
 
-- [ ] All four products are visible without excessive scrolling.
+- [ ] All current projects are visible without excessive scrolling.
+- [ ] A new project can be added through one standard directory entry and
+      identity asset without changing the page structure.
 - [ ] Product roles and relationships are unambiguous.
 - [ ] Every primary audience has a clear next action.
-- [ ] The quick evaluation route uses released, compatible versions.
+- [ ] Both evaluation routes use released, compatible versions.
 - [ ] Claims link to current evidence.
 - [ ] Architecture distinguishes runtime and build-time relationships.
 - [ ] Assets are accessible, optimized, and theme-safe.
+- [ ] V1–V4 and the social preview match the approved inventory and placement.
+- [ ] The profile stays within the approved organization content target.
 - [ ] Support, security, and contribution routes are explicit.
 - [ ] No important link points to a draft-only location after publication.
 - [ ] Signed-out, mobile, light-mode, and dark-mode reviews pass.
@@ -277,8 +300,6 @@ Test the draft with these visitor tasks:
 ## Open decisions
 
 - Final organization headline and one-sentence description.
-- Whether the primary demo covers all four products or offers separate MQTT and
-  AI tracks.
 - Which documentation URL is canonical across the organization.
 - Exact maturity labels for AISuite and CodexUI.
 - Whether a separate ecosystem demo repository is warranted.

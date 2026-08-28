@@ -7,10 +7,9 @@ presentation and coordinated launch of the **SNode.C ecosystem**:
   framework;
 - [MQTTSuite](MQTTSuite/README.md) — MQTT broker, integration,
   bridge, CLI, and storage applications;
-- [AISuite](AISuite/README.md) — typed asynchronous C++ and
-  TypeScript integration for the Codex app-server;
-- [CodexUI](CodexUI/README.md) — native Qt and browser interfaces
-  built on AISuite.
+- [AISuite](AISuite/README.md) — typed asynchronous C++ integration and a
+  multi-client bridge for the Codex app-server;
+- [CodexUI](CodexUI/README.md) — native Qt interface built on AISuite.
 
 The objective is not merely to improve documentation. The organization profile
 and every repository README will become a professional GitHub-native landing
@@ -28,7 +27,13 @@ five minutes:
 4. How can I run a useful example?
 5. Where do I get help or contribute?
 
-The main call to action will be: **Run the end-to-end demo.**
+The main call to action will be: **Run a demo.** The destination will offer a
+networking/MQTT track and a typed Codex-client track, as defined by the shared
+[page system](PAGE-SYSTEM.md).
+
+The approved execution sequence and auditable source baseline are maintained in
+the [implementation roadmap](LAUNCH-ROADMAP.md) and shared
+[fact register](FACTS.md).
 
 ## Landing-page workspaces
 
@@ -36,18 +41,37 @@ Each presentation has a working README and a detailed specification. All
 development happens here; approved READMEs are copied to their production
 repositories only after review.
 
-| Presentation | Working landing page | Content and design proposal | Eventual destination |
-| --- | --- | --- | --- |
-| SNode.C organization | [Open draft](SNode.C-orga/README.md) | [Open proposal](SNode.C-orga/PROPOSAL.md) | `SNodeC/.github/profile/README.md` |
-| SNode.C | [Open draft](SNode.C/README.md) | [Open proposal](SNode.C/PROPOSAL.md) | `SNodeC/snode.c/README.md` |
-| MQTTSuite | [Open draft](MQTTSuite/README.md) | [Open proposal](MQTTSuite/PROPOSAL.md) | `SNodeC/mqttsuite/README.md` |
-| AISuite | [Open draft](AISuite/README.md) | [Open proposal](AISuite/PROPOSAL.md) | `SNodeC/AISuite/README.md` |
-| CodexUI | [Open draft](CodexUI/README.md) | [Open proposal](CodexUI/PROPOSAL.md) | `SNodeC/CodexUI/README.md` |
+| Presentation | Working landing page | Proposal | Evidence | Eventual destination |
+| --- | --- | --- | --- | --- |
+| SNode.C organization | [Open draft](SNode.C-orga/README.md) | [Proposal](SNode.C-orga/PROPOSAL.md) | [Evidence](SNode.C-orga/EVIDENCE.md) | `SNodeC/.github/profile/README.md` |
+| SNode.C | [Open draft](SNode.C/README.md) | [Proposal](SNode.C/PROPOSAL.md) | [Evidence](SNode.C/EVIDENCE.md) | `SNodeC/snode.c/README.md` |
+| MQTTSuite | [Open draft](MQTTSuite/README.md) | [Proposal](MQTTSuite/PROPOSAL.md) | [Evidence](MQTTSuite/EVIDENCE.md) | `SNodeC/mqttsuite/README.md` |
+| AISuite | [Open draft](AISuite/README.md) | [Proposal](AISuite/PROPOSAL.md) | [Evidence](AISuite/EVIDENCE.md) | `SNodeC/AISuite/README.md` |
+| CodexUI | [Open draft](CodexUI/README.md) | [Proposal](CodexUI/PROPOSAL.md) | [Evidence](CodexUI/EVIDENCE.md) | `SNodeC/CodexUI/README.md` |
 
 Shared positioning, visual assets, compatibility information, and launch
 decisions should stay consistent across these workspaces. The working READMEs
 must not depend on unpublished files in the production repositories. Product-
 specific drafts can evolve independently until they pass the roadmap gates.
+
+## Approved landing-page system
+
+The shared editorial, structural, and visual decisions are maintained in the
+[SNode.C landing-page system](PAGE-SYSTEM.md). It is the source of truth for:
+
+- equal content and visual weight across the four product pages;
+- the common nine-part repository landing-page structure;
+- the four visual slots and social-preview system;
+- screenshot, diagram, accessibility, theme, and synthetic-data rules;
+- an organization profile that can grow beyond the current project catalog;
+- two honest evaluation tracks instead of an artificial all-product demo;
+- the boundary between this drafting workspace and read-only live repositories.
+
+Each presentation proposal defines only its product-specific content and visual
+inventory. The five working landing-page READMEs remain public-copy surfaces and
+must not accumulate planning notes. Approval of the page system does not approve
+unverified versions, maturity, compatibility, platform, performance, security,
+or protocol claims.
 
 ## Current baseline
 
@@ -59,10 +83,10 @@ The initial audit on 28 August 2026 found:
   READMEs function more like manuals than product landing pages;
 - AISuite has no public GitHub release, topics, website, or repository
   description;
-- CodexUI has no public release and its public presentation does not yet tell
-  the complete native-and-browser 1.0 story;
-- AISuite version metadata is inconsistent: CMake declares `0.7.0`, while its
-  TypeScript frontend package declares `1.0.0`;
+- CodexUI has no public release or declared project version; current master is
+  native-only and cannot carry a `1.0` or browser claim;
+- AISuite master declares `0.7.0` and contains no TypeScript package; the
+  separate development-branch package is excluded from the current baseline;
 - historical Codex UI versions exist beside the new canonical CodexUI product,
   so canonical naming and links must be unambiguous.
 
@@ -80,8 +104,8 @@ Working ecosystem statement:
 | --- | --- | --- | --- |
 | SNode.C | Event-driven C++ networking framework | C++ and systems developers | Build a first network app |
 | MQTTSuite | MQTT broker, bridge, integration, CLI, and storage suite | IoT and edge engineers | Run the MQTT quick start |
-| AISuite | Typed asynchronous C++/TypeScript bridge | AI tooling and C++ developers | Build and call the bridge |
-| CodexUI | Native Qt and browser interfaces | Codex users and UI developers | See the demo and install |
+| AISuite | Typed asynchronous C++ bridge | AI tooling and C++ developers | Build and call the bridge |
+| CodexUI | Native Qt interface | Codex users and UI developers | See the workflow and install |
 
 Claims such as “production-ready,” performance superiority, small footprint,
 protocol coverage, and supported platforms must be linked to reproducible tests
@@ -119,11 +143,11 @@ to action are fixed.
 - Inventory versions in CMake, package manifests, headers, generated files,
   documentation, CLI output, install metadata, and dependency pins.
 - Establish exactly one version source of truth per repository.
-- Decide whether AISuite qualifies for `1.0.0`; otherwise remove premature 1.0
-  declarations and align everything on the actual pre-1.0 version.
-- Keep CodexUI at `1.0.0` only if native and browser builds, installation,
-  AISuite compatibility, and documented acceptance tests pass from clean
-  checkouts.
+- Current master establishes AISuite source version `0.7.0`; TypeScript package
+  `1.0.0` exists only outside master and is excluded from current public copy.
+- CodexUI master has no project version and is native-only. A future `1.0` or
+  browser claim requires the relevant code, installation, compatibility, and
+  acceptance evidence to reach master first.
 - Create annotated or signed `vX.Y.Z` tags and GitHub Releases.
 - Maintain human-readable changelogs and release notes.
 - Publish the compatibility matrix, including CodexUI, AISuite, SNode.C, and
@@ -139,22 +163,24 @@ combination, including:
 - Debian stable and current Ubuntu;
 - GCC and Clang where supported;
 - x86-64 and an ARM target for advertised edge support;
-- native Qt and browser CodexUI builds;
+- native Qt CodexUI builds; browser builds only after they reach master;
 - OpenWrt if it remains a launch claim.
 
-#### End-to-end golden path
+#### Qualified evaluation tracks
 
-Maintain one demo that proves the ecosystem instead of four isolated builds:
+Maintain one `Run a demo` destination with two technically coherent tracks:
 
-1. install or build SNode.C;
-2. start a useful MQTTSuite scenario;
-3. start the AISuite bridge;
-4. open native or browser CodexUI;
-5. produce a visible successful result.
+1. **Networking and MQTT:** install or build SNode.C, start a useful MQTTSuite
+   scenario, and verify a visible message flow.
+2. **Typed Codex client:** install or build SNode.C and AISuite, start the
+   AISuite bridge, open native CodexUI, and complete a visible
+   workflow.
 
-Target a 5–10 minute evaluation path with copy/paste commands, expected output,
+Target 5–10 minutes per track with copy/paste commands, expected output,
 teardown, and troubleshooting. A script or container workflow may supplement,
-but not replace, native build documentation.
+but not replace, native build documentation. Do not imply a runtime relationship
+between the MQTT and Codex tracks unless a real integration is implemented and
+qualified.
 
 #### Trust and project hygiene
 
@@ -198,8 +224,7 @@ accessibility, technical precision, and fast loading.
 - **MQTTSuite:** broker Web UI, client/topic view, and a complete integration
   scenario.
 - **AISuite:** bridge telemetry and a multi-client flow diagram.
-- **CodexUI:** polished native and browser heroes plus a representative
-  thread/turn workflow.
+- **CodexUI:** polished native hero plus a representative thread/turn workflow.
 - **Launch:** a 60–90 second narrated demo and a silent 10–20 second social clip.
 
 Use consistent resolution, theme, window treatment, synthetic test data, crop,
@@ -219,9 +244,9 @@ Create the public `.github` repository with `profile/README.md` containing:
 
 1. compact branded hero and ecosystem value statement;
 2. three concrete “What you can build” use cases;
-3. four product cards with role, maturity, and one action each;
+3. an extensible project directory with equal entries for current projects;
 4. ecosystem architecture;
-5. end-to-end quick-start link;
+5. evaluation-route chooser;
 6. supported platforms, tests, documentation, licenses, and releases;
 7. support and community routes;
 8. roadmap and contribution call to action.
@@ -239,21 +264,21 @@ and public pins. Recommended pin order:
 
 Every root `README.md` will share this information architecture:
 
-1. name, one-sentence outcome, maturity/version, and restrained badges;
-2. one excellent hero image, code sample, or architecture visual;
-3. why the project exists and three to five differentiators;
-4. 60-second conceptual overview;
-5. fast quick start;
-6. capabilities plus explicit limitations and non-goals;
-7. compact architecture and ecosystem relationship;
-8. tested platforms and compatibility;
-9. installation options and full-documentation link;
-10. examples and use cases;
-11. support, security, contribution, roadmap, and licenses.
+1. hero with outcome, verified maturity/version, restrained badges, links, and
+   visual V1;
+2. three to five user outcomes or differentiators;
+3. one fast, qualified quick start with expected result and visual V2;
+4. one product-specific centerpiece;
+5. capabilities plus explicit limitations and non-goals;
+6. compact architecture, ownership, and ecosystem relationship with visual V3;
+7. installation, tested platforms, and compatibility;
+8. examples, deployment, or quality evidence with visual V4;
+9. documentation, support, security, contribution, roadmap, and licenses.
 
-Long manuals move from the root narrative into `docs/` or the existing
-documentation sites. The README should orient and convert; detailed docs should
-teach and serve as a reference.
+The live READMEs are read-only technical knowledge sources during this workflow;
+their structures and wording are not preserved. The new drafts should orient
+and convert, while qualified detailed documentation remains linked separately.
+Nothing in this workspace modifies the live local repositories.
 
 #### Product-specific priorities
 
@@ -263,10 +288,10 @@ teach and serve as a reference.
 - **MQTTSuite:** five-application diagram, runnable IoT scenario, MQTT 3.1.1
   scope, transport matrix, Web UI screenshot, and explicit MQTT 5 limitations.
 - **AISuite:** benefits before internal implementation terminology, typed C++
-  and TypeScript access, multi-client bridge, supported schema, minimal example,
-  and lifecycle limitations.
-- **CodexUI:** native/browser screenshot and workflow, prerequisites, security
-  boundaries, parity limits, install artifacts, and exact compatibility.
+  access, multi-client bridge, recorded schema, minimal example, and lifecycle
+  limitations.
+- **CodexUI:** native screenshot and workflow, prerequisites, security
+  boundaries, install artifacts, and exact compatibility.
 
 For every repository, configure its description, website, topics, social
 preview, releases, support routing, and accurate cross-links.
@@ -387,7 +412,7 @@ referrals, lessons, and follow-up actions.
 - [ ] All versions are internally consistent and tagged.
 - [ ] Compatibility and supported-version matrices are published.
 - [ ] CI proves clean builds, tests, installation, consumer use, and smoke tests.
-- [ ] An independent tester completes the golden path unaided.
+- [ ] An independent tester completes each evaluation track unaided.
 - [ ] Releases contain notes, artifacts, checksums, and known limitations.
 - [ ] Security, support, contribution, conduct, issue, and PR files exist.
 - [ ] The organization profile README and launch-facing pins are live.
@@ -403,7 +428,7 @@ referrals, lessons, and follow-up actions.
 ## Immediate implementation order
 
 1. Audit and decide exact versions for all four canonical repositories.
-2. Publish the compatibility matrix and qualify the golden path.
+2. Publish the compatibility matrix and qualify both evaluation tracks.
 3. Finalize the positioning brief and naming rules.
 4. Create the visual system and shot list.
 5. Build the organization profile README.

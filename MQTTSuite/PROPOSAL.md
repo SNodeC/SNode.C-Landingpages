@@ -1,6 +1,11 @@
 # Proposal — MQTTSuite Repository Landing Page
 
-[← Working landing page](README.md) · [Launch roadmap](../README.md)
+[← Working landing page](README.md) · [Launch roadmap](../README.md) ·
+[Shared page system](../PAGE-SYSTEM.md)
+
+This proposal defines MQTTSuite-specific content and visuals within the
+approved shared page system. Shared editorial, accessibility, asset, capture,
+and visual-placement rules are not duplicated here.
 
 ## Purpose
 
@@ -196,21 +201,47 @@ Route usage questions, defects, security reports, mapping examples, application
 extensions, and documentation changes. Explain the MIT/GPL choice accurately
 and distinguish MQTTSuite licensing from SNode.C and bundled dependencies.
 
+## Approved final section map
+
+The detailed requirements above consolidate into the shared nine-section
+product-page system:
+
+1. `What MQTTSuite enables`;
+2. `Quick start`;
+3. `Five focused applications`;
+4. `A complete integration scenario`;
+5. `Capabilities and limitations`;
+6. `Architecture and deployment`;
+7. `Installation and compatibility`;
+8. `Operational and quality evidence`;
+9. `Documentation and project routes`.
+
+Mapping, bridge, storage, protocol, transport, production, support, security,
+contribution, and license requirements become concise subsections within this
+map. They must not expand the page beyond the shared content target.
+
 ## Visual requirements
 
-### Required assets
+The shared visual language, dimensions, screenshot hygiene, theme behavior, and
+source-asset rules come from the [page system](../PAGE-SYSTEM.md).
 
-- `assets/mqttsuite-hero.png` or `.svg`
-- `assets/five-applications.svg`
-- `assets/integration-scenario.svg`
-- `assets/broker-web-ui.png`
-- `assets/bridge-topology.svg`
-- `assets/quick-start-terminal.png`
-- `assets/social-preview.png`
+### Visual inventory and placement
 
-Use a stable synthetic topic namespace and payload across diagrams, screenshots,
-commands, and video. Screenshots must not contain LAN addresses, usernames,
-tokens, certificates, or private device data.
+| Slot | Asset | Exact placement | Required content |
+| --- | --- | --- | --- |
+| V1 — Hero | `assets/mqttsuite-hero.svg` | Immediately below the hero links | Equal visual treatment for MQTTBroker, MQTTIntegrator, MQTTBridge, MQTTCli, and MQTTStore in one suite composition; MQTT 3.1.1 visible; no implication that the suite is only a broker |
+| V2 — First success | `assets/quick-start-terminal.png` | Directly after the broker/CLI quick-start expected output | Three panes showing MQTTBroker, an MQTTCli subscriber, and an MQTTCli publisher with one successful local message flow |
+| V3 — Architecture | `assets/integration-scenario.svg` | At the beginning of `A complete integration scenario` | Synthetic sensor → MQTTBroker and Web UI → MQTTIntegrator → MQTTBridge/remote broker and MQTTStore/MariaDB, with MQTTCli as the verification tool |
+| V4 — Product detail | `assets/broker-web-ui.png` | Immediately after the MQTTBroker entry in `Five-application suite` or its short proof paragraph | Real released Web UI with synthetic connected clients and topics from the canonical scenario; browser and desktop chrome cropped consistently |
+| Social preview | `assets/social-preview.png` | Repository metadata | Five-application motif, MQTT 3.1.1 label, approved outcome statement, and IoT-green accent |
+
+Use the shared `edge-lab/room-01/temperature` topic and
+`{"value":21.7,"unit":"C"}` payload across commands, terminal captures, the
+integration figure, Web UI, and later video. Use loopback endpoints in the
+quick-start proof. Screenshots must contain no LAN addresses, usernames, tokens,
+certificates, private device data, or unrelated browser content. A bridge-only
+topology may be documented later, but it is not an additional launch-page visual
+slot.
 
 ## Copy and format rules
 
@@ -223,15 +254,18 @@ tokens, certificates, or private device data.
 - No more than three hero badges and no vanity counters.
 - Avoid “production-ready” until the operational qualification is linked.
 
-## Documentation migration
+## Use of existing documentation
 
-1. Inventory all current root README headings and anchors.
-2. Split guides by application and shared concept.
-3. Move exhaustive connection-instance, mapping, and deployment references into
-   `docs/` or the generated documentation site.
-4. Retain concise quick starts in the landing page.
-5. Repair inbound links and publish a documentation index.
-6. Ensure commands do not use stale OpenWrt release candidates.
+1. Treat the current live README as a read-only source of candidate facts,
+   examples, commands, terminology, and documentation links.
+2. Verify selected behavior against the recorded current-master SHA and supporting tests.
+3. Rewrite all landing-page copy independently in this workspace; do not carry
+   over the manual's structure or wording.
+4. Link application, mapping, bridge, storage, transport, and deployment
+   references rather than reproducing them in the landing page.
+5. Do not modify the live local repository during this workflow.
+6. Reject stale moving-branch, OpenWrt release-candidate, or unqualified
+   production claims.
 
 ## Evidence checklist
 
@@ -266,7 +300,7 @@ tokens, certificates, or private device data.
 7. Migrate long reference content to structured documentation.
 8. Add deployment, production, security, support, and license sections.
 9. Run clean-machine, ARM/OpenWrt, link, and visual reviews.
-10. Publish only after commands and claims match the tagged release.
+10. Publish only after commands and claims match the recorded current-master SHAs.
 
 ## Acceptance criteria
 
@@ -280,11 +314,11 @@ tokens, certificates, or private device data.
 - [ ] Long reference material remains discoverable outside the root narrative.
 - [ ] Support, security, contribution, and licensing are clear.
 - [ ] All links, commands, images, and dark/light rendering pass review.
+- [ ] V1–V4 and the social preview match the approved inventory and placement.
+- [ ] The final section count and prose weight meet the shared product-page target.
 
 ## Open decisions
 
-- Canonical launch scenario and synthetic topic namespace.
-- Whether MQTTBroker Web UI or suite diagram is the primary hero.
 - Stable release and exact SNode.C compatibility.
 - MQTT conformance evidence suitable for publication.
 - Supported OpenWrt versions and packaging ownership.

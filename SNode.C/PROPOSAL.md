@@ -1,14 +1,19 @@
 # Proposal — SNode.C Repository Landing Page
 
-[← Working landing page](README.md) · [Launch roadmap](../README.md)
+[← Working landing page](README.md) · [Launch roadmap](../README.md) ·
+[Shared page system](../PAGE-SYSTEM.md)
+
+This proposal defines SNode.C-specific content and visuals within the approved
+shared page system. Shared editorial, accessibility, asset, capture, and
+visual-placement rules are not duplicated here.
 
 ## Purpose
 
-Transform the SNode.C root README from a long technical manual into a focused
-landing page for a modern event-driven C++ networking framework. Preserve the
-existing technical depth by moving it into structured documentation, while the
-root README answers what SNode.C is, why it matters, how it feels to use, and
-how to achieve a first success.
+Create a focused landing page for a modern event-driven C++ networking
+framework. Use the current live README as technical source material without
+preserving its structure or wording. The new page answers what SNode.C is, why
+it matters, how it feels to use, and how to achieve a first success, while
+linking qualified detailed documentation separately.
 
 ## Audience and jobs to be done
 
@@ -164,7 +169,7 @@ Offer paths in priority order:
 3. OpenWrt packages/feed where current;
 4. other verified platforms.
 
-Commands must use a release tag, an out-of-tree build, `cmake --build`,
+Commands must use current master and record the tested SHA, an out-of-tree build, `cmake --build`,
 `ctest`, and `cmake --install`. Clearly list minimum CMake, compiler, language
 standard, and required/optional dependencies.
 
@@ -203,19 +208,45 @@ State:
 Link contribution guide, code style, tests, architecture, good first issues,
 code of conduct, security policy, and dual MIT/LGPL licensing explanation.
 
+## Approved final section map
+
+The detailed requirements above consolidate into the shared nine-section
+product-page system:
+
+1. `What SNode.C enables`;
+2. `Quick start`;
+3. `Programming model`;
+4. `Capabilities and limitations`;
+5. `Architecture and ecosystem`;
+6. `Installation and compatibility`;
+7. `Examples and use cases`;
+8. `Performance and quality evidence`, included only when qualified;
+9. `Documentation and project routes`.
+
+The hero precedes these sections. Support, security, contribution, roadmap, and
+license links are consolidated in the final section rather than becoming five
+small sections.
+
 ## Visual requirements
 
-### Required assets
+The shared visual language, dimensions, screenshot hygiene, theme behavior, and
+source-asset rules come from the [page system](../PAGE-SYSTEM.md).
 
-- `assets/snodec-hero.svg`
-- `assets/programming-model.svg`
-- `assets/layer-architecture.svg`
-- `assets/echo-terminal.png`
-- `assets/social-preview.png`
+### Visual inventory and placement
 
-The hero should show code or architecture, not a generic network stock image.
-Diagrams must use the organization’s shared visual grammar and remain readable
-at GitHub’s content width.
+| Slot | Asset | Exact placement | Required content |
+| --- | --- | --- | --- |
+| V1 — Hero | `assets/snodec-hero.svg` | Immediately below the hero links | Two-panel code-to-result composition: a compact real C++ example, server/client event trace, and subtle layer strip; no generic stock imagery |
+| V2 — First success | `assets/echo-terminal.png` | Directly after the echo quick-start commands and expected output | Two terminal panes showing the exact qualified server and client commands, loopback connection, and successful echo result |
+| V3 — Architecture | `assets/programming-model.svg` | After the opening paragraph of `Programming model` | `SocketServer`/`SocketClient` → `SocketContextFactory` → per-connection `SocketContext`, with lifecycle and callback annotations |
+| V4 — Product detail | `assets/layer-architecture.svg` | At the beginning of `Architecture` | Event loop/OS, network/address, transport/encryption, connection/upgrade, and application-protocol layers; tested and optional scope must not be conflated |
+| Social preview | `assets/social-preview.png` | Repository metadata | SNode.C wordmark, approved outcome statement, compact code motif, and foundation-blue accent |
+
+The terminal capture uses generic `$` prompts, loopback networking, and no user,
+host, home-path, or unrelated shell data. Capture it from the same release
+candidate used to test the README commands. The approved first-success subject
+is the echo example; its final excerpt must remain short enough to understand
+without horizontal scrolling.
 
 ## Copy and style rules
 
@@ -230,17 +261,17 @@ at GitHub’s content width.
   section near the end.
 - Use at most three hero badges and no vanity counters.
 
-## Documentation migration
+## Use of existing documentation
 
-The existing long README must not be discarded. During implementation:
+The live README is a read-only knowledge source, not a structure to preserve.
+During implementation:
 
-1. inventory every current heading and anchor;
-2. map each item to landing page, guide, reference, example, or archive;
-3. preserve useful stable anchors through redirects/compatibility links where
-   practical;
-4. move detailed configuration, transport APIs, callbacks, and examples into
-   `docs/`;
-5. check all inbound repository links before replacing the root README.
+1. extract candidate facts, examples, terminology, and documentation links;
+2. verify selected facts against the release and supporting source/tests;
+3. rewrite all public landing-page copy independently in this workspace;
+4. link qualified configuration, transport, callback, API, and example
+   documentation rather than reproducing the live manual;
+5. do not modify the live local repository during this workflow.
 
 ## Evidence checklist
 
@@ -279,19 +310,21 @@ The existing long README must not be discarded. During implementation:
 - [ ] A first-time visitor reaches a successful example within ten minutes.
 - [ ] Programming model is understandable without reading implementation code.
 - [ ] Capabilities distinguish available, tested, and planned support.
-- [ ] Installation uses a tagged release and clean build.
+- [ ] Installation uses a clean current-master checkout with its tested SHA recorded.
 - [ ] All technical claims link to evidence.
 - [ ] Detailed existing documentation remains discoverable.
 - [ ] Ecosystem relationships are accurate and concise.
 - [ ] Support, security, contribution, and licensing are easy to find.
 - [ ] Images and diagrams pass light/dark and accessibility review.
+- [ ] V1–V4 and the social preview match the approved inventory and placement.
+- [ ] The final section count and prose weight meet the shared product-page target.
 - [ ] All commands are tested verbatim before publication.
 
 ## Open decisions
 
-- Canonical first example and acceptable line count.
+- Final line count and exact excerpt for the approved echo example.
 - Exact stable version and supported branch policy.
 - Which protocol combinations belong in the landing-page matrix.
 - Whether performance evidence is ready for launch.
-- Canonical documentation location and migration strategy.
+- Canonical documentation location and landing-page link/index strategy.
 - Final wording for Node.js inspiration and single-threaded behavior.
