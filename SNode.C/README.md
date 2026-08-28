@@ -2,51 +2,70 @@
 
 # SNode.C
 
-### Event-driven network applications in modern C++
+### Build event-driven network applications in modern C++
 
-Build clients, servers, gateways, and protocol services from reusable address,
-transport, connection, and application layers.
+SNode.C separates connection handling from application protocol logic. Define
+what should happen for one connection, then place that behavior behind a
+configurable client or server using the network path the application needs.
+
+![C++20](https://img.shields.io/badge/C%2B%2B-20-00599C?style=flat-square)
+![License: MIT OR LGPL-3.0-or-later](https://img.shields.io/badge/license-MIT%20OR%20LGPL--3.0--or--later-4c7bd9?style=flat-square)
 
 [Quick start](#quick-start) · [Programming model](#programming-model) ·
-[API documentation](https://snodec.github.io/snode.c-doc/html/index.html) ·
-[Examples](https://github.com/SNodeC/snode.c/tree/master/src/apps)
+[Architecture](docs/architecture.md) · [Configuration](docs/configuration.md) ·
+[Capability map](docs/capabilities.md) ·
+[API reference](https://snodec.github.io/snode.c-doc/html/index.html)
 
 </div>
 
 ![SNode.C code-to-result view showing a socket context and the resulting connection events](assets/snodec-hero.svg)
 
-<sub>Figure: Application code attaches per-connection state to a layered event-driven network path.</sub>
+<sub>Application code supplies connection-local behavior; SNode.C owns the surrounding event and connection lifecycle.</sub>
 
 > [!NOTE]
-> This page follows current public `master`. The most recently qualified source
-> was commit [`bf01683`](https://github.com/SNodeC/snode.c/commit/bf01683a53b48220a840522e8ccaf3b48e58c240),
-> whose CMake source version is `2.0.0`. That commit is newer than the latest
-> public tag; the version number is not a maturity or release-status claim.
+> This presentation follows public `master`. The most recently qualified source
+> is commit [`bf01683`](https://github.com/SNodeC/snode.c/commit/bf01683a53b48220a840522e8ccaf3b48e58c240),
+> whose CMake source version is `2.0.0`. Current master is newer than the latest
+> public tag, so that number is not presented as a release or maturity claim.
 
 ## Why SNode.C
 
-Network applications repeatedly solve the same infrastructure problems:
-address handling, connection lifecycle, event dispatch, buffering, encryption,
-protocol upgrades, configuration, and orderly shutdown. SNode.C provides those
-concerns as C++20 building blocks so application code can concentrate on the
-protocol and the state attached to each connection.
+Networking code tends to grow sideways. A small listener acquires address
+parsing, connection state, buffering, timeouts, retries, TLS, protocol framing,
+configuration, and shutdown behavior. When a second address family or client
+path arrives, application logic is often duplicated inside another set of
+callbacks.
 
-The framework is organized around a small recurring model. A `SocketServer` or
-`SocketClient` owns connection establishment. A `SocketContextFactory` creates
-one `SocketContext` for each accepted or established connection. The context
-then receives lifecycle and data events through the framework event loop.
+SNode.C gives those concerns explicit places. The runtime observes descriptors
+and timers. Client and server instances establish connections. A factory creates
+one protocol context for every accepted or established connection. That context
+owns the application-facing lifecycle and processes data without taking over
+socket setup or event dispatch.
+
+This division is useful in several different kinds of program:
+
+- a service can expose the same protocol through separately configured
+  endpoints;
+- a client can reconnect without turning its protocol state into global state;
+- an HTTP connection can move into a WebSocket context without replacing the
+  underlying connection;
+- applications can start at raw stream callbacks or use the supplied HTTP,
+  WebSocket, Express-style, and MQTT components where their verified scope fits.
+
+The architecture is inspired by the clarity of event-driven runtimes, including
+Node.js, but SNode.C is a C++ framework with its own API and type system. It does
+not provide Node.js, JavaScript, npm, or Express compatibility.
 
 ## Quick start
 
-The shortest evaluation path builds the supplied IPv4 echo pair. The commands
-use a canonical out-of-tree build and an isolated install directory so the same
-checkout can be rebuilt incrementally.
+The shortest evaluation path is the supplied IPv4 echo pair. The build stays in
+the canonical `cmake-build-release` directory, which can be reused for
+incremental builds while the compiler, generator, options, dependencies, and
+source revision remain unchanged.
 
-### Install dependencies
+### 1. Install the build requirements
 
-These Debian/Ubuntu package names cover the required baseline build. SNode.C
-requires GCC 12.2 or newer or Clang 13 or newer, CMake 3.18 or newer, OpenSSL,
-nlohmann/json, and `pkg-config`:
+For Debian or Ubuntu, these packages cover the qualified baseline build:
 
 ```sh
 sudo apt update
@@ -55,27 +74,27 @@ sudo apt install --yes \
   libssl-dev nlohmann-json3-dev
 ```
 
-Install the following packages for every corresponding optional component and
-maintainer target present in the current CMake graph:
+The following packages enable corresponding optional components or maintainer
+targets. They are not all required for the echo run:
 
 ```sh
-# Optional features: Bluetooth L2CAP/RFCOMM, MIME detection, MariaDB,
-# the snodec-control TUI, and TLS certificate generation/inspection.
+# Optional features: Bluetooth RFCOMM/L2CAP, MIME detection, MariaDB,
+# the snodec-control TUI, and certificate generation/inspection.
 sudo apt install --yes \
   libbluetooth-dev libmagic-dev libmariadb-dev libncurses-dev openssl
 
-# Optional maintainer tools: API documentation/graphs, include analysis,
+# Optional maintainer tools: API documentation and graphs, include analysis,
 # and source/CMake formatting.
 sudo apt install --yes \
   doxygen graphviz iwyu clang-format cmake-format
 ```
 
-`libssl-dev` is mandatory because the TLS source tree is configured
-unconditionally. The other feature packages enable or improve only their named
-components. CLI11 is already vendored as a single header; CMake fetches the
-pinned spdlog source on the first configure, so neither needs a system
-development package. Installing IWYU does not make it part of this fast path:
-the configure command below explicitly keeps `CHECK_INCLUDES` off.
+`libssl-dev` is mandatory for the current default source graph. CLI11 is
+vendored as a single header, and CMake fetches the pinned spdlog source during
+the first configure. The quick start explicitly disables include analysis even
+when IWYU is installed.
+
+### 2. Build the echo applications
 
 ```sh
 git clone https://github.com/SNodeC/snode.c.git
@@ -91,6 +110,8 @@ cmake --build cmake-build-release --parallel \
 export PATH="$PWD/cmake-build-release/src/apps/echo:$PATH"
 ```
 
+### 3. Listen, connect, and observe the contexts
+
 Start the listener in one terminal:
 
 ```sh
@@ -103,19 +124,19 @@ Connect from a second terminal:
 echoclient-legacy-in echoclient remote --host 127.0.0.1 --port 18001
 ```
 
-The server reports a listener on `127.0.0.1:18001`; the client reports a
-successful connection and both processes attach an echo context. Stop both with
+The server reports its listener, the client reports a successful connection,
+and both processes attach their echo contexts. The client sends a greeting and
+the peers reflect received data. Stop both processes with
 <kbd>Ctrl</kbd>+<kbd>C</kbd>.
 
 ![Real SNode.C terminals showing the IPv4 echo server listening and the client connecting](assets/echo-terminal.png)
 
-<sub>Screenshot: Genuine terminals from the qualified loopback echo connection, captured with isolated configuration.</sub>
+<sub>Genuine terminal output from the qualified loopback run at the recorded source revision.</sub>
 
-### Change the transport, not the application
+### Keep the echo behavior; change the network path
 
-The echo applications expose the same context through several compiled network
-and stream combinations. These variants were qualified on loopback with the
-same source revision:
+The same echo model is compiled into several endpoint variants. The following
+IPv6, Unix-domain, and mutual-TLS IPv4 paths were run during qualification:
 
 ```sh
 cmake --build cmake-build-release --parallel --target \
@@ -124,134 +145,170 @@ cmake --build cmake-build-release --parallel --target \
   echoserver-tls-in echoclient-tls-in
 ```
 
-| Variant | Server endpoint | Client endpoint |
+| Variant | Listener | Client |
 | --- | --- | --- |
 | IPv6 stream | `echoserver-legacy-in6 echoserver local --host ::1 --port 18002` | `echoclient-legacy-in6 echoclient remote --host ::1 --port 18002` |
 | Unix domain | `echoserver-legacy-un echoserver local --sun-path /tmp/snode-echo.sock` | `echoclient-legacy-un echoclient remote --sun-path /tmp/snode-echo.sock` |
 | Mutual TLS over IPv4 | `echoserver-tls-in echoserver local --host 127.0.0.1 --port 18443 tls --cert server.crt --cert-key server.key --ca-cert ca.crt` | `echoclient-tls-in echoclient remote --host 127.0.0.1 --port 18443 tls --cert client.crt --cert-key client.key --ca-cert ca.crt` |
 
 The TLS pair requires separate server and client certificates signed by the CA
-named in `--ca-cert`. Do not reuse development keys in deployed systems. Run
-`echoserver-tls-in --help=expanded` for certificate, cipher, verification, and
-timeout options. The qualified demo did not enable its application-specific SNI
-mapping.
+named through `--ca-cert`. This example does not make certificate verification,
+host policy, or deployment security automatic. Use reviewed certificates and
+inspect the complete compiled TLS surface with
+`echoserver-tls-in --help=expanded`.
 
 ## Programming model
 
-![Programming model from socket server or client through context factory to a per-connection context](assets/programming-model.svg)
+![Programming model from a configured endpoint through connection establishment and a context factory to connection-local callbacks](assets/programming-model.svg)
 
-<sub>Figure: One factory creates application-owned state for every established connection.</sub>
+<sub>A named client or server instance establishes a connection; its factory creates the context that owns protocol behavior for that connection.</sub>
 
-An **instance** is a named, configurable client or server endpoint. Its command
-line and configuration-file sections describe the local or remote address,
-connection limits, socket behavior, and—where applicable—TLS. Applications can
-therefore expose several address families or transports without duplicating
-their protocol logic.
+Four concepts recur throughout the framework:
 
-SNode.C uses an event-driven execution model. That is an architectural fact,
-not a performance claim: throughput, latency, memory use, and suitability for a
-specific workload still need measurements in that workload.
+1. A **client or server instance** describes one configurable endpoint. A
+   server accepts connections; a client initiates them.
+2. A **connection** owns the established stream, addresses, queues, timeouts,
+   and connection-level state.
+3. A **`SocketContextFactory`** chooses and creates the application context for
+   that connection.
+4. A **`SocketContext`** receives attach, data, error, signal, and detach
+   events and sends through its connection.
 
-## Layers and capabilities
+The supplied echo model is intentionally small. Its client context sends the
+first message from `onConnected()`. Both roles read available data from
+`onReceivedFromPeer()` and write it back through `sendToPeer()`. On detach, the
+context can distinguish a connection close from a context switch.
 
-![SNode.C layer architecture from event loop and addresses through streams, connections, and application protocols](assets/layer-architecture.svg)
+That last distinction matters above raw streams. SNode.C can replace the
+application context while retaining the established connection. The HTTP and
+WebSocket code uses this mechanism for protocol upgrades, with an upgrade
+factory selecting the next context. The detailed
+[architecture guide](docs/architecture.md) shows this transition without
+turning the landing page into a class diagram.
 
-<sub>Figure: Layer availability and composition do not imply identical qualification across every combination.</sub>
+## Architecture by composition
 
-| Layer | Current-master source scope | Qualification boundary |
+![SNode.C composition map showing application contexts above connection mode, endpoint role, address family, and the shared event runtime](assets/layer-architecture.svg)
+
+<sub>Layers can be selected independently in source, but only explicitly qualified paths should be treated as tested combinations.</sub>
+
+The bottom of the stack is shared infrastructure: descriptor readiness, timers,
+the event queue, and the selected multiplexer implementation. Address-family
+types and physical sockets sit above that runtime. Stream clients and servers
+then establish connections, optionally using the OpenSSL-backed TLS layer.
+Application protocol contexts finally attach connection-local behavior.
+
+Composition is not a support matrix. The current source contains IPv4, IPv6,
+Unix-domain, Bluetooth RFCOMM, and Bluetooth L2CAP layers, but the launch
+qualification exercised only IPv4, IPv6, Unix-domain, and mutual TLS over IPv4
+for the echo example. A class or build target existing does not prove that
+every adjacent layer has been tested with it.
+
+Read [Architecture and extension points](docs/architecture.md) for the event
+runtime, endpoint composition, ownership model, and HTTP-to-WebSocket context
+transition.
+
+## Capabilities and boundaries
+
+| Area | Present in current source | Public boundary |
 | --- | --- | --- |
-| Address families | IPv4, IPv6, Unix domain, Bluetooth RFCOMM, Bluetooth L2CAP | Echo qualification covers IPv4, IPv6, and Unix domain on Linux; Bluetooth needs suitable hardware and a separate run |
-| Streams | Plain connection-oriented stream and OpenSSL-backed TLS | Plain and mutual-TLS echo paths were run; not every address/layer combination is asserted |
-| Web | HTTP, WebSocket, Express-style routing and upgrades | Component sources and tests exist; consult the API docs for exact targets |
-| IoT | MQTT 3.1.1 protocol components and MQTT-over-WebSocket composition | MQTTSuite owns the end-user broker/integration workflows |
-| Configuration | API setters, command-line sections, and configuration files | `--help=expanded`, `--show-config`, and `--command-line` expose the effective surface |
-| Packaging | Component CMake exports for downstream `find_package` consumers | Current master installed successfully in the recorded qualification environment |
+| Event runtime | Event loop, event queue, timers, descriptor events, and select/poll/epoll multiplexer implementations | Architecture statement only; no throughput or latency claim |
+| Network families | IPv4, IPv6, Unix domain, RFCOMM, and L2CAP source layers | Echo runtime evidence currently covers IPv4, IPv6, and Unix domain |
+| Connections | Client/server stream connections, queues, timeouts, retry controls, client reconnect, and plain/TLS variants | Exact behavior depends on the concrete instance and configuration |
+| Web protocols | HTTP client/server parsing, Express-style server routing, WebSocket upgrades, and WebSocket subprotocol infrastructure | Source and tests define individual components; this page does not claim every network combination |
+| MQTT | MQTT 3.1.1 protocol components and MQTT-over-WebSocket composition | Ready-made broker, integration, bridge, CLI, and storage workflows belong to MQTTSuite |
+| Configuration | API setters, command-line sections, configuration files, effective-config inspection, and config-file writing | Named instances expose CLI/file configuration; anonymous instances are API-configured |
+| Database and content helpers | MariaDB integration and optional MIME detection | Built only when the corresponding dependencies and components are selected |
+| Packaging | Installed CMake component packages for downstream `find_package` consumers | Release artifact and broad platform support remain separate questions |
 
-Source availability does not mean that every layer can be combined with every
-address family, or that every combination has the same test coverage. Select
-the exact CMake components your application needs and verify that combination.
+The [current-master capability map](docs/capabilities.md) separates source,
+test, runtime, and release evidence and lists the dependencies attached to each
+area.
 
-## Choosing the right abstraction
+## Configuration that follows the instance
 
-Start at the highest layer that owns the behavior you actually need. Use the
-stream socket layer when your application defines its own framing and protocol.
-Use HTTP or WebSocket components when their parsers, upgrade lifecycle, and
-message boundaries are part of the requirement. Use the MQTT components when
-you are implementing an MQTT peer; use MQTTSuite when you want ready-made
-broker, integration, bridge, CLI, or storage processes.
+An instance is more than a port number. Its configuration tree separates local
+and remote addresses, established-connection behavior, physical-socket policy,
+and TLS. Server and client roles expose different required sections: a server
+needs a local listener address, while a client needs a remote destination.
 
-Keep connection-local state in a `SocketContext` rather than in a process-wide
-callback. Let the factory construct that state when the connection becomes
-usable, and treat disconnect/shutdown callbacks as part of the normal
-lifecycle. When exposing multiple instances, give each one a stable name so its
-address, TLS, retry, timeout, and queue policy remain inspectable.
+The same model can be set in C++, loaded from a configuration file, or
+overridden on the command line. Useful inspection paths are built into the
+application surface:
 
-Configuration defaults are application decisions. A loopback host, unlimited
-timeout, reconnect policy, or permissive certificate setting that is useful for
-a local example is not automatically appropriate for a deployed service.
+```sh
+echoserver-legacy-in --help=expanded
+echoserver-legacy-in --show-config
+echoserver-legacy-in --command-line=complete
+```
 
-## Build and consume
+This makes a named endpoint inspectable without moving deployment choices back
+into protocol code. Retry, timeout, queue, reconnect, certificate, CA, cipher,
+and SNI options remain explicit rather than implied by the word “networking.”
 
-For library development, keep `cmake-build-release` and
-`cmake-build-debug` as reusable canonical build directories. Reconfigure when
-the compiler, generator, dependency prefix, CMake options, or source revision
-changes.
+Read [Configuration without duplicated policy](docs/configuration.md) for the
+hierarchy, precedence, named/anonymous distinction, and deployment checks.
 
-After installation, downstream projects can request SNode.C components with
-CMake rather than relying on sibling checkout paths. Component names and
-examples are documented in the
-[API documentation](https://snodec.github.io/snode.c-doc/html/index.html) and
-the repository's [`src`](https://github.com/SNodeC/snode.c/tree/master/src)
-tree.
+## Build, install, and consume
 
-The source requests C++20. The recorded launch qualification used Debian
-GNU/Linux forky/sid, x86-64, GCC 16.2.0, CMake 4.3.4, and Ninja 1.13.2. This is
-a reproducible observation, not a declaration that other distributions,
-compilers, architectures, Android/Termux, or OpenWrt targets are supported.
+SNode.C requests C++20 and CMake 3.18 or newer. The recorded qualification used
+Debian GNU/Linux forky/sid on x86-64 with GCC 16.2.0, CMake 4.3.4, and Ninja
+1.13.2. That is a reproducible observation, not a declaration that every Linux
+distribution, compiler, architecture, Android/Termux environment, or OpenWrt
+target is supported.
 
-## Troubleshooting the first build
+For development, keep separate canonical Release and Debug build directories.
+Enable tests in the Debug configuration and run them through CTest:
 
-- If CMake cannot find a dependency, install its development package or pass a
-  reviewed prefix through `CMAKE_PREFIX_PATH`; do not point examples at an
-  unrelated live checkout.
-- If a listener cannot bind, choose an unused port or remove a stale Unix
-  socket only after confirming that no process owns it.
-- If TLS negotiation fails, verify the CA chain, certificate purpose, private
-  key pairing, validity period, and host/SNI policy on both peers. Do not bypass
-  verification merely to make the example connect.
-- Use `--help=expanded` for the exact compiled instance and
-  `--command-line=standard` to print the effective non-default configuration.
+```sh
+cmake -S . -B cmake-build-debug -G Ninja \
+  -DCMAKE_BUILD_TYPE=Debug \
+  -DSNODEC_BUILD_APPS=ON \
+  -DSNODEC_BUILD_TESTS=ON
+cmake --build cmake-build-debug --parallel
+ctest --test-dir cmake-build-debug --output-on-failure
+```
 
-For a development checkout, add tests in `cmake-build-debug` and run
-`ctest --test-dir cmake-build-debug --output-on-failure`. The launch
-qualification above intentionally proves selected echo paths; it is not a
-claim that every repository test passed in the same Release directory.
+Install from the build tree rather than copying libraries or headers manually:
 
-## Ecosystem
+```sh
+cmake --install cmake-build-release --prefix "$PWD/snodec-install"
+```
 
-SNode.C is the networking foundation for several separate applications and
-libraries:
+Downstream CMake projects can consume the installed component packages with
+`find_package`. Select only the components the program uses; do not rely on a
+sibling source checkout or assume that an optional dependency is available
+because another SNode.C component built successfully.
 
-- [MQTTSuite](https://github.com/SNodeC/mqttsuite) builds broker, integration,
-  bridge, CLI, and storage applications around MQTT 3.1.1.
-- [AISuite](https://github.com/SNodeC/AISuite) adds typed C++ access and a
-  multi-client bridge for the Codex app-server protocol.
-- [CodexUI](https://github.com/SNodeC/CodexUI) is a native Qt client built on
-  AISuite and SNode.C.
+## Projects built around SNode.C
 
-These projects have independent versions and responsibilities. Their features
-are not automatically SNode.C framework features.
+SNode.C is the networking foundation, not the entire application story:
 
-## Project routes
+- [MQTTSuite](https://github.com/SNodeC/mqttsuite) provides separate MQTT 3.1.1
+  broker, integration, bridge, CLI, and storage applications.
+- [AISuite](https://github.com/SNodeC/AISuite) uses SNode.C for typed integration
+  and multi-client bridge paths around the Codex app-server protocol.
+- [CodexUI](https://github.com/SNodeC/CodexUI) provides native and browser
+  presentations built on the AISuite integration layer.
 
-- Read the [API documentation](https://snodec.github.io/snode.c-doc/html/index.html).
-- Report reproducible defects in [Issues](https://github.com/SNodeC/snode.c/issues).
-- Ask usage questions in [Discussions](https://github.com/SNodeC/snode.c/discussions).
-- Inspect [releases](https://github.com/SNodeC/snode.c/releases) before relying
-  on packaged artifacts rather than current source.
-- Review the dual-license terms: `MIT OR LGPL-3.0-or-later`.
+Each project has its own version, support boundary, and documentation. Their
+features are not automatically framework features.
 
-The repository does not currently publish dedicated `SECURITY.md`,
-`SUPPORT.md`, or `CONTRIBUTING.md` routes. Until those exist, do not disclose a
-security issue in a public ticket if it would expose users; contact the
-maintainer through an agreed private channel first.
+## Documentation and project routes
+
+| Need | Route |
+| --- | --- |
+| Understand the layers and extension points | [Architecture guide](docs/architecture.md) |
+| Configure endpoints and deployment policy | [Configuration guide](docs/configuration.md) |
+| Check evidence and optional dependencies | [Capability map](docs/capabilities.md) |
+| Browse generated classes and namespaces | [API reference](https://snodec.github.io/snode.c-doc/html/index.html) |
+| Study complete applications | [Example sources](https://github.com/SNodeC/snode.c/tree/master/src/apps) |
+| Report a reproducible defect | [GitHub Issues](https://github.com/SNodeC/snode.c/issues) |
+| Ask a usage question | [GitHub Discussions](https://github.com/SNodeC/snode.c/discussions) |
+| Inspect published artifacts | [GitHub Releases](https://github.com/SNodeC/snode.c/releases) |
+
+SNode.C is available under `MIT OR LGPL-3.0-or-later`. Review the repository
+license files before redistribution. The repository does not currently publish
+dedicated `SECURITY.md`, `SUPPORT.md`, or `CONTRIBUTING.md` routes. Until a
+private security contact is formally documented, do not place sensitive
+vulnerability details in a public issue.

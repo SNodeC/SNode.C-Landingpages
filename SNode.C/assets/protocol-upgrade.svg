@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+  <title id="title">HTTP to WebSocket context upgrade</title>
+  <desc id="desc">An HTTP SocketContext handles an upgrade request. An upgrade factory selects and creates a WebSocket SocketContext, which attaches to the same established SocketConnection and can select a WebSocket subprotocol.</desc>
+  <defs>
+    <pattern id="grid" width="48" height="48" patternUnits="userSpaceOnUse">
+      <path d="M48 0H0V48" fill="none" stroke="#20304a" stroke-width="1" opacity=".34"/>
+    </pattern>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <path d="M0 0L12 6L0 12Z" fill="#5ca8ff"/>
+    </marker>
+  </defs>
+  <rect width="1600" height="900" rx="32" fill="#0b1425"/>
+  <rect width="1600" height="900" rx="32" fill="url(#grid)"/>
+  <rect y="890" width="1600" height="10" fill="#5ca8ff"/>
+
+  <text x="76" y="68" fill="#5ca8ff" font-family="Inter,Segoe UI,sans-serif" font-size="28" font-weight="700" letter-spacing="6">CONTEXT TRANSITION</text>
+  <text x="76" y="145" fill="#f5f8ff" font-family="Inter,Segoe UI,sans-serif" font-size="52" font-weight="750">Upgrade the protocol, keep the connection</text>
+  <text x="76" y="198" fill="#aebbd0" font-family="Inter,Segoe UI,sans-serif" font-size="27">HTTP hands application-protocol ownership to WebSocket after a successful upgrade.</text>
+
+  <rect x="76" y="285" width="430" height="260" rx="28" fill="#201d3d" stroke="#b583ff" stroke-width="3"/>
+  <text x="116" y="345" fill="#b583ff" font-family="ui-monospace,SFMono-Regular,monospace" font-size="25" font-weight="700">BEFORE</text>
+  <text x="116" y="405" fill="#f5f8ff" font-family="Inter,Segoe UI,sans-serif" font-size="34" font-weight="700">HTTP SocketContext</text>
+  <text x="116" y="454" fill="#c7b1f4" font-family="Inter,Segoe UI,sans-serif" font-size="24">parse request</text>
+  <text x="116" y="491" fill="#c7b1f4" font-family="Inter,Segoe UI,sans-serif" font-size="24">validate upgrade headers</text>
+
+  <path d="M506 415H630" stroke="#5ca8ff" stroke-width="5" fill="none" marker-end="url(#arrow)"/>
+  <text x="524" y="380" fill="#aebbd0" font-family="Inter,Segoe UI,sans-serif" font-size="21">upgrade request</text>
+
+  <rect x="654" y="310" width="292" height="210" rx="28" fill="#152640" stroke="#38cad6" stroke-width="3"/>
+  <text x="694" y="370" fill="#38cad6" font-family="ui-monospace,SFMono-Regular,monospace" font-size="25" font-weight="700">SELECT</text>
+  <text x="694" y="424" fill="#f5f8ff" font-family="Inter,Segoe UI,sans-serif" font-size="29" font-weight="700">Upgrade factory</text>
+  <text x="694" y="468" fill="#9fdde3" font-family="Inter,Segoe UI,sans-serif" font-size="22">create next context</text>
+
+  <path d="M946 415H1070" stroke="#5ca8ff" stroke-width="5" fill="none" marker-end="url(#arrow)"/>
+  <text x="974" y="380" fill="#aebbd0" font-family="Inter,Segoe UI,sans-serif" font-size="21">attach</text>
+
+  <rect x="1094" y="285" width="430" height="260" rx="28" fill="#173024" stroke="#55d86f" stroke-width="3"/>
+  <text x="1134" y="345" fill="#55d86f" font-family="ui-monospace,SFMono-Regular,monospace" font-size="25" font-weight="700">AFTER</text>
+  <text x="1134" y="405" fill="#f5f8ff" font-family="Inter,Segoe UI,sans-serif" font-size="34" font-weight="700">WebSocket context</text>
+  <text x="1134" y="454" fill="#aee8b8" font-family="Inter,Segoe UI,sans-serif" font-size="24">frames and messages</text>
+  <text x="1134" y="491" fill="#aee8b8" font-family="Inter,Segoe UI,sans-serif" font-size="24">selected subprotocol</text>
+
+  <rect x="76" y="650" width="1448" height="112" rx="28" fill="#30231c" stroke="#f0b45b" stroke-width="3"/>
+  <text x="116" y="700" fill="#f0b45b" font-family="ui-monospace,SFMono-Regular,monospace" font-size="24" font-weight="700">UNCHANGED FOUNDATION</text>
+  <text x="116" y="739" fill="#f5f8ff" font-family="Inter,Segoe UI,sans-serif" font-size="28" font-weight="700">SocketConnection · local/remote addresses · queues · timeouts · plain/TLS state</text>
+
+  <path d="M291 545V650M800 520V650M1309 545V650" stroke="#f0b45b" stroke-width="3" stroke-dasharray="10 10"/>
+  <text x="76" y="830" fill="#aebbd0" font-family="Inter,Segoe UI,sans-serif" font-size="23">The previous context detaches with a context-switch reason; connection close is a separate lifecycle event.</text>
+</svg>
