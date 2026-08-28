@@ -308,6 +308,12 @@ source-asset rules come from the [page system](../PAGE-SYSTEM.md).
 
 - Use the exact qualified current-master native and browser builds for screenshots.
 - Use the same synthetic repository/thread data and matching theme.
+- Capture the native presentation in isolated Xvfb at 2× UI density and the
+  browser artifact at 3200×1800; use recorded keyboard/pointer steps to expose
+  source-aligned scenarios without touching the maintainer's desktop.
+- Export both final screenshot assets at exactly 1600×900. Keep the Xvfb,
+  browser, synthetic-fixture, and composition automation in `assets/src/` or
+  the shared capture-source directory.
 - Capture at a consistent scale with readable text at GitHub width.
 - Remove usernames, paths, tokens, real prompts, and unrelated applications.
 - Show meaningful states without visual overload.

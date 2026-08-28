@@ -157,6 +157,27 @@ default Unix instance and enabling exactly one alternative. TLS/WSS examples
 must include the corresponding certificate prerequisites rather than implying
 that encryption is automatic.
 
+### UI evidence capture
+
+Use an isolated Xvfb display for native CodexUI screenshots so repeatable
+keyboard and pointer actions cannot expose or interrupt the maintainer's live
+desktop. Launch the exact qualified native binary and connect it only to the
+isolated synthetic AISuite/app-server fixture used for browser qualification.
+
+The capture set may show distinct scenarios—such as initial connection, thread
+selection, completed command activity, prompt submission, background work, and
+reconnect state—when each state is implemented by the reviewed source and can
+be reproduced from recorded input steps. Matching native/browser comparisons
+must use the same synthetic workspace, thread, turn, and activity state.
+
+Capture native and browser sources at 2× density and export every in-page
+CodexUI screenshot on the shared 1600×900 canvas. Pointer or keyboard automation
+is a capture aid, not product evidence by itself; the visible behavior must
+still be supported by implementation, tests, and the recorded qualified run.
+Keep launch commands, fixture definitions, and composition sources under
+`CodexUI/assets/src/` or the shared capture-source directory. Never retain a
+capture from the live desktop, even temporarily in the landing-page tree.
+
 ## Common misconceptions
 
 - CodexUI is not the bridge, provider, or persistence authority.
@@ -191,6 +212,10 @@ that encryption is automatic.
   scrolling behavior against tests and qualification documents.
 - Confirm the hero and workflow captures show real matching release state and no
   private data.
+- Re-run the recorded Xvfb input sequence and confirm the native capture is
+  deterministic, uses only synthetic data, and matches the documented state.
+- Confirm all final CodexUI screenshots are exactly 1600×900 and were derived
+  from 2× sources without redrawn application content.
 - Review privacy, authentication, listener exposure, and independent-project
   wording with the relevant evidence.
 - Verify exact names, V1–V4 assets, social preview, alt text, captions, and links.

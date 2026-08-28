@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc" viewBox="0 0 480 220">
+  <title id="title">AISuite: Typed protocol integration</title>
+  <desc id="desc">AISuite: Typed protocol integration</desc>
+  <defs>
+      <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#0b1220"/><stop offset="1" stop-color="#111b2e"/>
+      </linearGradient>
+      <linearGradient id="accent" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#bc8cff" stop-opacity=".95"/>
+        <stop offset="1" stop-color="#bc8cff" stop-opacity=".35"/>
+      </linearGradient>
+      <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+        <path d="M40 0H0V40" fill="none" stroke="#ffffff" stroke-opacity=".035"/>
+      </pattern>
+      <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+        <path d="M0 0L10 5L0 10Z" fill="#bc8cff"/>
+      </marker>
+      <marker id="arrow-muted" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+        <path d="M0 0L10 5L0 10Z" fill="#a9b8cd"/>
+      </marker>
+    </defs>
+  <rect width="480" height="220" rx="30" fill="url(#bg)"/>
+  <rect width="480" height="220" rx="30" fill="url(#grid)"/>
+  <path d="M0 212H480" stroke="#bc8cff" stroke-width="8" opacity=".9"/>
+  <circle cx="84" cy="100" r="52" fill="#bc8cff" fill-opacity=".12" stroke="#bc8cff" stroke-width="3"/>
+      <text x="84" y="114" text-anchor="middle" fill="#bc8cff" font-family="ui-monospace,monospace" font-size="38" font-weight="800">AI</text>
+      <text x="160" y="86" fill="#f5f8ff" font-family="Inter,ui-sans-serif,system-ui" font-size="34" font-weight="760">AISuite</text>
+      <text x="160" y="122" fill="#a9b8cd" font-family="Inter,ui-sans-serif,system-ui" font-size="17">Typed protocol integration</text>
+      <rect x="160" y="146" width="160" height="5" rx="2.5" fill="#bc8cff"/>
+</svg>

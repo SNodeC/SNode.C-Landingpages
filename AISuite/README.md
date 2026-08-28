@@ -18,6 +18,10 @@ application implement raw JSON-RPC, correlation, and transport adaptation.
 > SDK or product. Codex and the Codex app-server define the upstream protocol
 > semantics; AISuite adapts and presents that protocol to its clients.
 
+![Native and browser clients converging on an AISuite bridge and the Codex app-server](assets/aisuite-hero.svg)
+
+<sub>Figure: Typed clients share one bounded bridge while the app-server remains the semantic authority.</sub>
+
 Current public `master` contains the C++20 implementation and a framework-neutral
 TypeScript frontend SDK. The most recently qualified source was
 [`c3cce28`](https://github.com/SNodeC/AISuite/commit/c3cce28d813b4f48376a2a0c6ac74131bf443f65),
@@ -143,6 +147,10 @@ then `quit`. The result depends on the selected Codex home and authentication
 state; an empty list is valid. Avoid using real prompts or credentials in
 screenshots and logs.
 
+![Real AISuite provider, bridge, and reference-client terminals showing a synthetic thread-list request](assets/bridge-terminal.png)
+
+<sub>Screenshot: Genuine terminals for the isolated stdio fixture, IPv4 bridge listener, controller state, and harmless thread-list response.</sub>
+
 ## Two independent transport boundaries
 
 AISuite has two directions with different capabilities. They must not be merged
@@ -185,19 +193,14 @@ does not add application authentication or change controller authority.
 
 ## Architecture and authority
 
-```text
-native C++ client ─┐
-browser client ────┼─ frontend envelopes ─► codex-bridge
-CodexUI / observer ┘                         │
-                                             │ native app-server JSON-RPC
-                                             ▼
-                                      Codex app-server
-```
-
 The first frontend can become controller when the default policy is enabled.
 Additional frontends are observers; explicitly classified reads can be allowed
 by policy. Mutating operations remain controller-governed. The bridge routes
 responses and notifications but does not reinterpret app-server semantics.
+
+![Authority boundaries among clients, the AISuite bridge, and the Codex app-server](assets/authority-boundaries.svg)
+
+<sub>Figure: AISuite owns transport and transient routing state, not conversation semantics or persistence.</sub>
 
 All exposed boundaries are bounded: encoded message size, app-server input
 queue, transport write queues, parser limits, retained diagnostics, and work per
@@ -210,6 +213,10 @@ Generated C++ views and TypeScript declarations share recorded schema and
 operation inputs. Cross-language tests check type names, bindings, required
 parameters, counts, and source hashes. The C++ `getRaw()` surface preserves
 original JSON outside a current view; raw JSON-RPC remains an escape hatch.
+
+![Typed protocol generation from recorded inputs to C++ views and TypeScript declarations](assets/typed-generation-flow.svg)
+
+<sub>Figure: Shared inputs produce both language surfaces and equality evidence while raw JSON remains available.</sub>
 
 The TypeScript `CodexBridgeClient`, `ClientConnection`, and
 `WebSocketTransport` implement the browser-facing lifecycle. The transport uses

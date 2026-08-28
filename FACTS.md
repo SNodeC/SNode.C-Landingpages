@@ -7,7 +7,7 @@
 **Baseline:** current public `master` at the exact observed commit below
 
 **Scope:** source/repository audit plus clean current-master build, install,
-test, and selected quick-start qualification; visual capture remains pending
+test, selected quick-start qualification, and launch-visual production
 
 This register owns facts shared across landing pages. Project-level claim
 evidence lives in each directory's `EVIDENCE.md`.
@@ -126,7 +126,9 @@ landing-page route block promises them.
 
 - The principal SNode.C echo and MQTTSuite broker/subscriber/publisher paths are
   runtime-qualified. AISuite's full transport acceptance matrix and CodexUI's
-  native tests pass; authenticated visible UI capture remains pending.
+  native tests pass. The launch visuals use genuine isolated terminal and UI
+  captures, including an explicitly labeled synthetic app-server fixture; they
+  do not claim an authenticated user workflow.
 - Current-master cross-project compilation is qualified for the exact recorded
   Debian/GCC environment; release-level compatibility remains open.
 - Maturity and support policies are not established by source version numbers.
@@ -137,4 +139,6 @@ landing-page route block promises them.
 - CodexUI source version `1.0.0` must not be presented as release or maturity.
 - Security, support, contribution, and roadmap destinations need owner-approved
   canonical files or links.
-- Screenshots must come from the same commits that pass qualification.
+- The final screenshot set was rendered from 2× sources to a consistent
+  1600×900 canvas. CodexUI native capture uses isolated Xvfb input automation;
+  browser and native scenes use matching synthetic state.

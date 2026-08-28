@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc" viewBox="0 0 1600 800">
+  <title id="title">MQTTSuite five-application hero</title>
+  <desc id="desc">MQTTSuite five-application hero</desc>
+  <defs>
+      <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#0b1220"/><stop offset="1" stop-color="#111b2e"/>
+      </linearGradient>
+      <linearGradient id="accent" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#56d364" stop-opacity=".95"/>
+        <stop offset="1" stop-color="#56d364" stop-opacity=".35"/>
+      </linearGradient>
+      <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+        <path d="M40 0H0V40" fill="none" stroke="#ffffff" stroke-opacity=".035"/>
+      </pattern>
+      <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+        <path d="M0 0L10 5L0 10Z" fill="#56d364"/>
+      </marker>
+      <marker id="arrow-muted" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+        <path d="M0 0L10 5L0 10Z" fill="#a9b8cd"/>
+      </marker>
+    </defs>
+  <rect width="1600" height="800" rx="30" fill="url(#bg)"/>
+  <rect width="1600" height="800" rx="30" fill="url(#grid)"/>
+  <path d="M0 792H1600" stroke="#56d364" stroke-width="8" opacity=".9"/>
+
+  <text x="80" y="74" fill="#56d364" font-family="Inter,ui-sans-serif,system-ui" font-size="20" font-weight="700" letter-spacing="3">MQTTSUITE · MQTT 3.1.1</text>
+    <text x="80" y="136" fill="#f5f8ff" font-family="Inter,ui-sans-serif,system-ui" font-size="42" font-weight="750">Five focused applications, one message flow</text>
+    <text x="80" y="179" fill="#a9b8cd" font-family="Inter,ui-sans-serif,system-ui" font-size="22">Broker, inspect, transform, forward, and persist without collapsing the roles.</text>
+  <g>
+      <rect x="70" y="240" width="270" height="190" rx="18" fill="#14223a" stroke="#56d364" stroke-width="3"/>
+      <text x="94" y="278" fill="#56d364" font-family="ui-monospace,monospace" font-size="24" font-weight="700">B</text>
+      <text x="134" y="278" fill="#f5f8ff" font-family="Inter,ui-sans-serif,system-ui" font-size="22" font-weight="700">MQTTBroker</text>
+      <text x="94" y="312" fill="#a9b8cd" font-family="Inter,ui-sans-serif,system-ui" font-size="17">accept clients</text>
+<text x="94" y="337" fill="#a9b8cd" font-family="Inter,ui-sans-serif,system-ui" font-size="17">serve Web UI</text>
+    </g>
+  <g>
+      <rect x="370" y="240" width="270" height="190" rx="18" fill="#14223a" stroke="#39c5cf" stroke-width="1.5"/>
+      <text x="394" y="278" fill="#39c5cf" font-family="ui-monospace,monospace" font-size="24" font-weight="700">&gt;_</text>
+      <text x="434" y="278" fill="#f5f8ff" font-family="Inter,ui-sans-serif,system-ui" font-size="22" font-weight="700">MQTTCli</text>
+      <text x="394" y="312" fill="#a9b8cd" font-family="Inter,ui-sans-serif,system-ui" font-size="17">publish</text>
+<text x="394" y="337" fill="#a9b8cd" font-family="Inter,ui-sans-serif,system-ui" font-size="17">subscribe / inspect</text>
+    </g>
+  <g>
+      <rect x="670" y="240" width="270" height="190" rx="18" fill="#14223a" stroke="#bc8cff" stroke-width="1.5"/>
+      <text x="694" y="278" fill="#bc8cff" font-family="ui-monospace,monospace" font-size="24" font-weight="700">{}</text>
+      <text x="734" y="278" fill="#f5f8ff" font-family="Inter,ui-sans-serif,system-ui" font-size="22" font-weight="700">MQTTIntegrator</text>
+      <text x="694" y="312" fill="#a9b8cd" font-family="Inter,ui-sans-serif,system-ui" font-size="17">map topics</text>
+<text x="694" y="337" fill="#a9b8cd" font-family="Inter,ui-sans-serif,system-ui" font-size="17">transform payloads</text>
+    </g>
+  <g>
+      <rect x="970" y="240" width="270" height="190" rx="18" fill="#14223a" stroke="#58a6ff" stroke-width="1.5"/>
+      <text x="994" y="278" fill="#58a6ff" font-family="ui-monospace,monospace" font-size="24" font-weight="700">⇄</text>
+      <text x="1034" y="278" fill="#f5f8ff" font-family="Inter,ui-sans-serif,system-ui" font-size="22" font-weight="700">MQTTBridge</text>
+      <text x="994" y="312" fill="#a9b8cd" font-family="Inter,ui-sans-serif,system-ui" font-size="17">connect brokers</text>
+<text x="994" y="337" fill="#a9b8cd" font-family="Inter,ui-sans-serif,system-ui" font-size="17">filter / prefix</text>
+    </g>
+  <g>
+      <rect x="1270" y="240" width="270" height="190" rx="18" fill="#14223a" stroke="#e3b341" stroke-width="1.5"/>
+      <text x="1294" y="278" fill="#e3b341" font-family="ui-monospace,monospace" font-size="24" font-weight="700">DB</text>
+      <text x="1334" y="278" fill="#f5f8ff" font-family="Inter,ui-sans-serif,system-ui" font-size="22" font-weight="700">MQTTStore</text>
+      <text x="1294" y="312" fill="#a9b8cd" font-family="Inter,ui-sans-serif,system-ui" font-size="17">raw envelope</text>
+<text x="1294" y="337" fill="#a9b8cd" font-family="Inter,ui-sans-serif,system-ui" font-size="17">MariaDB projection</text>
+    </g>
+  <g><path d="M205 430C205 550 1405 550 1405 430" fill="none" stroke="#56d364" stroke-width="3"  marker-end="url(#arrow)"/>
+      <text x="805" y="582" text-anchor="middle" fill="#a9b8cd" font-family="Inter,ui-sans-serif,system-ui" font-size="14">one suite · explicit process boundaries</text></g>
+  <g><rect x="645" y="650" width="310" height="36" rx="18" fill="#56d364" fill-opacity=".13" stroke="#56d364"/>
+      <text x="800" y="674" text-anchor="middle" fill="#56d364" font-family="Inter,ui-sans-serif,system-ui" font-size="14" font-weight="700">MQTT 3.1.1</text></g>
+
+</svg>

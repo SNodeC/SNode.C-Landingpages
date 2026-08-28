@@ -35,8 +35,8 @@ GCC 16.2.0, CMake 4.3.4, and Ninja 1.13.2 on Debian forky/sid. IPv4 and IPv6
 loopback, Unix-domain, and CA-signed mutual-TLS IPv4 echo pairs connected.
 Passing TLS used client and server certificates signed by the same local CA;
 the demo's application-specific SNI mapping was intentionally not enabled.
-Screenshot capture and the complete repository CTest suite remain separate
-gates.
+The V2 asset is a genuine two-terminal Xvfb capture from the qualified IPv4 run.
+The complete repository CTest suite remains a separate gate.
 
 ## Open or excluded claims
 
@@ -46,5 +46,5 @@ gates.
   master a `2.0 release` without release evidence.
 - `single-threaded`, `single-tasking`, `lightweight`, and universal layer
   composability need precise scope and evidence before public use.
-- V2 can now be captured from the qualified echo commands; the image itself is
-  still pending.
+- V2 is captured from the real qualified server and client terminals. It is evidence for the
+  documented IPv4 loopback result only, not for the unshown transport variants.

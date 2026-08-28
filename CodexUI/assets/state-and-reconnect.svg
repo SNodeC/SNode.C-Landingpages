@@ -1,0 +1,88 @@
+<svg xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc" viewBox="0 0 1200 675">
+  <title id="title">CodexUI target state and reconnect sequence</title>
+  <desc id="desc">CodexUI target state and reconnect sequence</desc>
+  <defs>
+      <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#0b1220"/><stop offset="1" stop-color="#111b2e"/>
+      </linearGradient>
+      <linearGradient id="accent" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#e3b341" stop-opacity=".95"/>
+        <stop offset="1" stop-color="#e3b341" stop-opacity=".35"/>
+      </linearGradient>
+      <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+        <path d="M40 0H0V40" fill="none" stroke="#ffffff" stroke-opacity=".035"/>
+      </pattern>
+      <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+        <path d="M0 0L10 5L0 10Z" fill="#e3b341"/>
+      </marker>
+      <marker id="arrow-muted" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+        <path d="M0 0L10 5L0 10Z" fill="#a9b8cd"/>
+      </marker>
+    </defs>
+  <rect width="1200" height="675" rx="30" fill="url(#bg)"/>
+  <rect width="1200" height="675" rx="30" fill="url(#grid)"/>
+  <path d="M0 667H1200" stroke="#e3b341" stroke-width="8" opacity=".9"/>
+
+  <text x="55" y="48" fill="#e3b341" font-family="Inter,ui-sans-serif,system-ui" font-size="20" font-weight="700" letter-spacing="3">INTERACTION MODEL</text>
+    <text x="55" y="110" fill="#f5f8ff" font-family="Inter,ui-sans-serif,system-ui" font-size="34" font-weight="750">Keep intent visible through background work and reconnect</text>
+    <text x="55" y="153" fill="#a9b8cd" font-family="Inter,ui-sans-serif,system-ui" font-size="22">Selection does not silently redirect commands; reconnect rehydrates provider state.</text>
+  <rect x="55" y="185" width="520" height="420" rx="24" fill="#14223a" stroke="#e3b341" stroke-width="2"/>
+  <text x="85" y="225" fill="#e3b341" font-family="Inter,ui-sans-serif,system-ui" font-size="17" font-weight="700">SIMULTANEOUS UI STATE</text>
+  <g>
+      <rect x="85" y="260" width="210" height="110" rx="18" fill="#14223a" stroke="#e3b341" stroke-width="3"/>
+      <text x="109" y="298" fill="#e3b341" font-family="ui-monospace,monospace" font-size="24" font-weight="700">T</text>
+      <text x="149" y="298" fill="#f5f8ff" font-family="Inter,ui-sans-serif,system-ui" font-size="22" font-weight="700">Target</text>
+      <text x="109" y="332" fill="#a9b8cd" font-family="Inter,ui-sans-serif,system-ui" font-size="17">receives commands</text>
+    </g>
+  <g>
+      <rect x="335" y="260" width="210" height="110" rx="18" fill="#14223a" stroke="#56d364" stroke-width="1.5"/>
+      <text x="359" y="298" fill="#56d364" font-family="ui-monospace,monospace" font-size="24" font-weight="700">A</text>
+      <text x="399" y="298" fill="#f5f8ff" font-family="Inter,ui-sans-serif,system-ui" font-size="22" font-weight="700">Active turn</text>
+      <text x="359" y="332" fill="#a9b8cd" font-family="Inter,ui-sans-serif,system-ui" font-size="17">current target work</text>
+    </g>
+  <g>
+      <rect x="85" y="410" width="210" height="110" rx="18" fill="#14223a" stroke="#bc8cff" stroke-width="1.5"/>
+      <text x="109" y="448" fill="#bc8cff" font-family="ui-monospace,monospace" font-size="24" font-weight="700">R</text>
+      <text x="149" y="448" fill="#f5f8ff" font-family="Inter,ui-sans-serif,system-ui" font-size="22" font-weight="700">Running</text>
+      <text x="109" y="482" fill="#a9b8cd" font-family="Inter,ui-sans-serif,system-ui" font-size="17">background activity</text>
+    </g>
+  <g>
+      <rect x="335" y="410" width="210" height="110" rx="18" fill="#14223a" stroke="#58a6ff" stroke-width="1.5"/>
+      <text x="359" y="448" fill="#58a6ff" font-family="ui-monospace,monospace" font-size="24" font-weight="700">I</text>
+      <text x="399" y="448" fill="#f5f8ff" font-family="Inter,ui-sans-serif,system-ui" font-size="22" font-weight="700">Inspected</text>
+      <text x="359" y="482" fill="#a9b8cd" font-family="Inter,ui-sans-serif,system-ui" font-size="17">current view only</text>
+    </g>
+  <rect x="625" y="185" width="520" height="420" rx="24" fill="#14223a" stroke="#58a6ff" stroke-width="2"/>
+  <text x="655" y="225" fill="#58a6ff" font-family="Inter,ui-sans-serif,system-ui" font-size="17" font-weight="700">RECOVERY SEQUENCE</text>
+  <g>
+      <rect x="655" y="260" width="190" height="90" rx="18" fill="#14223a" stroke="#56d364" stroke-width="1.5"/>
+      <text x="679" y="298" fill="#56d364" font-family="ui-monospace,monospace" font-size="24" font-weight="700">1</text>
+      <text x="719" y="298" fill="#f5f8ff" font-family="Inter,ui-sans-serif,system-ui" font-size="22" font-weight="700">Connected</text>
+      <text x="679" y="332" fill="#a9b8cd" font-family="Inter,ui-sans-serif,system-ui" font-size="17">role visible</text>
+    </g>
+  <g>
+      <rect x="925" y="260" width="190" height="90" rx="18" fill="#14223a" stroke="#ff7b72" stroke-width="1.5"/>
+      <text x="949" y="298" fill="#ff7b72" font-family="ui-monospace,monospace" font-size="24" font-weight="700">2</text>
+      <text x="989" y="298" fill="#f5f8ff" font-family="Inter,ui-sans-serif,system-ui" font-size="22" font-weight="700">Provider loss</text>
+      <text x="949" y="332" fill="#a9b8cd" font-family="Inter,ui-sans-serif,system-ui" font-size="17">failure visible</text>
+    </g>
+  <g>
+      <rect x="655" y="435" width="190" height="90" rx="18" fill="#14223a" stroke="#e3b341" stroke-width="1.5"/>
+      <text x="679" y="473" fill="#e3b341" font-family="ui-monospace,monospace" font-size="24" font-weight="700">3</text>
+      <text x="719" y="473" fill="#f5f8ff" font-family="Inter,ui-sans-serif,system-ui" font-size="22" font-weight="700">Reattach</text>
+      <text x="679" y="507" fill="#a9b8cd" font-family="Inter,ui-sans-serif,system-ui" font-size="17">fresh frontend</text>
+    </g>
+  <g>
+      <rect x="925" y="435" width="190" height="90" rx="18" fill="#14223a" stroke="#58a6ff" stroke-width="1.5"/>
+      <text x="949" y="473" fill="#58a6ff" font-family="ui-monospace,monospace" font-size="24" font-weight="700">4</text>
+      <text x="989" y="473" fill="#f5f8ff" font-family="Inter,ui-sans-serif,system-ui" font-size="22" font-weight="700">Resynchronize</text>
+      <text x="949" y="507" fill="#a9b8cd" font-family="Inter,ui-sans-serif,system-ui" font-size="17">provider authority</text>
+    </g>
+  <g><path d="M845 305L925 305" fill="none" stroke="#e3b341" stroke-width="3"  marker-end="url(#arrow)"/>
+      </g>
+  <g><path d="M1020 350C1020 400 850 400 750 435" fill="none" stroke="#e3b341" stroke-width="3"  marker-end="url(#arrow)"/>
+      </g>
+  <g><path d="M845 480L925 480" fill="none" stroke="#e3b341" stroke-width="3"  marker-end="url(#arrow)"/>
+      </g>
+
+</svg>

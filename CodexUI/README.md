@@ -19,6 +19,10 @@ inspect Git changes, and keep connection state visible while work continues.
 > OpenAI application. It uses AISuite to communicate with a separately running
 > `codex-bridge`, which in turn communicates with the Codex app-server.
 
+![Matching native Qt and browser CodexUI presentations showing the same synthetic thread state](assets/codexui-hero.png)
+
+<sub>Figure: One qualified synthetic workflow presented by the native Qt and browser interfaces.</sub>
+
 This page follows current public `master`. The last qualified source was
 [`8791923`](https://github.com/SNodeC/CodexUI/commit/8791923e5475e39222ea4fc7674ca623bc02b4de),
 with the native build qualified against AISuite
@@ -117,6 +121,10 @@ and confirm that the pending card and resulting activity appear. Conversation
 availability and model operations depend on the selected Codex home,
 authentication, and app-server state.
 
+![CodexWebUI showing a completed synthetic transport-boundary review workflow](assets/first-workflow.png)
+
+<sub>Figure: Connect, select a thread, inspect command activity, and continue from the shared browser presentation.</sub>
+
 At the qualified commits, the build passed all seven CTest targets: socketpair
 contract, presentation pipeline, conversation projection, conversation cards,
 application layout, live Git changes, and shell integration. Installation
@@ -212,13 +220,9 @@ way to define startup behavior.
 
 ## Architecture
 
-```text
-Native Qt: GUI ── bounded JSONL ── SNode.C/AISuite client ─┐
-                                                           ├─► codex-bridge
-Browser: React presentation ── AISuite TypeScript SDK ─────┘        │
-                                                                    ▼
-                                                             Codex app-server
-```
+![CodexUI presentation architecture showing native and browser paths converging at the AISuite bridge](assets/presentation-architecture.svg)
+
+<sub>Figure: Native Qt and browser presentations use different local boundaries before sharing the bridge path.</sub>
 
 In the native process, Qt owns widgets and presentation state while a SNode.C
 thread owns the external transport and AISuite connection; a bounded,
@@ -259,6 +263,10 @@ A locally pending prompt remains distinct from provider-confirmed input and a
 completed turn; rejection or disconnect never becomes synthetic success.
 Inspection also remains separate from the command target, so viewing background
 work does not redirect the next command.
+
+![CodexUI state distinctions and reconnect sequence](assets/state-and-reconnect.svg)
+
+<sub>Figure: Target, active, running, and inspected state remain distinct across a visible reconnect and resynchronization.</sub>
 
 Transport loss produces visible disconnected, retrying, or failure state.
 Reconnect creates a fresh attachment and resynchronizes provider data; it is not

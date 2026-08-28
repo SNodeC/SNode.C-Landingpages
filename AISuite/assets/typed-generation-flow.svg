@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc" viewBox="0 0 1200 675">
+  <title id="title">AISuite shared C++ and TypeScript protocol generation</title>
+  <desc id="desc">AISuite shared C++ and TypeScript protocol generation</desc>
+  <defs>
+      <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#0b1220"/><stop offset="1" stop-color="#111b2e"/>
+      </linearGradient>
+      <linearGradient id="accent" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#bc8cff" stop-opacity=".95"/>
+        <stop offset="1" stop-color="#bc8cff" stop-opacity=".35"/>
+      </linearGradient>
+      <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+        <path d="M40 0H0V40" fill="none" stroke="#ffffff" stroke-opacity=".035"/>
+      </pattern>
+      <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+        <path d="M0 0L10 5L0 10Z" fill="#bc8cff"/>
+      </marker>
+      <marker id="arrow-muted" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+        <path d="M0 0L10 5L0 10Z" fill="#a9b8cd"/>
+      </marker>
+    </defs>
+  <rect width="1200" height="675" rx="30" fill="url(#bg)"/>
+  <rect width="1200" height="675" rx="30" fill="url(#grid)"/>
+  <path d="M0 667H1200" stroke="#bc8cff" stroke-width="8" opacity=".9"/>
+
+  <text x="55" y="48" fill="#bc8cff" font-family="Inter,ui-sans-serif,system-ui" font-size="20" font-weight="700" letter-spacing="3">TYPED GENERATION</text>
+    <text x="55" y="110" fill="#f5f8ff" font-family="Inter,ui-sans-serif,system-ui" font-size="48" font-weight="750">One input set, two language surfaces</text>
+    <text x="55" y="153" fill="#a9b8cd" font-family="Inter,ui-sans-serif,system-ui" font-size="22">Equality tests detect drift; raw JSON remains a bounded escape path.</text>
+  <g>
+      <rect x="55" y="250" width="235" height="145" rx="18" fill="#14223a" stroke="#39c5cf" stroke-width="1.5"/>
+      <text x="79" y="288" fill="#39c5cf" font-family="ui-monospace,monospace" font-size="24" font-weight="700">IN</text>
+      <text x="119" y="288" fill="#f5f8ff" font-family="Inter,ui-sans-serif,system-ui" font-size="22" font-weight="700">Recorded inputs</text>
+      <text x="79" y="322" fill="#a9b8cd" font-family="Inter,ui-sans-serif,system-ui" font-size="17">JSON schema</text>
+<text x="79" y="347" fill="#a9b8cd" font-family="Inter,ui-sans-serif,system-ui" font-size="17">Rust operation bindings</text>
+    </g>
+  <g>
+      <rect x="385" y="250" width="235" height="145" rx="18" fill="#14223a" stroke="#bc8cff" stroke-width="3"/>
+      <text x="409" y="288" fill="#bc8cff" font-family="ui-monospace,monospace" font-size="24" font-weight="700">GEN</text>
+      <text x="449" y="288" fill="#f5f8ff" font-family="Inter,ui-sans-serif,system-ui" font-size="22" font-weight="700">Generator</text>
+      <text x="409" y="322" fill="#a9b8cd" font-family="Inter,ui-sans-serif,system-ui" font-size="17">deterministic output</text>
+<text x="409" y="347" fill="#a9b8cd" font-family="Inter,ui-sans-serif,system-ui" font-size="17">source hashes</text>
+    </g>
+  <g>
+      <rect x="725" y="165" width="220" height="145" rx="18" fill="#14223a" stroke="#58a6ff" stroke-width="1.5"/>
+      <text x="749" y="203" fill="#58a6ff" font-family="ui-monospace,monospace" font-size="24" font-weight="700">C++</text>
+      <text x="789" y="203" fill="#f5f8ff" font-family="Inter,ui-sans-serif,system-ui" font-size="22" font-weight="700">C++ views</text>
+      <text x="749" y="237" fill="#a9b8cd" font-family="Inter,ui-sans-serif,system-ui" font-size="17">typed access</text>
+<text x="749" y="262" fill="#a9b8cd" font-family="Inter,ui-sans-serif,system-ui" font-size="17">getRaw()</text>
+    </g>
+  <g>
+      <rect x="725" y="365" width="220" height="145" rx="18" fill="#14223a" stroke="#e3b341" stroke-width="1.5"/>
+      <text x="749" y="403" fill="#e3b341" font-family="ui-monospace,monospace" font-size="24" font-weight="700">TS</text>
+      <text x="789" y="403" fill="#f5f8ff" font-family="Inter,ui-sans-serif,system-ui" font-size="22" font-weight="700">TypeScript</text>
+      <text x="749" y="437" fill="#a9b8cd" font-family="Inter,ui-sans-serif,system-ui" font-size="17">typed declarations</text>
+<text x="749" y="462" fill="#a9b8cd" font-family="Inter,ui-sans-serif,system-ui" font-size="17">browser SDK</text>
+    </g>
+  <g>
+      <rect x="1015" y="250" width="150" height="145" rx="18" fill="#14223a" stroke="#56d364" stroke-width="1.5"/>
+      <text x="1039" y="288" fill="#56d364" font-family="ui-monospace,monospace" font-size="24" font-weight="700">=</text>
+      <text x="1079" y="288" fill="#f5f8ff" font-family="Inter,ui-sans-serif,system-ui" font-size="22" font-weight="700">Equality</text>
+      <text x="1039" y="322" fill="#a9b8cd" font-family="Inter,ui-sans-serif,system-ui" font-size="17">names · maps</text>
+<text x="1039" y="347" fill="#a9b8cd" font-family="Inter,ui-sans-serif,system-ui" font-size="17">counts · hashes</text>
+    </g>
+  <g><path d="M290 322L385 322" fill="none" stroke="#bc8cff" stroke-width="3"  marker-end="url(#arrow)"/>
+      </g>
+  <g><path d="M620 300C665 300 680 235 725 235" fill="none" stroke="#bc8cff" stroke-width="3"  marker-end="url(#arrow)"/>
+      </g>
+  <g><path d="M620 345C665 345 680 437 725 437" fill="none" stroke="#bc8cff" stroke-width="3"  marker-end="url(#arrow)"/>
+      </g>
+  <g><path d="M945 235C980 235 980 300 1015 310" fill="none" stroke="#56d364" stroke-width="3"  marker-end="url(#arrow)"/>
+      </g>
+  <g><path d="M945 437C980 437 980 350 1015 340" fill="none" stroke="#56d364" stroke-width="3"  marker-end="url(#arrow)"/>
+      </g>
+
+</svg>

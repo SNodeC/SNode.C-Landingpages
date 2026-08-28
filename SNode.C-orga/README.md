@@ -14,6 +14,10 @@ stack.
 
 </div>
 
+![SNodeC ecosystem layers for networking foundations, protocol integrations, and user interfaces](assets/organization-hero.svg)
+
+<sub>Figure: An extensible ecosystem built from the networking foundation upward.</sub>
+
 SNodeC develops independently versioned open-source projects around an
 event-driven C++ networking foundation. The current catalog covers reusable
 network layers, MQTT 3.1.1 applications, typed Codex app-server integration,
@@ -45,6 +49,8 @@ navigation fields.
 
 #### [SNode.C](https://github.com/SNodeC/snode.c)
 
+<img src="assets/product-snodec.svg" alt="SNode.C networking foundation identity" width="240">
+
 Build event-driven C++20 network applications from named client/server
 instances, per-connection contexts, and composable network layers. Start here
 when you need the framework itself or when another SNodeC project is a build
@@ -60,6 +66,8 @@ dependency.
 
 #### [MQTTSuite](https://github.com/SNodeC/mqttsuite)
 
+<img src="assets/product-mqttsuite.svg" alt="MQTTSuite MQTT applications identity" width="240">
+
 Operate five focused MQTT 3.1.1 applications: MQTTBroker, MQTTCli,
 MQTTIntegrator, MQTTBridge, and MQTTStore. Choose it for local message flows,
 payload/topic transformation, broker routing, or MariaDB-backed persistence.
@@ -71,6 +79,8 @@ payload/topic transformation, broker routing, or MariaDB-backed persistence.
 [Quick start](https://github.com/SNodeC/mqttsuite#quick-start)
 
 #### [AISuite](https://github.com/SNodeC/AISuite)
+
+<img src="assets/product-aisuite.svg" alt="AISuite typed protocol integration identity" width="240">
 
 Integrate C++ and browser clients with the Codex app-server through generated
 typed surfaces, bounded framing, and a controller/observer bridge. Choose it
@@ -87,6 +97,8 @@ implementing the protocol boundary.
 
 #### [CodexUI](https://github.com/SNodeC/CodexUI)
 
+<img src="assets/product-codexui.svg" alt="CodexUI native and browser interface identity" width="240">
+
 Use native Qt 6 or browser presentations to navigate Codex threads and turns,
 submit prompts, follow activity, and keep target, running, selected, controller,
 and connection states visible. Native-only integrations remain labeled.
@@ -99,22 +111,14 @@ and connection states visible. Native-only integrations remain labeled.
 
 ## How the ecosystem fits
 
-```text
-Networking and MQTT                         Typed Codex client
-
-SNode.C                                    SNode.C
-   │                                          │
-   ▼                                          ▼
-MQTTSuite                                  AISuite
-                                              │
-                                              ▼
-                                           CodexUI
-```
-
 SNode.C supplies networking components to the downstream builds. MQTTSuite is
 the MQTT application track. AISuite is the Codex protocol/integration track;
 CodexUI provides native and browser presentations built on it. The two tracks are separate—there
 is no invented MQTTSuite-to-CodexUI runtime path.
+
+![Ecosystem architecture separating runtime relationships from package dependencies](assets/ecosystem-architecture.svg)
+
+<sub>Figure: Stable ecosystem layers with solid runtime paths and dashed build dependencies.</sub>
 
 Projects keep independent source versions and release histories. Compatibility
 must be demonstrated with exact revisions. The last coordinated qualification
@@ -125,6 +129,10 @@ MQTTSuite's basic broker/CLI flow and
 SNode.C's selected echo transports were run directly.
 
 ## Run a demo
+
+![Two separate evaluation routes for networking and MQTT or for a typed Codex client](assets/evaluation-routes.svg)
+
+<sub>Figure: Choose one qualified route; the diagram does not imply a cross-track runtime path.</sub>
 
 Choose the result you want to see:
 

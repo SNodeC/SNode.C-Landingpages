@@ -1,0 +1,90 @@
+<svg xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc" viewBox="0 0 1200 675">
+  <title id="title">MQTTSuite complete synthetic integration scenario</title>
+  <desc id="desc">MQTTSuite complete synthetic integration scenario</desc>
+  <defs>
+      <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#0b1220"/><stop offset="1" stop-color="#111b2e"/>
+      </linearGradient>
+      <linearGradient id="accent" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#56d364" stop-opacity=".95"/>
+        <stop offset="1" stop-color="#56d364" stop-opacity=".35"/>
+      </linearGradient>
+      <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+        <path d="M40 0H0V40" fill="none" stroke="#ffffff" stroke-opacity=".035"/>
+      </pattern>
+      <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+        <path d="M0 0L10 5L0 10Z" fill="#56d364"/>
+      </marker>
+      <marker id="arrow-muted" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+        <path d="M0 0L10 5L0 10Z" fill="#a9b8cd"/>
+      </marker>
+    </defs>
+  <rect width="1200" height="675" rx="30" fill="url(#bg)"/>
+  <rect width="1200" height="675" rx="30" fill="url(#grid)"/>
+  <path d="M0 667H1200" stroke="#56d364" stroke-width="8" opacity=".9"/>
+
+  <text x="55" y="48" fill="#56d364" font-family="Inter,ui-sans-serif,system-ui" font-size="20" font-weight="700" letter-spacing="3">INTEGRATION SCENARIO</text>
+    <text x="55" y="110" fill="#f5f8ff" font-family="Inter,ui-sans-serif,system-ui" font-size="38" font-weight="750">From edge measurement to routed and stored data</text>
+    <text x="55" y="153" fill="#a9b8cd" font-family="Inter,ui-sans-serif,system-ui" font-size="22">Synthetic topic: edge-lab/room-01/temperature · QoS 1</text>
+  <g>
+      <rect x="45" y="270" width="190" height="125" rx="18" fill="#14223a" stroke="#39c5cf" stroke-width="1.5"/>
+      <text x="69" y="308" fill="#39c5cf" font-family="ui-monospace,monospace" font-size="24" font-weight="700">°C</text>
+      <text x="109" y="308" fill="#f5f8ff" font-family="Inter,ui-sans-serif,system-ui" font-size="22" font-weight="700">Sensor</text>
+      <text x="69" y="342" fill="#a9b8cd" font-family="Inter,ui-sans-serif,system-ui" font-size="17">21.7 °C</text>
+<text x="69" y="367" fill="#a9b8cd" font-family="Inter,ui-sans-serif,system-ui" font-size="17">JSON payload</text>
+    </g>
+  <g>
+      <rect x="315" y="270" width="220" height="125" rx="18" fill="#14223a" stroke="#56d364" stroke-width="3"/>
+      <text x="339" y="308" fill="#56d364" font-family="ui-monospace,monospace" font-size="24" font-weight="700">B</text>
+      <text x="379" y="308" fill="#f5f8ff" font-family="Inter,ui-sans-serif,system-ui" font-size="22" font-weight="700">MQTTBroker</text>
+      <text x="339" y="342" fill="#a9b8cd" font-family="Inter,ui-sans-serif,system-ui" font-size="17">MQTT 3.1.1</text>
+<text x="339" y="367" fill="#a9b8cd" font-family="Inter,ui-sans-serif,system-ui" font-size="17">Web UI</text>
+    </g>
+  <g>
+      <rect x="610" y="160" width="230" height="125" rx="18" fill="#14223a" stroke="#bc8cff" stroke-width="1.5"/>
+      <text x="634" y="198" fill="#bc8cff" font-family="ui-monospace,monospace" font-size="24" font-weight="700">{}</text>
+      <text x="674" y="198" fill="#f5f8ff" font-family="Inter,ui-sans-serif,system-ui" font-size="22" font-weight="700">MQTTIntegrator</text>
+      <text x="634" y="232" fill="#a9b8cd" font-family="Inter,ui-sans-serif,system-ui" font-size="17">normalize topic</text>
+<text x="634" y="257" fill="#a9b8cd" font-family="Inter,ui-sans-serif,system-ui" font-size="17">transform payload</text>
+    </g>
+  <g>
+      <rect x="925" y="135" width="230" height="125" rx="18" fill="#14223a" stroke="#58a6ff" stroke-width="1.5"/>
+      <text x="949" y="173" fill="#58a6ff" font-family="ui-monospace,monospace" font-size="24" font-weight="700">⇄</text>
+      <text x="989" y="173" fill="#f5f8ff" font-family="Inter,ui-sans-serif,system-ui" font-size="22" font-weight="700">MQTTBridge</text>
+      <text x="949" y="207" fill="#a9b8cd" font-family="Inter,ui-sans-serif,system-ui" font-size="17">filter / prefix</text>
+<text x="949" y="232" fill="#a9b8cd" font-family="Inter,ui-sans-serif,system-ui" font-size="17">remote broker</text>
+    </g>
+  <g>
+      <rect x="610" y="400" width="230" height="125" rx="18" fill="#14223a" stroke="#e3b341" stroke-width="1.5"/>
+      <text x="634" y="438" fill="#e3b341" font-family="ui-monospace,monospace" font-size="24" font-weight="700">DB</text>
+      <text x="674" y="438" fill="#f5f8ff" font-family="Inter,ui-sans-serif,system-ui" font-size="22" font-weight="700">MQTTStore</text>
+      <text x="634" y="472" fill="#a9b8cd" font-family="Inter,ui-sans-serif,system-ui" font-size="17">raw envelope</text>
+<text x="634" y="497" fill="#a9b8cd" font-family="Inter,ui-sans-serif,system-ui" font-size="17">typed projection</text>
+    </g>
+  <g>
+      <rect x="925" y="425" width="230" height="125" rx="18" fill="#14223a" stroke="#e3b341" stroke-width="1.5"/>
+      <text x="949" y="463" fill="#e3b341" font-family="ui-monospace,monospace" font-size="24" font-weight="700">SQL</text>
+      <text x="989" y="463" fill="#f5f8ff" font-family="Inter,ui-sans-serif,system-ui" font-size="22" font-weight="700">MariaDB</text>
+      <text x="949" y="497" fill="#a9b8cd" font-family="Inter,ui-sans-serif,system-ui" font-size="17">operator schema</text>
+<text x="949" y="522" fill="#a9b8cd" font-family="Inter,ui-sans-serif,system-ui" font-size="17">persistence</text>
+    </g>
+  <g>
+      <rect x="315" y="475" width="220" height="105" rx="18" fill="#14223a" stroke="#39c5cf" stroke-width="1.5"/>
+      <text x="339" y="513" fill="#39c5cf" font-family="ui-monospace,monospace" font-size="24" font-weight="700">&gt;_</text>
+      <text x="379" y="513" fill="#f5f8ff" font-family="Inter,ui-sans-serif,system-ui" font-size="22" font-weight="700">MQTTCli</text>
+      <text x="339" y="547" fill="#a9b8cd" font-family="Inter,ui-sans-serif,system-ui" font-size="17">verify publish / subscribe</text>
+    </g>
+  <g><path d="M235 332L315 332" fill="none" stroke="#56d364" stroke-width="3"  marker-end="url(#arrow)"/>
+      <text x="275" y="322" text-anchor="middle" fill="#a9b8cd" font-family="Inter,ui-sans-serif,system-ui" font-size="14">publish</text></g>
+  <g><path d="M535 300C565 300 580 230 610 222" fill="none" stroke="#56d364" stroke-width="3"  marker-end="url(#arrow)"/>
+      <text x="570" y="252" text-anchor="middle" fill="#a9b8cd" font-family="Inter,ui-sans-serif,system-ui" font-size="14">subscribe</text></g>
+  <g><path d="M535 350C565 350 580 445 610 462" fill="none" stroke="#56d364" stroke-width="3"  marker-end="url(#arrow)"/>
+      <text x="565" y="410" text-anchor="middle" fill="#a9b8cd" font-family="Inter,ui-sans-serif,system-ui" font-size="14">store</text></g>
+  <g><path d="M840 222L925 197" fill="none" stroke="#56d364" stroke-width="3"  marker-end="url(#arrow)"/>
+      <text x="882.5" y="199.5" text-anchor="middle" fill="#a9b8cd" font-family="Inter,ui-sans-serif,system-ui" font-size="14">forward</text></g>
+  <g><path d="M840 462L925 487" fill="none" stroke="#56d364" stroke-width="3"  marker-end="url(#arrow)"/>
+      <text x="882.5" y="464.5" text-anchor="middle" fill="#a9b8cd" font-family="Inter,ui-sans-serif,system-ui" font-size="14">persist</text></g>
+  <g><path d="M425 475L425 395" fill="none" stroke="#39c5cf" stroke-width="3"  marker-end="url(#arrow)"/>
+      <text x="458" y="438" text-anchor="middle" fill="#a9b8cd" font-family="Inter,ui-sans-serif,system-ui" font-size="14">inspect</text></g>
+
+</svg>

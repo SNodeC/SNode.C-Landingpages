@@ -13,6 +13,10 @@ brokers, and persist selected data with one SNode.C-based toolkit.
 
 </div>
 
+![MQTTSuite composition showing five focused MQTT 3.1.1 applications](assets/mqttsuite-hero.svg)
+
+<sub>Figure: Broker, CLI, integration, bridge, and storage roles remain independently runnable.</sub>
+
 > [!NOTE]
 > This page tracks current public `master`. The last qualified source was
 > [`52de563`](https://github.com/SNodeC/mqttsuite/commit/52de5631245c6318bfa5b7cca700f0754014f34d),
@@ -37,6 +41,10 @@ Use one application or compose several around your MQTT deployment.
 The applications share SNode.C's configuration model, but they remain separate
 processes. MQTTSuite is not one monolithic daemon, and MQTTBroker alone is not
 the complete suite.
+
+![MQTTBroker dashboard showing a synthetic subscriber and topic activity](assets/broker-web-ui.png)
+
+<sub>Figure: Real current-master broker Web UI populated by the synthetic `edge-lab` qualification scenario.</sub>
 
 ## Quick start
 
@@ -136,6 +144,10 @@ policy reconnects, then stop the subscriber and broker with
 <kbd>Ctrl</kbd>+<kbd>C</kbd>. These commands were run verbatim against the
 commits above on Debian GNU/Linux forky/sid, x86-64, GCC 16.2.0.
 
+![Real MQTTBroker, subscriber, and publisher terminals showing a delivered QoS 1 message](assets/quick-start-terminal.png)
+
+<sub>Screenshot: Genuine terminals from one local MQTT 3.1.1 QoS 1 publication delivered to the subscriber.</sub>
+
 ### Transport and session variations
 
 MQTTCli selects one named client instance. MQTTBroker exposes corresponding
@@ -157,20 +169,9 @@ deployment.
 
 ## From device message to integration flow
 
-```text
-sensor or publisher
-        │ MQTT 3.1.1
-        ▼
-   MQTTBroker ───────► bundled Web UI
-        │
-        ├──► MQTTIntegrator ── mapping ──► normalized topic/payload
-        │
-        ├──► MQTTBridge ─────────────────► remote broker
-        │
-        └──► MQTTStore ──────────────────► MariaDB
+![MQTTSuite integration scenario from a sensor through broker, integration, bridge, storage, and verification paths](assets/integration-scenario.svg)
 
-MQTTCli can publish, subscribe, and verify at each MQTT boundary.
-```
+<sub>Figure: A complete evaluation topology; each application remains an independently qualified responsibility.</sub>
 
 This is a composition model, not an assertion that all five applications must
 run together. The landing-page scenario uses the stable synthetic topic

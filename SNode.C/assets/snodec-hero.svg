@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc" viewBox="0 0 1600 800">
+  <title id="title">SNode.C code-to-result hero</title>
+  <desc id="desc">SNode.C code-to-result hero</desc>
+  <defs>
+      <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#0b1220"/><stop offset="1" stop-color="#111b2e"/>
+      </linearGradient>
+      <linearGradient id="accent" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#58a6ff" stop-opacity=".95"/>
+        <stop offset="1" stop-color="#58a6ff" stop-opacity=".35"/>
+      </linearGradient>
+      <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+        <path d="M40 0H0V40" fill="none" stroke="#ffffff" stroke-opacity=".035"/>
+      </pattern>
+      <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+        <path d="M0 0L10 5L0 10Z" fill="#58a6ff"/>
+      </marker>
+      <marker id="arrow-muted" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+        <path d="M0 0L10 5L0 10Z" fill="#a9b8cd"/>
+      </marker>
+    </defs>
+  <rect width="1600" height="800" rx="30" fill="url(#bg)"/>
+  <rect width="1600" height="800" rx="30" fill="url(#grid)"/>
+  <path d="M0 792H1600" stroke="#58a6ff" stroke-width="8" opacity=".9"/>
+
+  <text x="80" y="74" fill="#58a6ff" font-family="Inter,ui-sans-serif,system-ui" font-size="20" font-weight="700" letter-spacing="3">SNODE.C</text>
+    <text x="80" y="136" fill="#f5f8ff" font-family="Inter,ui-sans-serif,system-ui" font-size="48" font-weight="750">Event-driven C++ networking</text>
+    <text x="80" y="179" fill="#a9b8cd" font-family="Inter,ui-sans-serif,system-ui" font-size="22">One programming model from listener configuration to per-connection callbacks.</text>
+  <g><rect x="80" y="225" width="690" height="410" rx="20" fill="#0a101c" stroke="#38506f"/>
+      <circle cx="105" cy="250" r="6" fill="#ff7b72"/><circle cx="125" cy="250" r="6" fill="#e3b341"/><circle cx="145" cy="250" r="6" fill="#56d364"/>
+      <text x="748" y="256" text-anchor="end" fill="#a9b8cd" font-family="ui-monospace,monospace" font-size="14">apps/echo/model/servers.h · excerpt</text>
+      <text x="105" y="297" fill="#f5f8ff" font-family="ui-monospace,SFMono-Regular,monospace" font-size="17"><tspan fill="#58a6ff" opacity=".95"> 1</tspan><tspan dx="18">using EchoSocketServer =</tspan></text>
+<text x="105" y="327" fill="#f5f8ff" font-family="ui-monospace,SFMono-Regular,monospace" font-size="17"><tspan fill="#58a6ff" opacity=".95"> 2</tspan><tspan dx="18">    net::NET::stream::legacy::SocketServer&lt;</tspan></text>
+<text x="105" y="357" fill="#f5f8ff" font-family="ui-monospace,SFMono-Regular,monospace" font-size="17"><tspan fill="#58a6ff" opacity=".95"> 3</tspan><tspan dx="18">        EchoServerSocketContextFactory&gt;;</tspan></text>
+<text x="105" y="387" fill="#f5f8ff" font-family="ui-monospace,SFMono-Regular,monospace" font-size="17"><tspan fill="#58a6ff" opacity=".95"> 4</tspan><tspan dx="18"></tspan></text>
+<text x="105" y="417" fill="#f5f8ff" font-family="ui-monospace,SFMono-Regular,monospace" font-size="17"><tspan fill="#58a6ff" opacity=".95"> 5</tspan><tspan dx="18">EchoSocketServer getServer() {</tspan></text>
+<text x="105" y="447" fill="#f5f8ff" font-family="ui-monospace,SFMono-Regular,monospace" font-size="17"><tspan fill="#58a6ff" opacity=".95"> 6</tspan><tspan dx="18">    return EchoSocketServer("echoserver");</tspan></text>
+<text x="105" y="477" fill="#f5f8ff" font-family="ui-monospace,SFMono-Regular,monospace" font-size="17"><tspan fill="#58a6ff" opacity=".95"> 7</tspan><tspan dx="18">}</tspan></text>
+    </g>
+  <g>
+      <rect x="900" y="245" width="600" height="110" rx="18" fill="#14223a" stroke="#58a6ff" stroke-width="3"/>
+      <text x="924" y="283" fill="#58a6ff" font-family="ui-monospace,monospace" font-size="24" font-weight="700">01</text>
+      <text x="964" y="283" fill="#f5f8ff" font-family="Inter,ui-sans-serif,system-ui" font-size="22" font-weight="700">LISTENING</text>
+      <text x="924" y="317" fill="#a9b8cd" font-family="Inter,ui-sans-serif,system-ui" font-size="17">IPv4 loopback · event loop ready</text>
+    </g>
+  <g>
+      <rect x="900" y="390" width="600" height="110" rx="18" fill="#14223a" stroke="#39c5cf" stroke-width="1.5"/>
+      <text x="924" y="428" fill="#39c5cf" font-family="ui-monospace,monospace" font-size="24" font-weight="700">02</text>
+      <text x="964" y="428" fill="#f5f8ff" font-family="Inter,ui-sans-serif,system-ui" font-size="22" font-weight="700">CONNECTED</text>
+      <text x="924" y="462" fill="#a9b8cd" font-family="Inter,ui-sans-serif,system-ui" font-size="17">SocketContext created · callback dispatched</text>
+    </g>
+  <g>
+      <rect x="900" y="535" width="600" height="110" rx="18" fill="#14223a" stroke="#56d364" stroke-width="1.5"/>
+      <text x="924" y="573" fill="#56d364" font-family="ui-monospace,monospace" font-size="24" font-weight="700">03</text>
+      <text x="964" y="573" fill="#f5f8ff" font-family="Inter,ui-sans-serif,system-ui" font-size="22" font-weight="700">ECHO</text>
+      <text x="924" y="607" fill="#a9b8cd" font-family="Inter,ui-sans-serif,system-ui" font-size="17">message returned · connection remains event-driven</text>
+    </g>
+  <g><path d="M1200 355L1200 390" fill="none" stroke="#58a6ff" stroke-width="3"  marker-end="url(#arrow)"/>
+      </g><g><path d="M1200 500L1200 535" fill="none" stroke="#58a6ff" stroke-width="3"  marker-end="url(#arrow)"/>
+      </g>
+
+</svg>

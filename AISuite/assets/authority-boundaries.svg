@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc" viewBox="0 0 1200 675">
+  <title id="title">AISuite client bridge and app-server authority boundaries</title>
+  <desc id="desc">AISuite client bridge and app-server authority boundaries</desc>
+  <defs>
+      <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#0b1220"/><stop offset="1" stop-color="#111b2e"/>
+      </linearGradient>
+      <linearGradient id="accent" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#bc8cff" stop-opacity=".95"/>
+        <stop offset="1" stop-color="#bc8cff" stop-opacity=".35"/>
+      </linearGradient>
+      <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+        <path d="M40 0H0V40" fill="none" stroke="#ffffff" stroke-opacity=".035"/>
+      </pattern>
+      <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+        <path d="M0 0L10 5L0 10Z" fill="#bc8cff"/>
+      </marker>
+      <marker id="arrow-muted" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+        <path d="M0 0L10 5L0 10Z" fill="#a9b8cd"/>
+      </marker>
+    </defs>
+  <rect width="1200" height="675" rx="30" fill="url(#bg)"/>
+  <rect width="1200" height="675" rx="30" fill="url(#grid)"/>
+  <path d="M0 667H1200" stroke="#bc8cff" stroke-width="8" opacity=".9"/>
+
+  <text x="55" y="48" fill="#bc8cff" font-family="Inter,ui-sans-serif,system-ui" font-size="20" font-weight="700" letter-spacing="3">ARCHITECTURE AND AUTHORITY</text>
+    <text x="55" y="110" fill="#f5f8ff" font-family="Inter,ui-sans-serif,system-ui" font-size="48" font-weight="750">Each layer owns one kind of state</text>
+    <text x="55" y="153" fill="#a9b8cd" font-family="Inter,ui-sans-serif,system-ui" font-size="22">Transport boundaries do not transfer semantic or persistence authority.</text>
+  <rect x="55" y="190" width="310" height="390" rx="24" fill="#14223a" stroke="#58a6ff" stroke-width="2"/>
+  <text x="85" y="230" fill="#58a6ff" font-family="Inter,ui-sans-serif,system-ui" font-size="17" font-weight="700">CLIENT BOUNDARY</text>
+  <g>
+      <rect x="85" y="260" width="250" height="115" rx="18" fill="#14223a" stroke="#58a6ff" stroke-width="1.5"/>
+      <text x="109" y="298" fill="#58a6ff" font-family="ui-monospace,monospace" font-size="24" font-weight="700">C</text>
+      <text x="149" y="298" fill="#f5f8ff" font-family="Inter,ui-sans-serif,system-ui" font-size="22" font-weight="700">Controller</text>
+      <text x="109" y="332" fill="#a9b8cd" font-family="Inter,ui-sans-serif,system-ui" font-size="17">presentation</text>
+<text x="109" y="357" fill="#a9b8cd" font-family="Inter,ui-sans-serif,system-ui" font-size="17">local interaction</text>
+    </g>
+  <g>
+      <rect x="85" y="410" width="250" height="115" rx="18" fill="#14223a" stroke="#39c5cf" stroke-width="1.5"/>
+      <text x="109" y="448" fill="#39c5cf" font-family="ui-monospace,monospace" font-size="24" font-weight="700">O</text>
+      <text x="149" y="448" fill="#f5f8ff" font-family="Inter,ui-sans-serif,system-ui" font-size="22" font-weight="700">Observer</text>
+      <text x="109" y="482" fill="#a9b8cd" font-family="Inter,ui-sans-serif,system-ui" font-size="17">allowed reads</text>
+<text x="109" y="507" fill="#a9b8cd" font-family="Inter,ui-sans-serif,system-ui" font-size="17">visible role</text>
+    </g>
+  <rect x="445" y="190" width="310" height="390" rx="24" fill="#14223a" stroke="#bc8cff" stroke-width="2"/>
+  <text x="475" y="230" fill="#bc8cff" font-family="Inter,ui-sans-serif,system-ui" font-size="17" font-weight="700">AISUITE BRIDGE</text>
+  <g>
+      <rect x="475" y="260" width="250" height="265" rx="18" fill="#14223a" stroke="#bc8cff" stroke-width="3"/>
+      <text x="499" y="298" fill="#bc8cff" font-family="ui-monospace,monospace" font-size="24" font-weight="700">BR</text>
+      <text x="539" y="298" fill="#f5f8ff" font-family="Inter,ui-sans-serif,system-ui" font-size="22" font-weight="700">Transient coordination</text>
+      <text x="499" y="332" fill="#a9b8cd" font-family="Inter,ui-sans-serif,system-ui" font-size="17">transport adaptation</text>
+<text x="499" y="357" fill="#a9b8cd" font-family="Inter,ui-sans-serif,system-ui" font-size="17">routing / correlation</text>
+<text x="499" y="382" fill="#a9b8cd" font-family="Inter,ui-sans-serif,system-ui" font-size="17">controller assignment</text>
+<text x="499" y="407" fill="#a9b8cd" font-family="Inter,ui-sans-serif,system-ui" font-size="17">bounded telemetry</text>
+<text x="499" y="432" fill="#a9b8cd" font-family="Inter,ui-sans-serif,system-ui" font-size="17">no conversation database</text>
+    </g>
+  <rect x="835" y="190" width="310" height="390" rx="24" fill="#14223a" stroke="#39c5cf" stroke-width="2"/>
+  <text x="865" y="230" fill="#39c5cf" font-family="Inter,ui-sans-serif,system-ui" font-size="17" font-weight="700">APP-SERVER</text>
+  <g>
+      <rect x="865" y="260" width="250" height="265" rx="18" fill="#14223a" stroke="#39c5cf" stroke-width="3"/>
+      <text x="889" y="298" fill="#39c5cf" font-family="ui-monospace,monospace" font-size="24" font-weight="700">AS</text>
+      <text x="929" y="298" fill="#f5f8ff" font-family="Inter,ui-sans-serif,system-ui" font-size="22" font-weight="700">Semantic authority</text>
+      <text x="889" y="332" fill="#a9b8cd" font-family="Inter,ui-sans-serif,system-ui" font-size="17">Codex operations</text>
+<text x="889" y="357" fill="#a9b8cd" font-family="Inter,ui-sans-serif,system-ui" font-size="17">thread / turn meaning</text>
+<text x="889" y="382" fill="#a9b8cd" font-family="Inter,ui-sans-serif,system-ui" font-size="17">conversation state</text>
+<text x="889" y="407" fill="#a9b8cd" font-family="Inter,ui-sans-serif,system-ui" font-size="17">persistence</text>
+<text x="889" y="432" fill="#a9b8cd" font-family="Inter,ui-sans-serif,system-ui" font-size="17">provider lifecycle</text>
+    </g>
+  <g><path d="M365 385L445 385" fill="none" stroke="#bc8cff" stroke-width="3"  marker-end="url(#arrow)"/>
+      <text x="405" y="375" text-anchor="middle" fill="#a9b8cd" font-family="Inter,ui-sans-serif,system-ui" font-size="14">frontend</text></g><g><path d="M755 385L835 385" fill="none" stroke="#bc8cff" stroke-width="3"  marker-end="url(#arrow)"/>
+      <text x="795" y="375" text-anchor="middle" fill="#a9b8cd" font-family="Inter,ui-sans-serif,system-ui" font-size="14">provider</text></g>
+
+</svg>

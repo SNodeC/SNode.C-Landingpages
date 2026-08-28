@@ -26,7 +26,9 @@ a substitute for accessible navigation.
 The organization page may therefore show the two approved evaluation tracks,
 but must not imply a single four-product pipeline. Current-master compilation
 and the core CLI/test paths are qualified at the exact recorded SHAs. Final
-sanitized product screenshots and authenticated UI capture remain pending.
+launch visuals are sanitized and use matching synthetic scenarios. They do not
+claim an authenticated Codex conversation or broaden the underlying product
+evidence.
 
 ## Navigation and public-route facts
 

@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc" viewBox="0 0 1600 800">
+  <title id="title">AISuite C++ and browser clients converging on codex-bridge</title>
+  <desc id="desc">AISuite C++ and browser clients converging on codex-bridge</desc>
+  <defs>
+      <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#0b1220"/><stop offset="1" stop-color="#111b2e"/>
+      </linearGradient>
+      <linearGradient id="accent" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#bc8cff" stop-opacity=".95"/>
+        <stop offset="1" stop-color="#bc8cff" stop-opacity=".35"/>
+      </linearGradient>
+      <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+        <path d="M40 0H0V40" fill="none" stroke="#ffffff" stroke-opacity=".035"/>
+      </pattern>
+      <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+        <path d="M0 0L10 5L0 10Z" fill="#bc8cff"/>
+      </marker>
+      <marker id="arrow-muted" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+        <path d="M0 0L10 5L0 10Z" fill="#a9b8cd"/>
+      </marker>
+    </defs>
+  <rect width="1600" height="800" rx="30" fill="url(#bg)"/>
+  <rect width="1600" height="800" rx="30" fill="url(#grid)"/>
+  <path d="M0 792H1600" stroke="#bc8cff" stroke-width="8" opacity=".9"/>
+
+  <text x="80" y="74" fill="#bc8cff" font-family="Inter,ui-sans-serif,system-ui" font-size="20" font-weight="700" letter-spacing="3">AISUITE</text>
+    <text x="80" y="136" fill="#f5f8ff" font-family="Inter,ui-sans-serif,system-ui" font-size="48" font-weight="750">Typed clients, one bounded bridge</text>
+    <text x="80" y="179" fill="#a9b8cd" font-family="Inter,ui-sans-serif,system-ui" font-size="22">C++ and browser integrations share routing without becoming a second Codex authority.</text>
+  <g>
+      <rect x="70" y="235" width="340" height="130" rx="18" fill="#14223a" stroke="#58a6ff" stroke-width="1.5"/>
+      <text x="94" y="273" fill="#58a6ff" font-family="ui-monospace,monospace" font-size="24" font-weight="700">C++</text>
+      <text x="134" y="273" fill="#f5f8ff" font-family="Inter,ui-sans-serif,system-ui" font-size="22" font-weight="700">Native C++ client</text>
+      <text x="94" y="307" fill="#a9b8cd" font-family="Inter,ui-sans-serif,system-ui" font-size="17">AISuite::OpenAICodex</text>
+<text x="94" y="332" fill="#a9b8cd" font-family="Inter,ui-sans-serif,system-ui" font-size="17">typed asynchronous views</text>
+    </g>
+  <g>
+      <rect x="70" y="410" width="340" height="130" rx="18" fill="#14223a" stroke="#e3b341" stroke-width="1.5"/>
+      <text x="94" y="448" fill="#e3b341" font-family="ui-monospace,monospace" font-size="24" font-weight="700">TS</text>
+      <text x="134" y="448" fill="#f5f8ff" font-family="Inter,ui-sans-serif,system-ui" font-size="22" font-weight="700">Browser client</text>
+      <text x="94" y="482" fill="#a9b8cd" font-family="Inter,ui-sans-serif,system-ui" font-size="17">@snodec/codex-frontend</text>
+<text x="94" y="507" fill="#a9b8cd" font-family="Inter,ui-sans-serif,system-ui" font-size="17">typed WebSocket lifecycle</text>
+    </g>
+  <g>
+      <rect x="620" y="290" width="380" height="210" rx="18" fill="#14223a" stroke="#bc8cff" stroke-width="3"/>
+      <text x="644" y="328" fill="#bc8cff" font-family="ui-monospace,monospace" font-size="24" font-weight="700">BR</text>
+      <text x="684" y="328" fill="#f5f8ff" font-family="Inter,ui-sans-serif,system-ui" font-size="22" font-weight="700">codex-bridge</text>
+      <text x="644" y="362" fill="#a9b8cd" font-family="Inter,ui-sans-serif,system-ui" font-size="17">bounded framing and queues</text>
+<text x="644" y="387" fill="#a9b8cd" font-family="Inter,ui-sans-serif,system-ui" font-size="17">routing · correlation</text>
+<text x="644" y="412" fill="#a9b8cd" font-family="Inter,ui-sans-serif,system-ui" font-size="17">controller / observer policy</text>
+    </g>
+  <g>
+      <rect x="1210" y="320" width="320" height="150" rx="18" fill="#14223a" stroke="#39c5cf" stroke-width="3"/>
+      <text x="1234" y="358" fill="#39c5cf" font-family="ui-monospace,monospace" font-size="24" font-weight="700">AS</text>
+      <text x="1274" y="358" fill="#f5f8ff" font-family="Inter,ui-sans-serif,system-ui" font-size="22" font-weight="700">Codex app-server</text>
+      <text x="1234" y="392" fill="#a9b8cd" font-family="Inter,ui-sans-serif,system-ui" font-size="17">protocol semantics</text>
+<text x="1234" y="417" fill="#a9b8cd" font-family="Inter,ui-sans-serif,system-ui" font-size="17">conversation persistence</text>
+    </g>
+  <g><path d="M410 300C500 300 530 350 620 365" fill="none" stroke="#bc8cff" stroke-width="3"  marker-end="url(#arrow)"/>
+      <text x="515" y="292" text-anchor="middle" fill="#a9b8cd" font-family="Inter,ui-sans-serif,system-ui" font-size="14">frontend envelopes</text></g>
+  <g><path d="M410 475C500 475 530 435 620 420" fill="none" stroke="#bc8cff" stroke-width="3"  marker-end="url(#arrow)"/>
+      <text x="515" y="488" text-anchor="middle" fill="#a9b8cd" font-family="Inter,ui-sans-serif,system-ui" font-size="14">codex subprotocol</text></g>
+  <g><path d="M1000 395L1210 395" fill="none" stroke="#bc8cff" stroke-width="3"  marker-end="url(#arrow)"/>
+      <text x="1105" y="385" text-anchor="middle" fill="#a9b8cd" font-family="Inter,ui-sans-serif,system-ui" font-size="14">native JSON-RPC</text></g>
+  <g><rect x="655" y="575" width="410" height="36" rx="18" fill="#bc8cff" fill-opacity=".13" stroke="#bc8cff"/>
+      <text x="860" y="599" text-anchor="middle" fill="#bc8cff" font-family="Inter,ui-sans-serif,system-ui" font-size="14" font-weight="700">TRANSIENT ROUTING — NOT PERSISTENCE</text></g>
+
+</svg>

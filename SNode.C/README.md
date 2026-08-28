@@ -13,6 +13,10 @@ transport, connection, and application layers.
 
 </div>
 
+![SNode.C code-to-result view showing a socket context and the resulting connection events](assets/snodec-hero.svg)
+
+<sub>Figure: Application code attaches per-connection state to a layered event-driven network path.</sub>
+
 > [!NOTE]
 > This page follows current public `master`. The most recently qualified source
 > was commit [`bf01683`](https://github.com/SNodeC/snode.c/commit/bf01683a53b48220a840522e8ccaf3b48e58c240),
@@ -103,6 +107,10 @@ The server reports a listener on `127.0.0.1:18001`; the client reports a
 successful connection and both processes attach an echo context. Stop both with
 <kbd>Ctrl</kbd>+<kbd>C</kbd>.
 
+![Real SNode.C terminals showing the IPv4 echo server listening and the client connecting](assets/echo-terminal.png)
+
+<sub>Screenshot: Genuine terminals from the qualified loopback echo connection, captured with isolated configuration.</sub>
+
 ### Change the transport, not the application
 
 The echo applications expose the same context through several compiled network
@@ -130,18 +138,9 @@ mapping.
 
 ## Programming model
 
-```text
-SocketServer / SocketClient
-            │ establishes a connection
-            ▼
- SocketContextFactory
-            │ creates one context
-            ▼
-      SocketContext
-            │ lifecycle + data callbacks
-            ▼
-      application logic
-```
+![Programming model from socket server or client through context factory to a per-connection context](assets/programming-model.svg)
+
+<sub>Figure: One factory creates application-owned state for every established connection.</sub>
 
 An **instance** is a named, configurable client or server endpoint. Its command
 line and configuration-file sections describe the local or remote address,
@@ -154,6 +153,10 @@ not a performance claim: throughput, latency, memory use, and suitability for a
 specific workload still need measurements in that workload.
 
 ## Layers and capabilities
+
+![SNode.C layer architecture from event loop and addresses through streams, connections, and application protocols](assets/layer-architecture.svg)
+
+<sub>Figure: Layer availability and composition do not imply identical qualification across every combination.</sub>
 
 | Layer | Current-master source scope | Qualification boundary |
 | --- | --- | --- |

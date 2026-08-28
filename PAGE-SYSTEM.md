@@ -209,6 +209,31 @@ publication.
 - State the tested version and environment in the surrounding text or caption.
 - Capture from the same exact master commits used to verify the README commands.
 
+### Reproducible interactive capture
+
+Interactive desktop evidence may be staged in an isolated Xvfb display. This
+keeps the capture independent of the maintainer's foreground desktop while still
+exercising the real application with ordinary keyboard and pointer input.
+
+- Start the qualified binary in a dedicated Xvfb display; never capture the
+  maintainer's live desktop or unrelated windows.
+- Drive only deterministic, source-aligned synthetic scenarios. Input
+  automation may select threads, submit safe prompts, switch transports, and
+  expose documented states, but it must not simulate behavior the build does
+  not implement.
+- Record the binary revisions, launch arguments, display geometry, input steps,
+  and synthetic fixture used for each final capture so the scene can be
+  reproduced after a source update.
+- Render UI and terminal sources at 2× density where practical (normally
+  3200×1800, or the native window's equivalent 2× geometry), then downsample
+  once to a consistent 1600×900 final canvas.
+- Preserve the real application chrome and meaningful state. Composition may
+  crop, label, and align qualified captures, but must not redraw controls,
+  replace application content, or conceal relevant limitations.
+- Overwrite the canonical asset filename after review; keep editable sources
+  and capture automation under `assets/src/` rather than accumulating ambiguous
+  alternate exports.
+
 ### Synthetic data baseline
 
 Use a stable, clearly fictional data set where it fits the product:
@@ -263,7 +288,7 @@ later justifies it.
 ## Facts that remain unresolved
 
 Approval of this page system does not approve technical release claims. Before
-public copy is written, the project proposals still require verified:
+publication, the project proposals still require verified or owner-approved:
 
 - versions and maturity labels;
 - canonical repository and documentation URLs;
@@ -271,7 +296,8 @@ public copy is written, the project proposals still require verified:
 - supported platforms and dependencies;
 - release artifacts and tested commands;
 - protocol, security, performance, and parity claims;
-- final logos, exact colors, screenshots, and release-candidate evidence.
+- owner approval of the produced logo/color system and launch visuals, plus a
+  final freshness check against the release-candidate evidence.
 
 ## Publication boundary
 
