@@ -8,7 +8,9 @@ for their subtree. They do not authorize changes outside this repository.
 
 For the AI-assisted README redesign, follow
 [`workflow/README-WORKFLOW.md`](workflow/README-WORKFLOW.md) as the canonical
-process and handoff specification.
+process and handoff specification and
+[`workflow/README-GOVERNANCE.md`](workflow/README-GOVERNANCE.md) as the
+presentation-governance authority.
 
 **No AI step may rely on previous chat history. Every workflow step must read its
 declared Markdown inputs from this repository and save its complete result to
@@ -17,9 +19,19 @@ the declared output Markdown file.**
 This rule makes ChatGPT, Codex, Claude, and human review interchangeable across
 sessions without depending on hidden or conversational state. When a workflow
 artifact and remembered chat context disagree, the repository artifact is the
-handoff source of truth. The workflow governs process and handoff; all remaining
-scope, safety, source-verification, and publication rules in this file continue
-to apply.
+handoff source of truth.
+
+For the README redesign, the canonical workflow and README governance override
+older fixed-format requirements such as mandatory nine-section layouts, prose
+word targets, exact V1–V4 slots/filenames/placements, or equal visual weight.
+Scoped `AGENTS.md` files remain authoritative for their project facts,
+terminology, boundaries, source locations, proof requirements, misconceptions,
+and validation concerns, but they may not re-impose the superseded fixed README
+template. `PAGE-SYSTEM.md`, proposals, existing READMEs, and existing assets are
+valuable research and design inputs rather than immutable layout specifications.
+
+All remaining scope, safety, source-verification, and publication rules in this
+file continue to apply.
 
 ## Required scoped-instruction loading
 
@@ -52,9 +64,9 @@ than proceeding without its guidance.
   format, generate into, install into, or commit in them.
 - Do not copy a live README's structure or wording. Extract candidate facts,
   verify them, and write new presentation copy.
-- Do not edit the five working landing-page READMEs until the user explicitly
-  approves the writing stage. Planning belongs in `PAGE-SYSTEM.md` and the
-  relevant `PROPOSAL.md`.
+- Do not edit the five working landing-page READMEs until the workflow reaches
+  the approved writing/finalization stage. Earlier planning belongs in the
+  declared `workflow/*.md` handoff artifacts.
 - Do not publish or copy files into canonical repositories from this workspace.
   Production publication is a later, reviewed operation.
 - Preserve unrelated user changes. Never use destructive Git commands.
@@ -72,25 +84,32 @@ The organization profile has no live local README source.
 
 ## Instruction and source hierarchy
 
-Use sources in this order:
+For README-redesign process and presentation decisions, use sources in this
+order:
 
-1. this file and the nearest nested `AGENTS.md`;
-2. [`PAGE-SYSTEM.md`](PAGE-SYSTEM.md) for approved shared structure and visuals;
-3. the relevant `PROPOSAL.md` for project-specific content and acceptance;
-4. verified current-master source, tests, CI, release metadata, and maintained
-   technical docs;
-5. live README content as a hint only.
+1. this file plus `workflow/README-WORKFLOW.md` and
+   `workflow/README-GOVERNANCE.md`;
+2. the nearest nested `AGENTS.md` for project-specific facts, terminology,
+   boundaries, proof rules, and validation concerns;
+3. verified current-master source, tests, CI, release metadata, and maintained
+   technical docs for technical truth;
+4. `PAGE-SYSTEM.md` for shared editorial, visual, capture, accessibility, and
+   asset principles that do not conflict with the canonical governance;
+5. the relevant `PROPOSAL.md`, existing README, figures, and screenshots as
+   research/provenance inputs.
 
-When sources conflict, do not silently choose the most convenient claim. Record
-the conflict in the proposal or fact inventory and leave public copy neutral
-until it is resolved.
+When sources conflict, do not silently choose the most convenient claim. For a
+presentation-format conflict, follow the canonical workflow/governance. For a
+technical-fact conflict, record it in the appropriate workflow fact artifact and
+leave public copy neutral until it is resolved.
 
 ## Fact-status vocabulary
 
 Use these labels in planning and review notes:
 
-- **Approved decision** — editorial, structural, or visual choice fixed in the
-  page system or a proposal.
+- **Approved decision** — editorial, structural, or visual choice fixed by the
+  current canonical workflow/governance or explicitly approved in a current
+  workflow artifact.
 - **Candidate fact — verify** — statement observed in source, a live README, or
   technical documentation that still needs release-specific evidence.
 - **Open fact** — required information not yet established, such as a version,
@@ -143,25 +162,31 @@ point to the exact reviewed commit; visitor navigation may point to maintained
   `full`, `fast`, and `supported` require current, linked evidence and scope.
 - State limitations and non-goals with the same precision as capabilities.
 
-## Shared page system
+## Shared page-system principles
 
-The four product pages use the approved nine-section architecture and target
-approximately 1,300–1,600 prose words, excluding commands, tables, and captions.
-Each receives equal editorial and visual weight regardless of project age or
-complexity.
+The redesign uses a common editorial and visual language, not a copied README
+template. The actual reader journey, section count, prose length, and visual
+inventory are decided in each project's Step 4 design artifact.
 
-Each product page has:
+By default, Step 4 should look for **2–3 meaningful in-page visuals**, but this is
+a design starting point rather than a quota. A project may use fewer or more
+when the storyboard clearly justifies it. A social preview is separate.
 
-- one outcome-led hero with no more than three meaningful badges;
-- one principal quick start and visible expected result;
-- one product-specific centerpiece;
-- one capabilities/limitations table;
-- one compatibility or requirements table;
-- visual slots V1–V4 and one social preview;
-- one compact documentation/support/security/contribution/license ending.
+Useful building blocks include:
 
-The organization profile targets approximately 900–1,100 words. It is a
-scalable navigator and may be shorter than the product pages.
+- an outcome-led hero with restrained badges and clear primary links;
+- one principal first-success path with a visible expected result;
+- one project-specific centerpiece;
+- concise capabilities/limitations and compatibility/requirements information
+  where useful;
+- architecture or workflow explanation where it materially aids understanding;
+- compact documentation, support, security, contribution, and license routes
+  where those destinations actually exist.
+
+Do not force all projects to have the same number of sections, words, tables, or
+visuals. SNode.C, MQTTSuite, AISuite, CodexUI, and the organization profile must
+share design quality and ecosystem language while retaining distinct narrative
+centers.
 
 ## Required scoped-instruction structure
 
@@ -178,8 +203,9 @@ consistent and operational. Each must define:
    and state names.
 7. **Source and destination** — read-only technical source and eventual public
    destination.
-8. **Approved decisions** — fixed content, CTA, quick start, structure, and
-   visuals.
+8. **Approved decisions** — durable product-specific content, CTA, quick-start,
+   and centerpiece decisions; fixed section counts or visual quotas are not
+   approved merely because they appear in legacy planning.
 9. **Candidate facts — verify** — technically plausible source material that is
    not yet approved launch copy.
 10. **Source-code alignment and proof** — project-specific implementation,
@@ -192,13 +218,15 @@ consistent and operational. Each must define:
 
 Do not turn scoped files into alternative proposals. They should tell a future
 writer how to reason about the project, where to look, what to emphasize, and
-what not to claim. Detailed page requirements remain in `PROPOSAL.md`.
+what not to claim. Step 4 owns the current page design.
 
 ## Visual and asset rules
 
-- Follow the exact V1–V4 filenames, content, and placement in each proposal.
-- Use the shared diagram grammar, accents, dimensions, screenshot hygiene, and
-  accessibility rules in `PAGE-SYSTEM.md`.
+- Follow the current project's approved Step 4/Step 5 workflow artifacts for
+  visual purpose, count, content, filenames, and placement.
+- Use the shared diagram grammar, screenshot hygiene, accessibility, and capture
+  principles in `PAGE-SYSTEM.md` where they do not conflict with the canonical
+  workflow/governance.
 - Use real qualified builds for product screenshots. Never label a mockup as
   shipped functionality.
 - Keep editable sources under the presentation's `assets/src/` directory.
@@ -206,7 +234,7 @@ what not to claim. Detailed page requirements remain in `PROPOSAL.md`.
   figure.
 - Test visuals in GitHub light and dark modes and at mobile width.
 - Pages must remain understandable when images fail to load.
-- Do not add extra visual slots merely because a project has more features.
+- Do not add visuals merely to satisfy symmetry or a historical slot count.
 
 ## Links and publication boundaries
 
@@ -217,7 +245,7 @@ what not to claim. Detailed page requirements remain in `PROPOSAL.md`.
   releases, security, support, and contribution links.
 - The landing pages and quick starts track current public `master`/`HEAD` by
   user decision. Preserve reproducibility by recording the exact tested SHAs in
-  `FACTS.md` and the relevant `EVIDENCE.md`.
+  `FACTS.md` and the relevant `EVIDENCE.md` or workflow fact artifact.
 - Do not link claims to search results, personal workspaces, local paths, or
   ephemeral CI artifacts.
 - The Codex-related pages must carry a concise independent-project notice and
@@ -254,7 +282,7 @@ what not to claim. Detailed page requirements remain in `PROPOSAL.md`.
 - The organization directory is category-based and must not encode a permanent
   project count.
 - Current product accents are foundation blue, IoT green, protocol violet, and
-  interface amber, subject to final contrast testing.
+  interface amber, subject to final contrast testing and later design approval.
 
 ## Required validation
 
@@ -262,10 +290,12 @@ Before handing off planning or copy changes:
 
 1. run `git diff --check`;
 2. verify all relative Markdown links resolve;
-3. confirm no unintended landing-page README changed during planning;
+3. confirm no unintended landing-page README changed before its workflow stage;
 4. confirm every public claim is approved or clearly marked for verification;
-5. confirm section count and prose weight match the shared system;
-6. confirm V1–V4 and the social preview match the scoped proposal;
+5. confirm the proposed structure and visual inventory follow the current Step 4
+   and Step 5 artifacts rather than legacy section/V1–V4 quotas;
+6. inspect visuals for source alignment, accessibility, GitHub-width legibility,
+   light/dark/mobile behavior, privacy, and meaningful captions/alt text;
 7. inspect the diff for accidental local paths, secrets, draft-only links, and
    live-repository changes.
 
