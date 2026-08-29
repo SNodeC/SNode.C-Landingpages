@@ -538,3 +538,113 @@ Codex technical corrections first — publication link destinations, the
 multiplexer qualifier, and the two diagram semantics — and then treat this audit
 as a subtraction list, preserving every evidence boundary in exactly one place
 rather than removing any of them.
+
+# Accepted changes
+
+## Codex technical findings
+
+- **Publication-relative paths — applied now.** The final working README rebases
+  the two working asset references to `assets/...` and the three landing-page
+  document references to `docs/...`. The destinations exist in the Landingpages
+  working tree. Production publication still requires those files to be
+  co-published to matching paths in `SNodeC/snode.c`, or the links to be replaced
+  or omitted.
+- **Multiplexer precision — applied now.** The README states that `epoll` is the
+  default, `poll` and `select` are configure-time alternatives, `core` links one
+  selected implementation, and the reviewed CI/runtime evidence exercised the
+  default `epoll` path only.
+- **Visual 1 factory association — technically accepted; artwork deferred.**
+  Public prose now states unambiguously that each endpoint flow retains its own
+  `SocketContextFactory`. The working SVG is not edited in Step 7c; the
+  publication-asset refinement is deferred under the maintainer decision in
+  `SNode.C/assets/src/IMPLEMENTATION.md`. Human visual approval remains pending.
+- **Visual 3 replacement-context creation / `response->end()` ownership —
+  technically accepted; artwork deferred.** The surrounding prose states that
+  the WebSocket factory creates the replacement context, that
+  `setSocketContext(new)` stages it, that the upgrade-status/application
+  callback calls `response->end()` to queue the `101`, and that the switch
+  completes after the current HTTP read callback on the same
+  `SocketConnection`. The working SVG is unchanged and still requires
+  publication-level semantic refinement and human approval.
+
+## Claude editorial findings
+
+- Removed the historical fixed-run CI link from the hero, converted the tagline
+  from a section heading to hero text, and made the first viewport explain why
+  connection-local application behavior matters.
+- Removed the redundant programming-model caption, shortened the role table and
+  code lead-in, and retained one compact prose explanation plus the figure,
+  image-disabled fallback table, and real code excerpt.
+- Kept the validated echo commands while explaining that the isolated
+  `XDG_CONFIG_HOME` and explicit information-level/text/monochrome logging make
+  the demonstrated output reproducible. The destructive-looking `rm -rf` setup
+  was removed.
+- Consolidated the implementation/composability warning into the capabilities
+  introduction and shortened the table boundaries while preserving unique TLS,
+  Bluetooth, protocol, multiplexer, release/package, platform, and performance
+  limits.
+- Removed duplicate configuration and installed-consumer rows from the
+  capabilities table, kept those topics in their architectural context, removed
+  the generic layer table, and replaced internal audit vocabulary with
+  developer-facing wording.
+- Compressed the HTTP-to-WebSocket explanation and reduced its caption to
+  “Same connection, new active context” while retaining the text required to
+  remain correct with images disabled.
+- Shortened prerequisites, echo-output explanation, provenance wording, repeated
+  uses of “current”, and filler qualifiers; made the context-replacement preview
+  an anchor link; and ended the page with useful next routes.
+- Added no new visual. Visual 2 remains absent because no authentic
+  `echo-connection-evidence.png` exists.
+
+# Rejected findings and reasons
+
+No Codex or Claude finding was fully rejected. Three Claude recommendations were
+applied in a deliberately less aggressive form because technical correctness and
+image-disabled completeness take precedence over word-count reduction:
+
+- The HTTP-to-WebSocket sequence was shortened substantially, but the final
+  README retains concise replacement-context creation, staging,
+  `response->end()` ownership, callback-return, detach, pointer-change, attach,
+  and same-connection semantics. The current working Visual 3 omits part of that
+  detail, so moving all ordering text to deeper documentation would make the
+  landing page rely on artwork that is already known to need semantic
+  refinement.
+- The prerequisites remain slightly broader than Claude's sample short list:
+  `pkg-config` and the fresh-configure network requirement are retained because
+  they are required by the shown default source-build path.
+- The suggested very small Boundary-cell word ceiling was treated as an
+  editorial target rather than a hard limit. The multiplexer, TLS-policy, and
+  MQTT-version/evidence distinctions remain explicit where compressing them
+  further would blur a unique evidence boundary.
+
+The LOW Visual 1 aspect-ratio refinement is neither rejected nor performed; it
+is deferred to the publication visual-refinement pass. The LOW finding about the
+long figure-free stretch is resolved through subtraction rather than a new
+visual.
+
+# Final status
+
+## Completed
+
+- Step 7a technical review is complete.
+- Step 7b editorial review is complete.
+- Accepted technical and editorial findings have been applied to the final
+  working README.
+- `SNode.C/README.md` now contains the controlled final README candidate in the
+  Landingpages workspace.
+
+## Still pending before production publication
+
+- Publication-level refinement of Visual 1 and Visual 3.
+- Human visual approval.
+- Optional authentic Visual 2 capture if that visual is retained.
+- Co-publication to the corresponding production paths, or replacement/omission,
+  of the `assets/...` and `docs/...` destinations referenced by the final
+  working README.
+- Final publication operation to the live `SNodeC/snode.c` repository.
+
+The working SVGs are not human-approved publication-final artwork, and
+`SNode.C/assets/echo-connection-evidence.png` does not exist. The public
+`SNodeC/snode.c` README has not been updated by Step 7c. The controlled content
+and review stages are complete in the Landingpages workspace; production
+publication remains gated by the visual and destination/publication work above.
