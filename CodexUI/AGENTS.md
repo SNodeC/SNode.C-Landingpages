@@ -1,8 +1,10 @@
 # AGENTS.md — CodexUI landing page
 
 These instructions supplement the root [`AGENTS.md`](../AGENTS.md) for all work
-under `CodexUI/`. Follow the shared [page system](../PAGE-SYSTEM.md) and this
-directory's [proposal](PROPOSAL.md).
+under `CodexUI/`. Follow the shared [page-system principles](../PAGE-SYSTEM.md),
+the canonical [README workflow](../workflow/README-WORKFLOW.md), and the
+[README governance](../workflow/README-GOVERNANCE.md). This directory's
+[proposal](PROPOSAL.md) is research/design input rather than a fixed layout.
 
 ## What it solves
 
@@ -78,16 +80,15 @@ A qualified visitor should be able to:
 ## Approved decisions
 
 - Primary CTA: see the workflow, then install CodexUI.
-- V1 is a real native/browser product pair using matching synthetic state.
-- V2 proves the shared first workflow with platform differences labeled.
-- V3 distinguishes native Qt/socketpair and browser/WebSocket paths before they
-  converge at AISuite's bridge.
-- V4 combines state distinctions and the reconnect sequence.
+- The actual native/browser user workflow is the README's narrative centerpiece.
 - Use explicit `supported`, `limited`, `not yet`, and `not applicable` states in
-  the native capability matrix.
+  native/browser capability summaries where useful.
 - Carry a concise independent-project notice near the hero and in project routes.
-- Use the approved nine-section map and shared word target.
-- A video may be linked later but does not become a fifth launch visual slot.
+- Earlier native/browser hero, shared-workflow proof, architecture-path, and
+  state/reconnect concepts are candidate visuals rather than mandatory V1–V4
+  slots. Step 4 chooses the visual inventory; Step 5 validates and finalizes it.
+- A video may be linked later when useful, but no fixed visual-slot count is
+  imposed.
 
 ## Source-code alignment and proof
 
@@ -151,11 +152,11 @@ master heads, record their exact tested SHAs, avoid sibling-checkout assumptions
 and test the installed first run.
 
 Show how the native executable selects its bridge-facing transport with real
-SNode.C command-line sections. Include the default Unix-domain path plus
-concise IPv4, IPv6, and WebSocket alternatives, explicitly disabling the
-default Unix instance and enabling exactly one alternative. TLS/WSS examples
-must include the corresponding certificate prerequisites rather than implying
-that encryption is automatic.
+SNode.C command-line sections. Include the default Unix-domain path plus concise
+IPv4, IPv6, and WebSocket alternatives, explicitly disabling the default Unix
+instance and enabling exactly one alternative. TLS/WSS examples must include the
+corresponding certificate prerequisites rather than implying that encryption is
+automatic.
 
 ### UI evidence capture
 
@@ -170,13 +171,14 @@ reconnect state—when each state is implemented by the reviewed source and can
 be reproduced from recorded input steps. Matching native/browser comparisons
 must use the same synthetic workspace, thread, turn, and activity state.
 
-Capture native and browser sources at 2× density and export every in-page
-CodexUI screenshot on the shared 1600×900 canvas. Pointer or keyboard automation
-is a capture aid, not product evidence by itself; the visible behavior must
-still be supported by implementation, tests, and the recorded qualified run.
-Keep launch commands, fixture definitions, and composition sources under
-`CodexUI/assets/src/` or the shared capture-source directory. Never retain a
-capture from the live desktop, even temporarily in the landing-page tree.
+Capture native and browser sources at high density and export approved in-page
+screenshots at a size chosen for the final composition and GitHub-width
+legibility. Pointer or keyboard automation is a capture aid, not product
+evidence by itself; the visible behavior must still be supported by
+implementation, tests, and the recorded qualified run. Keep launch commands,
+fixture definitions, and composition sources under `CodexUI/assets/src/` or the
+shared capture-source directory. Never retain a capture from the live desktop,
+even temporarily in the landing-page tree.
 
 ## Common misconceptions
 
@@ -210,12 +212,13 @@ capture from the live desktop, even temporarily in the landing-page tree.
   artifact.
 - Verify target, active, running, inspected, pending-prompt, reconnect, and
   scrolling behavior against tests and qualification documents.
-- Confirm the hero and workflow captures show real matching release state and no
-  private data.
-- Re-run the recorded Xvfb input sequence and confirm the native capture is
-  deterministic, uses only synthetic data, and matches the documented state.
-- Confirm all final CodexUI screenshots are exactly 1600×900 and were derived
-  from 2× sources without redrawn application content.
+- Confirm approved hero/workflow captures show real matching release state and
+  no private data.
+- Re-run recorded Xvfb input sequences and confirm captures are deterministic,
+  use only synthetic data, and match documented state.
+- Confirm final screenshots are legible at GitHub content width and are derived
+  from real source-aligned captures without redrawn application content.
 - Review privacy, authentication, listener exposure, and independent-project
   wording with the relevant evidence.
-- Verify exact names, V1–V4 assets, social preview, alt text, captions, and links.
+- Verify exact names, approved Step 4/Step 5 visuals, social preview if used, alt
+  text, captions, and links.
