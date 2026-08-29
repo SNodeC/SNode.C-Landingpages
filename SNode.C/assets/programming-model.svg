@@ -1,56 +1,13 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
-  <title id="title">SNode.C programming model</title>
-  <desc id="desc">A configured server or client instance accepts or establishes a connection. A SocketContextFactory creates one SocketContext for that connection, which receives attach, data, and detach callbacks.</desc>
-  <defs>
-    <pattern id="grid" width="48" height="48" patternUnits="userSpaceOnUse">
-      <path d="M48 0H0V48" fill="none" stroke="#20304a" stroke-width="1" opacity=".34"/>
-    </pattern>
-    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
-      <path d="M0 0L12 6L0 12Z" fill="#5ca8ff"/>
-    </marker>
-  </defs>
-  <rect width="1600" height="900" rx="32" fill="#0b1425"/>
-  <rect width="1600" height="900" rx="32" fill="url(#grid)"/>
-  <rect y="890" width="1600" height="10" fill="#5ca8ff"/>
-
-  <text x="76" y="68" fill="#5ca8ff" font-family="Inter,Segoe UI,sans-serif" font-size="28" font-weight="700" letter-spacing="6">PROGRAMMING MODEL</text>
-  <text x="76" y="145" fill="#f5f8ff" font-family="Inter,Segoe UI,sans-serif" font-size="52" font-weight="750">One context for each connection</text>
-  <text x="76" y="198" fill="#aebbd0" font-family="Inter,Segoe UI,sans-serif" font-size="27">Endpoint mechanics stay outside application protocol state.</text>
-
-  <rect x="76" y="285" width="330" height="220" rx="28" fill="#152640" stroke="#5ca8ff" stroke-width="3"/>
-  <text x="112" y="340" fill="#5ca8ff" font-family="ui-monospace,SFMono-Regular,monospace" font-size="28" font-weight="700">INSTANCE</text>
-  <text x="112" y="390" fill="#f5f8ff" font-family="Inter,Segoe UI,sans-serif" font-size="32" font-weight="700">SocketServer</text>
-  <text x="112" y="430" fill="#f5f8ff" font-family="Inter,Segoe UI,sans-serif" font-size="32" font-weight="700">or SocketClient</text>
-  <text x="112" y="474" fill="#aebbd0" font-family="Inter,Segoe UI,sans-serif" font-size="23">named endpoint · configured role</text>
-
-  <path d="M406 395H520" stroke="#5ca8ff" stroke-width="5" fill="none" marker-end="url(#arrow)"/>
-
-  <rect x="544" y="285" width="320" height="220" rx="28" fill="#152640" stroke="#38cad6" stroke-width="3"/>
-  <text x="580" y="340" fill="#38cad6" font-family="ui-monospace,SFMono-Regular,monospace" font-size="28" font-weight="700">CONNECTION</text>
-  <text x="580" y="394" fill="#f5f8ff" font-family="Inter,Segoe UI,sans-serif" font-size="31" font-weight="700">SocketConnection</text>
-  <text x="580" y="438" fill="#aebbd0" font-family="Inter,Segoe UI,sans-serif" font-size="23">addresses · queues · timeouts</text>
-  <text x="580" y="474" fill="#aebbd0" font-family="Inter,Segoe UI,sans-serif" font-size="23">plain stream or TLS</text>
-
-  <path d="M864 395H978" stroke="#5ca8ff" stroke-width="5" fill="none" marker-end="url(#arrow)"/>
-
-  <rect x="1002" y="285" width="522" height="220" rx="28" fill="#152640" stroke="#b583ff" stroke-width="3"/>
-  <text x="1040" y="340" fill="#b583ff" font-family="ui-monospace,SFMono-Regular,monospace" font-size="28" font-weight="700">FACTORY</text>
-  <text x="1040" y="394" fill="#f5f8ff" font-family="Inter,Segoe UI,sans-serif" font-size="32" font-weight="700">SocketContextFactory</text>
-  <text x="1040" y="438" fill="#aebbd0" font-family="Inter,Segoe UI,sans-serif" font-size="23">chooses application behavior</text>
-  <text x="1040" y="474" fill="#aebbd0" font-family="Inter,Segoe UI,sans-serif" font-size="23">creates exactly one attached context</text>
-
-  <path d="M1263 505V590" stroke="#5ca8ff" stroke-width="5" fill="none" marker-end="url(#arrow)"/>
-  <text x="1284" y="558" fill="#aebbd0" font-family="Inter,Segoe UI,sans-serif" font-size="21">create</text>
-
-  <rect x="690" y="615" width="834" height="172" rx="28" fill="#152640" stroke="#55d86f" stroke-width="3"/>
-  <text x="730" y="670" fill="#55d86f" font-family="ui-monospace,SFMono-Regular,monospace" font-size="28" font-weight="700">CONNECTION-LOCAL CONTEXT</text>
-  <text x="730" y="722" fill="#f5f8ff" font-family="Inter,Segoe UI,sans-serif" font-size="34" font-weight="700">SocketContext</text>
-  <text x="1015" y="722" fill="#aebbd0" font-family="Inter,Segoe UI,sans-serif" font-size="23">onConnected → data / send → onDisconnected</text>
-  <text x="730" y="757" fill="#aebbd0" font-family="Inter,Segoe UI,sans-serif" font-size="20">Application protocol state lives here.</text>
-  <text x="1095" y="757" fill="#aebbd0" font-family="Inter,Segoe UI,sans-serif" font-size="20">Socket ownership remains with the connection.</text>
-
-  <path d="M704 505V701H690" stroke="#38cad6" stroke-width="3" stroke-dasharray="10 10" fill="none"/>
-  <text x="76" y="705" fill="#f5f8ff" font-family="Inter,Segoe UI,sans-serif" font-size="28" font-weight="700">Lifecycle boundary</text>
-  <text x="76" y="748" fill="#aebbd0" font-family="Inter,Segoe UI,sans-serif" font-size="23">A context detaches on connection close</text>
-  <text x="76" y="782" fill="#aebbd0" font-family="Inter,Segoe UI,sans-serif" font-size="23">or when another protocol context takes over.</text>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="920" height="940" viewBox="0 0 920 940" role="img" aria-labelledby="title desc"><title id="title">SNode.C programming-model lifecycle</title><desc id="desc">A SocketServer accepts or a SocketClient completes a connection. The resulting SocketConnection calls the endpoint flow's SocketContextFactory with create(this); the factory returns one active per-connection SocketContext. The event loop driven by start() dispatches readiness, timers, lifecycle, and data callbacks.</desc><defs><marker id="runtime-arrow" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L10,5 L0,10 Z" fill="#1D4ED8"/></marker><style>
+      .canvas { fill:#F8FAFC; stroke:#CBD5E1; stroke-width:2; }
+      .node { fill:#FFFFFF; stroke:#94A3B8; stroke-width:2; }
+      .node-primary { fill:#FFFFFF; stroke:#1D4ED8; stroke-width:3; }
+      .rail { fill:#EFF6FF; stroke:#93C5FD; stroke-width:2; }
+      .api { font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono",monospace; fill:#0F172A; font-weight:700; }
+      .sans { font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; fill:#0F172A; }
+      .muted { font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; fill:#475569; }
+      .accent { font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; fill:#1D4ED8; font-weight:700; }
+      .runtime { fill:none; stroke:#1D4ED8; stroke-width:4; marker-end:url(#runtime-arrow); stroke-linecap:round; stroke-linejoin:round; }
+      .assoc { fill:none; stroke:#64748B; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+      .dispatch { fill:none; stroke:#1D4ED8; stroke-width:3; marker-end:url(#runtime-arrow); stroke-linecap:round; }
+    </style></defs><rect class="canvas" x="1" y="1" width="918" height="938" rx="24"/><rect class="node" x="52" y="72" width="330" height="118" rx="18"/><rect x="52" y="72" width="7" height="118" rx="3.5" fill="#1D4ED8"/><text class="api" x="84" y="126" font-size="29">SocketServer</text><text class="muted" x="84" y="162" font-size="21">configured endpoint flow</text><rect class="node" x="538" y="72" width="330" height="118" rx="18"/><rect x="538" y="72" width="7" height="118" rx="3.5" fill="#1D4ED8"/><text class="api" x="570" y="126" font-size="29">SocketClient</text><text class="muted" x="570" y="162" font-size="21">configured endpoint flow</text><path class="assoc" d="M217 72 V43 H703 V72 M703 43 H868 V504 H628"/><text class="muted" x="460" y="34" font-size="21" text-anchor="middle">endpoint flow retains factory</text><path class="runtime" d="M217 190 V226 Q217 248 241 248 H342"/><text class="accent" x="224" y="222" font-size="20">listen → accept</text><path class="runtime" d="M703 190 V226 Q703 248 679 248 H578"/><text class="accent" x="696" y="222" font-size="20" text-anchor="end">connect completes</text><rect class="node-primary" x="292" y="248" width="336" height="146" rx="20"/><text class="api" x="460" y="309" font-size="31" text-anchor="middle">SocketConnection</text><text class="muted" x="460" y="347" font-size="22" text-anchor="middle">established connection object</text><text class="muted" x="460" y="376" font-size="19" text-anchor="middle">stream mechanics + connection identity</text><path class="runtime" d="M460 394 V441"/><text class="accent" x="482" y="425" font-size="21">create(this)</text><rect class="node" x="292" y="446" width="336" height="116" rx="18"/><text class="api" x="460" y="497" font-size="27" text-anchor="middle">SocketContextFactory</text><text class="muted" x="460" y="532" font-size="20" text-anchor="middle">application-supplied creation boundary</text><path class="runtime" d="M460 562 V608"/><text class="accent" x="482" y="592" font-size="21">returns new</text><rect class="node-primary" x="292" y="613" width="336" height="142" rx="20"/><text class="api" x="460" y="671" font-size="31" text-anchor="middle">SocketContext</text><text class="accent" x="460" y="709" font-size="21" text-anchor="middle">per connection</text><text class="muted" x="460" y="738" font-size="19" text-anchor="middle">application / protocol behavior</text><path class="assoc" d="M292 341 H247 V684 H292"/><rect x="74" y="491" width="185" height="42" rx="20" fill="#F8FAFC" stroke="#CBD5E1"/><text class="muted" x="166" y="519" font-size="19" text-anchor="middle">one active context</text><rect class="rail" x="52" y="800" width="816" height="122" rx="22"/><text class="api" x="86" y="842" font-size="27">Event loop — start()</text><text class="sans" x="86" y="875" font-size="20">descriptor readiness · timers · lifecycle/data callback dispatch</text><text class="muted" x="86" y="904" font-size="18">caller-thread dispatch; no worker-pool implication</text><path class="dispatch" d="M170 800 V760"/><path class="dispatch" d="M460 800 V760"/><path class="dispatch" d="M750 800 V760"/><text class="muted" x="170" y="787" font-size="17" text-anchor="middle">endpoint readiness</text><text class="muted" x="460" y="787" font-size="17" text-anchor="middle">connection I/O</text><text class="muted" x="750" y="787" font-size="17" text-anchor="middle">context callbacks</text></svg>

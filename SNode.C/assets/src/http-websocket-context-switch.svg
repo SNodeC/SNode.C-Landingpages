@@ -1,0 +1,88 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="920" height="720" viewBox="0 0 920 720" role="img" aria-labelledby="title desc">
+  <title id="title">SNode.C HTTP-to-WebSocket context replacement</title>
+  <desc id="desc">An accepted HTTP Upgrade selects the WebSocket factory, prepares a 101 Switching Protocols response, and stages a new context with setSocketContext(new). After the current HTTP read callback, the HTTP context detaches with DetachReason::ContextSwitch and is removed, the active-context pointer changes, and the WebSocket SocketContextUpgrade attaches while the same SocketConnection remains established.</desc>
+  <defs>
+    <marker id="runtime-arrow" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L10,5 L0,10 Z" fill="#1D4ED8"/>
+    </marker>
+    <style>
+      .canvas { fill:#F8FAFC; stroke:#CBD5E1; stroke-width:2; }
+      .node { fill:#FFFFFF; stroke:#94A3B8; stroke-width:2; }
+      .node-primary { fill:#FFFFFF; stroke:#1D4ED8; stroke-width:3; }
+      .stage { fill:#EFF6FF; stroke:#93C5FD; stroke-width:2; }
+      .rail { fill:#FFFFFF; stroke:#1D4ED8; stroke-width:4; }
+      .api { font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono",monospace; fill:#0F172A; font-weight:700; }
+      .sans { font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; fill:#0F172A; }
+      .muted { font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; fill:#475569; }
+      .phase { font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; fill:#64748B; font-size:17px; font-weight:700; letter-spacing:1.2px; }
+      .accent { font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; fill:#1D4ED8; font-weight:700; }
+      .runtime { fill:none; stroke:#1D4ED8; stroke-width:4; marker-end:url(#runtime-arrow); stroke-linecap:round; stroke-linejoin:round; }
+      .assoc { fill:none; stroke:#64748B; stroke-width:2; stroke-linecap:round; }
+    </style>
+  </defs>
+
+  <rect class="canvas" x="1" y="1" width="918" height="718" rx="24"/>
+
+  <text class="phase" x="145" y="43" text-anchor="middle">BEFORE UPGRADE</text>
+  <text class="phase" x="460" y="43" text-anchor="middle">STAGED SWITCH</text>
+  <text class="phase" x="775" y="43" text-anchor="middle">AFTER CALLBACK</text>
+
+  <!-- Initial HTTP context. -->
+  <rect class="node-primary" x="38" y="72" width="214" height="172" rx="20"/>
+  <text class="api" x="145" y="126" font-size="25" text-anchor="middle">HTTP</text>
+  <text class="api" x="145" y="157" font-size="24" text-anchor="middle">SocketContext</text>
+  <text class="accent" x="145" y="194" font-size="19" text-anchor="middle">active context</text>
+  <text class="muted" x="145" y="222" font-size="17" text-anchor="middle">current HTTP read</text>
+
+  <!-- Accepted Upgrade enters a staging phase; no old-context-creates-new-context implication. -->
+  <path class="runtime" d="M252 158 H288"/>
+
+  <rect class="stage" x="288" y="62" width="344" height="224" rx="20"/>
+  <text class="accent" x="315" y="101" font-size="19">accepted HTTP Upgrade</text>
+  <text class="sans" x="315" y="135" font-size="19" font-weight="700">1  WebSocket factory selected</text>
+  <text class="sans" x="315" y="166" font-size="18" font-weight="700">2  101 Switching Protocols</text>
+  <text class="muted" x="342" y="193" font-size="17">response prepared</text>
+  <text class="api" x="315" y="222" font-size="18">3  setSocketContext(new)</text>
+  <text class="muted" x="342" y="248" font-size="17">stages replacement</text>
+  <text class="sans" x="315" y="274" font-size="17" font-weight="700">4  response-&gt;end() queues the 101</text>
+
+  <!-- Replacement context becomes active only after the completion sequence below. -->
+  <rect class="node-primary" x="668" y="72" width="214" height="172" rx="20"/>
+  <text class="api" x="775" y="121" font-size="23" text-anchor="middle">WebSocket</text>
+  <text class="api" x="775" y="151" font-size="22" text-anchor="middle">SocketContext</text>
+  <text class="api" x="775" y="181" font-size="17" text-anchor="middle">SocketContextUpgrade</text>
+  <text class="accent" x="775" y="216" font-size="19" text-anchor="middle">new active context</text>
+
+  <!-- Completion is post-callback and ordered: detach/remove, pointer swap, attach. -->
+  <path class="runtime" d="M460 286 V306"/>
+  <text class="muted" x="460" y="332" font-size="20" text-anchor="middle">after current HTTP read callback</text>
+
+  <rect class="node" x="38" y="360" width="286" height="94" rx="18"/>
+  <text class="api" x="181" y="390" font-size="19" text-anchor="middle">detach</text>
+  <text class="api" x="181" y="414" font-size="15" text-anchor="middle">DetachReason::ContextSwitch</text>
+  <text class="muted" x="181" y="439" font-size="16" text-anchor="middle">old HTTP context removed</text>
+
+  <path class="runtime" d="M324 407 H353"/>
+
+  <rect class="node" x="353" y="360" width="214" height="94" rx="18"/>
+  <text class="sans" x="460" y="390" font-size="18" font-weight="700" text-anchor="middle">active-context</text>
+  <text class="sans" x="460" y="414" font-size="18" font-weight="700" text-anchor="middle">pointer changes</text>
+  <text class="muted" x="460" y="439" font-size="16" text-anchor="middle">to staged context</text>
+
+  <path class="runtime" d="M567 407 H596"/>
+
+  <rect class="node" x="596" y="360" width="286" height="94" rx="18"/>
+  <text class="api" x="739" y="397" font-size="21" text-anchor="middle">attach()</text>
+  <text class="muted" x="739" y="427" font-size="16" text-anchor="middle">WebSocket context becomes active</text>
+
+  <!-- Lifecycle transitions from the current HTTP context to the replacement. -->
+  <path class="runtime" d="M145 244 V360"/>
+  <path class="runtime" d="M739 360 C739 320 775 320 775 244"/>
+
+  <!-- Continuous, undirected connection identity rail, routed outside the lifecycle boxes. -->
+  <path class="assoc" d="M38 158 H20 V574 H38 M882 158 H900 V574 H882"/>
+  <rect class="rail" x="38" y="500" width="844" height="148" rx="22"/>
+  <text class="api" x="460" y="552" font-size="29" text-anchor="middle">same SocketConnection</text>
+  <text class="sans" x="460" y="588" font-size="20" text-anchor="middle">descriptor-backed stream · addresses · connection identity · mode retained</text>
+  <text class="muted" x="460" y="620" font-size="18" text-anchor="middle">context replacement does not create a second transport connection</text>
+</svg>

@@ -1,0 +1,83 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="920" height="940" viewBox="0 0 920 940" role="img" aria-labelledby="title desc">
+  <title id="title">SNode.C programming-model lifecycle</title>
+  <desc id="desc">A SocketServer accepts or a SocketClient completes a connection. The resulting SocketConnection calls the endpoint flow's SocketContextFactory with create(this); the factory returns one active per-connection SocketContext. The event loop driven by start() dispatches readiness, timers, lifecycle, and data callbacks.</desc>
+  <defs>
+    <marker id="runtime-arrow" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L10,5 L0,10 Z" fill="#1D4ED8"/>
+    </marker>
+    <style>
+      .canvas { fill:#F8FAFC; stroke:#CBD5E1; stroke-width:2; }
+      .node { fill:#FFFFFF; stroke:#94A3B8; stroke-width:2; }
+      .node-primary { fill:#FFFFFF; stroke:#1D4ED8; stroke-width:3; }
+      .rail { fill:#EFF6FF; stroke:#93C5FD; stroke-width:2; }
+      .api { font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono",monospace; fill:#0F172A; font-weight:700; }
+      .sans { font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; fill:#0F172A; }
+      .muted { font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; fill:#475569; }
+      .accent { font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; fill:#1D4ED8; font-weight:700; }
+      .runtime { fill:none; stroke:#1D4ED8; stroke-width:4; marker-end:url(#runtime-arrow); stroke-linecap:round; stroke-linejoin:round; }
+      .assoc { fill:none; stroke:#64748B; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+      .dispatch { fill:none; stroke:#1D4ED8; stroke-width:3; marker-end:url(#runtime-arrow); stroke-linecap:round; }
+    </style>
+  </defs>
+
+  <rect class="canvas" x="1" y="1" width="918" height="938" rx="24"/>
+
+  <!-- Two endpoint roles enter the same recurring model. -->
+  <rect class="node" x="52" y="72" width="330" height="118" rx="18"/>
+  <rect x="52" y="72" width="7" height="118" rx="3.5" fill="#1D4ED8"/>
+  <text class="api" x="84" y="126" font-size="29">SocketServer</text>
+  <text class="muted" x="84" y="162" font-size="21">configured endpoint flow</text>
+
+  <rect class="node" x="538" y="72" width="330" height="118" rx="18"/>
+  <rect x="538" y="72" width="7" height="118" rx="3.5" fill="#1D4ED8"/>
+  <text class="api" x="570" y="126" font-size="29">SocketClient</text>
+  <text class="muted" x="570" y="162" font-size="21">configured endpoint flow</text>
+
+  <!-- Endpoint-flow/factory association: retained use/ownership, never a runtime call. -->
+  <path class="assoc" d="M217 72 V43 H703 V72 M703 43 H868 V504 H628"/>
+  <text class="muted" x="460" y="34" font-size="21" text-anchor="middle">endpoint flow retains factory</text>
+
+  <!-- Server/client establishment paths converge on one SocketConnection. -->
+  <path class="runtime" d="M217 190 V226 Q217 248 241 248 H342"/>
+  <text class="accent" x="224" y="222" font-size="20">listen → accept</text>
+  <path class="runtime" d="M703 190 V226 Q703 248 679 248 H578"/>
+  <text class="accent" x="696" y="222" font-size="20" text-anchor="end">connect completes</text>
+
+  <rect class="node-primary" x="292" y="248" width="336" height="146" rx="20"/>
+  <text class="api" x="460" y="309" font-size="31" text-anchor="middle">SocketConnection</text>
+  <text class="muted" x="460" y="347" font-size="22" text-anchor="middle">established connection object</text>
+  <text class="muted" x="460" y="376" font-size="19" text-anchor="middle">stream mechanics + connection identity</text>
+
+  <!-- The connection, not the endpoint, invokes the retained factory. -->
+  <path class="runtime" d="M460 394 V441"/>
+  <text class="accent" x="482" y="425" font-size="21">create(this)</text>
+  <rect class="node" x="292" y="446" width="336" height="116" rx="18"/>
+  <text class="api" x="460" y="497" font-size="27" text-anchor="middle">SocketContextFactory</text>
+  <text class="muted" x="460" y="532" font-size="20" text-anchor="middle">application-supplied creation boundary</text>
+
+  <path class="runtime" d="M460 562 V608"/>
+  <text class="accent" x="482" y="592" font-size="21">returns new</text>
+  <rect class="node-primary" x="292" y="613" width="336" height="142" rx="20"/>
+  <text class="api" x="460" y="671" font-size="31" text-anchor="middle">SocketContext</text>
+  <text class="accent" x="460" y="709" font-size="21" text-anchor="middle">per connection</text>
+  <text class="muted" x="460" y="738" font-size="19" text-anchor="middle">application / protocol behavior</text>
+
+  <!-- One active context is a persistent association, not a creation arrow. -->
+  <path class="assoc" d="M292 341 H247 V684 H292"/>
+  <rect x="74" y="491" width="185" height="42" rx="20" fill="#F8FAFC" stroke="#CBD5E1"/>
+  <text class="muted" x="166" y="519" font-size="19" text-anchor="middle">one active context</text>
+
+  <!-- Event loop rail underpins the entire model. -->
+  <rect class="rail" x="52" y="800" width="816" height="122" rx="22"/>
+  <text class="api" x="86" y="842" font-size="27">Event loop — start()</text>
+  <text class="sans" x="86" y="875" font-size="20">descriptor readiness · timers · lifecycle/data callback dispatch</text>
+  <text class="muted" x="86" y="904" font-size="18">caller-thread dispatch; no worker-pool implication</text>
+
+  <!-- Short dispatch cues identify the three kinds of work the rail drives. -->
+  <path class="dispatch" d="M170 800 V760"/>
+  <path class="dispatch" d="M460 800 V760"/>
+  <path class="dispatch" d="M750 800 V760"/>
+  <text class="muted" x="170" y="787" font-size="17" text-anchor="middle">endpoint readiness</text>
+  <text class="muted" x="460" y="787" font-size="17" text-anchor="middle">connection I/O</text>
+  <text class="muted" x="750" y="787" font-size="17" text-anchor="middle">context callbacks</text>
+</svg>
