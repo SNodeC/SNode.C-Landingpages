@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 620 1120" role="img" aria-labelledby="title desc">
+<title id="title">SNode.C configuration model — mobile</title>
+<desc id="desc">Mobile configuration model showing precedence from C++ API defaults to configuration file to command line, then a named endpoint instance and its relevant configuration sections.</desc>
+<rect x="0.5" y="0.5" width="619" height="1119" rx="24" fill="#F8FAFC" stroke="#CBD5E1"/>
+<text x="33" y="27" fill="#2563EB" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="18" font-weight="600" text-anchor="start" dominant-baseline="hanging">CONFIGURATION MODEL</text>
+<text x="33" y="59" fill="#0F172A" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="30" font-weight="700" text-anchor="start" dominant-baseline="hanging">One endpoint policy,</text>
+<text x="33" y="95" fill="#0F172A" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="30" font-weight="700" text-anchor="start" dominant-baseline="hanging">three input surfaces</text>
+<text x="33" y="135" fill="#475569" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="19" font-weight="400" text-anchor="start" dominant-baseline="hanging">Later inputs override earlier defaults.</text>
+<text x="33" y="177" fill="#475569" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="16" font-weight="600" text-anchor="start" dominant-baseline="hanging">PRECEDENCE · 1 ↓ 2 ↓ 3</text>
+<rect x="33" y="213" width="552" height="104" rx="18" fill="#fff" stroke="#CBD5E1" stroke-width="1.5"/>
+<text x="51.5" y="226.5" fill="#2563EB" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="16" font-weight="600" text-anchor="start" dominant-baseline="hanging">1</text>
+<text x="89.5" y="225.5" fill="#0F172A" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="25" font-weight="700" text-anchor="start" dominant-baseline="hanging">C++ API</text>
+<text x="89.5" y="268.5" fill="#475569" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="18" font-weight="400" text-anchor="start" dominant-baseline="hanging">initial values / defaults</text>
+<rect x="33" y="335" width="552" height="104" rx="18" fill="#fff" stroke="#CBD5E1" stroke-width="1.5"/>
+<text x="51.5" y="348.5" fill="#2563EB" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="16" font-weight="600" text-anchor="start" dominant-baseline="hanging">2</text>
+<text x="89.5" y="347.5" fill="#0F172A" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="25" font-weight="700" text-anchor="start" dominant-baseline="hanging">Configuration file</text>
+<text x="89.5" y="390.5" fill="#475569" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="18" font-weight="400" text-anchor="start" dominant-baseline="hanging">persistent named values</text>
+<rect x="33" y="457" width="552" height="104" rx="18" fill="#fff" stroke="#CBD5E1" stroke-width="1.5"/>
+<text x="51.5" y="470.5" fill="#2563EB" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="16" font-weight="600" text-anchor="start" dominant-baseline="hanging">3</text>
+<text x="89.5" y="469.5" fill="#0F172A" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="25" font-weight="700" text-anchor="start" dominant-baseline="hanging">Command line</text>
+<text x="89.5" y="512.5" fill="#475569" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="18" font-weight="400" text-anchor="start" dominant-baseline="hanging">invocation override</text>
+<rect x="33" y="599" width="552" height="116" rx="18" fill="#EFF6FF" stroke="#93C5FD" stroke-width="1.5"/>
+<text x="51.5" y="613.5" fill="#2563EB" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="15" font-weight="600" text-anchor="start" dominant-baseline="hanging">NAMED ENDPOINT INSTANCE</text>
+<text x="51.5" y="642.5" fill="#0F172A" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="27" font-weight="700" text-anchor="start" dominant-baseline="hanging">server or client endpoint</text>
+<text x="51.5" y="679.5" fill="#475569" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="17" font-weight="400" text-anchor="start" dominant-baseline="hanging">effective config · generated help · inspection</text>
+<text x="310" y="723" fill="#2563EB" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="28" font-weight="600" text-anchor="start" dominant-baseline="hanging">↓</text>
+<rect x="33" y="767" width="552" height="290" rx="18" fill="#fff" stroke="#CBD5E1" stroke-width="1.5"/>
+<text x="51.5" y="783.5" fill="#475569" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="16" font-weight="600" text-anchor="start" dominant-baseline="hanging">RELEVANT SECTIONS</text>
+<rect x="51.5" y="823.5" width="244" height="54" rx="12" fill="#EFF6FF" stroke="#93C5FD" stroke-width="1"/>
+<text x="64.5" y="838.5" fill="#0F172A" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="18" font-weight="600" text-anchor="start" dominant-baseline="hanging">local / remote</text>
+<rect x="319.5" y="823.5" width="244" height="54" rx="12" fill="#EFF6FF" stroke="#93C5FD" stroke-width="1"/>
+<text x="332.5" y="838.5" fill="#0F172A" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="18" font-weight="600" text-anchor="start" dominant-baseline="hanging">connection</text>
+<rect x="51.5" y="895.5" width="244" height="54" rx="12" fill="#EFF6FF" stroke="#93C5FD" stroke-width="1"/>
+<text x="64.5" y="910.5" fill="#0F172A" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="18" font-weight="600" text-anchor="start" dominant-baseline="hanging">socket</text>
+<rect x="319.5" y="895.5" width="244" height="54" rx="12" fill="#EFF6FF" stroke="#93C5FD" stroke-width="1"/>
+<text x="332.5" y="910.5" fill="#0F172A" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="18" font-weight="600" text-anchor="start" dominant-baseline="hanging">TLS when selected</text>
+<rect x="51.5" y="969.5" width="512" height="58" rx="12" fill="#F6F7F9"/>
+<text x="67.5" y="987.5" fill="#475569" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="18" font-weight="400" text-anchor="start" dominant-baseline="hanging">Anonymous instance · API only</text>
+</svg>

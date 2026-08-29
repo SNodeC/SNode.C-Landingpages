@@ -1,50 +1,48 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 1220" role="img" aria-labelledby="title desc">
-  <title id="title">SNode.C HTTP to WebSocket context replacement</title>
-  <desc id="desc">An accepted HTTP Upgrade selects a WebSocket upgrade factory, which creates a replacement context. The 101 Switching Protocols response is prepared. setSocketContext(new) stages the replacement while the HTTP context remains active, and the upgrade-status or application callback calls response-&gt;end() to queue the 101. After the current HTTP read callback returns, the HTTP context detaches with DetachReason::ContextSwitch and is removed, the active pointer changes to the staged replacement, and SocketContextUpgrade attaches. The same SocketConnection remains established; no second transport connection is created.</desc>
-  <defs>
-    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M0 0L10 5L0 10Z" fill="#1D4ED8"/></marker>
-    <style>
-      .canvas{fill:#F8FAFC;stroke:#CBD5E1;stroke-width:2}.card{fill:#FFFFFF;stroke:#94A3B8;stroke-width:2}.primary{fill:#FFFFFF;stroke:#1D4ED8;stroke-width:3}.stage{fill:#EFF6FF;stroke:#93C5FD;stroke-width:2}.rail{fill:#EAF2FF;stroke:#1D4ED8;stroke-width:3}
-      .title{font:700 34px -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;fill:#0F172A}.label{font:700 31px -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;fill:#0F172A}.body{font:500 29px -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;fill:#475569}.small{font:600 28px -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;fill:#475569}.api{font:700 28px ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono",monospace;fill:#0F172A}.accent{font:700 28px -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;fill:#1D4ED8}
-      .runtime{fill:none;stroke:#1D4ED8;stroke-width:4;stroke-linecap:round;stroke-linejoin:round;marker-end:url(#arrow)}
-    </style>
-  </defs>
-  <rect class="canvas" x="1" y="1" width="858" height="1218" rx="24"/>
-  <text class="title" x="430" y="50" text-anchor="middle">HTTP → WebSocket: staged context replacement</text>
-
-  <rect class="primary" x="54" y="82" width="752" height="134" rx="20"/>
-  <text class="label" x="82" y="126">1 · HTTP context is active</text>
-  <text class="body" x="82" y="169">Accepted HTTP Upgrade enters the upgrade path.</text>
-  <text class="small" x="82" y="202">The current HTTP read callback is still running.</text>
-
-  <path class="runtime" d="M430 216 V252"/>
-
-  <rect class="stage" x="54" y="258" width="752" height="356" rx="20"/>
-  <text class="label" x="82" y="302">Prepare and stage the replacement</text>
-  <text class="body" x="82" y="348">2 · WebSocket upgrade factory selected</text>
-  <text class="body" x="116" y="386">replacement <tspan font-family="ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,'Liberation Mono',monospace" font-weight="700">SocketContextUpgrade</tspan> created</text>
-  <text class="body" x="82" y="434">3 · <tspan font-family="ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,'Liberation Mono',monospace" font-weight="700">101 Switching Protocols</tspan> prepared</text>
-  <text class="body" x="82" y="482">4 · <tspan font-family="ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,'Liberation Mono',monospace" font-weight="700">setSocketContext(new)</tspan> stages it</text>
-  <text class="accent" x="116" y="522">replacement STAGED · HTTP context still ACTIVE</text>
-  <text class="body" x="82" y="570">5 · application/status callback calls</text>
-  <text class="api" x="116" y="606">response-&gt;end() · queues the 101</text>
-
-  <path class="runtime" d="M430 614 V650"/>
-
-  <rect class="card" x="54" y="656" width="752" height="118" rx="20"/>
-  <text class="label" x="82" y="700">6 · Current HTTP read callback returns</text>
-  <text class="small" x="82" y="744">Only now does the staged switch complete.</text>
-
-  <path class="runtime" d="M430 774 V810"/>
-
-  <rect class="primary" x="54" y="816" width="752" height="254" rx="20"/>
-  <text class="label" x="82" y="860">Complete the context switch</text>
-  <text class="body" x="82" y="906">7 · detach(<tspan font-family="ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,'Liberation Mono',monospace" font-weight="700">DetachReason::ContextSwitch</tspan>)</text>
-  <text class="body" x="82" y="948">8 · old HTTP context removed</text>
-  <text class="body" x="82" y="990">9 · active pointer → staged replacement</text>
-  <text class="body" x="82" y="1032">10 · <tspan font-family="ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,'Liberation Mono',monospace" font-weight="700">SocketContextUpgrade</tspan> attaches</text>
-
-  <rect class="rail" x="54" y="1094" width="752" height="94" rx="20"/>
-  <text class="label" x="430" y="1136" text-anchor="middle">same SocketConnection remains established</text>
-  <text class="accent" x="430" y="1174" text-anchor="middle">no second transport connection is created</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 820" role="img" aria-labelledby="title desc">
+<title id="title">SNode.C HTTP to WebSocket context replacement — desktop</title>
+<desc id="desc">HTTP remains active while a replacement WebSocket context is prepared and staged. After the current HTTP read callback returns, the old context detaches and is removed, the active pointer changes, SocketContextUpgrade attaches, and the same SocketConnection remains established.</desc>
+<rect x="0.5" y="0.5" width="1199" height="819" rx="24" fill="#F8FAFC" stroke="#CBD5E1"/>
+<text x="51" y="37" fill="#2563EB" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="17" font-weight="600" text-anchor="start" dominant-baseline="hanging">HTTP → WEBSOCKET</text>
+<text x="51" y="69" fill="#0F172A" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="32" font-weight="700" text-anchor="start" dominant-baseline="hanging">Replace the context, keep the connection</text>
+<text x="51" y="113" fill="#475569" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="18" font-weight="400" text-anchor="start" dominant-baseline="hanging">The replacement is staged while HTTP remains active, then committed after the read callback returns.</text>
+<rect x="51" y="169" width="280" height="92" rx="18" fill="#fff" stroke="#CBD5E1" stroke-width="1.5"/>
+<text x="69.5" y="182.5" fill="#475569" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="13" font-weight="600" text-anchor="start" dominant-baseline="hanging">ACTIVE BEFORE</text>
+<text x="69.5" y="207.5" fill="#0F172A" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="23" font-weight="700" text-anchor="start" dominant-baseline="hanging">HTTP SocketContext</text>
+<rect x="867" y="169" width="280" height="92" rx="16" fill="#ECFCF6" stroke="#11A474" stroke-width="1.5"/>
+<text x="885.5" y="182.5" fill="#057959" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="13" font-weight="600" text-anchor="start" dominant-baseline="hanging">ACTIVE AFTER</text>
+<text x="885.5" y="207.5" fill="#0F172A" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="22" font-weight="700" text-anchor="start" dominant-baseline="hanging">SocketContextUpgrade</text>
+<text x="381" y="200" fill="#2563EB" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="16" font-weight="600" text-anchor="start" dominant-baseline="hanging">HTTP active  →  replacement staged  →  WebSocket active</text>
+<rect x="51" y="291" width="330" height="342" rx="18" fill="#fff" stroke="#CBD5E1" stroke-width="1.5"/>
+<text x="71.5" y="307.5" fill="#475569" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="13" font-weight="600" text-anchor="start" dominant-baseline="hanging">01 · PREPARE</text>
+<text x="71.5" y="347.5" fill="#2563EB" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="15" font-weight="600" text-anchor="start" dominant-baseline="hanging">1</text>
+<text x="103.5" y="346.5" fill="#0F172A" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="17" font-weight="600" text-anchor="start" dominant-baseline="hanging">Accepted HTTP Upgrade</text>
+<text x="71.5" y="401.5" fill="#2563EB" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="15" font-weight="600" text-anchor="start" dominant-baseline="hanging">2</text>
+<text x="103.5" y="400.5" fill="#0F172A" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="17" font-weight="600" text-anchor="start" dominant-baseline="hanging">WebSocket factory selected</text>
+<text x="71.5" y="455.5" fill="#2563EB" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="15" font-weight="600" text-anchor="start" dominant-baseline="hanging">3</text>
+<text x="103.5" y="454.5" fill="#0F172A" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="17" font-weight="600" text-anchor="start" dominant-baseline="hanging">Replacement context created</text>
+<text x="71.5" y="509.5" fill="#2563EB" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="15" font-weight="600" text-anchor="start" dominant-baseline="hanging">4</text>
+<text x="103.5" y="508.5" fill="#0F172A" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="17" font-weight="600" text-anchor="start" dominant-baseline="hanging">101 Switching Protocols prepared</text>
+<rect x="409" y="291" width="330" height="342" rx="18" fill="#fff" stroke="#CBD5E1" stroke-width="1.5"/>
+<text x="429.5" y="307.5" fill="#475569" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="13" font-weight="600" text-anchor="start" dominant-baseline="hanging">02 · STAGE</text>
+<text x="429.5" y="347.5" fill="#2563EB" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="15" font-weight="600" text-anchor="start" dominant-baseline="hanging">5</text>
+<text x="461.5" y="346.5" fill="#0F172A" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="17" font-weight="600" text-anchor="start" dominant-baseline="hanging">setSocketContext(new)</text>
+<text x="461.5" y="370.5" fill="#475569" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="14" font-weight="400" text-anchor="start" dominant-baseline="hanging">stages replacement; HTTP stays active</text>
+<text x="429.5" y="421.5" fill="#2563EB" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="15" font-weight="600" text-anchor="start" dominant-baseline="hanging">6</text>
+<text x="461.5" y="420.5" fill="#0F172A" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="17" font-weight="600" text-anchor="start" dominant-baseline="hanging">Application/status callback</text>
+<text x="461.5" y="444.5" fill="#475569" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="14" font-weight="400" text-anchor="start" dominant-baseline="hanging">calls response-&gt;end() · queues the 101</text>
+<rect x="767" y="291" width="330" height="342" rx="18" fill="#fff" stroke="#CBD5E1" stroke-width="1.5"/>
+<text x="787.5" y="307.5" fill="#475569" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="13" font-weight="600" text-anchor="start" dominant-baseline="hanging">03 · COMMIT AFTER CALLBACK</text>
+<text x="787.5" y="347.5" fill="#2563EB" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="15" font-weight="600" text-anchor="start" dominant-baseline="hanging">7</text>
+<text x="819.5" y="346.5" fill="#0F172A" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="16" font-weight="600" text-anchor="start" dominant-baseline="hanging">HTTP read callback returns</text>
+<text x="787.5" y="394.5" fill="#2563EB" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="15" font-weight="600" text-anchor="start" dominant-baseline="hanging">8</text>
+<text x="819.5" y="393.5" fill="#0F172A" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="16" font-weight="600" text-anchor="start" dominant-baseline="hanging">detach(ContextSwitch)</text>
+<text x="787.5" y="441.5" fill="#2563EB" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="15" font-weight="600" text-anchor="start" dominant-baseline="hanging">9</text>
+<text x="819.5" y="440.5" fill="#0F172A" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="16" font-weight="600" text-anchor="start" dominant-baseline="hanging">old HTTP context removed</text>
+<text x="787.5" y="488.5" fill="#2563EB" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="15" font-weight="600" text-anchor="start" dominant-baseline="hanging">10</text>
+<text x="819.5" y="487.5" fill="#0F172A" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="16" font-weight="600" text-anchor="start" dominant-baseline="hanging">active-context pointer changes</text>
+<text x="787.5" y="535.5" fill="#2563EB" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="15" font-weight="600" text-anchor="start" dominant-baseline="hanging">11</text>
+<text x="819.5" y="534.5" fill="#0F172A" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="16" font-weight="600" text-anchor="start" dominant-baseline="hanging">SocketContextUpgrade::attach()</text>
+<rect x="51" y="673" width="1096" height="92" rx="18" fill="#0F172A"/>
+<text x="75" y="691" fill="#FFFFFF" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="21" font-weight="700" text-anchor="start" dominant-baseline="hanging">same SocketConnection remains established</text>
+<text x="75" y="726" fill="#CBD5E3" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="15" font-weight="500" text-anchor="start" dominant-baseline="hanging">descriptor-backed stream · addresses · connection identity retained · no second transport connection</text>
 </svg>

@@ -9,7 +9,10 @@ represented by an instance with a structured set of configuration sections.
 The same values can be supplied through C++ setters, a configuration file, or
 the generated command line.
 
-![API defaults, configuration files, and command-line overrides converging on a named instance and its sections](../assets/configuration-model.svg)
+<picture>
+  <source media="(max-width: 600px)" srcset="../assets/configuration-model-mobile.svg">
+  <img src="../assets/configuration-model.svg" alt="API defaults, configuration files, and command-line overrides converging on a named instance and its sections">
+</picture>
 
 <sub>One instance hierarchy is addressed through three configuration surfaces; later sources override earlier defaults.</sub>
 

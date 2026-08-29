@@ -1,40 +1,51 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 1140" role="img" aria-labelledby="title desc">
-  <title id="title">SNode.C architecture by composition</title>
-  <desc id="desc">A vertical composition map: the event runtime supports IPv4, IPv6, Unix-domain, source-only RFCOMM and L2CAP address families; server or client endpoint roles; plain or explicitly configured OpenSSL-backed TLS connection modes; and per-connection custom, HTTP, Express-style, WebSocket, or MQTT application contexts.</desc>
-  <defs><pattern id="grid" width="48" height="48" patternUnits="userSpaceOnUse"><path d="M48 0H0V48" fill="none" stroke="#20304a" stroke-width="1" opacity=".34"/></pattern></defs>
-  <rect width="900" height="1140" rx="28" fill="#0b1425"/><rect width="900" height="1140" rx="28" fill="url(#grid)"/>
-  <text x="48" y="58" fill="#5ca8ff" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="30" font-weight="700" letter-spacing="3">ARCHITECTURE BY COMPOSITION</text>
-  <text x="48" y="110" fill="#f5f8ff" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="34" font-weight="750">Protocol behavior above connection mechanics</text>
-
-  <text x="48" y="166" fill="#b583ff" font-family="ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,'Liberation Mono',monospace" font-size="30" font-weight="700">05 · APPLICATION CONTEXT</text>
-  <rect x="48" y="184" width="804" height="136" rx="22" fill="#201d3d" stroke="#b583ff" stroke-width="3"/>
-  <text x="78" y="232" fill="#f5f8ff" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="32" font-weight="700">Per-connection SocketContext</text>
-  <text x="78" y="278" fill="#c7b1f4" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="30">custom stream · HTTP · Express-style</text>
-  <text x="78" y="310" fill="#c7b1f4" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="30">WebSocket · MQTT components</text>
-
-  <text x="48" y="374" fill="#f0b45b" font-family="ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,'Liberation Mono',monospace" font-size="30" font-weight="700">04 · CONNECTION MODE</text>
-  <rect x="48" y="392" width="382" height="118" rx="22" fill="#30231c" stroke="#f0b45b" stroke-width="3"/>
-  <text x="78" y="442" fill="#f5f8ff" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="31" font-weight="700">Plain stream</text>
-  <rect x="470" y="392" width="382" height="118" rx="22" fill="#30231c" stroke="#f0b45b" stroke-width="3"/>
-  <text x="500" y="438" fill="#f5f8ff" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="30" font-weight="700">OpenSSL-backed TLS</text>
-  <text x="500" y="478" fill="#d9b98f" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="30">explicitly configured</text>
-
-  <text x="48" y="562" fill="#38cad6" font-family="ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,'Liberation Mono',monospace" font-size="30" font-weight="700">03 · ENDPOINT ROLE</text>
-  <rect x="48" y="580" width="382" height="118" rx="22" fill="#123039" stroke="#38cad6" stroke-width="3"/>
-  <text x="78" y="628" fill="#f5f8ff" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="31" font-weight="700">SocketServer</text>
-  <text x="78" y="670" fill="#9fdde3" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="30">listen · accept</text>
-  <rect x="470" y="580" width="382" height="118" rx="22" fill="#123039" stroke="#38cad6" stroke-width="3"/>
-  <text x="500" y="628" fill="#f5f8ff" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="31" font-weight="700">SocketClient</text>
-  <text x="500" y="670" fill="#9fdde3" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="30">connect · reconnect policy</text>
-
-  <text x="48" y="750" fill="#5ca8ff" font-family="ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,'Liberation Mono',monospace" font-size="30" font-weight="700">02 · ADDRESS FAMILY</text>
-  <rect x="48" y="768" width="246" height="88" rx="18" fill="#152640" stroke="#5ca8ff" stroke-width="3"/><text x="171" y="824" text-anchor="middle" fill="#f5f8ff" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="30" font-weight="700">IPv4</text>
-  <rect x="327" y="768" width="246" height="88" rx="18" fill="#152640" stroke="#5ca8ff" stroke-width="3"/><text x="450" y="824" text-anchor="middle" fill="#f5f8ff" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="30" font-weight="700">IPv6</text>
-  <rect x="606" y="768" width="246" height="88" rx="18" fill="#152640" stroke="#5ca8ff" stroke-width="3"/><text x="729" y="824" text-anchor="middle" fill="#f5f8ff" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="30" font-weight="700">Unix domain</text>
-  <rect x="48" y="878" width="382" height="88" rx="18" fill="#161d2c" stroke="#71829b" stroke-width="2" stroke-dasharray="9 8"/><text x="239" y="934" text-anchor="middle" fill="#d2d9e5" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="30" font-weight="700">RFCOMM · source</text>
-  <rect x="470" y="878" width="382" height="88" rx="18" fill="#161d2c" stroke="#71829b" stroke-width="2" stroke-dasharray="9 8"/><text x="661" y="934" text-anchor="middle" fill="#d2d9e5" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="30" font-weight="700">L2CAP · source</text>
-
-  <rect x="48" y="1006" width="804" height="100" rx="18" fill="#142941" stroke="#55d86f" stroke-width="2"/>
-  <text x="78" y="1048" fill="#aee8b8" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="30" font-weight="700">01 · EVENT RUNTIME</text>
-  <text x="78" y="1086" fill="#aee8b8" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="30" font-weight="700">multiplexer · timers · descriptor events</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 760" role="img" aria-labelledby="title desc">
+<title id="title">SNode.C architecture by composition — desktop</title>
+<desc id="desc">Five layers show application context, connection mode, endpoint role, address family, and event runtime. Bluetooth RFCOMM and L2CAP are marked source-only.</desc>
+<rect x="0.5" y="0.5" width="1199" height="759" rx="24" fill="#F8FAFC" stroke="#CBD5E1"/>
+<text x="51" y="37" fill="#2563EB" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="17" font-weight="600" text-anchor="start" dominant-baseline="hanging">ARCHITECTURE BY COMPOSITION</text>
+<text x="51" y="69" fill="#0F172A" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="32" font-weight="700" text-anchor="start" dominant-baseline="hanging">Keep protocol behavior above connection mechanics</text>
+<text x="51" y="113" fill="#475569" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="18" font-weight="400" text-anchor="start" dominant-baseline="hanging">Choose one compatible path through each layer; qualify the concrete path you deploy.</text>
+<rect x="51" y="173" width="1096" height="86" rx="18" fill="#fff" stroke="#CBD5E1" stroke-width="1.5"/>
+<text x="69.5" y="189.5" fill="#2563EB" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="14" font-weight="600" text-anchor="start" dominant-baseline="hanging">05</text>
+<text x="101.5" y="189.5" fill="#475569" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="14" font-weight="600" text-anchor="start" dominant-baseline="hanging">APPLICATION CONTEXT</text>
+<rect x="239.5" y="207.5" width="190" height="42" rx="12" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1"/>
+<text x="252.5" y="217.5" fill="#0F172A" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="15" font-weight="600" text-anchor="start" dominant-baseline="hanging">Custom stream</text>
+<rect x="445.5" y="207.5" width="220" height="42" rx="12" fill="#EFF6FF" stroke="#93C5FD" stroke-width="1"/>
+<text x="458.5" y="217.5" fill="#2563EB" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="15" font-weight="600" text-anchor="start" dominant-baseline="hanging">HTTP / Express-style</text>
+<rect x="681.5" y="207.5" width="180" height="42" rx="12" fill="#EFF6FF" stroke="#93C5FD" stroke-width="1"/>
+<text x="694.5" y="217.5" fill="#2563EB" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="15" font-weight="600" text-anchor="start" dominant-baseline="hanging">WebSocket</text>
+<rect x="877.5" y="207.5" width="150" height="42" rx="12" fill="#EFF6FF" stroke="#93C5FD" stroke-width="1"/>
+<text x="890.5" y="217.5" fill="#2563EB" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="15" font-weight="600" text-anchor="start" dominant-baseline="hanging">MQTT</text>
+<rect x="51" y="275" width="1096" height="86" rx="18" fill="#fff" stroke="#CBD5E1" stroke-width="1.5"/>
+<text x="69.5" y="291.5" fill="#2563EB" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="14" font-weight="600" text-anchor="start" dominant-baseline="hanging">04</text>
+<text x="101.5" y="291.5" fill="#475569" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="14" font-weight="600" text-anchor="start" dominant-baseline="hanging">CONNECTION MODE</text>
+<rect x="309.5" y="309.5" width="300" height="42" rx="12" fill="#EFF6FF" stroke="#93C5FD" stroke-width="1"/>
+<text x="322.5" y="319.5" fill="#2563EB" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="15" font-weight="600" text-anchor="start" dominant-baseline="hanging">Plain stream</text>
+<rect x="639.5" y="309.5" width="330" height="42" rx="12" fill="#EFF6FF" stroke="#93C5FD" stroke-width="1"/>
+<text x="652.5" y="319.5" fill="#2563EB" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="15" font-weight="600" text-anchor="start" dominant-baseline="hanging">OpenSSL-backed TLS</text>
+<rect x="51" y="377" width="1096" height="86" rx="18" fill="#fff" stroke="#CBD5E1" stroke-width="1.5"/>
+<text x="69.5" y="393.5" fill="#2563EB" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="14" font-weight="600" text-anchor="start" dominant-baseline="hanging">03</text>
+<text x="101.5" y="393.5" fill="#475569" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="14" font-weight="600" text-anchor="start" dominant-baseline="hanging">ENDPOINT ROLE</text>
+<rect x="309.5" y="411.5" width="330" height="42" rx="12" fill="#EFF6FF" stroke="#93C5FD" stroke-width="1"/>
+<text x="322.5" y="421.5" fill="#2563EB" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="15" font-weight="600" text-anchor="start" dominant-baseline="hanging">SocketServer · listen / accept</text>
+<rect x="669.5" y="411.5" width="300" height="42" rx="12" fill="#EFF6FF" stroke="#93C5FD" stroke-width="1"/>
+<text x="682.5" y="421.5" fill="#2563EB" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="15" font-weight="600" text-anchor="start" dominant-baseline="hanging">SocketClient · connect</text>
+<rect x="51" y="479" width="1096" height="86" rx="18" fill="#fff" stroke="#CBD5E1" stroke-width="1.5"/>
+<text x="69.5" y="495.5" fill="#2563EB" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="14" font-weight="600" text-anchor="start" dominant-baseline="hanging">02</text>
+<text x="101.5" y="495.5" fill="#475569" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="14" font-weight="600" text-anchor="start" dominant-baseline="hanging">ADDRESS FAMILY</text>
+<rect x="239.5" y="513.5" width="120" height="42" rx="12" fill="#EFF6FF" stroke="#93C5FD" stroke-width="1"/>
+<text x="250.5" y="524.5" fill="#0F172A" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="14" font-weight="600" text-anchor="start" dominant-baseline="hanging">IPv4</text>
+<rect x="375.5" y="513.5" width="120" height="42" rx="12" fill="#EFF6FF" stroke="#93C5FD" stroke-width="1"/>
+<text x="386.5" y="524.5" fill="#0F172A" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="14" font-weight="600" text-anchor="start" dominant-baseline="hanging">IPv6</text>
+<rect x="511.5" y="513.5" width="150" height="42" rx="12" fill="#EFF6FF" stroke="#93C5FD" stroke-width="1"/>
+<text x="522.5" y="524.5" fill="#0F172A" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="14" font-weight="600" text-anchor="start" dominant-baseline="hanging">Unix domain</text>
+<rect x="677.5" y="513.5" width="176" height="42" rx="12" fill="#F6F7F9" stroke="#94A1B2" stroke-width="1" stroke-dasharray="6 5"/>
+<text x="688.5" y="524.5" fill="#475569" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="14" font-weight="600" text-anchor="start" dominant-baseline="hanging">RFCOMM · source</text>
+<rect x="869.5" y="513.5" width="170" height="42" rx="12" fill="#F6F7F9" stroke="#94A1B2" stroke-width="1" stroke-dasharray="6 5"/>
+<text x="880.5" y="524.5" fill="#475569" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="14" font-weight="600" text-anchor="start" dominant-baseline="hanging">L2CAP · source</text>
+<rect x="51" y="603" width="1096" height="92" rx="18" fill="#fff" stroke="#CBD5E1" stroke-width="1.5"/>
+<text x="69.5" y="619.5" fill="#2563EB" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="14" font-weight="600" text-anchor="start" dominant-baseline="hanging">01</text>
+<text x="101.5" y="619.5" fill="#475569" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="14" font-weight="600" text-anchor="start" dominant-baseline="hanging">EVENT RUNTIME</text>
+<rect x="239.5" y="637.5" width="870" height="44" rx="12" fill="#EFF6FF"/>
+<text x="255.5" y="649.5" fill="#2563EB" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="16" font-weight="600" text-anchor="start" dominant-baseline="hanging">Event loop · selected multiplexer · timers · descriptor events</text>
 </svg>

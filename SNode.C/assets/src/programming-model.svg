@@ -1,53 +1,33 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 1000" role="img" aria-labelledby="title desc">
-  <title id="title">SNode.C programming model</title>
-  <desc id="desc">SocketServer and SocketClient have distinct establishment flows and each retains its own SocketContextFactory. Listen and accept or completed client connection establishment converge on one established SocketConnection. The connection invokes the originating endpoint flow's retained factory with create(this); it returns one active per-connection SocketContext. The event loop is driven by start() on the caller thread and no framework worker pool is implied.</desc>
-  <defs>
-    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M0 0L10 5L0 10Z" fill="#1D4ED8"/></marker>
-    <style>
-      .canvas{fill:#F8FAFC;stroke:#CBD5E1;stroke-width:2}.card{fill:#FFFFFF;stroke:#94A3B8;stroke-width:2}.primary{fill:#FFFFFF;stroke:#1D4ED8;stroke-width:3}.soft{fill:#EFF6FF;stroke:#93C5FD;stroke-width:2}.rail{fill:#EAF2FF;stroke:#1D4ED8;stroke-width:3}
-      .title{font:700 34px -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;fill:#0F172A}.label{font:700 32px -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;fill:#0F172A}.body{font:500 29px -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;fill:#475569}.small{font:600 28px -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;fill:#475569}.api{font:700 29px ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono",monospace;fill:#0F172A}.accent{font:700 28px -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;fill:#1D4ED8}
-      .runtime{fill:none;stroke:#1D4ED8;stroke-width:4;stroke-linecap:round;stroke-linejoin:round;marker-end:url(#arrow)}
-    </style>
-  </defs>
-  <rect class="canvas" x="1" y="1" width="858" height="998" rx="24"/>
-  <text class="title" x="430" y="50" text-anchor="middle">Two endpoint flows, one connection-local model</text>
-
-  <rect class="card" x="36" y="82" width="374" height="156" rx="20"/>
-  <text class="label" x="64" y="126">SocketServer</text>
-  <text class="accent" x="64" y="170">listen → accept</text>
-  <text class="body" x="64" y="211">retains its own factory</text>
-
-  <rect class="card" x="450" y="82" width="374" height="156" rx="20"/>
-  <text class="label" x="478" y="126">SocketClient</text>
-  <text class="accent" x="478" y="170">connect completes</text>
-  <text class="body" x="478" y="211">retains its own factory</text>
-
-  <path class="runtime" d="M223 238 V268 C223 290 300 290 350 304"/>
-  <path class="runtime" d="M637 238 V268 C637 290 560 290 510 304"/>
-
-  <rect class="primary" x="160" y="306" width="540" height="142" rx="22"/>
-  <text class="label" x="430" y="354" text-anchor="middle">SocketConnection</text>
-  <text class="body" x="430" y="397" text-anchor="middle">established connection</text>
-  <text class="small" x="430" y="432" text-anchor="middle">both endpoint paths converge here</text>
-
-  <path class="runtime" d="M430 448 V494"/>
-  <text class="accent" x="454" y="480">create(this)</text>
-
-  <rect class="soft" x="160" y="500" width="540" height="142" rx="22"/>
-  <text class="api" x="430" y="548" text-anchor="middle">SocketContextFactory</text>
-  <text class="body" x="430" y="590" text-anchor="middle">the originating endpoint's retained factory</text>
-  <text class="small" x="430" y="625" text-anchor="middle">server and client factories are distinct</text>
-
-  <path class="runtime" d="M430 642 V688"/>
-  <text class="accent" x="454" y="675">returns new</text>
-
-  <rect class="primary" x="160" y="694" width="540" height="136" rx="22"/>
-  <text class="label" x="430" y="742" text-anchor="middle">SocketContext</text>
-  <text class="accent" x="430" y="785" text-anchor="middle">one active per connection</text>
-  <text class="body" x="430" y="818" text-anchor="middle">protocol and application callbacks</text>
-
-  <rect class="rail" x="36" y="850" width="788" height="130" rx="18"/>
-  <text class="label" x="62" y="889">Event loop — start()</text>
-  <text class="small" x="62" y="925">caller-thread dispatch · no framework worker pool</text>
-  <text class="body" x="62" y="966">readiness · timers · lifecycle · data callbacks</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 720" role="img" aria-labelledby="title desc">
+<title id="title">SNode.C programming model — desktop</title>
+<desc id="desc">Two distinct server and client endpoint flows each own a SocketContextFactory. Both establishment paths converge on SocketConnection, which calls the owning flow&#x27;s retained factory with create(this) to create one active per-connection SocketContext. start() drives caller-thread event dispatch.</desc>
+<rect x="0.5" y="0.5" width="1199" height="719" rx="24" fill="#F8FAFC" stroke="#CBD5E1"/>
+<text x="51" y="39" fill="#2563EB" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="17" font-weight="600" text-anchor="start" dominant-baseline="hanging">PROGRAMMING MODEL</text>
+<text x="51" y="69" fill="#0F172A" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="32" font-weight="700" text-anchor="start" dominant-baseline="hanging">Two endpoint flows, one connection-local model</text>
+<text x="51" y="113" fill="#475569" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="18" font-weight="400" text-anchor="start" dominant-baseline="hanging">Each configured flow owns its factory; established connections create one active context.</text>
+<rect x="51" y="175" width="500" height="164" rx="18" fill="#fff" stroke="#CBD5E1" stroke-width="1.5"/>
+<text x="73.5" y="191.5" fill="#475569" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="13" font-weight="600" text-anchor="start" dominant-baseline="hanging">SERVER ENDPOINT FLOW</text>
+<text x="73.5" y="218.5" fill="#0F172A" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="26" font-weight="700" text-anchor="start" dominant-baseline="hanging">SocketServer</text>
+<text x="73.5" y="257.5" fill="#2563EB" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="16" font-weight="600" text-anchor="start" dominant-baseline="hanging">listen → accept</text>
+<rect x="323.5" y="264.5" width="202" height="42" rx="12" fill="#EFF6FF" stroke="#93C5FD" stroke-width="1"/>
+<text x="336.5" y="274.5" fill="#2563EB" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="14" font-weight="600" text-anchor="start" dominant-baseline="hanging">own SocketContextFactory</text>
+<rect x="647" y="175" width="500" height="164" rx="18" fill="#fff" stroke="#CBD5E1" stroke-width="1.5"/>
+<text x="669.5" y="191.5" fill="#475569" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="13" font-weight="600" text-anchor="start" dominant-baseline="hanging">CLIENT ENDPOINT FLOW</text>
+<text x="669.5" y="218.5" fill="#0F172A" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="26" font-weight="700" text-anchor="start" dominant-baseline="hanging">SocketClient</text>
+<text x="669.5" y="257.5" fill="#2563EB" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="16" font-weight="600" text-anchor="start" dominant-baseline="hanging">connect completes</text>
+<rect x="919.5" y="264.5" width="202" height="42" rx="12" fill="#EFF6FF" stroke="#93C5FD" stroke-width="1"/>
+<text x="932.5" y="274.5" fill="#2563EB" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="14" font-weight="600" text-anchor="start" dominant-baseline="hanging">own SocketContextFactory</text>
+<text x="301" y="327" fill="#2563EB" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="34" font-weight="600" text-anchor="start" dominant-baseline="hanging">↘</text>
+<text x="865" y="327" fill="#2563EB" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="34" font-weight="600" text-anchor="start" dominant-baseline="hanging">↙</text>
+<rect x="349" y="371" width="500" height="100" rx="18" fill="#FFFFFF" stroke="#2563EB" stroke-width="2"/>
+<text x="371" y="389" fill="#0F172A" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="26" font-weight="700" text-anchor="start" dominant-baseline="hanging">SocketConnection</text>
+<text x="371" y="427" fill="#475569" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="15" font-weight="400" text-anchor="start" dominant-baseline="hanging">established stream · connection identity · active-context owner</text>
+<rect x="349" y="485" width="500" height="52" rx="14" fill="#EFF6FF"/>
+<text x="371" y="500" fill="#2563EB" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="16" font-weight="600" text-anchor="start" dominant-baseline="hanging">↓  create(this) on the owning endpoint flow’s retained factory</text>
+<rect x="349" y="551" width="500" height="78" rx="18" fill="#ECFCF6" stroke="#11A474" stroke-width="1.5"/>
+<text x="371.5" y="566.5" fill="#0F172A" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="26" font-weight="700" text-anchor="start" dominant-baseline="hanging">SocketContext</text>
+<text x="371.5" y="604.5" fill="#057959" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="15" font-weight="600" text-anchor="start" dominant-baseline="hanging">one active context · connection-local behavior</text>
+<rect x="51" y="645" width="1096" height="58" rx="16" fill="#0F172A"/>
+<text x="73" y="662" fill="#FFFFFF" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="17" font-weight="700" text-anchor="start" dominant-baseline="hanging">Event loop · start()</text>
+<text x="261" y="663" fill="#CBD5E3" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="14" font-weight="500" text-anchor="start" dominant-baseline="hanging">caller-thread dispatch · descriptor readiness · timers · lifecycle/data callbacks</text>
 </svg>

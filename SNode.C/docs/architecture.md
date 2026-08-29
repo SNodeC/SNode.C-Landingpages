@@ -14,7 +14,10 @@ It is a typed composition model with explicit extension points. A concrete
 application still has to select compatible components, build them, and qualify
 the path it intends to deploy.
 
-![SNode.C composition map showing the event runtime, address families, endpoint roles, connection modes, and application contexts](../assets/layer-architecture.svg)
+<picture>
+  <source media="(max-width: 600px)" srcset="../assets/layer-architecture-mobile.svg">
+  <img src="../assets/layer-architecture.svg" alt="SNode.C composition map showing the event runtime, address families, endpoint roles, connection modes, and application contexts">
+</picture>
 
 <sub>The stack separates application behavior from endpoint and connection mechanics; highlighted qualification boundaries remain part of the documentation.</sub>
 
@@ -127,7 +130,10 @@ A `SocketConnection` can replace its attached context. The previous context is
 detached with `DetachReason::ContextSwitch`; the next context attaches to the
 same established connection. HTTP-to-WebSocket upgrade is the clearest example.
 
-![HTTP-to-WebSocket context switch in SNode.C: an accepted HTTP Upgrade stages a replacement WebSocket context; after the current HTTP read callback, the HTTP context detaches for ContextSwitch, is removed, and the WebSocket SocketContextUpgrade attaches to the same established SocketConnection.](../assets/http-websocket-context-switch.svg)
+<picture>
+  <source media="(max-width: 600px)" srcset="../assets/http-websocket-context-switch-mobile.svg">
+  <img src="../assets/http-websocket-context-switch.svg" alt="HTTP-to-WebSocket context switch in SNode.C: an accepted HTTP Upgrade stages a replacement WebSocket context; after the current HTTP read callback, the HTTP context detaches for ContextSwitch, is removed, and the WebSocket SocketContextUpgrade attaches to the same established SocketConnection.">
+</picture>
 
 <sub>The replacement is staged while HTTP remains active; the same established connection continues through the switch.</sub>
 

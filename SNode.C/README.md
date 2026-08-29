@@ -22,7 +22,10 @@ both paths converge on an established `SocketConnection`. The connection calls
 its retained factory with `create(this)`; the factory returns the per-connection
 `SocketContext`. One context is active for a connection at a time.
 
-![Diagram of the SNode.C programming model: a SocketServer accepts or a SocketClient completes a connection, the SocketConnection calls its endpoint flow's SocketContextFactory to create one active per-connection SocketContext, and the caller-thread event loop dispatches lifecycle and I/O callbacks.](assets/programming-model.svg)
+<picture>
+  <source media="(max-width: 600px)" srcset="assets/programming-model-mobile.svg">
+  <img src="assets/programming-model.svg" alt="Diagram of the SNode.C programming model: a SocketServer accepts or a SocketClient completes a connection, the SocketConnection calls its endpoint flow's SocketContextFactory to create one active per-connection SocketContext, and the caller-thread event loop dispatches lifecycle and I/O callbacks.">
+</picture>
 
 | Role | Responsibility |
 | --- | --- |
@@ -198,7 +201,10 @@ pointer changes to the staged replacement, and the WebSocket
 `SocketContextUpgrade` attaches. The same `SocketConnection` remains established;
 no second transport connection is created.
 
-![HTTP-to-WebSocket context switch in SNode.C: an accepted HTTP Upgrade stages a WebSocket context; after the current HTTP read callback, the HTTP context detaches for ContextSwitch, the new context attaches, and the same SocketConnection remains established.](assets/http-websocket-context-switch.svg)
+<picture>
+  <source media="(max-width: 600px)" srcset="assets/http-websocket-context-switch-mobile.svg">
+  <img src="assets/http-websocket-context-switch.svg" alt="HTTP-to-WebSocket context switch in SNode.C: an accepted HTTP Upgrade stages a WebSocket context; after the current HTTP read callback, the HTTP context detaches for ContextSwitch, the new context attaches, and the same SocketConnection remains established.">
+</picture>
 
 *Same connection, new active context.*
 
