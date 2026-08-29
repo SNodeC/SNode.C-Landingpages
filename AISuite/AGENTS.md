@@ -1,8 +1,10 @@
 # AGENTS.md — AISuite landing page
 
 These instructions supplement the root [`AGENTS.md`](../AGENTS.md) for all work
-under `AISuite/`. Follow the shared [page system](../PAGE-SYSTEM.md) and this
-directory's [proposal](PROPOSAL.md).
+under `AISuite/`. Follow the shared [page-system principles](../PAGE-SYSTEM.md),
+the canonical [README workflow](../workflow/README-WORKFLOW.md), and the
+[README governance](../workflow/README-GOVERNANCE.md). This directory's
+[proposal](PROPOSAL.md) is research/design input rather than a fixed layout.
 
 ## What it solves
 
@@ -39,8 +41,7 @@ dominate the AISuite page.
 A qualified visitor should be able to:
 
 1. explain what AISuite adds beyond raw JSON-RPC;
-2. identify the C++, bridge, reference-client, and generated-view
-   components;
+2. identify the C++, bridge, reference-client, and generated-view components;
 3. build the bridge, connect a client, and perform one safe request;
 4. understand provider, controller, observer, persistence, and trust boundaries;
 5. find the exact SNode.C, schema, package, and CodexUI compatibility information.
@@ -81,12 +82,13 @@ A qualified visitor should be able to:
 - The page leads with developer value before internal authority terminology.
 - Current-master examples use the installed C++ target/reference client and the
   tested TypeScript source package without implying registry publication.
-- V1 shows multiple client types converging on the bridge and app-server.
-- V2 proves provider/bridge/client success; V3 shows authority boundaries; V4
-  shows the typed-generation and equality-test flow.
+- Typed AI middleware and bridge architecture are the narrative centerpiece.
+- Earlier multi-client bridge, terminal-proof, authority-boundary, and
+  typed-generation/equality concepts are candidate visuals rather than
+  mandatory V1–V4 slots. Step 4 chooses the visual inventory; Step 5 validates
+  and finalizes it.
 - Carry a concise independent-project notice near the first Codex description
   and in the final project routes.
-- Use the approved nine-section map and shared word target.
 
 ## Source-code alignment and proof
 
@@ -145,9 +147,9 @@ npm test --prefix packages/codex-frontend
 ```
 
 Public commands must use current SNode.C and AISuite master heads and record
-their exact tested SHAs. The quick-start request must be harmless, reproducible, and
-documented with expected response and telemetry. C++ samples must compile in CI
-and must not use private headers or sibling paths.
+their exact tested SHAs. The quick-start request must be harmless, reproducible,
+and documented with expected response and telemetry. C++ samples must compile in
+CI and must not use private headers or sibling paths.
 
 Document transport selection on both independent bridge boundaries:
 
@@ -185,11 +187,12 @@ provider-side TLS exists when the current app-server listener has no WSS mode.
 ## Validation
 
 - Build, test, install, and consume AISuite from clean current-master checkouts.
-- Run the C++ generation/equality tests and state their schema
-  scope accurately.
-- Execute the bridge/reference-client quick start and compare V2 with reality.
-- Review every arrow and ownership label in V1, V3, and V4 against the
+- Run the C++ generation/equality tests and state their schema scope accurately.
+- Execute the bridge/reference-client quick start and compare any approved proof
+  visual with reality.
+- Review every arrow and ownership label in approved Step 5 visuals against the
   architecture contract and tests.
 - Check listener, controller, telemetry, logging, and exposure language with a
   security reviewer.
-- Verify independent-project wording, exact names, links, alt text, and assets.
+- Verify independent-project wording, exact names, links, approved Step 4/Step 5
+  visuals, captions, and alt text.
