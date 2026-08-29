@@ -8,6 +8,10 @@ connection lifecycle, event dispatch, stream/TLS mechanics, and endpoint
 configuration so protocol code can stay focused on what happens on one
 connection.
 
+SNode.C is designed primarily for machine-to-machine (M2M) communication and
+IoT-oriented network applications, while its connection and protocol model is
+general-purpose.
+
 The core model is connection-local: a configured `SocketServer` or
 `SocketClient` establishes a `SocketConnection`; that connection asks its
 endpoint flow's `SocketContextFactory` for the `SocketContext` that handles
@@ -46,7 +50,7 @@ protocol/application behavior. One context is active for a connection at a time.
 | Event loop | Dispatch descriptor, timer, lifecycle, and data work. |
 
 The supplied [echo context](https://github.com/SNodeC/snode.c/blob/bf01683a53b48220a840522e8ccaf3b48e58c240/src/apps/echo/model/EchoSocketContext.cpp)
-shows what connection-local behavior looks like:
+shows what connection-local behavior looks like (logging omitted):
 
 ```cpp
 void EchoSocketContext::onConnected() {
@@ -106,16 +110,21 @@ cmake --build cmake-build-release --parallel \
 mkdir -p cmake-build-release/echo-config
 ```
 
-The isolated configuration directory and explicit information-level, text,
-monochrome logging options pin the output shown below; they are not ordinary
-mandatory runtime setup.
+Here, `legacy` names the plain, non-TLS stream variant. `CHECK_INCLUDES=OFF`
+keeps the optional IWYU include-analysis pass out of this first build when IWYU
+is installed.
+
+The fresh `XDG_CONFIG_HOME` points SNode.C at an isolated configuration root, so
+existing user configuration cannot change the defaults used below.
+Information-level text logging is already the default; `--monochrom=true` makes
+the shown output independent of terminal color support.
 
 Start the server:
 
 ```sh
 XDG_CONFIG_HOME="$PWD/cmake-build-release/echo-config" \
   ./cmake-build-release/src/apps/echo/echoserver-legacy-in \
-  --log-level 4 --log-format text --monochrom=true \
+  --monochrom=true \
   echoserver local --host 127.0.0.1 --port 18001
 ```
 
@@ -124,7 +133,7 @@ Then start the client from the same checkout in a second terminal:
 ```sh
 XDG_CONFIG_HOME="$PWD/cmake-build-release/echo-config" \
   ./cmake-build-release/src/apps/echo/echoclient-legacy-in \
-  --log-level 4 --log-format text --monochrom=true \
+  --monochrom=true \
   echoclient remote --host 127.0.0.1 --port 18001
 ```
 
@@ -140,9 +149,9 @@ role=client inst=echoclient conn=1 — transport connected
 ```
 
 These lines prove that the listener started and one plain IPv4 loopback
-connection formed; at the selected information log level the reflected payload
-is not printed. The source-defined contexts do reflect bytes, and the pair keeps
-echoing until you stop both processes with Ctrl-C.
+connection formed. At the default information level the logger does not print
+the reflected payload; the linked context source reflects each received chunk,
+and the pair continues echoing until you stop both processes with Ctrl-C.
 
 Plain IPv6 loopback, a Unix-domain plain stream path, and one mutual-TLS IPv4
 echo arrangement were also separately qualified.
@@ -158,14 +167,29 @@ that surface has been exercised. This is a fit-check, not a claim that every
 address-family × connection-mode × protocol combination has equivalent test
 coverage.
 
-| Area | Available surface | What has been exercised |
-| --- | --- | --- |
-| Event runtime | Descriptor/timer loop; server/client stream endpoints; connection-local contexts. `epoll` is the default; `poll` and `select` are configure-time alternatives. | CI on the reviewed commit ran the root test suite. Current CI/runtime evidence exercised default `epoll` only. |
-| Plain streams | IPv4, IPv6, and Unix-domain server/client paths. | Component tests plus recorded echo runs for all three. |
-| TLS streams | OpenSSL-backed TLS connection layer and configuration. | TLS state/ownership/shutdown tests plus one mutual-TLS IPv4 echo run. Trust, hostname, certificate, and cipher policy remain application/operator responsibilities. |
-| Bluetooth | Conditional RFCOMM and L2CAP stream layers with BlueZ. | The reviewed CI build included BlueZ; no hardware runtime qualification. |
-| Web protocols | HTTP/1.0 and HTTP/1.1, Express-style routing/middleware, WebSocket version 13, and EventSource/SSE. | Broad plain-IPv4 HTTP tests, smaller IPv6/Unix HTTP and WebSocket paths, and plain-IPv4 SSE tests. No HTTP/2 claim; “Express-style” is not Node.js Express compatibility. |
-| MQTT | MQTT 3.1.1 client/server and MQTT-over-WebSocket components. | Packet/lifecycle tests; MQTTSuite has a separately qualified IPv4 QoS 1 path. No MQTT 5; MQTT-over-WebSocket network evidence is narrower. |
+- **Event runtime.** **Available:** Descriptor/timer loop; server/client stream
+  endpoints; connection-local contexts. `epoll` is the default; `poll` and
+  `select` are configure-time alternatives. **Exercised:** CI on the reviewed
+  commit ran the root test suite. Current CI/runtime evidence exercised default
+  `epoll` only.
+- **Plain streams.** **Available:** IPv4, IPv6, and Unix-domain server/client
+  paths. **Exercised:** Component tests plus recorded echo runs for all three.
+- **TLS streams.** **Available:** OpenSSL-backed TLS connection layer and
+  configuration. **Exercised:** TLS state/ownership/shutdown tests plus one
+  mutual-TLS IPv4 echo run. Trust, hostname, certificate, and cipher policy
+  remain application/operator responsibilities.
+- **Bluetooth.** **Available:** Conditional RFCOMM and L2CAP stream layers with
+  BlueZ. **Exercised:** The reviewed CI build included BlueZ; no hardware runtime
+  qualification.
+- **Web protocols.** **Available:** HTTP/1.0 and HTTP/1.1, Express-style
+  routing/middleware, WebSocket version 13, and EventSource/SSE. **Exercised:**
+  Broad plain-IPv4 HTTP tests, smaller IPv6/Unix HTTP and WebSocket paths, and
+  plain-IPv4 SSE tests. No HTTP/2 claim; “Express-style” is not Node.js Express
+  compatibility.
+- **MQTT.** **Available:** MQTT 3.1.1 client/server and MQTT-over-WebSocket
+  components. **Exercised:** Packet/lifecycle tests; MQTTSuite has a separately
+  qualified IPv4 QoS 1 path. No MQTT 5; MQTT-over-WebSocket network evidence is
+  narrower.
 
 The reviewed `master` is source-buildable and locally installable, but it is
 newer than the latest GitHub release and is not represented by a current tagged
@@ -176,7 +200,7 @@ architecture support matrix. No throughput, latency, or footprint claim is made
 here.
 
 See the [capability map](docs/capabilities.md) for detailed protocol, transport,
-build, platform, and evidence scope.
+build, platform, and evidence scope, including optional components and tooling.
 
 ## Architecture and extension points
 
