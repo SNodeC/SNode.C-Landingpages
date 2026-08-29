@@ -2,56 +2,24 @@
   <title id="title">SNode.C configuration model</title>
   <desc id="desc">API defaults, a configuration file, and command-line overrides feed one named client or server instance. The instance exposes local, remote, connection, socket, and optional TLS sections.</desc>
   <defs>
-    <pattern id="grid" width="48" height="48" patternUnits="userSpaceOnUse">
-      <path d="M48 0H0V48" fill="none" stroke="#20304a" stroke-width="1" opacity=".34"/>
-    </pattern>
-    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
-      <path d="M0 0L12 6L0 12Z" fill="#5ca8ff"/>
-    </marker>
+    <pattern id="grid" width="48" height="48" patternUnits="userSpaceOnUse"><path d="M48 0H0V48" fill="none" stroke="#20304a" stroke-width="1" opacity=".34"/></pattern>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M0 0L12 6L0 12Z" fill="#5ca8ff"/></marker>
   </defs>
-  <rect width="1600" height="900" rx="32" fill="#0b1425"/>
-  <rect width="1600" height="900" rx="32" fill="url(#grid)"/>
-  <rect y="890" width="1600" height="10" fill="#5ca8ff"/>
-
-  <text x="76" y="68" fill="#5ca8ff" font-family="Inter,Segoe UI,sans-serif" font-size="28" font-weight="700" letter-spacing="6">CONFIGURATION MODEL</text>
-  <text x="76" y="145" fill="#f5f8ff" font-family="Inter,Segoe UI,sans-serif" font-size="52" font-weight="750">One endpoint policy, three configuration surfaces</text>
-  <text x="76" y="198" fill="#aebbd0" font-family="Inter,Segoe UI,sans-serif" font-size="27">Defaults become persistent configuration; the command line can override one invocation.</text>
-
-  <text x="76" y="270" fill="#aebbd0" font-family="Inter,Segoe UI,sans-serif" font-size="21" font-weight="700">PRECEDENCE  1 → 2 → 3</text>
-  <rect x="76" y="296" width="360" height="122" rx="26" fill="#152640" stroke="#5ca8ff" stroke-width="3"/>
-  <text x="112" y="345" fill="#5ca8ff" font-family="ui-monospace,SFMono-Regular,monospace" font-size="24" font-weight="700">1  C++ API</text>
-  <text x="112" y="386" fill="#f5f8ff" font-family="Inter,Segoe UI,sans-serif" font-size="26" font-weight="700">initial values / defaults</text>
-
-  <rect x="76" y="446" width="360" height="122" rx="26" fill="#201d3d" stroke="#b583ff" stroke-width="3"/>
-  <text x="112" y="495" fill="#b583ff" font-family="ui-monospace,SFMono-Regular,monospace" font-size="24" font-weight="700">2  CONFIG FILE</text>
-  <text x="112" y="536" fill="#f5f8ff" font-family="Inter,Segoe UI,sans-serif" font-size="26" font-weight="700">persistent named values</text>
-
-  <rect x="76" y="596" width="360" height="122" rx="26" fill="#173024" stroke="#55d86f" stroke-width="3"/>
-  <text x="112" y="645" fill="#55d86f" font-family="ui-monospace,SFMono-Regular,monospace" font-size="24" font-weight="700">3  COMMAND LINE</text>
-  <text x="112" y="686" fill="#f5f8ff" font-family="Inter,Segoe UI,sans-serif" font-size="26" font-weight="700">invocation override</text>
-
+  <rect width="1600" height="900" rx="32" fill="#0b1425"/><rect width="1600" height="900" rx="32" fill="url(#grid)"/><rect y="890" width="1600" height="10" fill="#5ca8ff"/>
+  <text x="76" y="68" fill="#5ca8ff" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="28" font-weight="700" letter-spacing="6">CONFIGURATION MODEL</text>
+  <text x="76" y="145" fill="#f5f8ff" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="52" font-weight="750">One endpoint policy, three configuration surfaces</text>
+  <text x="76" y="198" fill="#aebbd0" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="27">Defaults become persistent configuration; the command line can override one invocation.</text>
+  <text x="76" y="270" fill="#aebbd0" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="21" font-weight="700">PRECEDENCE  1 → 2 → 3</text>
+  <rect x="76" y="296" width="360" height="122" rx="26" fill="#152640" stroke="#5ca8ff" stroke-width="3"/><text x="112" y="345" fill="#5ca8ff" font-family="ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,'Liberation Mono',monospace" font-size="24" font-weight="700">1  C++ API</text><text x="112" y="386" fill="#f5f8ff" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="26" font-weight="700">initial values / defaults</text>
+  <rect x="76" y="446" width="360" height="122" rx="26" fill="#201d3d" stroke="#b583ff" stroke-width="3"/><text x="112" y="495" fill="#b583ff" font-family="ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,'Liberation Mono',monospace" font-size="24" font-weight="700">2  CONFIG FILE</text><text x="112" y="536" fill="#f5f8ff" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="26" font-weight="700">persistent named values</text>
+  <rect x="76" y="596" width="360" height="122" rx="26" fill="#173024" stroke="#55d86f" stroke-width="3"/><text x="112" y="645" fill="#55d86f" font-family="ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,'Liberation Mono',monospace" font-size="24" font-weight="700">3  COMMAND LINE</text><text x="112" y="686" fill="#f5f8ff" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="26" font-weight="700">invocation override</text>
   <path d="M436 357H585M436 507H585M436 657H585" stroke="#5ca8ff" stroke-width="4" fill="none" marker-end="url(#arrow)"/>
-
-  <rect x="610" y="336" width="420" height="342" rx="30" fill="#152640" stroke="#38cad6" stroke-width="4"/>
-  <text x="652" y="400" fill="#38cad6" font-family="ui-monospace,SFMono-Regular,monospace" font-size="24" font-weight="700">NAMED INSTANCE</text>
-  <text x="652" y="458" fill="#f5f8ff" font-family="Inter,Segoe UI,sans-serif" font-size="36" font-weight="750">server or client endpoint</text>
-  <line x1="652" y1="492" x2="988" y2="492" stroke="#29445f" stroke-width="2"/>
-  <text x="652" y="545" fill="#aebbd0" font-family="Inter,Segoe UI,sans-serif" font-size="25">identity · enabled state · role</text>
-  <text x="652" y="590" fill="#aebbd0" font-family="Inter,Segoe UI,sans-serif" font-size="25">generated help and inspection</text>
-  <text x="652" y="635" fill="#aebbd0" font-family="Inter,Segoe UI,sans-serif" font-size="25">effective configuration</text>
-
+  <rect x="610" y="336" width="420" height="342" rx="30" fill="#152640" stroke="#38cad6" stroke-width="4"/><text x="652" y="400" fill="#38cad6" font-family="ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,'Liberation Mono',monospace" font-size="24" font-weight="700">NAMED INSTANCE</text><text x="652" y="458" fill="#f5f8ff" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="36" font-weight="750">server or client endpoint</text><line x1="652" y1="492" x2="988" y2="492" stroke="#29445f" stroke-width="2"/><text x="652" y="545" fill="#aebbd0" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="25">identity · enabled state · role</text><text x="652" y="590" fill="#aebbd0" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="25">generated help and inspection</text><text x="652" y="635" fill="#aebbd0" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="25">effective configuration</text>
   <path d="M1030 507H1125" stroke="#5ca8ff" stroke-width="4" fill="none" marker-end="url(#arrow)"/>
-
-  <text x="1150" y="295" fill="#f0b45b" font-family="ui-monospace,SFMono-Regular,monospace" font-size="22" font-weight="700">SECTIONS</text>
-  <rect x="1150" y="318" width="374" height="80" rx="20" fill="#30231c" stroke="#f0b45b" stroke-width="3"/>
-  <text x="1188" y="368" fill="#f5f8ff" font-family="Inter,Segoe UI,sans-serif" font-size="27" font-weight="700">local / remote</text>
-  <rect x="1150" y="418" width="374" height="80" rx="20" fill="#30231c" stroke="#f0b45b" stroke-width="3"/>
-  <text x="1188" y="468" fill="#f5f8ff" font-family="Inter,Segoe UI,sans-serif" font-size="27" font-weight="700">connection</text>
-  <rect x="1150" y="518" width="374" height="80" rx="20" fill="#30231c" stroke="#f0b45b" stroke-width="3"/>
-  <text x="1188" y="568" fill="#f5f8ff" font-family="Inter,Segoe UI,sans-serif" font-size="27" font-weight="700">socket</text>
-  <rect x="1150" y="618" width="374" height="80" rx="20" fill="#30231c" stroke="#f0b45b" stroke-width="3"/>
-  <text x="1188" y="668" fill="#f5f8ff" font-family="Inter,Segoe UI,sans-serif" font-size="27" font-weight="700">TLS when selected</text>
-
-  <rect x="610" y="748" width="914" height="86" rx="24" fill="#111d31" stroke="#394a63" stroke-width="2"/>
-  <text x="652" y="800" fill="#aebbd0" font-family="Inter,Segoe UI,sans-serif" font-size="18">Anonymous instances: API only · Concrete roles and families expose only their relevant sections.</text>
+  <text x="1150" y="295" fill="#f0b45b" font-family="ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,'Liberation Mono',monospace" font-size="22" font-weight="700">SECTIONS</text>
+  <rect x="1150" y="318" width="374" height="80" rx="20" fill="#30231c" stroke="#f0b45b" stroke-width="3"/><text x="1188" y="368" fill="#f5f8ff" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="27" font-weight="700">local / remote</text>
+  <rect x="1150" y="418" width="374" height="80" rx="20" fill="#30231c" stroke="#f0b45b" stroke-width="3"/><text x="1188" y="468" fill="#f5f8ff" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="27" font-weight="700">connection</text>
+  <rect x="1150" y="518" width="374" height="80" rx="20" fill="#30231c" stroke="#f0b45b" stroke-width="3"/><text x="1188" y="568" fill="#f5f8ff" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="27" font-weight="700">socket</text>
+  <rect x="1150" y="618" width="374" height="80" rx="20" fill="#30231c" stroke="#f0b45b" stroke-width="3"/><text x="1188" y="668" fill="#f5f8ff" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="27" font-weight="700">TLS when selected</text>
+  <rect x="610" y="748" width="914" height="86" rx="24" fill="#111d31" stroke="#394a63" stroke-width="2"/><text x="652" y="800" fill="#aebbd0" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="18">Anonymous instances: API only · Concrete roles and families expose only their relevant sections.</text>
 </svg>

@@ -3,82 +3,185 @@
 Implementation date: 29 August 2026
 Validated SNode.C source baseline: `bf01683a53b48220a840522e8ccaf3b48e58c240`
 
-## Visual 1 — Programming-model lifecycle
+This file preserves the Step 5/6 implementation record and adds the Step 8
+publication-refinement result. Human publication approval remains pending.
 
-- Export: `../programming-model.svg`
-- Editable source: `programming-model.svg`
-- Canvas: 920 × 940 SVG viewBox
-- Neutral canvas: `#F8FAFC`
-- Foundation-blue accent: `#1D4ED8`
-- Runtime arrows use the accent; association/identity connectors remain neutral and undirected.
-- The server path is labeled `listen → accept`; the client path is labeled `connect completes`.
-- `SocketConnection` calls the retained factory with `create(this)` and the factory returns the new context.
-- The figure shows one active context per connection and uses `Event loop — start()`; `tick()` is deliberately absent.
-- No raster image is embedded.
+## Publication visual system
 
-Alt text recommendation:
+Visual 1 and Visual 3 now use one neutral, self-contained SVG system:
+
+- explicit `#F8FAFC` canvas and internal surfaces so GitHub light/dark page CSS
+  is irrelevant to SVG legibility;
+- foundation blue `#1D4ED8` for runtime arrows/emphasis;
+- explicit neutral strokes and labels so meaning survives grayscale;
+- system/generic sans and monospace font stacks only;
+- no `currentColor`, `prefers-color-scheme`, external CSS, external fonts,
+  `<script>`, `<foreignObject>`, `<image>`, raster payloads, or linked resources;
+- no fixed HTML embedding width/height; publication SVGs expose a `viewBox` and
+  scale normally in GitHub Markdown.
+
+The editable sources are already clean publication SVG. Export is therefore a
+byte-preserving copy rather than a renderer-specific reserialization:
+
+```sh
+cp SNode.C/assets/src/programming-model.svg \
+   SNode.C/assets/programming-model.svg
+cp SNode.C/assets/src/http-websocket-context-switch.svg \
+   SNode.C/assets/http-websocket-context-switch.svg
+cmp -s SNode.C/assets/src/programming-model.svg \
+       SNode.C/assets/programming-model.svg
+cmp -s SNode.C/assets/src/http-websocket-context-switch.svg \
+       SNode.C/assets/http-websocket-context-switch.svg
+```
+
+### Visual 1 — programming model
+
+- Editable source: `SNode.C/assets/src/programming-model.svg`
+- Publication export: `SNode.C/assets/programming-model.svg`
+- Canvas: `1280 × 720` viewBox (`16:9`)
+- Rendered export verified, not just source markup.
+
+| Required semantic | Result | Rendered verification |
+| --- | --- | --- |
+| `SocketServer` endpoint flow is distinct | PASS | Separate server card and path |
+| `SocketClient` endpoint flow is distinct | PASS | Separate client card and path |
+| Each endpoint retains its own `SocketContextFactory` | PASS | Both endpoint cards explicitly say `retains its own factory` |
+| No shared/global factory is implied | PASS | Factory target is labeled as the originating endpoint's retained factory |
+| Server path is `listen → accept` | PASS | Exact label present on server card |
+| Client path completes connection establishment | PASS | Exact `connect completes` label present |
+| Both paths converge on an established `SocketConnection` | PASS | Both runtime arrows enter the single established connection card |
+| Connection invokes retained factory with `create(this)` | PASS | Connection-to-factory runtime arrow is labeled `create(this)` |
+| Factory produces per-connection `SocketContext` | PASS | `returns new` arrow enters `SocketContext` card |
+| One context is active per connection | PASS | Connection and context cards explicitly state one active context |
+| Event loop is driven by `start()` | PASS | Bottom rail is `Event loop — start()` |
+| No operational `tick()` claim | PASS | `tick()` is absent |
+| No framework worker-pool implication | PASS | No worker objects are drawn; rail explicitly says `no framework worker pool` |
+
+Alt text remains:
 
 > Diagram of the SNode.C programming model: a SocketServer accepts or a SocketClient completes a connection, the SocketConnection calls its endpoint flow's SocketContextFactory to create one active per-connection SocketContext, and the caller-thread event loop dispatches lifecycle and I/O callbacks.
 
-Caption recommendation:
+### Visual 2 — authentic echo evidence
 
-> Server and client establishment paths converge on the same connection-local context model; the event loop is driven by `start()` and the connection calls the retained factory with `create(this)`.
+**Publication decision: ABSENT.**
 
-## Visual 2 — Echo connection evidence
+The committed Landingpages tree has no validated
+`SNode.C/assets/src/echo-capture/` raw capture set and no publication-final
+`SNode.C/assets/echo-connection-evidence.png`. Step 5 contains an exact-revision
+reproduction recipe and recorded output, but those text records are not a raw
+terminal-capture provenance set. The current execution environment likewise has
+no exact-revision SNode.C checkout or built echo binaries from which a new real
+capture can be produced.
 
-No final PNG was produced in this implementation run. The repository contains no validated `assets/src/echo-capture/` raw capture set, and the available execution environment does not contain an exact-revision SNode.C checkout or built echo binaries from which a new authentic terminal capture can be made. The historical `echo-terminal.png` was not reused, redrawn, normalized, or relabeled.
+The historical `SNode.C/assets/echo-terminal.png` was not reused, relabeled,
+redrawn, normalized, or copied into the publication package. No synthetic
+terminal output was created.
 
-The deterministic capture stage in `SNode.C/workflow/05-VISUALS.md` remains required before `echo-connection-evidence.png` can exist.
+A future pass requires a fresh exact-revision run plus the raw PNGs, verbatim
+transcripts, `REPRODUCTION.md`, and deterministic composition material specified
+in `SNode.C/workflow/05-VISUALS.md`, followed by the final rendered-width,
+privacy, and provenance gates.
 
-## Visual 3 — HTTP → WebSocket context replacement
+### Visual 3 — HTTP → WebSocket context replacement
 
-- Export: `../http-websocket-context-switch.svg`
-- Editable source: `http-websocket-context-switch.svg`
-- Canvas: 920 × 720 SVG viewBox
-- Neutral canvas: `#F8FAFC`
-- Foundation-blue accent: `#1D4ED8`
-- The connection rail is continuous and undirected.
-- The staging box preserves factory selection → `101 Switching Protocols` preparation → `setSocketContext(new)` staging → `response->end()` queueing.
-- The completion sequence is explicitly post-callback and preserves detach/removal → active-pointer change → attach ordering.
-- The `attach()` transition leads to the WebSocket context; there is no direct old-context → new-context creation arrow.
-- No WebSocket version is printed inside the mechanism figure; the validated specification keeps version 13 in surrounding capability scope rather than implying a transport matrix here.
-- No raster image is embedded.
+- Editable source: `SNode.C/assets/src/http-websocket-context-switch.svg`
+- Publication export: `SNode.C/assets/http-websocket-context-switch.svg`
+- Canvas: `1440 × 900` viewBox (wider-than-tall; mobile readability prioritized over a stricter 16:9 target)
+- Rendered export verified, not just source markup.
 
-Alt text recommendation:
+| Authoritative chronology | Result | Rendered verification |
+| --- | --- | --- |
+| Accepted HTTP Upgrade | PASS | Step 1 in active HTTP phase |
+| WebSocket upgrade factory selected | PASS | Step 2 begins with factory selection |
+| Replacement WebSocket context created | PASS | Step 2 explicitly completes with replacement creation |
+| `101 Switching Protocols` prepared | PASS | Step 3 explicitly says `101 response prepared`; SVG description carries the full status phrase |
+| `setSocketContext(new)` stages while HTTP remains active | PASS | Step 4 plus `replacement STAGED · HTTP context still ACTIVE` |
+| Application/status callback calls `response->end()` and queues `101` | PASS | Step 5 explicitly identifies callback ownership and queueing |
+| Current HTTP read callback returns | PASS | Step 6 explicitly states callback return |
+| Old HTTP context detaches for `ContextSwitch` | PASS | First completion card says `detach` / `ContextSwitch`; public prose carries exact enum spelling |
+| Old HTTP context removed | PASS | Second completion card says `old HTTP context removed` |
+| Active-context pointer changes to staged replacement | PASS | Third completion card says `active pointer → staged replacement` |
+| WebSocket `SocketContextUpgrade` attaches | PASS | Fourth completion card is `attach()` / `SocketContextUpgrade` |
+| Same `SocketConnection` remains established | PASS | Continuous lower rail states this explicitly |
+| No second transport connection is created | PASS | Lower rail states this explicitly |
+
+The figure contains no WebSocket version number and does not imply that the
+framework automatically calls `response->end()`.
+
+Alt text remains:
 
 > HTTP-to-WebSocket context switch in SNode.C: an accepted HTTP Upgrade stages a WebSocket context; after the current HTTP read callback, the HTTP context detaches for ContextSwitch, the new context attaches, and the same SocketConnection remains established.
 
-Caption recommendation:
+## Cross-figure consistency
 
-> An HTTP Upgrade stages the replacement context and queues the `101 Switching Protocols` response; after the current read callback, the old context is removed, the active pointer changes, and the WebSocket context attaches to the same connection.
+| Check | Result |
+| --- | --- |
+| Visual 1 establishes one active context per connection | PASS |
+| Visual 3 shows the replacement as staged while HTTP is still the active context | PASS |
+| Staging does not imply two simultaneously active contexts | PASS |
+| After callback return and pointer change, the WebSocket replacement becomes the one active context | PASS |
+| Both figures preserve one established `SocketConnection` as the context owner | PASS |
 
-## Render and accessibility checks
+## Render and accessibility validation
 
-The exported SVGs were rendered from their actual SVG markup, not inferred from source text. Checks performed on the generated assets:
+Renderer: Inkscape `1.4 (e7c3feb100, 2024-10-09)`.
+Grayscale/composite checks: Pillow `12.3.0`.
 
-- desktop-width raster inspection at the 920-pixel native content width;
-- mobile-width raster inspection at 375 CSS pixels;
-- GitHub-light and GitHub-dark page-background composites;
-- grayscale/monochrome inspection;
-- text, arrow direction, alignment, and clipping inspection;
-- SVG parse validation;
-- text/accent contrast checks on the neutral canvas (`17.06:1` primary text, `7.24:1` secondary text, `6.41:1` foundation blue);
-- no `<image>` elements or raster data URLs;
-- no credentials, usernames, hostnames, local paths, LAN addresses, certificates, or unrelated data in exported assets.
+Mechanical render commands used for both principal SVGs:
 
-Result: both SVGs pass the implementation-stage light, dark, desktop, mobile, monochrome, and privacy checks. Human visual approval remains pending.
+```sh
+inkscape SNode.C/assets/<asset>.svg --export-type=png --export-width=900 \
+  --export-filename=<temporary-desktop.png>
+inkscape SNode.C/assets/<asset>.svg --export-type=png --export-width=375 \
+  --export-filename=<temporary-mobile.png>
+```
 
-## Human workflow decision — proceed to Step 6 with deferred visual refinement
+The rendered PNGs were inspected at approximately 900 px desktop width and
+375 px mobile width. Each was also composited with light (`#FFFFFF`) and dark
+GitHub-like (`#0D1117`) surrounding page backgrounds, then converted to
+monochrome/grayscale. Temporary validation rasters live outside the repository
+and are not publication artifacts.
 
-Human maintainer decision recorded on 29 August 2026:
+| Render/accessibility gate | Visual 1 | Visual 3 |
+| --- | --- | --- |
+| Desktop render | PASS | PASS |
+| Mobile render | PASS | PASS |
+| Light surrounding page | PASS | PASS |
+| Dark surrounding page | PASS | PASS |
+| Grayscale/monochrome | PASS | PASS |
+| Clipping/overlap | PASS | PASS |
+| Arrow direction unambiguous | PASS | PASS |
+| Information not encoded only by color | PASS | PASS |
+| Primary labels remain practically readable at mobile embedding | PASS | PASS |
+| Ordinary chronology labels target approximately 10 CSS px at 375 px embedding; secondary cues defer detail to adjacent prose | PASS | PASS |
+| Privacy/editor metadata | PASS | PASS |
 
-- the implemented Visual 1 and Visual 3 are **sufficient for README drafting and layout work**;
-- they are **not yet accepted as publication-final visual design**;
-- publication-level visual refinement is intentionally deferred until after the Step 6 README draft exists;
-- `Human approval: APPROVED` is **not** granted at this stage and remains pending;
-- Visual 2 remains absent/pending authentic deterministic capture and must not be replaced by synthetic evidence;
-- Step 6 may reference the current Visual 1 and Visual 3 as working assets and must remain structurally valid if Visual 2 is absent;
-- later visual refinement may change composition, typography, spacing, hierarchy, and aesthetic treatment without reopening Step 4 or Step 5b, provided the validated technical semantics and evidence boundaries in `SNode.C/workflow/05-VISUALS.md` are preserved;
-- final publication still requires human visual approval of the refined assets.
+Computed WCAG contrast ratios for ordinary text against the immediate neutral
+surfaces are above 4.5:1: `#0F172A` on `#F8FAFC` = `17.06:1`, `#475569` on
+`#F8FAFC` = `7.24:1`, and foundation blue `#1D4ED8` on `#F8FAFC` = `6.41:1`.
+Equivalent ratios on white and `#EFF6FF` remain above 6:1 for the accent/muted
+text used there.
 
-This is an explicit maintainer-authorized workflow deviation from the normal human-approval gate between Step 5 and Step 6. It authorizes README drafting only; it does not approve the current visuals for publication.
+## Existing transitive visuals
+
+`layer-architecture.svg` and `configuration-model.svg` remain technically usable
+and in the publication dependency graph. Step 8 only replaced their leading
+`Inter` preference with explicit system/generic font stacks; their established
+composition was not redesigned. They render without external dependencies or
+privacy metadata. Their older visual language is non-blocking cosmetic debt.
+
+The older `protocol-upgrade.svg` remains in Landingpages history but is no longer
+in the publication dependency graph. Its compact direct factory-to-attach story
+is less precise than the validated staged replacement chronology, so
+`docs/architecture.md` now reuses the publication-final principal context-switch
+SVG instead of redesigning the historical figure.
+
+## Human workflow status
+
+The 29 August Step 6 deviation remains historical: Visual 1 and Visual 3 were
+allowed to support drafting before publication-final artwork existed. Step 8 now
+completes the non-human visual refinement and validation gates, but it does not
+grant human approval.
+
+**Human approval: PENDING.**
+Live `SNodeC/snode.c` publication is not authorized by this step.

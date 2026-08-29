@@ -127,12 +127,21 @@ A `SocketConnection` can replace its attached context. The previous context is
 detached with `DetachReason::ContextSwitch`; the next context attaches to the
 same established connection. HTTP-to-WebSocket upgrade is the clearest example.
 
-![HTTP context transitioning through an upgrade factory to a WebSocket context while the connection remains established](../assets/protocol-upgrade.svg)
+![HTTP-to-WebSocket context switch in SNode.C: an accepted HTTP Upgrade stages a replacement WebSocket context; after the current HTTP read callback, the HTTP context detaches for ContextSwitch, is removed, and the WebSocket SocketContextUpgrade attaches to the same established SocketConnection.](../assets/http-websocket-context-switch.svg)
 
-<sub>The address, socket, connection, and optional TLS state remain in place while application-protocol ownership moves to a WebSocket context.</sub>
+<sub>The replacement is staged while HTTP remains active; the same established connection continues through the switch.</sub>
 
-The server-side HTTP response examines the requested upgrade, selects an
-appropriate `SocketContextUpgradeFactory`, and creates the replacement context.
+On the server path, an accepted HTTP Upgrade selects the WebSocket upgrade
+factory, which creates the replacement `SocketContextUpgrade`. The HTTP response
+prepares `101 Switching Protocols`, and `setSocketContext(new)` stages the
+replacement while the HTTP context is still active. The upgrade-status or
+application callback calls `response->end()` to queue the `101`; the framework
+does not invoke that call automatically. After the current HTTP read callback
+returns, the old HTTP context detaches with `DetachReason::ContextSwitch` and is
+removed, the active-context pointer changes to the staged replacement, and the
+WebSocket `SocketContextUpgrade` attaches. The `SocketConnection` remains
+established throughout, so no second transport connection is created.
+
 WebSocket then adds its frame receiver/transmitter behavior and selects a
 subprotocol where configured. Upgrade factories and WebSocket subprotocol
 factories can be linked into the application; the current implementation also

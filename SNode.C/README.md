@@ -170,14 +170,16 @@ context around the shared event runtime. Custom `SocketContextFactory` and
 connection-local behavior.
 
 The connection/context split also permits a protocol transition without opening
-a second transport connection. During an HTTP-to-WebSocket upgrade, the
-WebSocket factory creates the replacement context and the HTTP path prepares the
-`101 Switching Protocols` response. `setSocketContext(new)` stages the
-replacement while the HTTP context is still active; the upgrade-status/application
-callback calls `response->end()` to queue the `101`. After the current HTTP read
-callback returns, the HTTP context detaches with
-`DetachReason::ContextSwitch`, the active pointer changes, and the WebSocket
-context attaches to the same `SocketConnection`.
+a second transport connection. After an HTTP Upgrade is accepted, the WebSocket
+upgrade factory is selected and creates the replacement `SocketContextUpgrade`;
+the HTTP path prepares the `101 Switching Protocols` response.
+`setSocketContext(new)` stages the replacement while the HTTP context remains
+active, and the upgrade-status/application callback calls `response->end()` to
+queue the `101`. After the current HTTP read callback returns, the HTTP context
+detaches with `DetachReason::ContextSwitch` and is removed, the active-context
+pointer changes to the staged replacement, and the WebSocket
+`SocketContextUpgrade` attaches. The same `SocketConnection` remains established;
+no second transport connection is created.
 
 ![HTTP-to-WebSocket context switch in SNode.C: an accepted HTTP Upgrade stages a WebSocket context; after the current HTTP read callback, the HTTP context detaches for ContextSwitch, the new context attaches, and the same SocketConnection remains established.](assets/http-websocket-context-switch.svg)
 

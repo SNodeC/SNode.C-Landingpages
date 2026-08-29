@@ -1,14 +1,13 @@
 # Current-master capability map
 
 [← SNode.C](../README.md) · [Architecture](architecture.md) ·
-[Configuration](configuration.md) · [Evidence register](../EVIDENCE.md)
+[Configuration](configuration.md)
 
 This page answers a narrow question: what is visible in the reviewed SNode.C
-source, and what did the landing-page qualification actually exercise?
+source, and what did the recorded qualification exercise?
 
 It is not a permanent support matrix. The public presentation tracks `master`,
-so every release candidate must refresh the source revision, dependency graph,
-tests, and runtime evidence before publication.
+and the evidence below remains scoped to the reviewed revision.
 
 **Reviewed baseline:** public `master` at
 [`bf01683`](https://github.com/SNodeC/snode.c/commit/bf01683a53b48220a840522e8ccaf3b48e58c240),
@@ -67,7 +66,8 @@ behavior should not be attributed to SNode.C itself.
 
 ## Build and dependency surface
 
-The qualified Debian/Ubuntu baseline uses:
+The reviewed Debian qualification environment used these package names for the
+base source-build path:
 
 ```sh
 sudo apt install --yes \
@@ -126,5 +126,4 @@ are:
 - [Releases](https://github.com/SNodeC/snode.c/releases)
 
 Dedicated public security, support, contribution, and compatibility policies
-remain launch gaps. The detailed claim ledger is maintained in the local
-[evidence register](../EVIDENCE.md).
+remain launch gaps.

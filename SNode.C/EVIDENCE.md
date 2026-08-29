@@ -52,3 +52,27 @@ The complete repository CTest suite remains a separate gate.
   composability need precise scope and evidence before public use.
 - V2 is captured from the real qualified server and client terminals. It is evidence for the
   documented IPv4 loopback result only, not for the unshown transport variants.
+
+## 29 August 2026 — current publication-status correction
+
+The Visual-2 statements above are preserved as historical evidence-register
+entries. They do **not** describe the current canonical publication package.
+Current publication status is governed by:
+
+- `SNode.C/workflow/05-VISUALS.md`;
+- `SNode.C/assets/src/IMPLEMENTATION.md`;
+- `SNode.C/workflow/07-FINAL-REVIEWS.md`; and
+- `SNode.C/workflow/08-PUBLICATION-READY.md`.
+
+As of the Step 8 publication-readiness pass, the repository has no validated
+`SNode.C/assets/src/echo-capture/` raw capture set and no publication-final
+`SNode.C/assets/echo-connection-evidence.png`. The historical
+`SNode.C/assets/echo-terminal.png` is not a publication substitute and is not in
+the publication dependency graph. No synthetic, redrawn, normalized, relabeled,
+or historical terminal image is used as Visual 2.
+
+A future Visual-2 pass must create a new authentic exact-revision capture set,
+preserve its raw screenshots/transcripts and reproduction metadata under the
+paths required by `workflow/05-VISUALS.md`, compose the final PNG without
+altering terminal output, and pass the documented rendered-width/privacy gates.
+Until then, the publication-final Visual-2 status is **ABSENT**.
