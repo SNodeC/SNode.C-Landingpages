@@ -92,21 +92,26 @@ cmake -S . -B cmake-build-release -G Ninja \
 cmake --build cmake-build-release --parallel \
   --target echoserver-legacy-in echoclient-legacy-in
 
-export PATH="$PWD/cmake-build-release/src/apps/echo:$PATH"
-export XDG_CONFIG_HOME="$(mktemp -d)"
+rm -rf cmake-build-release/echo-config
+mkdir -p cmake-build-release/echo-config
 ```
 
-Start the server:
+Start the server from the `snode.c` checkout:
 
 ```sh
-echoserver-legacy-in --log-level 4 --log-format text --monochrom=true \
+XDG_CONFIG_HOME="$PWD/cmake-build-release/echo-config" \
+  ./cmake-build-release/src/apps/echo/echoserver-legacy-in \
+  --log-level 4 --log-format text --monochrom=true \
   echoserver local --host 127.0.0.1 --port 18001
 ```
 
-Then start the client in a second terminal:
+Then, from the same checkout in a second terminal, start the client with the same
+isolated configuration directory:
 
 ```sh
-echoclient-legacy-in --log-level 4 --log-format text --monochrom=true \
+XDG_CONFIG_HOME="$PWD/cmake-build-release/echo-config" \
+  ./cmake-build-release/src/apps/echo/echoclient-legacy-in \
+  --log-level 4 --log-format text --monochrom=true \
   echoclient remote --host 127.0.0.1 --port 18001
 ```
 
@@ -190,16 +195,18 @@ that every theoretically possible combination has equivalent test coverage.
 
 The connection/context split also permits a real protocol transition without
 replacing the established connection. During an HTTP-to-WebSocket upgrade, the
-WebSocket factory creates the replacement context and the HTTP path prepares and
-queues the `101 Switching Protocols` response. `setSocketContext(new)` stages the
-replacement. After the current HTTP read callback returns, the HTTP context
+WebSocket factory is selected and creates the replacement context; the HTTP path
+prepares the `101 Switching Protocols` response. `setSocketContext(new)` stages
+the replacement; `response->end()` then queues the `101` through the still-active
+HTTP context. After the current HTTP read callback returns, the HTTP context
 detaches with `DetachReason::ContextSwitch`, the active pointer changes, and the
 WebSocket context attaches to the same `SocketConnection`.
 
 ![HTTP-to-WebSocket context switch in SNode.C: an accepted HTTP Upgrade stages a WebSocket context; after the current HTTP read callback, the HTTP context detaches for ContextSwitch, the new context attaches, and the same SocketConnection remains established.](../assets/http-websocket-context-switch.svg)
 
-*An HTTP Upgrade stages the replacement context and queues the `101 Switching
-Protocols` response; after the current read callback, the old context is removed,
+*An HTTP Upgrade prepares the replacement context and `101 Switching Protocols`
+response; `setSocketContext(new)` stages the replacement before `response->end()`
+queues the response. After the current read callback, the old context is removed,
 the active pointer changes, and the WebSocket context attaches to the same
 connection.*
 
