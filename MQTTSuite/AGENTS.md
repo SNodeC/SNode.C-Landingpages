@@ -1,8 +1,10 @@
 # AGENTS.md — MQTTSuite landing page
 
 These instructions supplement the root [`AGENTS.md`](../AGENTS.md) for all work
-under `MQTTSuite/`. Follow the shared [page system](../PAGE-SYSTEM.md) and this
-directory's [proposal](PROPOSAL.md).
+under `MQTTSuite/`. Follow the shared [page-system principles](../PAGE-SYSTEM.md),
+the canonical [README workflow](../workflow/README-WORKFLOW.md), and the
+[README governance](../workflow/README-GOVERNANCE.md). This directory's
+[proposal](PROPOSAL.md) is research/design input rather than a fixed layout.
 
 ## What it solves
 
@@ -18,9 +20,9 @@ Focus on the five applications as one coherent MQTT 3.1.1 toolkit and show how
 an operator or integrator chooses and combines them. Lead with a visible local
 message flow, then demonstrate the complete synthetic integration scenario.
 
-Give MQTTBroker, MQTTIntegrator, MQTTBridge, MQTTCli, and MQTTStore equal
-editorial treatment. Use the Web UI as real product evidence, not as a reason to
-present MQTTSuite as only a broker.
+Give MQTTBroker, MQTTIntegrator, MQTTBridge, MQTTCli, and MQTTStore appropriate
+editorial treatment according to the reader journey. Use the Web UI as real
+product evidence, not as a reason to present MQTTSuite as only a broker.
 
 ## Project boundaries
 
@@ -78,16 +80,15 @@ A qualified visitor should be able to:
 ## Approved decisions
 
 - Primary CTA: run MQTTBroker and publish the first message with MQTTCli.
-- The hero presents all five applications with equal weight.
-- The quick-start proof shows broker, subscriber, and publisher panes.
+- The five applications are all represented clearly, without forcing equal
+  section or visual weight.
+- The quick-start proof shows broker, subscriber, and publisher behavior.
 - The canonical scenario uses `edge-lab/room-01/temperature` and
   `{"value":21.7,"unit":"C"}` consistently.
-- The scenario figure covers broker, Web UI, integrator, bridge, store, remote
-  broker, MariaDB, and MQTTCli verification without becoming a configuration
-  reference.
-- Use the approved nine-section map, shared word target, V1–V4 assets, and social
-  preview.
-- A separate bridge-topology figure is not an additional launch visual slot.
+- The broker/integrator/bridge/store flow is the narrative centerpiece.
+- Earlier hero, terminal-proof, integration-scenario, Web-UI, and bridge-topology
+  concepts are candidate visuals rather than mandatory V1–V4 slots. Step 4
+  chooses the visual inventory; Step 5 validates and finalizes it.
 
 ## Source-code alignment and proof
 
@@ -140,10 +141,10 @@ cmake --install "$BUILD_DIR" --prefix "$INSTALL_PREFIX"
 ```
 
 The public quick start must use current compatible SNode.C and MQTTSuite master
-heads and record their exact tested SHAs,
-start only the required local listener, show an MQTTCli subscriber and publisher,
-include expected output, and explain teardown. Do not copy the live README's
-long all-instances configuration sequence without qualification.
+heads and record their exact tested SHAs, start only the required local listener,
+show an MQTTCli subscriber and publisher, include expected output, and explain
+teardown. Do not copy the live README's long all-instances configuration
+sequence without qualification.
 
 ## Common misconceptions
 
@@ -170,10 +171,13 @@ long all-instances configuration sequence without qualification.
 ## Validation
 
 - Complete the broker/subscriber/publisher quick start from clean current-master
-  checkouts and compare the V2 screenshot with actual output.
-- Run the canonical `edge-lab` scenario and verify every arrow in V3.
-- Confirm each application receives equal space in the centerpiece table.
-- Check MQTT 5 status and every protocol/transport cell explicitly.
+  checkouts and compare any approved terminal proof with actual output.
+- Run the canonical `edge-lab` scenario and verify every runtime arrow used in
+  approved Step 5 visuals.
+- Confirm all five applications are represented clearly enough for project
+  selection without forcing equal page-space quotas.
+- Check MQTT 5 status and every protocol/transport claim explicitly.
 - Review TLS, credentials, persistence, loop, storage, and monitoring language
   with the relevant evidence.
-- Verify V1–V4, social preview, captions, alt text, links, and exact names.
+- Verify approved Step 4/Step 5 visuals, social preview if used, captions, alt
+  text, links, and exact names.
