@@ -1,135 +1,93 @@
 # SNode.C landing-page system
 
-[← Workspace roadmap](README.md) · [Implementation roadmap](LAUNCH-ROADMAP.md) ·
-[Fact register](FACTS.md)
+[← Workspace roadmap](README.md) · [Canonical workflow](workflow/README-WORKFLOW.md) ·
+[README governance](workflow/README-GOVERNANCE.md) · [Fact register](FACTS.md)
 
-**Status:** Approved planning baseline, 28 August 2026
+**Status:** Shared design and capture principles for the canonical README redesign.
 
-This document is the shared source of truth for the organization profile and
-four repository landing pages developed in this workspace. Product-specific
-content, screenshots, and figures are specified in each presentation's
-`PROPOSAL.md`. Public-facing copy belongs in the corresponding working
-`README.md` only after the content plan and technical facts are approved.
+This document defines the common editorial, visual, capture, accessibility, and
+asset principles for the SNode.C organization profile and the SNode.C,
+MQTTSuite, AISuite, and CodexUI landing pages.
 
-The live local repositories are read-only knowledge sources. Their current
-README structures and wording are not templates and do not need to be
-preserved. No implementation work from this workspace may modify those live
-repositories.
+It is **not** a fixed README template. The canonical process is defined in
+`workflow/README-WORKFLOW.md`, and presentation conflicts are resolved by
+`workflow/README-GOVERNANCE.md`.
 
-## Approved editorial direction
+The earlier nine-section, fixed word-count, and mandatory V1–V4 system is no
+longer binding. Git history preserves that planning baseline. Existing proposals,
+READMEs, figures, screenshots, and social previews remain research/provenance
+inputs until replaced or explicitly approved.
+
+## Editorial direction
 
 - Write for experienced developers and technical evaluators.
 - Lead with outcomes, evidence, and the shortest useful evaluation path.
 - Use concise, technically precise, GitHub-native Markdown.
 - Never invent versions, compatibility, performance, security, platform, or
   maturity claims.
-- Treat every claim from a live README as a candidate fact until it is verified
-  against current public `master`/`HEAD` and supporting evidence.
-- Replace the working landing-page READMEs completely after plan approval; use
-  the live READMEs only as technical source material.
+- Treat claims from existing READMEs as candidate facts until verified against
+  current public `master`/`HEAD` and supporting evidence.
 - Keep detailed configuration and reference material out of the landing-page
-  narrative. Link to qualified documentation when it exists.
+  narrative unless it is essential to first success.
+- Link to qualified deeper documentation when it exists.
+- Prefer omission over completeness.
 - Keep all pages useful when images fail to load.
 
-## Shared product-page architecture
+## Reader journey and page structure
 
-The four repository landing pages use the same nine-part system. Section names
-may be adapted to the product, but their purpose and relative weight remain
-consistent.
+Each project decides its actual reader journey in
+`<Project>/workflow/04-README-DESIGN.md`.
 
-1. **Hero** — name, outcome, verified version/maturity, no more than three
-   badges, primary links, and visual slot V1.
-2. **What it enables** — three to five user outcomes or differentiators.
-3. **Quick start** — one qualified first-success path, expected result, and
-   visual slot V2.
-4. **Product centerpiece** — programming model, application suite, developer
-   integration, or user workflow.
-5. **Capabilities and limitations** — compact verified matrix with explicit
-   limits and non-goals.
-6. **Architecture** — boundaries, ownership, data flow, ecosystem relationship,
-   and visual slot V3.
-7. **Installation and compatibility** — supported paths, exact dependencies,
-   tested platforms, and version combinations.
-8. **Examples, deployment, or quality evidence** — the product-specific proof
-   section and visual slot V4.
-9. **Documentation and project routes** — documentation, support, security,
-   contribution, roadmap, and licenses.
+Section count, prose length, tables, and visual count are design outcomes, not
+compliance targets. Useful building blocks include:
 
-### Content balance
+- an outcome-led hero;
+- a concise explanation of what the project enables;
+- one qualified first-success path with expected result;
+- one project-specific centerpiece;
+- capabilities and limitations where useful;
+- architecture or workflow explanation where it improves understanding;
+- installation/requirements information needed for evaluation;
+- deeper documentation, support, security, contribution, roadmap, and license
+  routes where those destinations exist.
 
-Each product page targets:
+These elements do not have to become separate top-level sections or appear in a
+fixed order.
 
-- nine primary sections, with at most one additional section where clarity
-  requires it;
-- approximately 1,300–1,600 words of prose, excluding commands, tables, and
-  captions;
-- one principal quick start;
-- one product-specific centerpiece;
-- one capabilities/limitations table;
-- one compatibility or requirements table;
-- four in-page visual slots plus one social preview;
-- the same compact trust and community footer structure.
+## Visual inventory
 
-Product complexity must not determine promotional weight. MQTTSuite summarizes
-its five applications rather than reproducing five manuals. AISuite and CodexUI
-receive sufficient workflow, integration, compatibility, and trust content to
-match the depth of the more established SNode.C and MQTTSuite pages.
+Step 4 should normally propose **2–3 meaningful in-page visuals** per project.
+This is a design default, not a quota. Fewer or more are acceptable when the
+storyboard gives a clear reason. A social preview is separate from the in-page
+visual count.
 
-## Organization-profile architecture
+Do not add a visual merely to create symmetry across projects. Every visual must
+communicate something that is materially faster or clearer than prose alone.
 
-The organization profile is a scalable navigator rather than a fixed showcase
-of the current four repositories. It targets approximately 900–1,100 words and
-uses this structure:
+The four projects share a visual language but have different narrative centers:
 
-1. ecosystem hero and navigation;
-2. outcome-oriented "What you can build" paths;
-3. extensible project directory;
-4. stable layer-based ecosystem architecture;
-5. evaluation-route chooser;
-6. evidence, compatibility, and trust summary;
-7. community and contribution routes.
+- **SNode.C:** programming model;
+- **MQTTSuite:** MQTT applications and message flows;
+- **AISuite:** typed AI middleware and bridge architecture;
+- **CodexUI:** real user workflow and UI;
+- **Organization:** ecosystem navigation.
 
-### Extensible project directory
+## Organization profile
 
-Never describe the catalog as containing a fixed number of projects. Organize
-entries under categories that can grow, initially:
+The organization profile is a scalable navigator rather than a fixed showcase.
+It should let visitors understand the ecosystem, choose the right project, and
+reach an evaluation route quickly.
+
+Never describe the catalog as containing a permanent number of projects.
+Organize entries under extensible categories, initially:
 
 - **Foundations**;
 - **Protocols and integrations**;
 - **Applications and interfaces**;
 - **Tools and examples**, when populated.
 
-Every project entry uses the same fields:
-
-```text
-Project name
-Category · verified maturity
-One-sentence outcome.
-Best for: primary audience or job.
-Repository · Documentation · Quick start
-```
-
-Adding a project should require one identity asset and one standard entry, not a
-new layout. "Featured projects" may highlight a subset, but a complete "All
-projects" directory remains available. The architecture diagram represents
-stable ecosystem layers; it is not the navigation mechanism and does not encode
-a permanent project count.
-
-## Visual placement system
-
-Every product page uses the same visual rhythm.
-
-| Slot | Placement | Purpose | Typical format |
-| --- | --- | --- | --- |
-| V1 — Hero | Immediately after the headline, description, badges, and primary links | Explain the product in one glance | Full-width SVG or real UI composite |
-| V2 — First success | Directly after quick-start commands and expected result | Prove the evaluation path works | Terminal or application screenshot |
-| V3 — Architecture | Inside the architecture or "How it works" section | Explain components, boundaries, and data flow | Theme-aware SVG |
-| V4 — Product detail | After the product-specific centerpiece or proof section | Explain the distinguishing behavior | SVG, annotated screenshot, or two-panel figure |
-| Social preview | Repository metadata; not a dominant README image | Present the project consistently when shared | 1280×640 PNG |
-
-Do not stack all visuals at the top. A page should alternate concise text,
-commands or tables, and meaningful visuals so it remains scannable without
-becoming a promotional microsite.
+Adding a project should not require redesigning the organization profile.
+Architecture graphics must not be the only navigation mechanism.
 
 ## Visual language
 
@@ -141,20 +99,21 @@ becoming a promotional microsite.
 - No generic AI brains, stock network imagery, animated typing, autoplay media,
   decorative GIFs, or dense badge walls.
 - No fragile multi-column HTML card grid as the only navigation mechanism.
-- Native Markdown is preferred; minimal HTML is permitted for theme-aware
-  images when it improves accessibility.
+- Native Markdown is preferred; minimal HTML is permitted when it materially
+  improves accessibility or theme behavior.
 
 ### Product accents
 
-Final colors require contrast testing. Their approved semantic roles are:
+Current semantic roles are provisional until final design approval and contrast
+validation:
 
 - SNode.C — foundation blue;
 - MQTTSuite — IoT green;
 - AISuite — protocol violet;
 - CodexUI — interface amber.
 
-The neutral organization palette anchors the system. Product identity must also
-use labels, icons, and shapes so color is never the only distinction.
+Color must never be the only project distinction; labels, icons, shapes, and
+content hierarchy also carry meaning.
 
 ### Diagram grammar
 
@@ -162,25 +121,27 @@ use labels, icons, and shapes so color is never the only distinction.
 - Dashed arrows mean package or build dependencies.
 - Containers show process, thread, authority, or trust boundaries and must be
   labeled explicitly.
-- Node shapes, arrowheads, border weights, typography, spacing, and captions are
-  shared across every figure.
+- Node shapes, arrowheads, border weights, typography, spacing, and captions
+  should be consistent across the family.
 - Diagrams must not imply that every theoretically composable combination is
   tested or supported.
-- Editable sources are committed beside the exported assets.
+- Editable sources are committed beside or under the exported asset tree.
 
 ## Asset and capture specification
 
-### Standard dimensions
+### Dimensions
 
-- hero and screenshot canvas: approximately 1600×900 or 1600×800;
-- architecture SVG `viewBox`: approximately `0 0 1200 675`;
-- wide hero SVG `viewBox`: approximately `0 0 1600 900`;
-- social preview: exactly 1280×640 PNG;
-- all content images: readable when rendered at GitHub content width.
+Use dimensions appropriate to the final composition rather than forcing every
+visual into the same canvas. Practical defaults are:
+
+- screenshots and hero composites: about 1600×900 or 1600×800;
+- architecture/wide SVGs: view boxes sized for GitHub content width;
+- social preview: 1280×640 PNG;
+- all content images: readable at GitHub content width and on mobile.
 
 SVG is preferred for diagrams. PNG is preferred for sharp UI and terminal
-captures. Assets must be optimized without making interface text or terminal
-output difficult to read.
+captures. Optimize assets without making interface text or terminal output hard
+to read.
 
 ### Asset layout
 
@@ -197,46 +158,40 @@ publication.
 
 ### Screenshot rules
 
-- Capture real, qualified current-master builds; never present a mockup as shipped
-  functionality.
-- Use consistent scale, theme, crop, window treatment, and visual density.
+- Capture real, qualified current-master builds; never present a mockup as
+  shipped functionality.
+- Use consistent scale, crop, window treatment, and visual density within a
+  project.
 - Use synthetic repositories, topics, threads, prompts, payloads, and telemetry.
 - Show a meaningful successful state, not an empty interface.
 - Remove usernames, home paths, hostnames, LAN addresses, tokens, credentials,
   certificates, real prompts, bookmarks, unrelated applications, and shell
   history.
 - Use a generic `$` prompt when terminal chrome or identity adds no value.
-- State the tested version and environment in the surrounding text or caption.
-- Capture from the same exact master commits used to verify the README commands.
+- State tested version/environment in surrounding text or provenance records.
+- Capture from the same exact master commits used to verify README commands.
 
 ### Reproducible interactive capture
 
-Interactive desktop evidence may be staged in an isolated Xvfb display. This
-keeps the capture independent of the maintainer's foreground desktop while still
-exercising the real application with ordinary keyboard and pointer input.
+Interactive desktop evidence may be staged in an isolated Xvfb display.
 
-- Start the qualified binary in a dedicated Xvfb display; never capture the
+- Start the qualified binary in a dedicated display; never capture the
   maintainer's live desktop or unrelated windows.
-- Drive only deterministic, source-aligned synthetic scenarios. Input
-  automation may select threads, submit safe prompts, switch transports, and
-  expose documented states, but it must not simulate behavior the build does
-  not implement.
-- Record the binary revisions, launch arguments, display geometry, input steps,
-  and synthetic fixture used for each final capture so the scene can be
-  reproduced after a source update.
-- Render UI and terminal sources at 2× density where practical (normally
-  3200×1800, or the native window's equivalent 2× geometry), then downsample
-  once to a consistent 1600×900 final canvas.
-- Preserve the real application chrome and meaningful state. Composition may
-  crop, label, and align qualified captures, but must not redraw controls,
-  replace application content, or conceal relevant limitations.
-- Overwrite the canonical asset filename after review; keep editable sources
-  and capture automation under `assets/src/` rather than accumulating ambiguous
-  alternate exports.
+- Drive only deterministic, source-aligned synthetic scenarios.
+- Record binary revisions, launch arguments, geometry, input steps, and fixture
+  state for each final capture.
+- Render at high density where practical, then downsample once to the final
+  canvas.
+- Preserve real application chrome and meaningful state. Composition may crop,
+  label, and align qualified captures, but must not redraw controls, replace
+  application content, or conceal relevant limitations.
+- Overwrite the canonical approved asset after review; keep editable sources and
+  capture automation under `assets/src/` rather than accumulating ambiguous
+  alternates.
 
 ### Synthetic data baseline
 
-Use a stable, clearly fictional data set where it fits the product:
+Use a stable, clearly fictional data set where it fits:
 
 - scenario: `edge-lab`;
 - MQTT topic: `edge-lab/room-01/temperature`;
@@ -251,31 +206,34 @@ a runtime integration that does not exist.
 ## Accessibility and theme behavior
 
 - Every meaningful image receives concise, information-bearing alt text.
-- Every figure receives a short caption immediately below it.
+- Every meaningful figure receives a short useful caption when the surrounding
+  prose does not already provide that context.
 - Important information is repeated in text; screenshots are never the only
   instructions or proof.
 - Test SVGs and screenshots in GitHub light and dark modes.
-- Use light/dark variants through a minimal `<picture>` element when one neutral
-  asset cannot maintain contrast.
-- Avoid text embedded at sizes that become unreadable on mobile.
+- Use light/dark variants through minimal HTML only when one neutral asset cannot
+  maintain contrast.
+- Avoid embedded text sizes that become unreadable on mobile.
 - Ensure pages remain navigable with images disabled.
 
-## Approved product visual decisions
+## Product-specific visual direction
 
-- **SNode.C:** compact echo example; code-to-result hero; echo terminal proof;
-  programming-model and layer-architecture figures.
-- **MQTTSuite:** five-application hero; broker/subscriber/publisher terminal
-  proof; canonical `edge-lab` integration scenario; real broker Web UI evidence.
-- **AISuite:** current-master C++/TypeScript multi-client bridge hero;
-  bridge/client terminal proof; authority boundaries; shared typed-generation
-  flow. Do not imply npm publication or a built CodexWebUI artifact.
-- **CodexUI:** real native/browser product hero; shared first-workflow proof;
-  native Qt/socketpair and browser/TypeScript paths converging at AISuite;
-  combined state-and-reconnect figure with platform differences labeled.
-- **Organization:** brand-level hero without a fixed project count; reusable
-  project identities; layer-based architecture; extensible evaluation routes.
+These are starting points, not mandatory asset lists:
 
-## Approved evaluation strategy
+- **SNode.C:** code-to-result/programming-model communication and real echo proof
+  where useful.
+- **MQTTSuite:** the five applications and a representative MQTT message flow,
+  supported by real broker/CLI/UI evidence where useful.
+- **AISuite:** client types converging on the bridge/app-server boundary,
+  authority separation, and typed-generation flow where useful.
+- **CodexUI:** real native/browser UI and a representative workflow; architecture
+  should support rather than dominate the visible product story.
+- **Organization:** ecosystem navigation and stable layer relationships without a
+  fixed project count.
+
+Step 4 and Step 5 decide the final visual inventory and filenames.
+
+## Ecosystem evaluation strategy
 
 The organization uses one `Run a demo` entry point with two honest tracks:
 
@@ -288,7 +246,7 @@ later justifies it.
 ## Facts that remain unresolved
 
 Approval of this page system does not approve technical release claims. Before
-publication, the project proposals still require verified or owner-approved:
+publication, the workflow still requires verified or owner-approved:
 
 - versions and maturity labels;
 - canonical repository and documentation URLs;
@@ -296,13 +254,12 @@ publication, the project proposals still require verified or owner-approved:
 - supported platforms and dependencies;
 - release artifacts and tested commands;
 - protocol, security, performance, and parity claims;
-- owner approval of the produced logo/color system and launch visuals, plus a
-  final freshness check against the release-candidate evidence.
+- final visual identity and freshness against the publication candidate.
 
 ## Publication boundary
 
-Planning decisions live in this document and the five proposals. The working
-landing-page READMEs contain only public-facing presentation copy after approval.
-Production publication happens through reviewed changes to canonical
-repositories at a later stage; this workspace must never modify the live local
-repositories directly.
+Workflow decisions live in the canonical workflow artifacts. The working
+landing-page READMEs contain only public-facing presentation copy after the
+corresponding writing stage. Production publication happens through reviewed
+changes to canonical repositories later; this workspace must never modify the
+live local source repositories directly.
