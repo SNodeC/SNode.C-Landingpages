@@ -4,6 +4,23 @@ These instructions apply to the complete `SNode.C-Landingpages` workspace.
 Nested `AGENTS.md` files add project-specific facts and may narrow these rules
 for their subtree. They do not authorize changes outside this repository.
 
+## Canonical AI handoff workflow
+
+For the AI-assisted README redesign, follow
+[`workflow/README-WORKFLOW.md`](workflow/README-WORKFLOW.md) as the canonical
+process and handoff specification.
+
+**No AI step may rely on previous chat history. Every workflow step must read its
+declared Markdown inputs from this repository and save its complete result to
+the declared output Markdown file.**
+
+This rule makes ChatGPT, Codex, Claude, and human review interchangeable across
+sessions without depending on hidden or conversational state. When a workflow
+artifact and remembered chat context disagree, the repository artifact is the
+handoff source of truth. The workflow governs process and handoff; all remaining
+scope, safety, source-verification, and publication rules in this file continue
+to apply.
+
 ## Required scoped-instruction loading
 
 When a run starts from the repository root, do not rely on native instruction
