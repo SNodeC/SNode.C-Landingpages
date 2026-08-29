@@ -67,3 +67,18 @@ The exported SVGs were rendered from their actual SVG markup, not inferred from 
 - no credentials, usernames, hostnames, local paths, LAN addresses, certificates, or unrelated data in exported assets.
 
 Result: both SVGs pass the implementation-stage light, dark, desktop, mobile, monochrome, and privacy checks. Human visual approval remains pending.
+
+## Human workflow decision — proceed to Step 6 with deferred visual refinement
+
+Human maintainer decision recorded on 29 August 2026:
+
+- the implemented Visual 1 and Visual 3 are **sufficient for README drafting and layout work**;
+- they are **not yet accepted as publication-final visual design**;
+- publication-level visual refinement is intentionally deferred until after the Step 6 README draft exists;
+- `Human approval: APPROVED` is **not** granted at this stage and remains pending;
+- Visual 2 remains absent/pending authentic deterministic capture and must not be replaced by synthetic evidence;
+- Step 6 may reference the current Visual 1 and Visual 3 as working assets and must remain structurally valid if Visual 2 is absent;
+- later visual refinement may change composition, typography, spacing, hierarchy, and aesthetic treatment without reopening Step 4 or Step 5b, provided the validated technical semantics and evidence boundaries in `SNode.C/workflow/05-VISUALS.md` are preserved;
+- final publication still requires human visual approval of the refined assets.
+
+This is an explicit maintainer-authorized workflow deviation from the normal human-approval gate between Step 5 and Step 6. It authorizes README drafting only; it does not approve the current visuals for publication.
