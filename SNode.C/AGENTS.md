@@ -1,8 +1,10 @@
 # AGENTS.md — SNode.C landing page
 
 These instructions supplement the root [`AGENTS.md`](../AGENTS.md) for all work
-under `SNode.C/`. Follow the shared [page system](../PAGE-SYSTEM.md) and this
-directory's [proposal](PROPOSAL.md).
+under `SNode.C/`. Follow the shared [page-system principles](../PAGE-SYSTEM.md),
+the canonical [README workflow](../workflow/README-WORKFLOW.md), and the
+[README governance](../workflow/README-GOVERNANCE.md). This directory's
+[proposal](PROPOSAL.md) is research/design input rather than a fixed layout.
 
 ## What it solves
 
@@ -79,9 +81,10 @@ A qualified visitor should be able to:
 
 - Primary outcome: build event-driven network applications in modern C++.
 - Primary first success: a compact echo server/client example.
-- Use the approved nine-section final map and shared product-page word target.
-- V1 is a code-to-result hero; V2 is real echo terminal proof; V3 is the
-  programming model; V4 is the layer architecture.
+- The programming model is the README's narrative centerpiece.
+- Earlier code-to-result, echo-terminal, programming-model, and layer-architecture
+  visual ideas are useful candidates, not mandatory V1–V4 slots. Step 4 chooses
+  the visual inventory; Step 5 validates and finalizes it.
 - Capabilities must distinguish available, tested, optional, and planned scope.
 - Performance or footprint appears only when reproducible evidence is ready.
 - Existing live README material is knowledge input only; rewrite independently.
@@ -137,12 +140,12 @@ cmake --install "$BUILD_DIR" --prefix "$INSTALL_PREFIX"
 
 Before publication, replace variables with clearly introduced paths, use the
 current public master head, record its exact SHA, document mandatory and
-optional dependencies, and test the
-echo commands and downstream `find_package` consumer from clean environments.
-Do not reuse moving-branch clone/install instructions as a stable quick start.
-The transport examples must include a qualified mutual-TLS echo path as well
-as concise plain IPv4, IPv6, and Unix-domain variants; do not reduce SNode.C's
-networking presentation to clear-text TCP alone.
+optional dependencies, and test the echo commands and downstream `find_package`
+consumer from clean environments. Do not reuse moving-branch clone/install
+instructions as a stable quick start. The transport examples must include a
+qualified mutual-TLS echo path as well as concise plain IPv4, IPv6, and
+Unix-domain variants; do not reduce SNode.C's networking presentation to
+clear-text TCP alone.
 
 ## Common misconceptions
 
@@ -172,7 +175,8 @@ networking presentation to clear-text TCP alone.
 - Build and run the echo path from a clean temporary checkout of current master.
 - Confirm the first example communicates the object model without horizontal
   scrolling or unexplained internal types.
-- Verify every capability-table cell against build/test evidence.
+- Verify every capability claim against build/test evidence.
 - Ensure MQTT, AISuite, and CodexUI remain brief ecosystem examples.
 - Check Node.js wording for false compatibility implications.
-- Verify license identifiers, commands, links, V1–V4 assets, and alt text.
+- Verify license identifiers, commands, links, approved Step 4/Step 5 visuals,
+  captions, and alt text.
