@@ -1,8 +1,10 @@
 # AGENTS.md — SNode.C organization profile
 
 These instructions supplement the root [`AGENTS.md`](../AGENTS.md) for all work
-under `SNode.C-orga/`. Follow the shared [page system](../PAGE-SYSTEM.md) and this
-directory's [proposal](PROPOSAL.md).
+under `SNode.C-orga/`. Follow the shared [page-system principles](../PAGE-SYSTEM.md),
+the canonical [README workflow](../workflow/README-WORKFLOW.md), and the
+[README governance](../workflow/README-GOVERNANCE.md). This directory's
+[proposal](PROPOSAL.md) is research/design input rather than a fixed layout.
 
 ## What it solves
 
@@ -18,8 +20,8 @@ clear next actions. Present the organization as a coherent but extensible home
 for networking foundations, protocols and integrations, applications and
 interfaces, and future tools or examples.
 
-The profile is a front door, not a product manual. Give current projects equal
-prominence and make adding future projects structurally routine.
+The profile is a front door, not a product manual. Give current projects clear
+and balanced representation while making future additions structurally routine.
 
 ## Project boundaries
 
@@ -72,10 +74,11 @@ Within five minutes, a visitor should be able to:
 
 ## Approved decisions
 
-- Target 900–1,100 prose words and the approved seven-section public map.
+- The organization profile is an extensible ecosystem navigator; Step 4 decides
+  its final reader journey, section count, prose length, and visual inventory.
 - Use category-based, repeatable project entries with identity, category,
   verified maturity, outcome, best-fit audience, repository, documentation, and
-  quick-start links.
+  quick-start links where those facts/routes are verified.
 - Initial categories are `Foundations`, `Protocols and integrations`, and
   `Applications and interfaces`; add `Tools and examples` when populated.
 - The current directory begins with SNode.C, MQTTSuite, AISuite, and CodexUI but
@@ -83,21 +86,23 @@ Within five minutes, a visitor should be able to:
 - Use one `Run a demo` destination with two routes:
   1. SNode.C → MQTTSuite;
   2. SNode.C → AISuite → CodexUI.
-- Use the exact V1–V4 and social-preview assets specified in `PROPOSAL.md`.
+- Earlier organization hero, project identity, architecture, route, and social
+  preview concepts are candidate visual/design inputs rather than mandatory
+  V1–V4 slots or filenames. Step 4/Step 5 choose and validate the final set.
 - Draft the organization profile early if useful, but finalize and publish it
   after product destinations and proof links are stable.
 
 ## Source-code alignment and proof
 
 Every technical statement in a project entry, use case, architecture label, or
-evaluation route must be backed by the corresponding project's exact tagged
-source and evidence. Verify product roles and dependency arrows against build
-manifests and public targets; verify runtime arrows against implementation and
-integration tests; verify visible outcomes with reproducible runs.
+evaluation route must be backed by the corresponding project's exact tagged or
+selected source and evidence. Verify product roles and dependency arrows against
+build manifests and public targets; verify runtime arrows against implementation
+and integration tests; verify visible outcomes with reproducible runs.
 
 Do not infer ecosystem behavior merely because repositories are related or use
 similar terminology. The profile may summarize verified project evidence, but
-it must not broaden its scope. Record stable tagged-source, test, release, and
+it must not broaden its scope. Record stable source, test, release, and
 documentation links for every material summary claim before publication.
 
 ## Candidate facts — verify
@@ -136,8 +141,10 @@ expected output, teardown, and troubleshooting.
 ## Validation
 
 - Add a hypothetical fifth project and confirm the directory still works.
-- Confirm all current projects receive equal entry structure and visual weight.
+- Confirm all current projects are clear and discoverable without forcing equal
+  word or visual quotas.
 - Confirm every directory action leads to a production destination.
-- Confirm the architecture and route figures do not act as the only navigation.
+- Confirm architecture/route figures do not act as the only navigation.
 - Confirm no fixed project count or false all-product runtime flow appears.
 - Test signed-out, mobile, light-mode, dark-mode, and image-disabled rendering.
+- Verify approved Step 4/Step 5 visuals, captions, alt text, and links.
