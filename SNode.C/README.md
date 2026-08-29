@@ -2,25 +2,35 @@
 
 **Event-driven network clients and servers in C++20**
 
-One recurring model: configure an endpoint, take the connection it establishes,
-and attach protocol behavior to that connection while the event loop drives
-lifecycle and I/O. Application behavior stays connection-local; socket and
-dispatch mechanics stay outside it.
+SNode.C is a C++20 networking framework for building network clients, servers,
+and protocol endpoints around a shared event-driven runtime. It centralizes
+connection lifecycle, event dispatch, stream/TLS mechanics, and endpoint
+configuration so protocol code can stay focused on what happens on one
+connection.
+
+The core model is connection-local: a configured `SocketServer` or
+`SocketClient` establishes a `SocketConnection`; that connection asks its
+endpoint flow's `SocketContextFactory` for the `SocketContext` that handles
+protocol and application events. The same model is used by custom stream
+protocols and the framework's HTTP, WebSocket, EventSource/SSE, and MQTT 3.1.1
+components.
 
 **C++20** ·
 [MIT OR LGPL-3.0-or-later](https://github.com/SNodeC/snode.c/blob/master/LICENSE)
 
 **[Run the echo pair](#run-the-echo-pair)** ·
-**[Programming model](#programming-model)** ·
+**[See the programming model](#the-programming-model)** ·
+**[Check capabilities](#capabilities-at-a-glance)** ·
 **[Browse examples](https://github.com/SNodeC/snode.c/tree/master/src/apps)**
 
-## Programming model
+## The programming model
 
-A configured `SocketServer` follows `listen → accept`; a `SocketClient` follows
-the connect path. Each endpoint flow retains its own `SocketContextFactory`, and
-both paths converge on an established `SocketConnection`. The connection calls
-its retained factory with `create(this)`; the factory returns the per-connection
-`SocketContext`. One context is active for a connection at a time.
+Start with the lifecycle rather than the protocol list. A `SocketServer` follows
+the listen/accept path and a `SocketClient` follows the connect path. Each
+endpoint flow retains its own `SocketContextFactory`. Once a transport
+connection is established, its `SocketConnection` calls that retained factory
+with `create(this)`; the returned `SocketContext` becomes the connection-local
+protocol/application behavior. One context is active for a connection at a time.
 
 <picture>
   <source media="(max-width: 600px)" srcset="assets/programming-model-mobile.svg">
@@ -29,14 +39,14 @@ its retained factory with `create(this)`; the factory returns the per-connection
 
 | Role | Responsibility |
 | --- | --- |
-| `SocketServer` / `SocketClient` | Configured endpoints; each flow retains its own factory. |
-| `SocketConnection` | Established stream and owner of the active context. |
-| `SocketContextFactory` | Creates connection-local behavior for its connection. |
-| `SocketContext` | Per-connection protocol and application callbacks. |
-| Event loop | `start()` dispatches descriptor, timer, lifecycle, and data work. |
+| `SocketServer` / `SocketClient` | Configure and initiate the server or client endpoint flow. |
+| `SocketConnection` | Own the established stream and its active context. |
+| `SocketContextFactory` | Create connection-local behavior for that endpoint flow. |
+| `SocketContext` | Handle protocol/application callbacks for one connection. |
+| Event loop | Dispatch descriptor, timer, lifecycle, and data work. |
 
 The supplied [echo context](https://github.com/SNodeC/snode.c/blob/bf01683a53b48220a840522e8ccaf3b48e58c240/src/apps/echo/model/EchoSocketContext.cpp)
-shows how a context handles its connection:
+shows what connection-local behavior looks like:
 
 ```cpp
 void EchoSocketContext::onConnected() {
@@ -62,14 +72,16 @@ it. SNode.C does not create a framework worker pool, so a blocking or
 long-running callback delays other work on that loop. Applications may introduce
 their own concurrency.
 
-A connection can replace its active context without replacing the underlying
-`SocketConnection`; the [HTTP-to-WebSocket upgrade](#architecture-and-extension-points)
-below is a concrete implementation of that mechanism.
+Because the context is separate from the connection, SNode.C can replace the
+active context while retaining the established `SocketConnection`. The
+[HTTP-to-WebSocket transition](#architecture-and-extension-points) below is a
+concrete use of that mechanism.
 
 ## Run the echo pair
 
-The shortest independently qualified path is the supplied plain IPv4 echo server
-and client on loopback.
+The supplied plain IPv4 echo server and client are the shortest independently
+qualified way to see the endpoint/connection/context lifecycle running on
+loopback.
 
 For this source-build path, provide Git, a project-accepted C++20 compiler,
 CMake 3.18+, Ninja, pkg-config, OpenSSL development files, and nlohmann/json
@@ -95,8 +107,8 @@ mkdir -p cmake-build-release/echo-config
 ```
 
 The isolated configuration directory and explicit information-level, text,
-monochrome logging options make the output below reproducible; they are not
-ordinary mandatory runtime setup.
+monochrome logging options pin the output shown below; they are not ordinary
+mandatory runtime setup.
 
 Start the server:
 
@@ -128,78 +140,62 @@ role=client inst=echoclient conn=1 — transport connected
 ```
 
 These lines prove that the listener started and one plain IPv4 loopback
-connection formed; the selected information-level output does not print the
-reflected payload. The supplied source-defined contexts do reflect bytes, and
-the pair keeps echoing until you stop both processes with Ctrl-C.
+connection formed; at the selected information log level the reflected payload
+is not printed. The source-defined contexts do reflect bytes, and the pair keeps
+echoing until you stop both processes with Ctrl-C.
 
-Separate qualification also covered plain IPv6 loopback, a Unix-domain plain
-stream path, and one mutual-TLS IPv4 echo arrangement.
+Plain IPv6 loopback, a Unix-domain plain stream path, and one mutual-TLS IPv4
+echo arrangement were also separately qualified.
 
 Commands and output were verified against
 [`bf01683`](https://github.com/SNodeC/snode.c/commit/bf01683a53b48220a840522e8ccaf3b48e58c240)
 on 29 August 2026.
 
-## Capabilities and evidence
+## Capabilities at a glance
 
-Implementation and composability do not imply that every address-family ×
-connection-mode × protocol combination has equivalent test or support evidence.
-Each item below keeps implementation, strongest evidence, and boundary together
-without requiring a wide table.
+For a framework evaluation, it matters both what SNode.C implements and how far
+that surface has been exercised. This is a fit-check, not a claim that every
+address-family × connection-mode × protocol combination has equivalent test
+coverage.
 
-- **Event runtime and stream model.** Descriptor/timer event loop; server/client
-  stream endpoints; connection-local contexts. `epoll` is the default; `poll`
-  and `select` are configure-time alternatives, and `core` links one selected
-  implementation. **Evidence:** CI on the reviewed commit ran the root test
-  suite; focused context-lifecycle testing also passed. **Boundary:** CI/runtime
-  used default `epoll` only.
-- **Plain streams.** IPv4, IPv6, and Unix-domain server/client paths.
-  **Evidence:** component tests plus recorded echo runs for all three.
-  **Boundary:** scoped runtime evidence.
-- **TLS streams.** OpenSSL-backed TLS connection layer and configuration surface.
-  **Evidence:** TLS state/ownership/shutdown tests plus one mutual-TLS IPv4 echo
-  run. **Boundary:** security policy is application/operator-owned.
-- **Bluetooth.** Conditional RFCOMM and L2CAP stream layers when BlueZ is
-  available. **Evidence:** the reviewed CI configuration built with BlueZ.
-  **Boundary:** no hardware runtime qualification.
-- **HTTP and routing.** HTTP/1.0 and HTTP/1.1 client/server components;
-  Express-style routing and middleware. **Evidence:** broad plain-IPv4 HTTP
-  tests, smaller IPv6/Unix sets, and routing/middleware tests. **Boundary:** no
-  HTTP/2 or Node.js/Express compatibility.
-- **WebSocket and SSE.** WebSocket version 13; EventSource/SSE. **Evidence:**
-  WebSocket unit/component tests with plain IPv4 plus smaller IPv6/Unix coverage;
-  SSE plain-IPv4 tests. **Boundary:** no conformance certification.
-- **MQTT.** MQTT 3.1.1 client/server components; MQTT-over-WebSocket components.
-  **Evidence:** MQTT packet/lifecycle tests; a separate MQTTSuite IPv4 QoS 1 run.
-  **Boundary:** no MQTT 5; MQTT-over-WebSocket evidence is narrower.
+| Area | Available surface | What has been exercised |
+| --- | --- | --- |
+| Event runtime | Descriptor/timer loop; server/client stream endpoints; connection-local contexts. `epoll` is the default; `poll` and `select` are configure-time alternatives. | CI on the reviewed commit ran the root test suite. Current CI/runtime evidence exercised default `epoll` only. |
+| Plain streams | IPv4, IPv6, and Unix-domain server/client paths. | Component tests plus recorded echo runs for all three. |
+| TLS streams | OpenSSL-backed TLS connection layer and configuration. | TLS state/ownership/shutdown tests plus one mutual-TLS IPv4 echo run. Trust, hostname, certificate, and cipher policy remain application/operator responsibilities. |
+| Bluetooth | Conditional RFCOMM and L2CAP stream layers with BlueZ. | The reviewed CI build included BlueZ; no hardware runtime qualification. |
+| Web protocols | HTTP/1.0 and HTTP/1.1, Express-style routing/middleware, WebSocket version 13, and EventSource/SSE. | Broad plain-IPv4 HTTP tests, smaller IPv6/Unix HTTP and WebSocket paths, and plain-IPv4 SSE tests. No HTTP/2 claim; “Express-style” is not Node.js Express compatibility. |
+| MQTT | MQTT 3.1.1 client/server and MQTT-over-WebSocket components. | Packet/lifecycle tests; MQTTSuite has a separately qualified IPv4 QoS 1 path. No MQTT 5; MQTT-over-WebSocket network evidence is narrower. |
 
-`master` is source-buildable and locally installable, but the reviewed head is
-not represented by a current tagged 2.0/current-head release or published binary
-package; the latest GitHub release is older. One Linux/GCC CI lane and one
-Debian/x86-64 Release qualification do not establish broad Linux, compiler,
-architecture, OpenWrt, Android, or other-platform support. No performance or
-footprint claim is made.
+The reviewed `master` is source-buildable and locally installable, but it is
+newer than the latest GitHub release and is not represented by a current tagged
+2.0 release or a published current-head binary package. Current platform
+evidence includes one Linux/GCC CI lane and one Debian/x86-64 Release
+qualification; it does not establish a broad operating-system, compiler, or
+architecture support matrix. No throughput, latency, or footprint claim is made
+here.
 
-See the [capability and evidence notes](docs/capabilities.md) for detailed scope.
+See the [capability map](docs/capabilities.md) for detailed protocol, transport,
+build, platform, and evidence scope.
 
 ## Architecture and extension points
 
-Concrete endpoint types compose an address/network family, physical stream,
-plain or OpenSSL-backed TLS connection mode, server/client role, and application
-context around the shared event runtime. Custom `SocketContextFactory` and
-`SocketContext` implementations are the direct extension point for
-connection-local behavior.
+A concrete endpoint selects a compatible address/network family, plain or
+OpenSSL-backed TLS stream mode, server or client role, and application context
+around the shared event runtime. Custom `SocketContextFactory` and
+`SocketContext` implementations are the direct extension point. The
+[architecture guide](docs/architecture.md) shows the full composition and its
+boundaries.
 
-The connection/context split also permits a protocol transition without opening
-a second transport connection. After an HTTP Upgrade is accepted, the WebSocket
-upgrade factory is selected and creates the replacement `SocketContextUpgrade`;
-the HTTP path prepares the `101 Switching Protocols` response.
-`setSocketContext(new)` stages the replacement while the HTTP context remains
-active, and the upgrade-status/application callback calls `response->end()` to
-queue the `101`. After the current HTTP read callback returns, the HTTP context
-detaches with `DetachReason::ContextSwitch` and is removed, the active-context
-pointer changes to the staged replacement, and the WebSocket
-`SocketContextUpgrade` attaches. The same `SocketConnection` remains established;
-no second transport connection is created.
+The connection/context split also supports a protocol transition without opening
+a second transport connection. During an HTTP-to-WebSocket upgrade, the selected
+WebSocket factory creates a replacement context while HTTP remains active.
+`setSocketContext(new)` stages it, and the upgrade-status/application callback
+calls `response->end()` to queue `101 Switching Protocols`. After the current
+HTTP read callback returns, the HTTP context detaches with
+`DetachReason::ContextSwitch` and is removed, the active pointer changes, and
+the WebSocket `SocketContextUpgrade` attaches to the same established
+`SocketConnection`.
 
 <picture>
   <source media="(max-width: 600px)" srcset="assets/http-websocket-context-switch-mobile.svg">
@@ -208,48 +204,35 @@ no second transport connection is created.
 
 *Same connection, new active context.*
 
-A named endpoint exposes its typed configuration hierarchy through C++ API
-defaults, a configuration file, and generated command-line sections. Effective
-precedence is:
+A named endpoint can expose one typed configuration hierarchy through C++ API
+defaults, a configuration file, and generated command-line sections:
 
 **command line > configuration file > API/default**
 
-See the [configuration guide](docs/configuration.md) for the full hierarchy.
-SNode.C also installs componentized namespaced CMake targets; tests on the
-reviewed commit include selected installed-consumer builds.
+The [configuration guide](docs/configuration.md) covers named instances,
+role-specific sections, inspection commands, TLS policy, and the responsive
+configuration figure. SNode.C also installs componentized namespaced CMake
+targets; tests include selected installed consumers.
 
-## Documentation, examples, and ecosystem routes
+## Choose your next step
 
-For deeper evaluation:
+| If you want to… | Go here |
+| --- | --- |
+| Understand ownership, lifecycle, composition, and extension points | [Architecture](docs/architecture.md) |
+| Configure named endpoints, CLI/file overrides, retry, reconnect, or TLS | [Configuration](docs/configuration.md) |
+| Check exact protocol, transport, build, platform, and qualification scope | [Capabilities](docs/capabilities.md) |
+| Start from working source examples | [Example applications](https://github.com/SNodeC/snode.c/tree/master/src/apps) |
+| Inspect or discuss the project | [Source](https://github.com/SNodeC/snode.c) · [Issues](https://github.com/SNodeC/snode.c/issues) · [Discussions](https://github.com/SNodeC/snode.c/discussions) · [Releases](https://github.com/SNodeC/snode.c/releases) |
 
-- [Architecture](docs/architecture.md) — object/lifecycle and layer
-  responsibilities.
-- [Configuration](docs/configuration.md) — named instances, files, generated CLI
-  sections, and precedence.
-- [Capabilities and evidence](docs/capabilities.md) — detailed scope and
-  qualification boundaries.
-- [Example sources](https://github.com/SNodeC/snode.c/tree/master/src/apps) —
-  echo, HTTP/WebSocket, and other maintained examples.
-- [Repository source](https://github.com/SNodeC/snode.c) ·
-  [Issues](https://github.com/SNodeC/snode.c/issues) ·
-  [Discussions](https://github.com/SNodeC/snode.c/discussions) ·
-  [Releases](https://github.com/SNodeC/snode.c/releases) ·
-  [License](https://github.com/SNodeC/snode.c/blob/master/LICENSE).
+SNode.C is the networking foundation for two distinct ecosystem paths.
+[MQTTSuite](https://github.com/SNodeC/mqttsuite) provides MQTT broker,
+integration, bridge, CLI, and storage applications.
+[AISuite](https://github.com/SNodeC/AISuite) provides typed Codex integration and
+bridging, with [CodexUI](https://github.com/SNodeC/CodexUI) as the
+native/browser presentation project in that path. These are related projects,
+not one shared-version distribution or one all-project runtime pipeline. AISuite
+and CodexUI are independent open-source projects, not official OpenAI products.
 
-Related projects keep their domain-specific behavior outside SNode.C:
-
-- [MQTTSuite](https://github.com/SNodeC/mqttsuite) is the downstream MQTT
-  application toolkit; its broker, integration, bridge, CLI, and storage
-  behavior belongs to MQTTSuite.
-- [AISuite](https://github.com/SNodeC/AISuite) is the downstream typed Codex
-  integration and bridge project; its Codex protocol and controller/bridge
-  behavior belongs to AISuite.
-- [CodexUI](https://github.com/SNodeC/CodexUI) is the native/browser presentation
-  project in the AISuite path; its UI behavior belongs to CodexUI.
-
-AISuite and CodexUI are independent open-source projects, not official OpenAI
-products. The two ecosystem paths are SNode.C → MQTTSuite and
-SNode.C → AISuite → CodexUI.
-
-Next: **[read the architecture](docs/architecture.md)** or
-**[browse the examples](https://github.com/SNodeC/snode.c/tree/master/src/apps)**.
+If the connection/context split matches the architecture you want, continue with
+the [architecture guide](docs/architecture.md). If you prefer to evaluate by
+code, [browse the examples](https://github.com/SNodeC/snode.c/tree/master/src/apps).
