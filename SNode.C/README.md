@@ -140,17 +140,34 @@ on 29 August 2026.
 
 Implementation and composability do not imply that every address-family ×
 connection-mode × protocol combination has equivalent test or support evidence.
-The table pairs implemented breadth with the strongest reviewed evidence.
+Each item below keeps implementation, strongest evidence, and boundary together
+without requiring a wide table.
 
-| Area | Current implementation | Strongest evidence | Boundary |
-| --- | --- | --- | --- |
-| Event runtime and stream model | Descriptor/timer event loop; server/client stream endpoints; connection-local contexts. `epoll` is the default; `poll` and `select` are configure-time alternatives, and `core` links one selected implementation. | CI on the reviewed commit ran the root test suite; focused context-lifecycle testing also passed. | CI/runtime used default `epoll` only. |
-| Plain streams | IPv4, IPv6, and Unix-domain server/client paths | Component tests plus recorded echo runs for all three | Scoped runtime evidence |
-| TLS streams | OpenSSL-backed TLS connection layer and configuration surface | TLS state/ownership/shutdown tests plus one mutual-TLS IPv4 echo run | Security policy is application/operator-owned. |
-| Bluetooth | Conditional RFCOMM and L2CAP stream layers when BlueZ is available | The reviewed CI configuration built with BlueZ | No hardware runtime qualification |
-| HTTP and routing | HTTP/1.0 and HTTP/1.1 client/server components; Express-style routing and middleware | Broad plain-IPv4 HTTP tests, smaller IPv6/Unix sets, and routing/middleware tests | No HTTP/2 or Node.js/Express compatibility |
-| WebSocket and SSE | WebSocket version 13; EventSource/SSE | WebSocket unit/component tests with plain IPv4 plus smaller IPv6/Unix coverage; SSE plain-IPv4 tests | No conformance certification |
-| MQTT | MQTT 3.1.1 client/server components; MQTT-over-WebSocket components | MQTT packet/lifecycle tests; a separate MQTTSuite IPv4 QoS 1 run | No MQTT 5; MQTT-over-WebSocket evidence is narrower. |
+- **Event runtime and stream model.** Descriptor/timer event loop; server/client
+  stream endpoints; connection-local contexts. `epoll` is the default; `poll`
+  and `select` are configure-time alternatives, and `core` links one selected
+  implementation. **Evidence:** CI on the reviewed commit ran the root test
+  suite; focused context-lifecycle testing also passed. **Boundary:** CI/runtime
+  used default `epoll` only.
+- **Plain streams.** IPv4, IPv6, and Unix-domain server/client paths.
+  **Evidence:** component tests plus recorded echo runs for all three.
+  **Boundary:** scoped runtime evidence.
+- **TLS streams.** OpenSSL-backed TLS connection layer and configuration surface.
+  **Evidence:** TLS state/ownership/shutdown tests plus one mutual-TLS IPv4 echo
+  run. **Boundary:** security policy is application/operator-owned.
+- **Bluetooth.** Conditional RFCOMM and L2CAP stream layers when BlueZ is
+  available. **Evidence:** the reviewed CI configuration built with BlueZ.
+  **Boundary:** no hardware runtime qualification.
+- **HTTP and routing.** HTTP/1.0 and HTTP/1.1 client/server components;
+  Express-style routing and middleware. **Evidence:** broad plain-IPv4 HTTP
+  tests, smaller IPv6/Unix sets, and routing/middleware tests. **Boundary:** no
+  HTTP/2 or Node.js/Express compatibility.
+- **WebSocket and SSE.** WebSocket version 13; EventSource/SSE. **Evidence:**
+  WebSocket unit/component tests with plain IPv4 plus smaller IPv6/Unix coverage;
+  SSE plain-IPv4 tests. **Boundary:** no conformance certification.
+- **MQTT.** MQTT 3.1.1 client/server components; MQTT-over-WebSocket components.
+  **Evidence:** MQTT packet/lifecycle tests; a separate MQTTSuite IPv4 QoS 1 run.
+  **Boundary:** no MQTT 5; MQTT-over-WebSocket evidence is narrower.
 
 `master` is source-buildable and locally installable, but the reviewed head is
 not represented by a current tagged 2.0/current-head release or published binary

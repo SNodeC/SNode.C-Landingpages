@@ -212,3 +212,107 @@ maintainer visual/publication approval.
 Every applicable non-human Step 8 gate is PASS. The remaining mandatory gate is
 explicit maintainer approval after the browser-based publication review. No
 files have been published to the live `SNodeC/snode.c` repository in this round.
+
+---
+
+# Step 8b browser review and Step 8c correction state
+
+The Chromium 151 / Playwright review of exact Step 8 revision
+`9fe065209ed08315313ce02c14c4a409747d19b1` superseded the earlier synthetic
+mobile gate for approval purposes. It found **0 BLOCKER, 5 IMPORTANT, 2 MINOR,
+1 POLISH** and returned **NOT READY FOR HUMAN APPROVAL**. The decisive browser
+measurement was an actual GitHub Markdown content width of approximately
+**309 px** on a 390 × 844 mobile viewport.
+
+Step 8c corrects only those browser findings; it does not reopen the README
+story, technical semantics, evidence boundaries, or publication-package design.
+
+## IMPORTANT finding disposition
+
+1. **Principal Visual 1 mobile readability — CORRECTED / PASS.** The figure is
+   recomposed to `860 × 1000`, label density is lower, ordinary labels render at
+   approximately 10 CSS px or more at a 309 px embed, and all 13 Step 8 semantic
+   conditions remain PASS.
+2. **Principal Visual 3 mobile chronology — CORRECTED / PASS.** The three-column
+   figure is replaced by a vertical `860 × 1220` chronology. Accepted Upgrade,
+   factory selection, replacement creation, `101` preparation, staging,
+   application/status callback `response->end()`, callback return, detach/remove,
+   pointer change, `SocketContextUpgrade` attach, same connection, and no second
+   transport are directly readable in sequence at 309 px.
+3. **Architecture composition mobile readability — CORRECTED / PASS.** The
+   dark-navy style is retained, while the composition becomes `900 × 1140` with
+   only secondary wording removed and 30 px-or-larger ordinary labels.
+4. **Configuration model mobile readability — CORRECTED / PASS.** The dark-navy
+   style is retained in a `900 × 1160` vertical composition. API/default,
+   configuration file, command line, precedence, named endpoint, relevant
+   sections, and anonymous API-only behavior remain explicit.
+5. **Capability-table mobile reading flow — CORRECTED / PASS.** The README
+   four-column capabilities table and the wide tables in `docs/capabilities.md`
+   are replaced with compact vertical Markdown entries that keep capability,
+   implementation/source state, strongest evidence, and boundary together.
+   Claims and evidence scope are unchanged.
+
+## MINOR finding disposition
+
+- **README capabilities table width (~681 px in ~309 px content) — CORRECTED.**
+  The table no longer exists; its quick-scan content is represented vertically.
+- **Configuration hierarchy `Typical examples` column — LEFT OPEN / NON-BLOCKING.**
+  `docs/configuration.md` retains its section-hierarchy table. Converting it to
+  a vertical inventory would materially lengthen that focused reference page;
+  the table remains horizontally scrollable on narrow GitHub views and retains
+  better desktop comparison value. This is the only deliberately open MINOR.
+
+## POLISH disposition
+
+The architecture and configuration figures retain their older dark-navy visual
+language. Step 8c changes them only for browser-proven readability, not stylistic
+uniformity. The remaining difference from the neutral principal SVG system is
+**non-blocking cosmetic debt**.
+
+## Step 8c 309 px and regression validation
+
+Changed SVGs were mechanically rendered with Inkscape 1.4 at exactly **309 px**
+(the actual GitHub Markdown content width measured by the Step 8b Chromium 151 /
+Playwright review) and around 900 px desktop width, then checked with light and
+dark surrounding pages. Changed figures were also inspected in grayscale. A
+fresh GitHub-native Chromium/Playwright run is intentionally left to the next
+revalidation step.
+
+Results:
+
+- 309 px mobile visual legibility: **PASS** for all four changed SVGs;
+- desktop regression: **PASS** for all four;
+- light/dark surrounding page: **PASS**;
+- grayscale/non-color meaning: **PASS**;
+- clipping/overlap and arrow/chronology direction: **PASS**;
+- contrast, privacy, and SVG portability: **PASS**;
+- principal editable source/publication export byte identity: **PASS**;
+- public wording adds no technical claim: **PASS**.
+
+## Step 8c publication package and cleanup
+
+Recursive dependency closure and destination-layout validation remain the same
+**8-file** public package documented above. The vertical Markdown capability
+changes introduce no local dependency. Staged validation reports no missing
+local target, casing error, local-anchor failure, workflow/internal dependency,
+`EVIDENCE.md` dependency, or Visual-2 dependency.
+
+The accidentally tracked browser-review archive
+`SNode.C/workflow/browser-review/snodec-publication-browser-review-9fe0652.tar.gz`
+from commit `f9b440b53e406b13e9f4aa9506a0f1e9c21aa687` is removed in Step 8c. No new
+screenshot archive, browser raster, staging tree, or other validation artifact is
+tracked.
+
+**Human approval remains PENDING.** The historical Step 8 status
+`READY FOR HUMAN PUBLICATION REVIEW` above is not a current approval statement;
+the Step 8b browser result invalidated that gate pending correction and fresh
+browser revalidation.
+
+## Step 8c current status
+
+**READY FOR BROWSER REVALIDATION**
+
+All five IMPORTANT browser findings are corrected in this candidate. The next
+action is a fresh run of the existing Codex Chromium/Playwright browser-validation
+procedure against the Step 8c commit. Human approval is not granted by this
+record.

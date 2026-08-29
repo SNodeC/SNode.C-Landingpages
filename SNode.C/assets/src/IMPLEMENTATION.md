@@ -185,3 +185,68 @@ grant human approval.
 
 **Human approval: PENDING.**
 Live `SNodeC/snode.c` publication is not authorized by this step.
+
+---
+
+## Step 8c — browser findings correction
+
+Chromium/Playwright review of Step 8 commit `9fe065209ed08315313ce02c14c4a409747d19b1`
+found that the earlier nominal 375 px raster checks overstated mobile legibility:
+GitHub rendered the Markdown content at approximately **309 px**. Step 8c keeps
+all validated semantics and corrects only browser-exposed publication usability.
+
+### Browser-driven visual corrections
+
+- **Visual 1:** recomposed from `1280 × 720` to `860 × 1000`. Secondary wording
+  was removed or consolidated; all ordinary labels are at least 28 SVG units,
+  yielding approximately 10 CSS px or more at a 309 px embed. Distinct server
+  and client flows, each flow's own retained factory, `listen → accept`, client
+  completion, `create(this)`, one active context, `start()`, caller-thread
+  dispatch, and the no-worker-pool boundary remain explicit.
+- **Visual 3:** recomposed from a three-column `1440 × 900` layout to a vertical
+  `860 × 1220` chronology. The accepted Upgrade, factory selection, replacement
+  creation, `101` preparation, staging, application/status callback
+  `response->end()`, callback return, `ContextSwitch` detach/removal, active
+  pointer change, `SocketContextUpgrade` attach, same connection, and no-second-
+  transport statements are all directly readable in sequence at 309 px.
+- **Architecture composition:** retained its dark-navy visual language but moved
+  from `1600 × 900` to `900 × 1140`, removed only secondary explanatory copy,
+  and uses 30 px-or-larger labels for the composition rows at the 309 px target.
+- **Configuration model:** retained its dark-navy visual language but moved from
+  `1600 × 900` to `900 × 1160`. API/default, configuration file, command line,
+  precedence, named endpoint instance, relevant sections, and the anonymous-
+  instance API-only note remain explicit with mobile-readable labels.
+
+Principal editable sources and publication exports remain byte-identical after
+the documented copy/export procedure.
+
+### Step 8c render validation
+
+Renderer: Inkscape `1.4`, using an exact **309 px** export width taken from the
+Chromium/Playwright Step 8b GitHub measurement. Desktop regression renders use a
+900 px content width. Light/dark surrounding-page composites and grayscale
+copies were also checked for the changed visuals. A fresh Chromium/Playwright
+GitHub-native review remains the next workflow action rather than being claimed
+by this correction pass.
+
+| Gate | Visual 1 | Visual 3 | Architecture | Configuration |
+| --- | --- | --- | --- | --- |
+| 309 px browser/render legibility | PASS | PASS | PASS | PASS |
+| Desktop regression | PASS | PASS | PASS | PASS |
+| Light/dark surrounding page | PASS | PASS | PASS | PASS |
+| Grayscale / non-color meaning | PASS | PASS | PASS | PASS |
+| Clipping / overlap | PASS | PASS | PASS | PASS |
+| SVG portability/privacy | PASS | PASS | PASS | PASS |
+
+At the actual 309 px target, the principal SVG minimum ordinary label size is
+28 units on an 860-unit viewBox, approximately `10.1 CSS px`. The two transitive
+figures use a 900-unit viewBox and 30-unit minimum ordinary labels, approximately
+`10.3 CSS px`. Contrast and privacy constraints remain unchanged from Step 8;
+no external resource, raster payload, editor metadata, private path, credential,
+hostname, or user identity was introduced.
+
+The older dark-navy visual language remains intentionally different from the
+neutral principal figures. Step 8c changes those assets only for readability;
+the stylistic difference remains non-blocking cosmetic debt.
+
+**Human approval: PENDING.** Step 8c authorizes no live publication.

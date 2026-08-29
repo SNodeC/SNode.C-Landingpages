@@ -1,61 +1,53 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" role="img" aria-labelledby="title desc">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 1000" role="img" aria-labelledby="title desc">
   <title id="title">SNode.C programming model</title>
-  <desc id="desc">SocketServer and SocketClient have distinct establishment flows and each retains its own SocketContextFactory. Listen and accept or a completed client connection converge on an established SocketConnection. The connection calls the matching retained factory with create(this), which produces one active per-connection SocketContext. The event loop is driven by start().</desc>
+  <desc id="desc">SocketServer and SocketClient have distinct establishment flows and each retains its own SocketContextFactory. Listen and accept or completed client connection establishment converge on one established SocketConnection. The connection invokes the originating endpoint flow's retained factory with create(this); it returns one active per-connection SocketContext. The event loop is driven by start() on the caller thread and no framework worker pool is implied.</desc>
   <defs>
-    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="strokeWidth"><path d="M0 0L12 6L0 12Z" fill="#1D4ED8"/></marker>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M0 0L10 5L0 10Z" fill="#1D4ED8"/></marker>
     <style>
-      .canvas{fill:#F8FAFC;stroke:#CBD5E1;stroke-width:2}.card{fill:#FFFFFF;stroke:#94A3B8;stroke-width:2}.primary{fill:#FFFFFF;stroke:#1D4ED8;stroke-width:4}.soft{fill:#EFF6FF;stroke:#93C5FD;stroke-width:2}.rail{fill:#EAF2FF;stroke:#1D4ED8;stroke-width:3}
-      .title{font:700 38px -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;fill:#0F172A}.label{font:700 34px -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;fill:#0F172A}.body{font:500 34px -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;fill:#475569}.small{font:600 31px -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;fill:#475569}.api{font:700 31px ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono",monospace;fill:#0F172A}.accent{font:700 29px -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;fill:#1D4ED8}
-      .runtime{fill:none;stroke:#1D4ED8;stroke-width:5;stroke-linecap:round;stroke-linejoin:round;marker-end:url(#arrow)}.dispatch{fill:none;stroke:#1D4ED8;stroke-width:3.5;stroke-linecap:round;marker-end:url(#arrow)}.assoc{fill:none;stroke:#64748B;stroke-width:2.5;stroke-linecap:round}
+      .canvas{fill:#F8FAFC;stroke:#CBD5E1;stroke-width:2}.card{fill:#FFFFFF;stroke:#94A3B8;stroke-width:2}.primary{fill:#FFFFFF;stroke:#1D4ED8;stroke-width:3}.soft{fill:#EFF6FF;stroke:#93C5FD;stroke-width:2}.rail{fill:#EAF2FF;stroke:#1D4ED8;stroke-width:3}
+      .title{font:700 34px -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;fill:#0F172A}.label{font:700 32px -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;fill:#0F172A}.body{font:500 29px -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;fill:#475569}.small{font:600 28px -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;fill:#475569}.api{font:700 29px ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono",monospace;fill:#0F172A}.accent{font:700 28px -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;fill:#1D4ED8}
+      .runtime{fill:none;stroke:#1D4ED8;stroke-width:4;stroke-linecap:round;stroke-linejoin:round;marker-end:url(#arrow)}
     </style>
   </defs>
-  <rect class="canvas" x="1" y="1" width="1278" height="718" rx="28"/>
-  <text class="title" x="48" y="54">Distinct endpoint flows, one connection-local context model</text>
+  <rect class="canvas" x="1" y="1" width="858" height="998" rx="24"/>
+  <text class="title" x="430" y="50" text-anchor="middle">Two endpoint flows, one connection-local model</text>
 
-  <rect class="card" x="48" y="84" width="350" height="168" rx="22"/>
-  <rect x="48" y="84" width="8" height="168" rx="4" fill="#1D4ED8"/>
-  <text class="label" x="80" y="132">SocketServer</text>
-  <text class="accent" x="80" y="174">listen → accept</text>
-  <text class="body" x="80" y="220">retains its own factory</text>
+  <rect class="card" x="36" y="82" width="374" height="156" rx="20"/>
+  <text class="label" x="64" y="126">SocketServer</text>
+  <text class="accent" x="64" y="170">listen → accept</text>
+  <text class="body" x="64" y="211">retains its own factory</text>
 
-  <rect class="card" x="48" y="292" width="350" height="168" rx="22"/>
-  <rect x="48" y="292" width="8" height="168" rx="4" fill="#1D4ED8"/>
-  <text class="label" x="80" y="340">SocketClient</text>
-  <text class="accent" x="80" y="382">connect completes</text>
-  <text class="body" x="80" y="428">retains its own factory</text>
+  <rect class="card" x="450" y="82" width="374" height="156" rx="20"/>
+  <text class="label" x="478" y="126">SocketClient</text>
+  <text class="accent" x="478" y="170">connect completes</text>
+  <text class="body" x="478" y="211">retains its own factory</text>
 
-  <path class="runtime" d="M398 164 C438 164 438 214 470 214"/>
-  <path class="runtime" d="M398 372 C438 372 438 300 470 300"/>
+  <path class="runtime" d="M223 238 V268 C223 290 300 290 350 304"/>
+  <path class="runtime" d="M637 238 V268 C637 290 560 290 510 304"/>
 
-  <rect class="primary" x="470" y="166" width="300" height="176" rx="24"/>
-  <text class="label" x="620" y="220" text-anchor="middle">SocketConnection</text>
-  <text class="body" x="620" y="264" text-anchor="middle">established connection</text>
-  <text class="body" x="620" y="306" text-anchor="middle">owns one active context</text>
+  <rect class="primary" x="160" y="306" width="540" height="142" rx="22"/>
+  <text class="label" x="430" y="354" text-anchor="middle">SocketConnection</text>
+  <text class="body" x="430" y="397" text-anchor="middle">established connection</text>
+  <text class="small" x="430" y="432" text-anchor="middle">both endpoint paths converge here</text>
 
-  <text class="accent" x="875" y="194" text-anchor="middle">create(this)</text>
-  <path class="runtime" d="M770 224 H968"/>
+  <path class="runtime" d="M430 448 V494"/>
+  <text class="accent" x="454" y="480">create(this)</text>
 
-  <rect class="soft" x="980" y="98" width="252" height="184" rx="22"/>
-  <text class="small" x="1106" y="136" text-anchor="middle">originating endpoint's</text>
-  <text class="small" x="1106" y="170" text-anchor="middle">retained factory</text>
-  <text class="api" x="1106" y="216" text-anchor="middle">SocketContext</text>
-  <text class="api" x="1106" y="252" text-anchor="middle">Factory</text>
+  <rect class="soft" x="160" y="500" width="540" height="142" rx="22"/>
+  <text class="api" x="430" y="548" text-anchor="middle">SocketContextFactory</text>
+  <text class="body" x="430" y="590" text-anchor="middle">the originating endpoint's retained factory</text>
+  <text class="small" x="430" y="625" text-anchor="middle">server and client factories are distinct</text>
 
-  <path class="runtime" d="M1106 282 V334"/>
-  <text class="accent" x="1004" y="322">returns new</text>
+  <path class="runtime" d="M430 642 V688"/>
+  <text class="accent" x="454" y="675">returns new</text>
 
-  <rect class="primary" x="980" y="348" width="252" height="148" rx="22"/>
-  <text class="label" x="1106" y="400" text-anchor="middle">SocketContext</text>
-  <text class="accent" x="1106" y="442" text-anchor="middle">one active</text>
-  <text class="body" x="1106" y="480" text-anchor="middle">per connection</text>
+  <rect class="primary" x="160" y="694" width="540" height="136" rx="22"/>
+  <text class="label" x="430" y="742" text-anchor="middle">SocketContext</text>
+  <text class="accent" x="430" y="785" text-anchor="middle">one active per connection</text>
+  <text class="body" x="430" y="818" text-anchor="middle">protocol and application callbacks</text>
 
-  <path class="assoc" d="M770 322 H900 V422 H980"/>
-
-  <rect class="rail" x="48" y="552" width="1184" height="124" rx="22"/>
-  <text class="label" x="82" y="600">Event loop — start()</text>
-  <text class="body" x="82" y="642">descriptor readiness · timers · lifecycle/data callbacks · caller-thread dispatch</text>
-  <text class="small" x="1196" y="600" text-anchor="end">no framework worker pool</text>
-  <path class="dispatch" d="M220 552 V486"/>
-  <path class="dispatch" d="M620 552 V360"/>
-  <path class="dispatch" d="M1106 552 V510"/>
+  <rect class="rail" x="36" y="850" width="788" height="130" rx="18"/>
+  <text class="label" x="62" y="889">Event loop — start()</text>
+  <text class="small" x="62" y="925">caller-thread dispatch · no framework worker pool</text>
+  <text class="body" x="62" y="966">readiness · timers · lifecycle · data callbacks</text>
 </svg>

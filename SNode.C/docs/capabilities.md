@@ -26,39 +26,73 @@ observed 28 August 2026.
 
 ## Runtime and connection foundation
 
-| Capability | Source state | Landing-page runtime evidence | Boundary |
-| --- | --- | --- | --- |
-| C++20 event-driven runtime | Source-verified | Clean Release configure, selected build, and echo runs completed | No performance or real-time guarantee |
-| select, poll, and epoll multiplexer implementations | Source-verified | The qualified build used its configured implementation; no comparative run | Availability is not a benchmark |
-| Timers, descriptor events, event queue, signals | Source-verified; repository tests exist | Used indirectly by the qualified applications | No universal ordering/fairness claim |
-| Stream client and server roles | Runtime-qualified for echo | Listener and connector completed on selected paths | Other protocols need their own qualification |
-| Connection read/write queues and accounting | Source-verified; tests exist | Echo exercised ordinary send/read | Queue-bound and overload policy remain application concerns |
-| Retry/backoff and client reconnect configuration | Source-verified; tests exist | Not part of the launch echo evidence | Exact failure sequences remain outside this claim |
+- **C++20 event-driven runtime.** **Source:** source-verified. **Runtime
+  evidence:** clean Release configure, selected build, and echo runs completed.
+  **Boundary:** no performance or real-time guarantee.
+- **select, poll, and epoll multiplexer implementations.** **Source:**
+  source-verified. **Runtime evidence:** the qualified build used its configured
+  implementation; no comparative run. **Boundary:** availability is not a
+  benchmark.
+- **Timers, descriptor events, event queue, signals.** **Source:**
+  source-verified; repository tests exist. **Runtime evidence:** used indirectly
+  by the qualified applications. **Boundary:** no universal ordering/fairness
+  claim.
+- **Stream client and server roles.** **Source:** runtime-qualified for echo.
+  **Runtime evidence:** listener and connector completed on selected paths.
+  **Boundary:** other protocols need their own qualification.
+- **Connection read/write queues and accounting.** **Source:** source-verified;
+  tests exist. **Runtime evidence:** echo exercised ordinary send/read.
+  **Boundary:** queue-bound and overload policy remain application concerns.
+- **Retry/backoff and client reconnect configuration.** **Source:**
+  source-verified; tests exist. **Runtime evidence:** not part of the launch echo
+  evidence. **Boundary:** exact failure sequences remain outside this claim.
 
 ## Network and connection variants
 
-| Variant | Source state | Runtime evidence | Required environment |
-| --- | --- | --- | --- |
-| IPv4 plain stream | Runtime-qualified | Echo server/client on `127.0.0.1` | Standard Linux networking |
-| IPv6 plain stream | Runtime-qualified | Echo server/client on `::1` | IPv6 loopback enabled |
-| Unix-domain plain stream | Runtime-qualified | Echo server/client using an isolated socket path | Unix-domain sockets |
-| TLS over IPv4 | Runtime-qualified for one mutual-TLS echo path | Separate CA-signed server and client certificates connected | OpenSSL and reviewed certificate material |
-| Bluetooth RFCOMM | Source-verified | Runtime pending in this documentation pass | BlueZ, adapter, peer, and protocol-specific qualification |
-| Bluetooth L2CAP | Source-verified | Runtime pending in this documentation pass | BlueZ, adapter, peer, and protocol-specific qualification |
+- **IPv4 plain stream.** **State:** runtime-qualified. **Runtime evidence:** echo
+  server/client on `127.0.0.1`. **Required environment:** standard Linux
+  networking.
+- **IPv6 plain stream.** **State:** runtime-qualified. **Runtime evidence:** echo
+  server/client on `::1`. **Required environment:** IPv6 loopback enabled.
+- **Unix-domain plain stream.** **State:** runtime-qualified. **Runtime evidence:**
+  echo server/client using an isolated socket path. **Required environment:**
+  Unix-domain sockets.
+- **TLS over IPv4.** **State:** runtime-qualified for one mutual-TLS echo path.
+  **Runtime evidence:** separate CA-signed server and client certificates
+  connected. **Required environment:** OpenSSL and reviewed certificate
+  material.
+- **Bluetooth RFCOMM.** **State:** source-verified. **Runtime evidence:** pending
+  in this documentation pass. **Required environment for qualification:** BlueZ,
+  adapter, peer, and protocol-specific qualification.
+- **Bluetooth L2CAP.** **State:** source-verified. **Runtime evidence:** pending in
+  this documentation pass. **Required environment for qualification:** BlueZ,
+  adapter, peer, and protocol-specific qualification.
 
-The source layout makes additional compositions expressible. This table does
+The source layout makes additional compositions expressible. These entries do
 not promote an unrun composition merely because its types or targets exist.
 
 ## Application protocol components
 
-| Area | What current source contains | Evidence boundary |
-| --- | --- | --- |
-| HTTP | Client/server contexts, request/response parsers, connection handling, transfer decoders, upgrade selection | Source-verified with repository component tests; no universal address-family matrix |
-| Express-style server API | `WebApp`, routers, route matching, middleware, request/response conveniences | Source-verified; “Express-style” describes the programming approach, not Node.js API compatibility |
-| WebSocket | Client/server HTTP upgrade contexts, frame receiver/transmitter, subprotocol factories, linked and loadable extension paths | Source-verified with repository tests; plugin deployment policy is application-owned |
-| MQTT | MQTT 3.1.1 protocol level, client and broker framework components, session-related source, MQTT-over-WebSocket composition | Source-verified; do not say “fully compliant” without a current conformance record |
-| MariaDB | Optional database integration components | Source-verified when the MariaDB development dependency is selected; database version/operations matrix remains open |
-| MIME detection | Optional content-type helper using libmagic | Source-verified when libmagic is available |
+- **HTTP.** Client/server contexts, request/response parsers, connection handling,
+  transfer decoders, and upgrade selection. **Evidence boundary:** source-verified
+  with repository component tests; no universal address-family matrix.
+- **Express-style server API.** `WebApp`, routers, route matching, middleware,
+  and request/response conveniences. **Evidence boundary:** source-verified;
+  “Express-style” describes the programming approach, not Node.js API
+  compatibility.
+- **WebSocket.** Client/server HTTP upgrade contexts, frame receiver/transmitter,
+  subprotocol factories, and linked/loadable extension paths. **Evidence
+  boundary:** source-verified with repository tests; plugin deployment policy is
+  application-owned.
+- **MQTT.** MQTT 3.1.1 protocol level, client and broker framework components,
+  session-related source, and MQTT-over-WebSocket composition. **Evidence
+  boundary:** source-verified; do not say “fully compliant” without a current
+  conformance record.
+- **MariaDB.** Optional database integration components. **Evidence boundary:**
+  source-verified when the MariaDB development dependency is selected; database
+  version/operations matrix remains open.
+- **MIME detection.** Optional content-type helper using libmagic. **Evidence
+  boundary:** source-verified when libmagic is available.
 
 MQTTSuite is the appropriate public destination for ready-made MQTTBroker,
 MQTTIntegrator, MQTTBridge, MQTTCli, and MQTTStore workflows. Their application
@@ -75,23 +109,29 @@ sudo apt install --yes \
   libssl-dev nlohmann-json3-dev
 ```
 
-| Dependency/tool | Role | Baseline state |
-| --- | --- | --- |
-| C++20 compiler | Compile SNode.C | Required |
-| CMake 3.18 or newer | Configure and generate builds | Required by project metadata |
-| Git and CA roots | Clone and first-configure source retrieval | Required by documented source workflow |
-| `pkg-config`/`pkgconf` | Dependency discovery | Required by current graph |
-| OpenSSL development files | TLS source and default graph | Required for the documented build |
-| nlohmann/json 3.11 or newer | JSON/configuration-related components | Required by current graph |
-| CLI11 | Command/configuration parser | Vendored single header; no system package required |
-| spdlog | Logging implementation | Pinned source fetched by CMake; no system package required in the documented path |
-| BlueZ | RFCOMM/L2CAP layers | Optional |
-| libmagic | MIME detection | Optional |
-| MariaDB client development files | Database integration | Optional |
-| Curses | `snodec-control` TUI | Optional |
-| Doxygen and Graphviz | Generated API documentation and diagrams | Optional maintainer tools |
-| IWYU | Include analysis | Optional maintainer tool |
-| clang-format and cmake-format | Formatting targets | Optional maintainer tools |
+- **C++20 compiler — required.** Compiles SNode.C.
+- **CMake 3.18 or newer — required.** Configures and generates builds; the
+  minimum comes from project metadata.
+- **Git and CA roots — required for the documented source workflow.** Used for
+  clone and first-configure source retrieval.
+- **`pkg-config`/`pkgconf` — required by the current graph.** Dependency
+  discovery.
+- **OpenSSL development files — required for the documented build.** TLS source
+  and default graph.
+- **nlohmann/json 3.11 or newer — required by the current graph.**
+  JSON/configuration-related components.
+- **CLI11 — vendored.** Command/configuration parser; no system package required.
+- **spdlog — fetched as pinned source in the documented path.** Logging
+  implementation; no system package required there.
+- **BlueZ — optional.** RFCOMM/L2CAP layers.
+- **libmagic — optional.** MIME detection.
+- **MariaDB client development files — optional.** Database integration.
+- **Curses — optional.** `snodec-control` TUI.
+- **Doxygen and Graphviz — optional maintainer tools.** Generated API
+  documentation and diagrams.
+- **IWYU — optional maintainer tool.** Include analysis.
+- **clang-format and cmake-format — optional maintainer tools.** Formatting
+  targets.
 
 ## Packaging, platforms, and release status
 
