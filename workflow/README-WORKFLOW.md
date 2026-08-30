@@ -1,447 +1,407 @@
 # Canonical AI-assisted README workflow
 
-This document defines the canonical handoff workflow for redesigning the GitHub
-landing pages for the SNode.C organization and the SNode.C, MQTTSuite, AISuite,
-and CodexUI repositories.
+This document defines the canonical handoff and publication workflow for the
+SNode.C ecosystem landing pages.
 
-The existing `SNode.C-Landingpages` repository is the starting point and remains
-the working repository. Existing facts, evidence, qualification results,
-commands, screenshots, figures, and drafts are research inputs; they are not
-automatically approved final presentation material.
+SNode.C itself established the quality bar, evidence discipline, visual language,
+Figma workflow, responsive-figure rules, and publication/closure pattern. The
+remaining product repositories should reuse that foundation rather than repeat
+SNode.C's exploratory work.
+
+The current accelerated order is:
+
+1. **MQTTSuite**
+2. **AISuite**
+3. **CodexUI**
+4. **SNode.C organization profile** after the product destinations are stable
+
+Reuse the **design language and quality standard**, not the literal SNode.C
+section order or visual composition.
+
+---
 
 ## Canonical handoff rule
 
-**No AI step may rely on previous chat history. Every step must read its declared
-Markdown inputs from this repository and save its complete result to the declared
-output Markdown file.**
+**No AI step may depend on previous chat history. Every step must read its
+specified repository artifacts and save its complete result to the specified
+repository artifact.**
 
-This makes the workflow reproducible and allows ChatGPT, Codex, and Claude to
-hand work to one another without depending on conversation context.
+A conversation may provide convenience and continuity, but repository Markdown
+is the handoff source of truth. If chat memory and a repository artifact differ,
+the repository artifact wins.
 
-The first two steps are global. Steps 3–7 are repeated for each presentation in
-this order:
-
-1. SNode.C
-2. MQTTSuite
-3. AISuite
-4. CodexUI
-5. SNode.C organization profile
-
-Finish SNode.C completely first. It establishes the quality bar and visual
-language for the remaining pages; reuse the design language and workflow, not an
-identical README template.
-
-Recommended workflow artifact layout:
+The standard per-project artifact set remains:
 
 ```text
-SNode.C-Landingpages/
-├── workflow/
-│   ├── 01-REPOSITORY-AUDIT.md
-│   ├── 02-ECOSYSTEM-POSITIONING.md
-│   └── README-WORKFLOW.md
-├── SNode.C/
-│   ├── workflow/
-│   │   ├── 03-TECHNICAL-FACTS.md
-│   │   ├── 04-README-DESIGN.md
-│   │   ├── 05-VISUALS.md
-│   │   ├── 06-README-DRAFT.md
-│   │   └── 07-FINAL-REVIEWS.md
-│   ├── README.md
-│   └── assets/
-├── MQTTSuite/
-│   └── workflow/...
-├── AISuite/
-│   └── workflow/...
-├── CodexUI/
-│   └── workflow/...
-└── SNode.C-orga/
-    └── workflow/...
-```
-
----
-
-# 1. Preserve the current Landingpages repository as research material
-
-**AI:** Codex  
-**Reasoning:** High  
-**Purpose:** Decide what existing work is valuable and what is disposable. Do
-not rewrite the landing pages yet.
-
-## Read before starting
-
-```text
-Entire SNode.C-Landingpages repository
-```
-
-## Save result to
-
-```text
-workflow/01-REPOSITORY-AUDIT.md
-```
-
-This file becomes an authoritative input for all later steps.
-
-## Prompt
-
-```text
-Inspect the complete current SNode.C-Landingpages repository.
-
-We are restarting the README design, but we do not want to lose useful work.
-Identify what should be:
-- preserved as verified research,
-- preserved but simplified,
-- replaced,
-- or removed.
-
-Focus especially on FACTS/EVIDENCE, qualification results, commands,
-screenshots, figures and existing README content.
-
-Save the complete result to:
-workflow/01-REPOSITORY-AUDIT.md
-
-Do not modify the READMEs or assets yet.
-```
-
----
-
-# 2. Define the ecosystem story once
-
-**AI:** ChatGPT  
-**Reasoning:** High  
-**Purpose:** Establish the common editorial foundation for all five pages.
-
-## Read before starting
-
-```text
-workflow/01-REPOSITORY-AUDIT.md
-
-and the existing relevant files in:
-SNode.C-Landingpages/
-```
-
-## Save result to
-
-```text
-workflow/02-ECOSYSTEM-POSITIONING.md
-```
-
-Every subsequent README-design step must read this file.
-
-## Prompt
-
-```text
-Read:
-workflow/01-REPOSITORY-AUDIT.md
-
-Using the current SNode.C-Landingpages repository as supporting research,
-define the editorial positioning of the SNode.C ecosystem.
-
-Cover:
-- what SNode.C fundamentally is,
-- why the ecosystem exists,
-- who it is for,
-- what makes it technically interesting,
-- and how SNode.C, MQTTSuite, AISuite and CodexUI relate.
-
-Avoid generic open-source marketing language.
-Do not write the individual READMEs yet.
-
-Save the result to:
-workflow/02-ECOSYSTEM-POSITIONING.md
-```
-
-This is the only global strategy step required before working product by product.
-
----
-
-# Repeat steps 3–7 for each project
-
-Recommended order:
-
-```text
-SNode.C
-MQTTSuite
-AISuite
-CodexUI
-SNode.C-orga
-```
-
-Finish SNode.C completely before proceeding to the other pages.
-
----
-
-# 3. Verify the project's technical facts
-
-**AI:** Codex  
-**Reasoning:** Max / xhigh  
-**Purpose:** Establish technical truth from the actual repository HEAD.
-
-The example below uses SNode.C. Substitute the corresponding project and source
-repository for MQTTSuite, AISuite, and CodexUI. For the organization profile,
-verify its ecosystem claims against all relevant repositories.
-
-## Read before starting
-
-```text
-workflow/01-REPOSITORY-AUDIT.md
-workflow/02-ECOSYSTEM-POSITIONING.md
-
-SNode.C/ existing material in SNode.C-Landingpages
-
-Current HEAD of:
-SNodeC/snode.c
-```
-
-## Save result to
-
-```text
-SNode.C/workflow/03-TECHNICAL-FACTS.md
-```
-
-Use the corresponding presentation directory for the other pages.
-
-## Prompt
-
-```text
-Read first:
-workflow/01-REPOSITORY-AUDIT.md
-workflow/02-ECOSYSTEM-POSITIONING.md
-
-We are redesigning the GitHub README for SNode.C.
-
-Use the existing SNode.C-Landingpages/SNode.C material as research,
-but verify all important information against the current SNode.C repository HEAD.
-
-Summarize only facts relevant to a professional README:
-purpose, architecture, programming model, important capabilities,
-protocols/transports, dependencies, examples, limitations,
-ecosystem relationships and genuine differentiators.
-
-Flag unsupported or outdated claims in the current landing-page draft.
-
-Do not write the new README yet.
-
-Save the complete verified result to:
-SNode.C/workflow/03-TECHNICAL-FACTS.md
-```
-
-This is one of the stages where the highest reasoning budget is justified.
-
----
-
-# 4. Design the README and its visuals together
-
-**AI:** ChatGPT  
-**Reasoning:** High  
-**Purpose:** Decide the story before generating prose or graphics.
-
-## Read before starting
-
-```text
-workflow/02-ECOSYSTEM-POSITIONING.md
 <Project>/workflow/03-TECHNICAL-FACTS.md
-workflow/01-REPOSITORY-AUDIT.md
+<Project>/workflow/04-README-DESIGN.md
+<Project>/workflow/05-VISUALS.md
+<Project>/workflow/06-README-DRAFT.md
+<Project>/workflow/07-FINAL-REVIEWS.md
+<Project>/README.md
+<Project>/assets/
+<Project>/assets/src/
 ```
 
-Also inspect the existing README and assets, but treat them as drafts rather than
-constraints on the new presentation.
+Do not create extra workflow stages merely because SNode.C needed additional
+closure passes while the process itself was still being invented. For the
+remaining projects, Steps 4–7 are deliberately compressed operationally.
 
-## Save result to
+---
+
+# AI roles and reasoning policy
+
+Use the role best suited to the decision rather than one AI for everything.
+
+| Task | AI | Model policy | Reasoning |
+| --- | --- | --- | --- |
+| Repository audit / inventory | Codex | strongest current Codex model | High |
+| Ecosystem/editorial positioning | ChatGPT | GPT-5.6 Sol or current successor | High |
+| Technical truth / source verification | Codex | strongest current Codex model | **xhigh** by default |
+| README structure / visual art direction / final copy | ChatGPT | GPT-5.6 Sol or current successor | High |
+| Visual semantics / commands / reproducibility validation | Codex | strongest current Codex model | High |
+| Final technical audit | Codex | strongest current Codex model | **xhigh** |
+| Final editorial audit | Claude | strongest available Opus-class model | High |
+
+Do **not** use Max/Ultra by default. Escalate Codex to Max only when Step 3 or
+Step 7 exposes conflicting source/test/release evidence that xhigh cannot resolve
+cleanly. Ultra is not part of the normal publication workflow.
+
+Role shorthand:
+
+```text
+Codex   → Is it true?
+ChatGPT → What should we communicate, and how?
+Claude  → What is weak, generic, verbose, or badly presented?
+Human   → Is this actually the project, and does it look professional?
+```
+
+---
+
+# Global foundation — Steps 1 and 2
+
+Steps 1 and 2 are **one-time ecosystem work**. They already exist and should not
+be repeated for every repository.
+
+## Step 1 — Repository audit
+
+**AI:** Codex  
+**Reasoning:** High  
+**Artifact:** `workflow/01-REPOSITORY-AUDIT.md`
+
+Purpose: distinguish durable evidence/research from presentation material that
+should be rebuilt.
+
+Do not rerun Step 1 unless the Landingpages repository changes so fundamentally
+that the preserved/rebuild classification is no longer useful.
+
+## Step 2 — Ecosystem positioning
+
+**AI:** ChatGPT  
+**Reasoning:** High  
+**Artifact:** `workflow/02-ECOSYSTEM-POSITIONING.md`
+
+Purpose: establish the common ecosystem story, terminology, project roles,
+audiences, and boundaries once.
+
+Do not rerun Step 2 merely because a product README changes. Update it only when
+the ecosystem relationship itself materially changes.
+
+---
+
+# Per-project workflow
+
+For each remaining repository, execute Step 3 rigorously and Steps 4–7 in the
+accelerated production loop below.
+
+The practical target is **one technical-facts pass, one design/visual pass, one
+visual-validation gate, one draft, one parallel final review, and one finalization
+pass**.
+
+---
+
+# Step 3 — Verify technical truth
+
+**AI:** Codex  
+**Reasoning:** xhigh  
+**Output:** `<Project>/workflow/03-TECHNICAL-FACTS.md`
+
+This remains the non-negotiable deep step. Speed must come from presentation
+reuse, not from weakening technical verification.
+
+## Read first
+
+```text
+AGENTS.md
+workflow/README-GOVERNANCE.md
+workflow/README-WORKFLOW.md
+workflow/01-REPOSITORY-AUDIT.md
+workflow/02-ECOSYSTEM-POSITIONING.md
+<Project>/AGENTS.md
+relevant existing <Project>/ material
+current public source repository HEAD
+```
+
+## Verify only README-relevant facts
+
+Establish:
+
+- fundamental purpose and audience;
+- actual architecture/programming model;
+- current applications/components;
+- important protocols/transports/integrations;
+- installation/build/package surface;
+- first-success path;
+- important configuration/runtime behavior;
+- genuine differentiators;
+- ecosystem relationships;
+- evidence boundaries and limitations;
+- release/version/platform/package status relevant to public claims.
+
+Do not turn Step 3 into a complete source-code audit. Verify enough to make the
+landing page correct.
+
+## Prompt template
+
+```text
+Continue the canonical README workflow for <Project>.
+
+Read and follow:
+- AGENTS.md
+- workflow/README-GOVERNANCE.md
+- workflow/README-WORKFLOW.md
+- workflow/01-REPOSITORY-AUDIT.md
+- workflow/02-ECOSYSTEM-POSITIONING.md
+- <Project>/AGENTS.md
+
+Perform Step 3 only.
+
+Verify all material README-relevant facts against the current public source
+repository HEAD. Use existing Landingpages material as research, not as proof.
+
+Establish purpose, architecture/programming model, important capabilities,
+first-success path, dependencies/package surface, limitations, release/platform
+scope, ecosystem relationships and genuine differentiators.
+
+Flag stale or unsupported existing claims. Preserve explicit evidence boundaries.
+Do not write or redesign the README.
+
+Save the complete self-contained result to:
+<Project>/workflow/03-TECHNICAL-FACTS.md
+```
+
+### Stop condition
+
+Step 3 is complete when a later writer can produce the README without reopening
+the source repository for ordinary claims. Unresolved facts may remain, but they
+must be explicitly marked as unresolved or excluded.
+
+---
+
+# Accelerated Steps 4–7
+
+The original SNode.C workflow separated every design, visual, drafting, review,
+and closure activity while the publication system was being invented. That is
+no longer necessary.
+
+For MQTTSuite, AISuite and CodexUI, use the following operational compression.
+
+---
+
+# Step 4 — Design the README and visual storyboard in one pass
+
+**AI:** ChatGPT  
+**Reasoning:** High  
+**Outputs:**
 
 ```text
 <Project>/workflow/04-README-DESIGN.md
+<Project>/workflow/05-VISUALS.md   # initial design/art-direction section
 ```
 
-The document should contain at least:
+This replaces separate exploratory README-design and visual-art-direction chats.
+The story and visuals should be designed together.
+
+## Read first
 
 ```text
-headline
-value proposition
-audience
-reader journey
-section order
-main centerpiece
-quick-start concept
-visual inventory
-content to move out of README
-calls to action
-```
-
-## Prompt
-
-```text
-Read first:
-workflow/02-ECOSYSTEM-POSITIONING.md
-SNode.C/workflow/03-TECHNICAL-FACTS.md
 workflow/01-REPOSITORY-AUDIT.md
-
-Using those verified facts and the common SNode.C ecosystem positioning,
-design the new SNode.C GitHub README.
-
-Define:
-- headline and one-sentence value proposition,
-- reader journey and section order,
-- the main technical centerpiece,
-- the quickest useful first-success example,
-- 2–3 meaningful visuals,
-- and what detailed material should be linked out instead.
-
-This must be a GitHub landing page, not a technical manual.
-Do not write the complete README yet.
-
-Save the complete result to:
-SNode.C/workflow/04-README-DESIGN.md
+workflow/02-ECOSYSTEM-POSITIONING.md
+<Project>/workflow/03-TECHNICAL-FACTS.md
+<Project>/AGENTS.md
+SNode.C/README.md                  # quality/style reference only
+SNode.C/workflow/09-FIGMA-RESPONSIVE-FIGURES.md
 ```
 
-Use these product-specific centerpieces:
+SNode.C is a **quality and design-language reference**, not a template to copy.
+
+## Decide in this one pass
+
+`04-README-DESIGN.md` should fix:
+
+- headline and one-sentence value proposition;
+- primary audience;
+- reader journey and section order;
+- centerpiece;
+- quickest useful first success;
+- which proof belongs in README versus deeper docs;
+- calls to action / next-step routing;
+- intended visual/text rhythm.
+
+At the same time, initialize `05-VISUALS.md` with only the visuals that materially
+help the reader. For each visual state:
+
+- one idea it communicates;
+- desktop/mobile need;
+- content and labels;
+- technical relationships/arrows;
+- source/capture requirement;
+- intended asset name;
+- what is deliberately omitted.
+
+Do not create decorative quota-filling visuals.
+
+## Product centerpieces
 
 ```text
-SNode.C
-→ programming model
-
 MQTTSuite
-→ MQTT applications and message flows
+→ the five applications and real MQTT/message flow
 
 AISuite
-→ typed AI middleware / bridge architecture
+→ typed integration plus provider/bridge/client authority boundaries
 
 CodexUI
-→ actual user workflow and UI
+→ actual native/browser user workflow and visible product state
 
 SNode.C organization
-→ ecosystem navigation
+→ ecosystem/project navigation, not another product architecture page
 ```
+
+## Prompt template
+
+```text
+Read the canonical workflow inputs and <Project>/workflow/03-TECHNICAL-FACTS.md.
+
+Perform the accelerated Step 4 for <Project>.
+
+In one pass:
+1. define the README structure and reader journey;
+2. define the small visual storyboard that supports that journey.
+
+Use SNode.C only as the established quality/style reference. Do not copy its
+section structure mechanically.
+
+Save the complete README design to:
+<Project>/workflow/04-README-DESIGN.md
+
+Create/update the initial visual plan in:
+<Project>/workflow/05-VISUALS.md
+
+Mark technical visual semantics and runtime arrows PENDING CODEX VALIDATION.
+Do not write the full README yet.
+```
+
+### Speed rule
+
+Do not conduct a separate general “visual ideas” review after Step 4. If the
+storyboard communicates the approved centerpiece clearly, proceed directly to
+Step 5.
 
 ---
 
-# 5. Create the diagrams and real screenshot scenarios
+# Step 5 — Validate once, then produce the visuals
 
-This step deliberately involves two AI systems, but all results go into one
-Markdown handoff document.
+**AI:** Codex for technical validation; ChatGPT/Figma for figure execution; real
+application capture for screenshots  
+**Reasoning:** Codex High  
+**Output:** `<Project>/workflow/05-VISUALS.md` plus actual assets
 
-## Output file
+This is one validation gate, not a design cycle.
 
-```text
-<Project>/workflow/05-VISUALS.md
-```
+## 5a — Codex validates the complete storyboard once
 
-It should eventually contain entries such as:
-
-```text
-Visual 1
-- purpose
-- design
-- approved technical semantics
-- implementation notes
-- asset filename
-
-Visual 2
-...
-
-Screenshot 1
-- intended state
-- reproduction commands
-- fixture/test data
-- capture requirements
-- asset filename
-```
-
-## 5a. Visual design
-
-**AI:** ChatGPT  
-**Reasoning:** High
-
-### Read before starting
-
-```text
-workflow/02-ECOSYSTEM-POSITIONING.md
-<Project>/workflow/03-TECHNICAL-FACTS.md
-<Project>/workflow/04-README-DESIGN.md
-```
-
-### Prompt
-
-```text
-Read first:
-workflow/02-ECOSYSTEM-POSITIONING.md
-SNode.C/workflow/03-TECHNICAL-FACTS.md
-SNode.C/workflow/04-README-DESIGN.md
-
-Design the visual concepts required by the approved SNode.C README structure.
-
-For each proposed figure or screenshot specify:
-- the single idea it should communicate,
-- visual hierarchy and composition,
-- components and labels,
-- arrows/data flows where relevant,
-- what information should deliberately be omitted,
-- and what the reader should understand within about five seconds.
-
-Avoid generic boxes-and-arrows diagrams and decorative imagery.
-Aim for calm, modern, professional technical graphics.
-
-Create:
-SNode.C/workflow/05-VISUALS.md
-
-Mark all technical relationships as PENDING CODEX VALIDATION.
-```
-
-## 5b. Technical validation and screenshot reproduction
-
-**AI:** Codex  
-**Reasoning:** High
-
-### Read before starting
+Read:
 
 ```text
 <Project>/workflow/03-TECHNICAL-FACTS.md
 <Project>/workflow/04-README-DESIGN.md
 <Project>/workflow/05-VISUALS.md
+current public source HEAD
 ```
 
-Also inspect the actual current source repository HEAD.
+Validate:
 
-### Prompt
+- every component and ownership boundary;
+- every dependency/runtime arrow;
+- protocol/version wording;
+- commands and screenshot states;
+- deterministic fixture/synthetic data;
+- what a screenshot actually proves;
+- filenames and required responsive variants.
+
+Update `05-VISUALS.md` in place with corrections and `VALIDATED` status.
+
+### Codex prompt
 
 ```text
-Read first:
-SNode.C/workflow/03-TECHNICAL-FACTS.md
-SNode.C/workflow/04-README-DESIGN.md
-SNode.C/workflow/05-VISUALS.md
+Validate <Project>/workflow/05-VISUALS.md against current public source HEAD.
 
-Review every proposed SNode.C figure and screenshot scenario
-against the current source repository HEAD.
+Check every architecture relationship, dependency/runtime arrow, protocol claim,
+command and screenshot state. Define deterministic reproduction steps for real
+screenshots using synthetic data.
 
-Verify every architecture component, dependency, ownership boundary,
-protocol relationship and runtime arrow.
+Preserve the approved visual design intent. Correct only technical semantics and
+reproduction details.
 
-For screenshots, define a deterministic real application scenario
-using synthetic data and current functionality.
-Do not fake functionality for presentation purposes.
-
-Update:
-SNode.C/workflow/05-VISUALS.md
-
-Preserve the visual design intent but add technical corrections,
-reproduction instructions and a final VALIDATED status for each visual.
+Update <Project>/workflow/05-VISUALS.md and mark each final visual VALIDATED.
 ```
 
-After the AI work, visually inspect the final figures/screenshots and add a human
-approval field before proceeding:
+## 5b — Produce the actual assets immediately
+
+After Codex validation, do not open another abstract visual-design phase.
+
+### Designed diagrams / explanatory figures
+
+- create and edit them in **Figma**;
+- Figma is the editable visual source of truth;
+- keep publication exports under `<Project>/assets/`;
+- keep repository source/export counterparts under `<Project>/assets/src/`;
+- use responsive desktop/mobile compositions only where the content needs art
+  direction at GitHub mobile width;
+- do not hand-edit publication SVG geometry after Figma export;
+- verify light/dark/mobile rendering and text clearance.
+
+### Product screenshots
+
+- capture real source-aligned builds only;
+- use deterministic synthetic data;
+- never capture the maintainer's live/private desktop or account state;
+- record reproduction commands/fixtures under `assets/src/` or `05-VISUALS.md`;
+- use Figma only for approved composition/cropping/annotation, never to fake
+  application functionality.
+
+### Human gate
+
+The maintainer performs one visual check and records:
 
 ```text
 Human approval: APPROVED
 ```
 
+A rejected visual is corrected locally; rejection does **not** reopen README
+structure unless the centerpiece itself was wrong.
+
 ---
 
-# 6. Write the complete README
+# Step 6 — Write one frozen candidate
 
 **AI:** ChatGPT  
 **Reasoning:** High  
-**Purpose:** Turn approved facts, story, and visuals into the public-facing page.
+**Output:** `<Project>/workflow/06-README-DRAFT.md`
 
-## Read before starting
+Write the complete candidate once the validated/approved assets exist.
+
+## Read first
 
 ```text
 workflow/02-ECOSYSTEM-POSITIONING.md
@@ -450,308 +410,301 @@ workflow/02-ECOSYSTEM-POSITIONING.md
 <Project>/workflow/05-VISUALS.md
 ```
 
-The visuals referenced in `05-VISUALS.md` should already exist under:
+## Rules
+
+- treat the README as a landing page, not a qualification report;
+- orient → differentiate → show proof → first success → fit-check → route deeper;
+- prefer omission over completeness;
+- use the established SNode.C prose discipline: concrete, calm, precise;
+- do not repeat evidence caveats in every section;
+- do not add claims merely to fill space;
+- make the best/highest-level project API or user surface visible where that is
+  central to evaluation;
+- keep deeper technical matrices and exhaustive options in linked docs.
+
+## Prompt template
 
 ```text
-<Project>/assets/
-```
+Using the verified facts, approved README design and validated visuals, write the
+complete professional <Project> README.
 
-## Save working result to
+Use SNode.C as the quality/style reference only.
 
-```text
+The README must orient a first-time technical evaluator, explain the project's
+specific differentiator, show credible proof, provide one fast useful success
+path, expose important evidence boundaries, and route deeper documentation.
+
+Prefer omission over completeness and remove workflow/governance vocabulary from
+reader-facing prose.
+
+Save the frozen candidate to:
 <Project>/workflow/06-README-DRAFT.md
+
+Do not overwrite <Project>/README.md yet.
 ```
 
-Do not overwrite `README.md` immediately. The final review must operate on one
-frozen candidate.
+### Speed rule
 
-## Prompt
-
-```text
-Read first:
-workflow/02-ECOSYSTEM-POSITIONING.md
-SNode.C/workflow/03-TECHNICAL-FACTS.md
-SNode.C/workflow/04-README-DESIGN.md
-SNode.C/workflow/05-VISUALS.md
-
-Now write the complete professional SNode.C README.
-
-Use only the verified technical facts, approved ecosystem positioning,
-approved README design and validated visual assets.
-
-Treat README.md as a GitHub landing page:
-orient the reader, explain the differentiator, show proof,
-provide a fast useful entry point, then link to deeper documentation.
-
-Prefer omission over completeness.
-Do not reproduce qualification bookkeeping, exhaustive dependency details,
-or implementation trivia unless essential.
-Never invent technical claims.
-
-Save the complete candidate README to:
-SNode.C/workflow/06-README-DRAFT.md
-
-Do not overwrite SNode.C/README.md yet.
-```
+Do not ask ChatGPT to self-review the draft in a separate stage. Freeze it and
+send it directly to the two independent Step 7 reviewers.
 
 ---
 
-# 7. Run one technical review and one editorial review
+# Step 7 — Parallel reviews, one controlled finalization, then publish
 
-All review findings go into:
+This is the largest operational compression.
+
+The technical and editorial reviews should run **in parallel against the same
+frozen Step 6 candidate**. They are independent reviews, not sequential rewrite
+cycles.
+
+All findings go into:
 
 ```text
 <Project>/workflow/07-FINAL-REVIEWS.md
 ```
 
-Use clearly separated sections:
+Use sections:
 
 ```text
 # Codex technical audit
-
-...
-
 # Claude editorial audit
-
-...
-
 # Accepted changes
-
-...
-
 # Rejected findings and reasons
-
-...
-
+# Validation
 # Final status
-
-...
 ```
 
-## 7a. Technical review
+## 7a — Technical audit
 
 **AI:** Codex  
-**Reasoning:** Max / xhigh
+**Reasoning:** xhigh
 
-### Read before starting
+Review only technical correctness and reproducibility:
 
-```text
-<Project>/workflow/03-TECHNICAL-FACTS.md
-<Project>/workflow/04-README-DESIGN.md
-<Project>/workflow/05-VISUALS.md
-<Project>/workflow/06-README-DRAFT.md
-```
+- wrong/unsupported/stale claims;
+- commands that no longer work;
+- incorrect visual semantics;
+- evidence boundaries that are too broad;
+- release/package/platform claims not established by evidence.
 
-Also inspect the actual current source repository HEAD.
+Do not rewrite for style.
 
-### Prompt
-
-```text
-Read first:
-SNode.C/workflow/03-TECHNICAL-FACTS.md
-SNode.C/workflow/04-README-DESIGN.md
-SNode.C/workflow/05-VISUALS.md
-SNode.C/workflow/06-README-DRAFT.md
-
-Perform a strict technical audit of the README draft
-against the current SNode.C repository HEAD.
-
-Check every factual statement, architecture relationship,
-example, command, capability, dependency and limitation.
-
-Report only:
-- incorrect claims,
-- unsupported claims,
-- stale information,
-- misleading wording,
-- broken commands,
-- or important technical limitations that must be stated.
-
-Do not rewrite the README for style.
-
-Create or update:
-SNode.C/workflow/07-FINAL-REVIEWS.md
-
-Write your findings under:
-# Codex technical audit
-```
-
-## 7b. Editorial review
+## 7b — Editorial audit
 
 **AI:** Claude  
 **Reasoning:** High
 
-### Read before starting
+Review only publication quality:
 
-```text
-workflow/02-ECOSYSTEM-POSITIONING.md
-<Project>/workflow/04-README-DESIGN.md
-<Project>/workflow/06-README-DRAFT.md
-<Project>/workflow/07-FINAL-REVIEWS.md
-```
+- generic or AI-sounding prose;
+- weak hierarchy;
+- unnecessary qualification/process language;
+- duplication and verbosity;
+- weak visual/text rhythm;
+- missing high-value API/product demonstration;
+- poor first-success friction;
+- weak calls to action or ending.
 
-Claude should see the technical findings but should not reinterpret technical
+Claude may read Codex's findings for awareness but must not override technical
 truth.
 
-### Prompt
-
-```text
-Read first:
-workflow/02-ECOSYSTEM-POSITIONING.md
-SNode.C/workflow/04-README-DESIGN.md
-SNode.C/workflow/06-README-DRAFT.md
-SNode.C/workflow/07-FINAL-REVIEWS.md
-
-Review the README draft as the landing page of a serious professional
-open-source C++ project.
-
-Identify:
-- generic AI-generated wording,
-- boring or overlong passages,
-- weak hierarchy,
-- unnecessary qualification,
-- repetition,
-- poor visual/text balance,
-- weak calls to action,
-- and material that belongs in deeper documentation instead.
-
-Be aggressive about what should be shortened or removed.
-Do not expand the README and do not override Codex's technical findings.
-
-Append your findings to:
-SNode.C/workflow/07-FINAL-REVIEWS.md
-
-under:
-# Claude editorial audit
-```
-
-## 7c. Final controlled rewrite
-
-This remains part of Step 7 rather than becoming another workflow stage.
+## 7c — Finalize once
 
 **AI:** ChatGPT  
 **Reasoning:** High
 
-### Read before starting
+Read all project workflow artifacts plus both audits. Apply accepted findings in
+one controlled edit.
 
-```text
-workflow/02-ECOSYSTEM-POSITIONING.md
-<Project>/workflow/03-TECHNICAL-FACTS.md
-<Project>/workflow/04-README-DESIGN.md
-<Project>/workflow/05-VISUALS.md
-<Project>/workflow/06-README-DRAFT.md
-<Project>/workflow/07-FINAL-REVIEWS.md
-```
+Technical corrections from Codex take precedence. Preserve the approved reader
+journey and visual hierarchy unless a reviewer found an actual blocker.
 
-### Output
+Write:
 
 ```text
 <Project>/README.md
 ```
 
-Also update `<Project>/workflow/07-FINAL-REVIEWS.md` with accepted/rejected
-findings and completion status.
+and complete `07-FINAL-REVIEWS.md` with accepted/rejected findings, validation,
+and final status.
 
-### Prompt
+### Finalization prompt
 
 ```text
-Read all workflow artifacts:
-workflow/02-ECOSYSTEM-POSITIONING.md
-SNode.C/workflow/03-TECHNICAL-FACTS.md
-SNode.C/workflow/04-README-DESIGN.md
-SNode.C/workflow/05-VISUALS.md
-SNode.C/workflow/06-README-DRAFT.md
-SNode.C/workflow/07-FINAL-REVIEWS.md
+Read all canonical workflow artifacts for <Project>, including the Codex and
+Claude audits in <Project>/workflow/07-FINAL-REVIEWS.md.
 
-Apply the accepted findings from the Codex technical audit
-and Claude editorial review.
+Apply the accepted findings in one controlled finalization pass.
 
-Technical corrections from Codex take precedence.
-Preserve the approved structure and visual hierarchy.
-Remove verbosity rather than adding material.
-Do not reintroduce qualification detail that was deliberately moved out.
+Technical corrections from Codex take precedence. Do not reopen the approved
+structure unless a finding is a real blocker. Prefer removing verbosity over
+adding explanation. Preserve evidence boundaries and validated visuals.
 
-Write the final result to:
-SNode.C/README.md
+Write the final README to:
+<Project>/README.md
 
-Also update:
-SNode.C/workflow/07-FINAL-REVIEWS.md
+Update <Project>/workflow/07-FINAL-REVIEWS.md with:
+- Accepted changes
+- Rejected findings and reasons
+- Validation
+- Final status
 
-with:
-# Accepted changes
-# Rejected findings and reasons
-# Final status
+Then perform repository-native publication validation and, when explicitly
+requested, commit and push the complete package.
 ```
 
 ---
 
-# Complete handoff pipeline
+# Publication validation — one gate, not another design phase
+
+Before committing/pushing, validate the complete dependency closure once.
+
+At minimum check:
+
+- current Landingpages `main` baseline before writing;
+- current relevant public source HEAD(s);
+- `git diff --check` when a native checkout is available;
+- Markdown links and heading anchors;
+- every referenced local asset exists;
+- public figure/source counterparts are synchronized;
+- Figma/source-of-truth provenance is current for designed figures;
+- responsive/mobile assets render legibly;
+- real screenshots match recorded reproduction state;
+- commands are aligned with the reviewed source revision;
+- no private paths, credentials or live-user data;
+- no unsupported release/platform/security/performance claims;
+- no workflow-only links or draft paths in the public dependency closure.
+
+Record validation in `07-FINAL-REVIEWS.md`. Do not create a new numbered
+workflow stage merely to record routine closure.
+
+If a networked native checkout is unavailable, state that limitation explicitly
+instead of claiming local checks that were not run.
+
+---
+
+# Moving-HEAD rule
+
+A source or Landingpages branch moving during the workflow does **not** trigger a
+full restart.
+
+If the public source HEAD changes:
+
+1. compare old and new source revisions;
+2. identify whether changed paths affect public claims, commands or visuals;
+3. revalidate only affected claims;
+4. update the Step 3 evidence baseline and downstream wording only where needed.
+
+If Landingpages `main` changes while preparing the final commit:
+
+1. stop before pushing;
+2. preserve the concurrent change;
+3. rebase/rebuild the candidate on current `main`;
+4. compare the resulting one-commit diff;
+5. fast-forward only; never force-push over unrelated work.
+
+This rule exists specifically to avoid repeating an entire publication workflow
+for a small concurrent change.
+
+---
+
+# Remaining project emphasis
+
+## MQTTSuite
+
+Primary story:
 
 ```text
-                         EXISTING REPOSITORY
-                                │
-                                ▼
-                     CODEX / HIGH
-             01-REPOSITORY-AUDIT.md
-                                │
-                                ▼
-                    CHATGPT / HIGH
-           02-ECOSYSTEM-POSITIONING.md
-                                │
-              ┌─────────────────┴─────────────────┐
-              │          per project              │
-              ▼                                   │
-          CODEX / MAX                             │
-     03-TECHNICAL-FACTS.md                        │
-              │                                   │
-              ▼                                   │
-        CHATGPT / HIGH                            │
-      04-README-DESIGN.md                         │
-              │                                   │
-              ▼                                   │
-        CHATGPT / HIGH                            │
-          visual design                           │
-              │                                   │
-        CODEX / HIGH                              │
-     technical validation                         │
-              │                                   │
-              ▼                                   │
-         05-VISUALS.md                            │
-              │                                   │
-        HUMAN APPROVAL                            │
-              │                                   │
-              ▼                                   │
-        CHATGPT / HIGH                            │
-     06-README-DRAFT.md                           │
-              │                                   │
-       ┌──────┴──────┐                            │
-       ▼             ▼                            │
- CODEX / MAX      CLAUDE / HIGH                   │
- technical           editorial                    │
-       └──────┬──────┘                            │
-              ▼                                   │
-     07-FINAL-REVIEWS.md                          │
-              │                                   │
-              ▼                                   │
-        CHATGPT / HIGH                            │
-          final edit                              │
-              │                                   │
-              ▼                                   │
-           README.md                              │
-              └───────────────────────────────────┘
+five focused MQTT applications
+→ broker / transform / bridge / CLI / store
+→ real MQTT message flow
 ```
 
-## Responsibility split
+Likely highest-value evidence:
 
-- **Codex:** repository understanding, source verification, technical claim
-  validation, architecture checks, reproducible commands and screenshot states.
-- **ChatGPT:** ecosystem positioning, editorial structure, visual art direction,
-  README storytelling, cross-project consistency, and final controlled editing.
-- **Claude:** independent editorial attack on the near-final README, especially
-  verbosity, generic AI prose, hierarchy, and unnecessary material.
-- **Human maintainer:** product identity, technical intent, visual taste, and
-  final approval.
+- short broker/subscriber/publisher first success;
+- one clear application/message-flow figure;
+- one genuine Web UI/product screenshot if it materially helps evaluation.
 
-The workflow deliberately keeps technical verification separate from editorial
-judgment. The goal is to preserve the rigor of the existing research while
-removing process-driven, formulaic README content.
+Do not turn the README into five application manuals.
+
+## AISuite
+
+Primary story:
+
+```text
+typed C++ / TypeScript integration
+→ one bounded bridge
+→ provider/controller/observer authority
+```
+
+Likely highest-value evidence:
+
+- typed API example;
+- bridge/authority figure;
+- one deterministic bridge/client success path.
+
+Do not let CodexUI presentation behavior dominate AISuite.
+
+## CodexUI
+
+Primary story:
+
+```text
+real native/browser workflow
+→ threads / turns / prompt / activity / reconnect state
+```
+
+Likely highest-value evidence:
+
+- genuine native/browser product captures;
+- shared user-workflow explanation;
+- architecture only where needed to explain visible behavior/boundaries.
+
+Do not lead with reducer/protocol/internal implementation terminology.
+
+---
+
+# Expected operational cadence per remaining repository
+
+The accelerated workflow should normally require:
+
+```text
+1. Codex xhigh    → Step 3 technical facts
+2. ChatGPT High   → Step 4 README + visual storyboard
+3. Codex High     → Step 5 validation
+4. Figma/capture  → actual visuals + one human approval
+5. ChatGPT High   → Step 6 frozen draft
+6. Codex xhigh + Claude High in parallel → Step 7 reviews
+7. ChatGPT High   → Step 7 finalization + validation + requested push
+```
+
+The same ChatGPT conversation may continue from Step 4 through Step 6 and later
+Step 7c, because the repository artifacts—not conversation history—carry the
+canonical state.
+
+The goal is not to reduce quality. The goal is to remove repeated exploratory
+loops now that SNode.C has already established the system.
+
+---
+
+# Stop rule
+
+After Step 7 finalization and publication validation, **stop**.
+
+Do not automatically request another Codex/Claude review cycle. Reopen review
+only when one of these is true:
+
+- a technical blocker remains;
+- a new material claim was introduced after review;
+- a visual's technical semantics changed after validation;
+- the README structure was materially changed after the frozen draft;
+- the public source moved in a way that affects published claims.
+
+Polish findings that do not materially improve first-time-reader understanding,
+technical correctness, credibility, accessibility or actionability are not a
+reason for another cycle.
+
+This is the canonical accelerated workflow for the remaining SNode.C ecosystem
+landing pages.
