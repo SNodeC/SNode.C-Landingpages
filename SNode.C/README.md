@@ -227,7 +227,9 @@ calls `response->end()` to queue `101 Switching Protocols`. After the current
 HTTP read callback returns, the HTTP context detaches with
 `DetachReason::ContextSwitch` and is removed, the active pointer changes, and
 the WebSocket `SocketContextUpgrade` attaches to the same established
-`SocketConnection`.
+`SocketConnection`. SSE/EventSource follows a different HTTP-layer path: it
+keeps the HTTP context and streams server-to-client events rather than replacing
+the active protocol context.
 
 <picture>
   <source media="(max-width: 600px)" srcset="assets/http-websocket-context-switch-mobile.svg">
