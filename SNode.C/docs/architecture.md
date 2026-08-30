@@ -137,26 +137,43 @@ same established connection. HTTP-to-WebSocket upgrade is the clearest example.
 
 <sub>The replacement is staged while HTTP remains active; the same established connection continues through the switch.</sub>
 
-On the server path, an accepted HTTP Upgrade selects the WebSocket upgrade
-factory, which creates the replacement `SocketContextUpgrade`. The HTTP response
-prepares `101 Switching Protocols`, and `setSocketContext(new)` stages the
-replacement while the HTTP context is still active. The upgrade-status or
-application callback calls `response->end()` to queue the `101`; the framework
-does not invoke that call automatically. After the current HTTP read callback
-returns, the old HTTP context detaches with `DetachReason::ContextSwitch` and is
-removed, the active-context pointer changes to the staged replacement, and the
-WebSocket `SocketContextUpgrade` attaches. The `SocketConnection` remains
-established throughout, so no second transport connection is created.
+The server-side HTTP upgrade path is protocol-generic. `Response::upgrade()`
+first requires the request's `Connection` header to contain `Upgrade`. The
+upgrade selector then reads the comma-separated values of the `Upgrade` header,
+normalizes each protocol name, ignores an optional `/version` suffix for
+selection, and chooses the first matching `SocketContextUpgradeFactory`. A
+factory may be linked into the application or, when dynamic loading is allowed,
+loaded by protocol name. The selected factory receives the HTTP request and
+response and creates the protocol-specific `SocketContextUpgrade`; WebSocket is
+the concrete implementation shown in the figure, not the only possible upgrade
+target.
 
-WebSocket then adds its frame receiver/transmitter behavior and selects a
-subprotocol where configured. Upgrade factories and WebSocket subprotocol
-factories can be linked into the application; the current implementation also
-contains dynamic loading paths with defined library and symbol conventions.
+Once the selected factory creates a replacement context,
+`setSocketContext(new)` stages it while the HTTP context is still active. The
+protocol-specific factory is responsible for preparing the switching response.
+For WebSocket, the current factory validates WebSocket version 13 and the
+requested subprotocol, sets the WebSocket upgrade/accept headers, and selects
+`101 Switching Protocols`. The upgrade-status or application callback calls
+`response->end()` to queue the prepared response; the framework does not invoke
+that call automatically.
 
-That flexibility has an operational consequence: a loadable extension is code
-execution inside the process. Packaging, search paths, ownership, version
-compatibility, and allowed plugin names belong to the deployment threat model.
-Do not describe dynamic discovery as a security boundary.
+The context switch itself is protocol-independent. After the current HTTP read
+callback returns, the old HTTP context detaches with
+`DetachReason::ContextSwitch` and is removed, the active-context pointer changes
+to the staged replacement, and the selected `SocketContextUpgrade` attaches to
+the same established `SocketConnection`. No second transport connection is
+created.
+
+For WebSocket specifically, the attached upgrade context adds WebSocket frame
+receiver/transmitter behavior and selects a subprotocol where configured.
+Upgrade factories can be linked into the application and the current selector
+also supports protocol-named dynamic loading when enabled; WebSocket subprotocol
+factories have their own linked/loadable extension paths.
+
+Those loadable extension paths execute code inside the process. Packaging,
+search paths, ownership, version compatibility, and allowed plugin names belong
+to the deployment threat model. Do not describe dynamic discovery as a security
+boundary.
 
 Source anchors:
 
