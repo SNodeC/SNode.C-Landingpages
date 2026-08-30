@@ -107,7 +107,7 @@ flattened into qualified keys, keeping the owning command and section visible.
 For an endpoint instance named `echo`, a local port is represented as:
 
 ```ini
-echo.local.port="0.0.0.0"
+echo.local.host="0.0.0.0"
 echo.local.port=18001
 ```
 
