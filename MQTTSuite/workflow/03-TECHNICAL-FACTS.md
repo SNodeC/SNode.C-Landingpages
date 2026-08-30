@@ -2,56 +2,60 @@
 
 **Review date:** 30 August 2026  
 **Workflow stage:** Step 3 — Technical Truth  
-**Public source baseline:** `SNodeC/mqttsuite` `master`/`HEAD` at
-[`52de5631245c6318bfa5b7cca700f0754014f34d`](https://github.com/SNodeC/mqttsuite/commit/52de5631245c6318bfa5b7cca700f0754014f34d)  
-**Compatible foundation baseline:** `SNodeC/snode.c` `master`/`HEAD` at
-[`60f26d9ae54b3e9ffde954d0ca75e53f79f31d79`](https://github.com/SNodeC/snode.c/commit/60f26d9ae54b3e9ffde954d0ca75e53f79f31d79)
+**Public MQTTSuite baseline:** `SNodeC/mqttsuite` `master`/`HEAD` at [`52de5631245c6318bfa5b7cca700f0754014f34d`](https://github.com/SNodeC/mqttsuite/commit/52de5631245c6318bfa5b7cca700f0754014f34d)  
+**Current SNode.C baseline:** `SNodeC/snode.c` `master`/`HEAD` at [`60f26d9ae54b3e9ffde954d0ca75e53f79f31d79`](https://github.com/SNodeC/snode.c/commit/60f26d9ae54b3e9ffde954d0ca75e53f79f31d79)  
+**Last runtime-qualified SNode.C dependency:** [`bf01683a53b48220a840522e8ccaf3b48e58c240`](https://github.com/SNodeC/snode.c/commit/bf01683a53b48220a840522e8ccaf3b48e58c240)  
+**OpenWrt package-source baseline:** `SNodeC/OpenWRT` `main` at tree/HEAD [`c9378fe95f7c015752c748fc4ab012b585d294d1`](https://github.com/SNodeC/OpenWRT)
 
-This document is the self-contained technical handoff for MQTTSuite README design and writing. It verifies current public `master`/`HEAD`, not a release tag. **Current public heads are the dependency and truth baseline throughout this workflow.** Source version metadata may describe build/package expectations, but tags and historical releases are not compatibility authorities here.
+This document is the self-contained technical handoff for later MQTTSuite README design, visual qualification, writing, validation and publication. Repository source and recorded qualification evidence, not chat history, control all later technical claims.
 
-Existing landing-page READMEs, proposals, figures, and screenshots are research inputs only. Where they disagree with current source or the evidence boundaries below, this document controls later MQTTSuite README work.
+The workflow targets current public `master`/`HEAD`. Historical releases and package metadata are recorded because they matter to availability and installation, but they do **not** replace current public heads as the technical truth baseline.
+
+Existing Landingpages READMEs, proposals, figures and screenshots remain research inputs only. Where they conflict with the evidence boundaries below, this file controls later MQTTSuite work.
 
 ## Evidence vocabulary
 
-- **Current-head source-verified** — directly established by the current MQTTSuite and/or SNode.C source at the SHAs above.
-- **Runtime-qualified** — reproduced in the existing isolated landing-page qualification with recorded commands and visible output.
-- **Carried forward by source-delta review** — prior runtime evidence remains relevant because the current-head changes since that run do not touch the consumed implementation surface; this is not a substitute for a fresh rerun when a final screenshot or current-head acceptance claim is required.
+- **Current-head source-verified** — directly established by current MQTTSuite and/or SNode.C source at the SHAs above.
+- **Runtime-qualified** — reproduced by the existing isolated landing-page qualification with recorded commands and visible output.
+- **Carried forward by source-delta review** — prior runtime evidence remains relevant because the source changes since that run do not touch the consumed implementation surface. This is not a fresh current-head rerun.
+- **Package-source verified** — packaging definitions or install scripts exist in current public source, without implying that a feed/package was built, published or executed successfully.
 - **Runtime-pending** — implemented in source but not reproduced by the landing-page qualification.
-- **Open** — no sufficient current-head evidence for a public claim.
+- **Open** — current evidence is insufficient for a public claim.
 
-## Current-head status and compatibility
+## 1. Current-head status and dependency compatibility
 
-MQTTSuite `master` is unchanged from the application qualification baseline at `52de563...`. Its top-level CMake build adds all five application directories and requires C++20.
+MQTTSuite `master` is unchanged from the 28 August application qualification baseline at `52de563...`. Its top-level CMake build adds all five application directories and requires C++20.
 
-SNode.C advanced after the earlier MQTTSuite runtime run from `bf01683a53b48220a840522e8ccaf3b48e58c240` to current `60f26d9...`. The exact comparison is:
+SNode.C advanced after that MQTTSuite runtime run from `bf01683...` to `60f26d9...`. The exact comparison is:
 
 <https://github.com/SNodeC/snode.c/compare/bf01683a53b48220a840522e8ccaf3b48e58c240...60f26d9ae54b3e9ffde954d0ca75e53f79f31d79>
 
-Those five SNode.C commits add and document the external echo example, its tests, and CI wiring. They do not change the MQTTSuite-consumed MQTT, networking, HTTP/WebSocket, MariaDB, configuration, or exported component implementation. Therefore the earlier MQTTSuite broker/CLI runtime proof is carried forward by source-delta review to the current dependency surface, but **it is not a fresh current-SNode.C-HEAD rerun**.
+The five intervening SNode.C commits add/document the external echo example, its tests and CI wiring. They do not change the MQTTSuite-consumed MQTT, networking, HTTP/WebSocket, MariaDB, configuration or exported component implementation. Therefore the earlier MQTTSuite broker/CLI runtime proof can be carried forward by source-delta review to the current dependency surface. It remains **not a fresh run against SNode.C `60f26d9...`**.
 
-Current SNode.C HEAD itself configures, builds, runs the pre-existing test suite, installs, configures the new external echo project, and builds that project in CI; its current CI run fails only at the final new external-echo CTest step. The current run is:
+Current SNode.C HEAD has one CI run for `60f26d9...`, run `33293707417`, and that run concludes **failure** at the newly added external-echo validation path. The failure is outside the MQTTSuite-consumed source delta reviewed above, but later ecosystem copy must not claim that all current public heads are green.
 
-<https://github.com/SNodeC/snode.c/actions/runs/33293707417>
+MQTTSuite itself has no application build/test CI job and no MQTTSuite test directory on current master. Its current workflows:
 
-Do not claim that all current heads have a completely green CI state. The SNode.C failure is outside the MQTTSuite dependency surface reviewed here, but it remains a current-head fact.
+- update the README table of contents when the README changes; and
+- create/upload a source archive when a GitHub release is published.
 
-MQTTSuite has no application build/test CI job and no MQTTSuite test directory on current master. Its current workflows maintain README content and packaging automation, not application acceptance. Runtime statements below therefore come from the explicit landing-page qualification, not MQTTSuite CI.
+Runtime statements below therefore come from explicit landing-page qualification, not MQTTSuite CI.
 
-## Canonical project identity
+## 2. Canonical project identity
 
-MQTTSuite is a set of **five independently runnable MQTT applications**, not one monolithic daemon:
+MQTTSuite is a toolkit of **five independently runnable MQTT applications**, not one monolithic daemon and not five modes of a single executable.
 
-| Application | Executable | Exact role | Primary relationship |
+| Application | Executable | Exact role | Primary boundary |
 | --- | --- | --- | --- |
-| **MQTTBroker** | `mqttbroker` | MQTT broker/server with bundled browser dashboard and optional in-process mapping | Accepts MQTT clients and distributes publications |
-| **MQTTIntegrator** | `mqttintegrator` | MQTT client integration process that subscribes, transforms, and republishes | Consumes broker traffic through configured mappings |
-| **MQTTBridge** | `mqttbridge` | Group of outbound MQTT client connections that forwards selected broker traffic | Connects multiple brokers through logical bridge groups |
-| **MQTTCli** | `mqttcli` | Terminal MQTT client for publishing, subscribing, and inspecting messages | Provides the shortest operator/evaluation path into a broker |
-| **MQTTStore** | `mqttstore` | MQTT subscriber that persists raw message envelopes and optional typed JSON projections to MariaDB | Connects MQTT traffic to database storage |
+| **MQTTBroker** | `mqttbroker` | MQTT broker/server with bundled browser dashboard and optional in-process mapping | accepts MQTT clients and distributes publications |
+| **MQTTIntegrator** | `mqttintegrator` | MQTT client integration process that subscribes, transforms and republishes | subscribed input → mapping → republished output |
+| **MQTTBridge** | `mqttbridge` | group of outbound MQTT client connections forwarding selected broker traffic | configured brokers grouped into logical bridges |
+| **MQTTCli** | `mqttcli` | terminal MQTT client for publishing, subscribing and inspecting messages | one selected MQTT client transport/session |
+| **MQTTStore** | `mqttstore` | MQTT subscriber persisting raw message envelopes and optional typed JSON projections to MariaDB | MQTT subscription → storage plan → MariaDB |
 
-The current top-level `CMakeLists.txt` unconditionally adds all five application directories. Later README copy should therefore present one toolkit with separate processes and responsibilities, not five modes of one executable.
+The current top-level `CMakeLists.txt` unconditionally adds `mqttbroker`, `mqttintegrator`, `mqttbridge`, `mqttcli` and `mqttstore`.
 
-A useful relationship model is:
+A safe architectural relationship model is:
 
 ```text
 publishers / devices
@@ -59,49 +63,54 @@ publishers / devices
         ▼
    MQTTBroker  ◄──────────── MQTTCli
         │                     publish / subscribe / inspect
-        ├──────────────► MQTTIntegrator ── transform + republish ──► MQTT
+        ├──────────────► MQTTIntegrator ── map + republish ──► MQTT
         │
-        ├──────────────► MQTTStore ────────────────────────────────► MariaDB
+        ├──────────────► MQTTStore ─────────────────────────► MariaDB
         │
-        └──────────────► MQTTBridge ───────────────► other brokers
+        └──────────────► MQTTBridge ────────────────────────► other brokers
 ```
 
-This is a role model, not proof that all five were executed together. The basic broker/CLI path is runtime-qualified; mapping, multi-broker forwarding, and MariaDB storage remain runtime-pending in this landing-page qualification.
+This is a role/composition model, **not** evidence that all five applications have been executed together. Only the broker/CLI path is currently runtime-qualified by the landing-page evidence.
 
-## MQTT protocol scope
+## 3. MQTT protocol scope
 
 ### Safe current-head claim
 
 MQTTSuite targets **MQTT 3.1.1** through SNode.C's MQTT implementation.
 
-Current SNode.C defines MQTT 3.1.1 protocol level `0x04`, and its server CONNECT path requires protocol name `MQTT` and protocol level 4 after handling the private reflection bit described under loop prevention. Source paths:
+Current SNode.C uses MQTT protocol name `MQTT` and protocol level `0x04` for ordinary MQTT 3.1.1 connections. The server CONNECT path validates the protocol name and, after masking the private reflection bit described under MQTTBridge, requires protocol level 4.
 
-- `src/iot/mqtt/packets/Connect.h`
-- `src/iot/mqtt/packets/Connect.cpp`
-- `src/iot/mqtt/server/packets/Connect.cpp`
-- `src/iot/mqtt/server/Mqtt.cpp`
+Relevant current SNode.C source includes:
 
-Current source implements the MQTT 3.1.1 packet paths needed for CONNECT, PUBLISH, QoS acknowledgement flows, SUBSCRIBE/UNSUBSCRIBE, PING and DISCONNECT. The broker source also contains retained-message state, subscription trees, persistent-session state and offline QoS 1/2 queues.
+- `src/iot/mqtt/packets/Connect.{h,cpp}`;
+- `src/iot/mqtt/server/packets/Connect.cpp`;
+- `src/iot/mqtt/client/Mqtt.cpp`;
+- `src/iot/mqtt/server/Mqtt.cpp`;
+- `src/iot/mqtt/server/broker/Broker.cpp`;
+- `src/iot/mqtt/server/broker/Session.cpp`;
+- `src/iot/mqtt/server/broker/SubscriptionTree.cpp`.
 
-### Evidence boundary
+Current source contains CONNECT, PUBLISH, QoS acknowledgement flows, SUBSCRIBE/UNSUBSCRIBE, PING and DISCONNECT handling. The broker implementation also contains retained-message state, persistent-session state, subscription matching and offline QoS 1/2 queues.
 
-The landing-page runtime proof is narrower: one plain-IPv4 broker/subscriber/publisher exchange at QoS 1. Do not broaden that run into a conformance claim for every MQTT feature.
+### Runtime boundary
 
-For later public wording:
+The public runtime proof is deliberately narrower: one plain-IPv4 broker/subscriber/publisher exchange at QoS 1.
+
+For later wording:
 
 - **Runtime-qualified:** CONNECT + subscribe + publish + delivered QoS 1 message in the documented local scenario.
-- **Current-head source-verified, runtime-pending here:** QoS 2 flows, retained messages, wills, persistent-session recovery, offline queues and `+`/`#` subscription matching.
-- **Not eligible:** `full MQTT`, complete MQTT conformance, MQTT 5 support, or claims that every feature combination has been tested.
+- **Current-head source-verified, runtime-pending here:** QoS 2 paths, retained messages, wills, persistent-session recovery, offline queues and `+`/`#` subscription matching.
+- **Not eligible:** `full MQTT`, complete MQTT conformance, MQTT 5 support, or a claim that all MQTT feature combinations are tested.
 
-MQTT username/password fields are carried in CONNECT packets, but the reviewed current SNode.C broker CONNECT path validates protocol/flags and then stores the supplied username/password. No broker credential-verification backend is invoked in that path. **Do not describe MQTTBroker as authenticating MQTT usernames/passwords on the basis of these fields alone.**
+MQTT username/password fields are supported in client CONNECT construction. The reviewed SNode.C broker CONNECT path parses and stores supplied credentials but does not invoke a credential-verification backend. Therefore **do not describe MQTTBroker as authenticating MQTT usernames/passwords** on the basis of these fields alone.
 
-## MQTTBroker
+## 4. MQTTBroker
 
 ### Role
 
-MQTTBroker is the server-side application. It accepts MQTT client connections, owns the broker/session/subscription/retained-message model through SNode.C, exposes a browser-facing broker dashboard, and can optionally run the same mapping engine used by MQTTIntegrator inside the broker process.
+MQTTBroker is the server-side application. It accepts MQTT client connections, owns the broker/session/subscription/retained-message model through SNode.C, exposes the bundled browser-facing broker dashboard, and can optionally execute the shared mapping engine inside the broker process.
 
-### Transport source scope
+### Source transport surface
 
 Current `mqttbroker/CMakeLists.txt` exposes build options for:
 
@@ -113,73 +122,71 @@ Current `mqttbroker/CMakeLists.txt` exposes build options for:
 - Unix-domain direct MQTT over TLS;
 - MQTT over WebSocket and WSS through corresponding HTTP/HTTPS server surfaces.
 
-The broker WebSocket upgrade requires the `mqtt` WebSocket subprotocol. Routes `/ws`, `/mqtt`, and `/` can accept that upgrade.
+The broker WebSocket upgrade requires the `mqtt` WebSocket subprotocol. Current routes `/ws`, `/mqtt` and `/` can accept that upgrade.
 
-These are **source-implemented transport roles**, not a runtime-tested matrix. Only the plain IPv4 MQTT listener is runtime-qualified in the principal first-success scenario.
+These are **source implementation paths**, not a tested transport matrix. Only the plain IPv4 MQTT listener is runtime-qualified in the principal first-success scenario.
 
-### Bundled broker Web UI
+### Bundled Web UI
 
-The browser dashboard is a genuine current-master product surface. Current source installs HTML/CSS/JavaScript from `mqttbroker/html/` under the MQTTSuite broker web root and routes `/clients` to the dashboard.
+The broker dashboard is a genuine current-master product surface. Current source installs HTML/CSS/JavaScript from `mqttbroker/html/` below the broker web root and routes `/clients` to the dashboard.
 
-The broker exposes live/event and mutating HTTP endpoints including:
+The current broker router exposes live/event and mutating HTTP endpoints including:
 
 - `GET /api/mqtt/events` — SSE event stream;
 - `GET /sse` — SSE event stream;
 - `POST /api/mqtt/disconnect` — close a selected client connection;
 - `POST /api/mqtt/unsubscribe` — remove a selected client subscription;
-- `POST /api/mqtt/release` — release a retained topic by publishing an empty retained value;
+- `POST /api/mqtt/release` — publish an empty retained value for a topic;
 - `POST /api/mqtt/subscribe` — add a subscription for a selected connected client.
 
-The existing landing-page broker screenshot was captured from the real current-MQTTSuite-HEAD dashboard using synthetic clients/topic state. Because MQTTSuite HEAD has not moved, that dashboard load remains source-aligned evidence. It proves the visible dashboard state, not every mutating admin action.
+The existing Landingpages broker screenshot was captured from the real MQTTSuite `52de563...` dashboard with synthetic client/topic state. Since MQTTSuite HEAD has not moved, that visible dashboard state remains current-MQTTSuite-HEAD runtime evidence. It does **not** prove every mutating dashboard/API action.
 
-### Broker security boundary
+### Broker HTTP security boundary
 
-The broker `/api/mqtt` middleware sets permissive CORS, including `Access-Control-Allow-Origin: *`, and no application-level Basic Authentication middleware appears in the reviewed broker router. The API can disconnect clients and change subscription/retained state.
+The `/api/mqtt` middleware sets permissive CORS including `Access-Control-Allow-Origin: *`. No application-level Basic Authentication middleware appears in the reviewed broker router, while the API can disconnect clients and mutate subscriptions/retained state.
 
 Therefore:
 
 - treat the broker HTTP surface as an administrative/trusted-network surface unless separately protected;
-- TLS can encrypt a listener but does not itself add authorization;
-- do not call the dashboard/API secure or authenticated without additional current evidence;
-- do not expose it remotely merely because HTTP/HTTPS transport exists.
+- TLS encrypts a listener but does not provide authorization by itself;
+- do not call the dashboard/API authenticated or remote-safe without additional evidence;
+- do not infer MQTT client authentication from username/password CONNECT fields.
 
 ### Embedded mapping
 
-MQTTBroker constructs each MQTT connection with the shared `MqttMapper`. In `mqttbroker/lib/Mqtt.cpp`, incoming publications are sent to the broker model and then, when a mapper exists, processed into immediate and delayed mapped publications and republished through the same broker.
+`mqttbroker/lib/Mqtt.cpp` receives a shared `MqttMapper`. For each incoming publication it updates the broker model, then—when a mapper is present—derives immediate and delayed mapped publications and republishes those outputs through the same broker.
 
-This is **in-process shared mapping behavior**, not a hidden `mqttintegrator` child process. It is a real architectural differentiator, but the landing-page mapping scenario remains runtime-pending.
+This is in-process mapper behavior, **not** a hidden `mqttintegrator` child process. It is source-verified; the canonical mapped-message scenario remains runtime-pending.
 
-## MQTTIntegrator
+## 5. MQTTIntegrator
 
 ### Role
 
-MQTTIntegrator is an outbound MQTT client application. It derives subscriptions from the mapping configuration, receives matching MQTT publications, maps them, and republishes immediate or delayed results.
+MQTTIntegrator is an outbound MQTT client integration process. It derives MQTT subscriptions from mapping configuration, receives matching publications, transforms them and republishes immediate or delayed mapped outputs.
 
-`mqttintegrator/lib/Mqtt.cpp` establishes the exact lifecycle:
+`mqttintegrator/lib/Mqtt.cpp` establishes the lifecycle:
 
-1. on socket connection, send MQTT CONNECT using mapper connection settings;
-2. after an accepted CONNACK with no existing session, subscribe to the mapper-derived topic list;
-3. on PUBLISH, obtain immediate and scheduled mapped outputs;
+1. on socket connection, send CONNECT using mapping connection settings;
+2. after an accepted CONNACK with no existing session, subscribe to mapper-derived topics;
+3. on PUBLISH, derive immediate and scheduled mappings;
 4. publish immediate outputs and timer-schedule delayed outputs;
-5. on mapping update, reconnect when connection settings changed, otherwise compute a subscription delta and hot subscribe/unsubscribe.
+5. on mapping update, reconnect if connection settings changed, otherwise hot subscribe/unsubscribe the delta.
 
-Current `mqttintegrator.cpp` seeds a default/demo mapping in source after attempting to load `mapping.json`; command-line/configuration and the admin API can replace/deploy mappings. Do not imply that the executable starts in a neutral no-mapping state.
-
-### Transport source scope
+### Source transport surface
 
 Current source instantiates client roles for:
 
-- IPv4 / IPv6 / Unix-domain direct MQTT streams;
+- IPv4, IPv6 and Unix-domain direct MQTT streams;
 - plain and TLS variants;
 - MQTT over WS/WSS for IPv4, IPv6 and Unix-domain HTTP clients.
 
-Again, these are source-implemented options, not a qualified support matrix.
+These are source paths, not an application support matrix.
 
 ### Mapping administration API
 
-MQTTIntegrator creates IPv4 HTTP and HTTPS admin servers and uses the shared mapping-admin router. The router exposes schema/config/history, PATCH/replace, validate, deploy and rollback operations.
+MQTTIntegrator creates IPv4 HTTP and HTTPS administration servers and uses the shared `MappingAdminRouter`. That router provides mapping schema/config/history, validation, replace/PATCH, deploy and rollback operations.
 
-Unlike the broker and bridge admin surfaces, this router applies SNode.C `BasicAuthentication`. However, current `AdminOptions` defaults are:
+The router applies SNode.C `BasicAuthentication`. Current defaults in `MappingAdminRouter.h` are:
 
 ```text
 user = admin
@@ -187,83 +194,83 @@ pass = admin
 realm = mqttsuite-admin
 ```
 
-This must be treated as a development/default credential boundary, not a security guarantee. A public deployment must replace/protect those credentials and decide its listener/TLS/exposure policy.
+This is a development/default credential boundary, not a security guarantee. Public/deployed use must replace/protect those credentials and explicitly decide bind/TLS/exposure policy.
 
-### Integrator UI limitation
+### Portable UI limitation
 
-The mapping admin router currently serves `/ui` from a **hard-coded maintainer-local absolute path**:
+Current `MappingAdminRouter.cpp` serves `/ui` from this hard-coded maintainer-local absolute path:
 
 ```text
 /home/voc/tmp/integrator/mqtt-integrator-ui/dist/mqtt-integrator-ui/browser
 ```
 
-No corresponding packaged MQTTIntegrator UI artifact is present in the current MQTTSuite source tree. Therefore:
+No corresponding packaged MQTTIntegrator UI artifact is present in current MQTTSuite source. Therefore:
 
 - the mapping admin API is real current-head functionality;
-- a portable, installed, shipped MQTTIntegrator Web UI is **not** established by current master;
-- do not use an integrator UI screenshot as proof of shipped current-master functionality until this path/packaging boundary is fixed and qualified.
+- a portable installed/shipped MQTTIntegrator Web UI is **not established** by current master;
+- do not use an integrator UI screenshot as shipped-product proof until that packaging/path boundary is corrected and qualified.
 
-## Mapping semantics
+## 6. Mapping semantics
 
-The shared mapping engine is defined by `lib/mapping-schema.json`, `MqttMapper`, `JsonMappingReader`, and the mapping plugin interface. It is used by MQTTIntegrator and can also be embedded in MQTTBroker.
+The shared mapping engine is defined by `lib/mapping-schema.json`, `MqttMapper`, `JsonMappingReader` and the plugin interface. MQTTIntegrator uses it directly; MQTTBroker can use the same mapper in process.
 
 ### Topic matching and subscriptions
 
-The mapping schema describes a hierarchical topic tree. Current mapper source recognizes literal topic levels plus `+` and `#` level names and derives MQTT subscriptions from the configured tree. This supports MQTT-style wildcard mapping at source level, but do not claim every wildcard edge case is conformance-tested by this workflow.
+The schema describes a hierarchical topic tree. Current mapper source recognizes literal topic levels plus `+` and `#` names and derives MQTT subscriptions from the configured tree. Treat this as source-level wildcard behavior, not exhaustive MQTT wildcard conformance evidence.
 
 ### Three mapping modes
 
-**Static mapping** compares the incoming MQTT payload string with configured `message` values. A match emits the configured `mapped_message` to `mapped_topic`.
+**Static mapping** compares the incoming MQTT payload string against configured `message` values. A match emits `mapped_message` to `mapped_topic`.
 
-**Value-template mapping** exposes the incoming payload as a scalar string in the template context and renders topic/message templates.
+**Value-template mapping** exposes the incoming payload as a scalar string in the template context and renders configured topic/message templates.
 
-**JSON-template mapping** parses the incoming payload as JSON and exposes the parsed value in the template context. Invalid JSON does not produce a JSON-template mapping.
+**JSON-template mapping** parses the incoming payload as JSON and exposes the parsed value to the template context. Invalid JSON does not produce a JSON-template mapping.
 
-Mapped outputs can specify:
+Mapped output definitions can specify:
 
 - `mapped_topic`;
 - output QoS 0–2;
 - retain flag;
-- delay;
-- template suppressions for template mappings.
+- delay (`-1` default for immediate; non-negative values schedule output);
+- suppressions for template mappings.
 
-A negative default delay takes the immediate path; non-negative delay values are placed into the scheduled-publish queue. Template rendering uses the embedded Inja implementation. Mapping plugins can be dynamically loaded and can register additional template callbacks.
+Template rendering uses embedded Inja. Dynamically loaded mapper plugins can register additional template callbacks.
 
-### Mapping configuration and credential boundary
+### Mapping connection/security boundary
 
-The mapping `connection` object contains MQTT client settings including clean session, will, username and password. The mapping admin workflow can write draft/history/current mapping files to the filesystem. These files can therefore contain credentials.
+The mapping `connection` object includes MQTT client ID, keepalive, clean session, will fields, username and password. Mapping administration can write draft/history/current mapping files to the filesystem. Those files can therefore contain credentials.
 
-Treat mapping files and their history/drafts as credential-bearing configuration. No encrypted secret-store abstraction is established here.
+Treat mapping configuration/history as credential-bearing state. No encrypted secret-store abstraction is established by current MQTTSuite source.
 
 ### Evidence boundary
 
-Mapping behavior is current-head source-verified. The canonical end-to-end transformation scenario has not been rerun in the landing-page qualification, so later figures must not present a mapped output as runtime proof until Step 5 validates a real scenario.
+Mapping behavior is current-head source-verified. No deterministic end-to-end mapping run is part of the existing landing-page runtime qualification. Step 5 must execute a real input → mapped output scenario before a figure/output is labelled as runtime proof.
 
-## MQTTBridge
+## 7. MQTTBridge
 
-### Role and logical bridge model
+### Role and logical-bridge model
 
-MQTTBridge is not a broker. It creates **outbound MQTT client connections** to configured brokers and groups those clients into named logical bridges.
+MQTTBridge is **not** a broker. It creates outbound MQTT client connections to configured brokers and groups them into named logical bridges.
 
 Each configured broker member can define:
 
 - network endpoint;
-- MQTT client ID / keepalive / clean-session settings;
+- MQTT client ID, keepalive and clean-session settings;
 - will settings;
 - username/password;
-- session-store path;
+- client session-store file;
 - subscriptions with QoS;
 - broker prefix;
 - `loop_prevention` flag;
 - disabled state.
 
-On accepted CONNACK, a broker client joins its logical bridge and subscribes to its configured topics. Thus bridge traffic selection is primarily established by each source broker connection's MQTT subscriptions.
+On accepted CONNACK, the client joins its logical bridge and subscribes to its configured topics. Traffic selection is therefore primarily expressed as MQTT subscriptions on each source broker connection.
 
 ### Exact forwarding behavior
 
-When one bridge member receives a publication, `Bridge::publish()` sends it to every **other connected member** of the same logical bridge. It does not send the publication directly back over the origin connection.
+When one broker member receives a PUBLISH, `Bridge::publish()` forwards it to every **other connected member** in the same logical bridge and does not send it immediately back over the origin connection.
 
-The forwarded topic is constructed exactly as:
+The outgoing topic is constructed as:
 
 ```text
 bridge prefix
@@ -272,70 +279,68 @@ bridge prefix
 + original MQTT topic
 ```
 
-The payload, QoS and retain flag are forwarded unchanged by that bridge step.
+The bridge forwarding step carries payload, QoS and retain flag through unchanged.
 
-Do not describe MQTTBridge as a transformation engine; topic/payload transformation belongs to the mapper/integrator. Likewise, do not imply a separate arbitrary bridge-filter language beyond the configured MQTT subscriptions and prefixes established in source.
+Do not describe MQTTBridge as a payload transformation engine. Mapping/transformation belongs to MQTTIntegrator/the shared mapper. Also do not invent a separate arbitrary bridge-filter language beyond the configured MQTT subscriptions and prefixes present in source.
 
-### Loop-prevention semantics — two bounded mechanisms
+### Loop prevention: two bounded mechanisms
 
-There are two different mechanisms that must not be collapsed into a generic “loops are solved” claim.
+Two mechanisms exist and must not be collapsed into “loops are solved”:
 
-1. **Within one logical bridge**, MQTTBridge never immediately forwards a received publication back to the same bridge connection it arrived on.
-2. **Per broker connection**, `loop_prevention=true` is passed into SNode.C's MQTT CONNECT path.
+1. **Within a logical bridge**, the process never immediately forwards a received message back through the exact connection from which it arrived.
+2. A per-broker `loop_prevention=true` setting is passed into SNode.C's MQTT CONNECT packet construction.
 
-The second mechanism is a private extension. Current SNode.C sets the high bit of the MQTT protocol-level byte, producing `0x84` rather than ordinary MQTT 3.1.1 `0x04`. Its own server deserializer interprets that bit as “do not reflect messages to origin”, masks the bit, and then validates the remaining protocol level as MQTT 3.1.1. The broker session code suppresses delivery back to the origin client when reflection is disabled.
+The second mechanism is a private extension. Current SNode.C sets the high bit of the MQTT protocol-level byte (`0x84` instead of ordinary `0x04`). Its own server deserializer interprets this bit as “do not reflect messages to origin”, masks it and then validates the remaining protocol level as MQTT 3.1.1. Broker-session delivery suppresses reflection to the origin client when reflection is disabled.
 
-This mechanism is **not standard MQTT 3.1.1 behavior**. Source comments compare it with a private/`try_private` style broker mechanism. It cannot be assumed to work with arbitrary third-party brokers and does not prove every cyclic broker topology safe.
+This is **not standard MQTT 3.1.1 behavior**. It cannot be assumed to interoperate with arbitrary third-party brokers and it does not establish safety for arbitrary cyclic broker topologies.
 
-Safe wording later: MQTTSuite has explicit origin-reflection suppression mechanisms; cyclic topologies and third-party interoperability require topology-specific qualification.
+Safe later wording: MQTTSuite provides explicit origin-reflection suppression mechanisms; cyclic topologies and third-party broker behavior require topology-specific qualification.
 
-### Bridge admin/API surface
+### Bridge admin/status surface
 
-Current `mqttbridge` exposes:
+Current `mqttbridge` source exposes a configuration/status HTTP surface including:
 
-- `GET /api/bridge/config` — returns the active bridge JSON;
-- `PATCH /api/bridge/config` — validates/stages a JSON patch, closes bridge flows, activates the new configuration, restarts connections and persists the active configuration;
-- `GET /api/bridge/sse` — lifecycle/status SSE;
-- `/config` — static bridge configuration UI.
+- active bridge configuration retrieval;
+- PATCH/stage/validate/apply behavior that can restart bridge connections and persist configuration;
+- lifecycle/status SSE at `/api/bridge/sse`;
+- bundled static configuration UI under `/config`.
 
-Current source creates IPv4 plain/TLS admin HTTP servers. No application-level Basic Authentication middleware is present in this router.
+Current source creates IPv4 plain/TLS admin HTTP servers. No application-level Basic Authentication middleware is established for this bridge router.
 
-This is a significant security boundary because the active bridge JSON contains broker username/password fields and the API can change live bridge behavior.
+This is security-relevant because active bridge configuration contains broker credentials and the API can modify live behavior.
 
 ### Bridge credential/logging boundary
 
-`BridgeStore::activateStaged()` writes the full active bridge JSON back to the configured definition file. Current `mqttbridge.cpp` debug logging also prints broker username, broker password, will message, address and other configuration values.
+Current bridge code persists active bridge JSON and its debug logging prints broker username, broker password, will message, address and other configuration values.
 
 Therefore:
 
-- the bridge definition file is credential-bearing state;
+- bridge definition files are credential-bearing state;
 - debug logs can contain secrets;
-- no real credentials may appear in screenshots or qualification captures;
-- remote admin exposure requires an external/explicit trust boundary rather than being assumed safe.
+- qualification screenshots must use synthetic/no credentials and be reviewed for log output as well as command lines;
+- remote admin exposure requires an explicit external trust/authentication boundary.
 
 ### Bluetooth schema mismatch — current-head defect
 
-The current bridge JSON schema accepts network protocols:
+Current `mqttbridge/lib/bridge-schema.json` accepts network protocols:
 
 ```text
 in, in6, rc, l2, un
 ```
 
-including Bluetooth RFCOMM (`rc`) and L2CAP (`l2`). However, the current `mqttbridge` executable only includes and instantiates IPv4, IPv6 and Unix-domain client paths, with their stream/TLS and corresponding WebSocket variants. `mqttbridge/CMakeLists.txt` has no MQTTSuite bridge RFCOMM/L2CAP build option; it merely lists some SNode.C Bluetooth components as optional package components.
+including Bluetooth RFCOMM (`rc`) and L2CAP (`l2`). However, current `mqttbridge` executable code only includes/instantiates IPv4, IPv6 and Unix-domain client paths with their stream/TLS and WebSocket variants. `mqttbridge/CMakeLists.txt` has no MQTTSuite bridge RFCOMM/L2CAP build option; it only names SNode.C Bluetooth components as optional components.
 
-**Conclusion:** RFCOMM/L2CAP bridge operation is not established by current MQTTSuite master. The schema is broader than the current executable implementation. A schema-valid Bluetooth bridge description is not proof that the executable can create that connection.
+**Conclusion:** RFCOMM/L2CAP MQTTBridge operation is not established by current MQTTSuite master. The schema is broader than the executable implementation. A schema-valid Bluetooth bridge definition is not proof that the executable can create that connection.
 
-Any existing Landingpages claim telling users to rebuild SNode.C with Bluetooth and then enable MQTTSuite RFCOMM/L2CAP targets is stale/unsupported and must be removed or corrected before publication.
+Any Landingpages claim instructing users to enable MQTTSuite RFCOMM/L2CAP targets is stale/unsupported and must be removed or corrected.
 
-## MQTTCli
+## 8. MQTTCli
 
 ### Role
 
-MQTTCli is the terminal evaluation/operations client. One enabled client instance can publish, subscribe, or do both. It is the correct application for the shortest visible first success because its received-message output displays the MQTT topic, payload, QoS, retain and duplicate state.
+MQTTCli is the terminal MQTT client and the correct tool for the shortest visible first success. One enabled client instance can publish, subscribe or do both. Received-message output includes topic, payload, QoS, retain and duplicate state; JSON payloads are pretty-printed when parsing succeeds.
 
-If a payload parses as JSON, current source pretty-prints it; otherwise it wraps the text for terminal width.
-
-### Source transport scope
+### Source transport surface
 
 Current source instantiates:
 
@@ -346,90 +351,88 @@ Current source instantiates:
 - `in6-wsmqtt`, `in6-wsmqtts`;
 - `un-wsmqtt`, `un-wsmqtts`.
 
-WebSocket clients use the `mqtt` subprotocol and default target `/ws`.
+WebSocket clients use subprotocol `mqtt` and default target `/ws`.
 
-Session configuration includes client ID, QoS 0–2, persistent-session selection, keepalive, will, username and password. Subscription topics and publication topics can carry a `##<qos>` suffix to override the default QoS; publication also supports retain.
+Session configuration includes client ID, QoS 0–2, persistent-session selection, keepalive, will, username and password. Topic strings can carry the application's `##<qos>` suffix to override default QoS; publication also supports retain.
 
 ### CLI security boundary
 
-Current debug logging prints MQTT username, password and will message. Treat debug output as potentially secret-bearing. Public captures must use synthetic/no credentials and must be reviewed for logs as well as command lines.
+Current debug logging can print MQTT username/password and will data. Public terminal captures must use synthetic/no credentials and inspect logs before publication.
 
-## MQTTStore
+## 9. MQTTStore
 
 ### Role
 
-MQTTStore is an outbound MQTT subscriber that writes received messages to MariaDB. Its storage model deliberately separates a **raw envelope** from optional **typed projections**.
+MQTTStore is an outbound MQTT subscriber that writes received publications to MariaDB. Its key architectural distinction is **raw MQTT envelope first, optional typed projections second**.
 
-### MQTT/client source scope
+### MQTT/client source surface
 
-The current executable provides the same IPv4, IPv6 and Unix-domain direct/TLS plus WS/WSS client family as MQTTCli. It has configurable MQTT client ID, default subscription QoS, persistent-session choice, keepalive, will, username/password and client session-store path. Subscription strings can use `topic##qos` to override the default QoS.
-
-### MariaDB connection configuration
-
-Current source exposes database host, username, password, database name, TCP port, Unix socket and flags. These are ordinary configuration values, not secret-store handles.
+Current executable provides the same IPv4, IPv6 and Unix-domain direct/TLS plus WS/WSS client family as MQTTCli. It has configurable client ID, default subscription QoS, persistent-session choice, keepalive, will, username/password and session-store path. Subscription strings can use `topic##qos` to override the default QoS.
 
 ### Raw envelope
 
-For each received PUBLISH, MQTTStore constructs a message record containing:
+For every received PUBLISH, `mqttstore/lib/Mqtt.cpp` constructs a record containing:
 
 - source connection name;
 - MQTT topic;
-- original payload bytes/string;
+- original payload;
 - QoS;
 - retain flag;
 - DUP flag;
 - packet identifier.
 
-It then inserts the message into the configured raw table. When auto-create is enabled, current source can create that raw table with fields for receive timestamp, source instance, topic, QoS, retain/DUP, packet identifier, raw payload, text representation, JSON representation and a `json|text|binary` payload-format marker.
+`MariaDbStorage::store()` always attempts the configured raw-table insert first. Current auto-create support can create a raw table containing receive timestamp, source instance, topic, QoS, retain/DUP, packet identifier, raw payload, text representation, JSON representation and `json|text|binary` payload-format marker.
 
-Every received message takes the raw-insert path. JSON parsing only changes the derived representation and whether typed projections can be attempted.
+JSON parsing changes the derived representation and projection eligibility; it does not replace the raw storage path.
 
 ### Typed projections
 
-Typed projections are attempted **only when the payload parses as JSON**. `projection-schema.json` defines a target table and columns. Each column can derive from:
+Typed projection inserts are attempted **only when the payload parses as JSON**. Projection definitions target an operator-defined table and can derive columns from:
 
-- an RFC 6901 JSON Pointer;
-- a zero-based MQTT topic level;
-- a literal string.
+- RFC 6901 JSON Pointer;
+- zero-based MQTT topic level;
+- literal string.
 
-A projection has an MQTT topic filter. Current `StoragePlan` matching implements literal levels, `+`, and a terminal `#` wildcard. Optional missing values can be omitted; values marked required become SQL `NULL` when the configured source is unavailable.
+A projection includes an MQTT topic filter. Current `StoragePlan` matching supports literal levels, `+`, and terminal `#` wildcard behavior.
 
-### Storage ownership boundaries
+Only the raw table has source support for automatic creation. Projection tables are application/domain schemas and are not auto-created or migrated by MQTTStore.
 
-Only the raw table has source support for automatic creation. Current MQTTSuite does **not** establish automatic creation or migration of operator-defined projection tables.
+### MariaDB/security/ownership boundaries
+
+Current configuration exposes database host, username, password, database, TCP port, Unix socket and flags. Credentials are ordinary configuration values, not secret-store handles.
 
 No current-head evidence establishes:
 
-- schema migration policy for projection tables;
+- projection-table migration policy;
 - retention/expiry policy;
 - database backup policy;
-- atomicity between the raw insert and projection inserts;
-- failure/retry guarantees across database loss;
-- MariaDB version support matrix.
+- atomicity between raw and projection inserts;
+- retry/failure guarantees across database loss;
+- supported MariaDB version matrix.
 
-Raw payloads are persisted unredacted. Database and MQTT credentials are ordinary configuration strings. Database schema lifecycle, retention, access control and data classification remain operator responsibilities.
+Raw payloads are persisted unredacted. Database schema lifecycle, retention, access control, backup and data classification remain operator responsibilities.
 
-## Transport matrix — source implementation, not support matrix
+The repository's `docs/mqttstore-user-guide.md` contains useful setup guidance, but its phrase “production pipeline” is documentation prose, not production-readiness evidence. Do not promote it into a public maturity claim.
 
-The following table is safe as a **source implementation inventory** only:
+## 10. Source transport inventory — not a support matrix
 
 | Application | MQTT role | Direct MQTT source paths | MQTT-over-WebSocket source paths | HTTP/admin surface |
 | --- | --- | --- | --- | --- |
-| MQTTBroker | server | IPv4, IPv6, Unix; plain/TLS | WS/WSS via IPv4, IPv6 and Unix HTTP(S) servers | Broker dashboard/API/SSE |
-| MQTTIntegrator | client | IPv4, IPv6, Unix; plain/TLS | WS/WSS via IPv4, IPv6 and Unix HTTP clients | Mapping admin IPv4 HTTP/HTTPS, BasicAuth |
-| MQTTBridge | outbound client group | IPv4, IPv6, Unix; plain/TLS | WS/WSS via IPv4, IPv6 and Unix HTTP clients | Bridge config/status IPv4 HTTP/HTTPS; no app auth found |
+| MQTTBroker | server | IPv4, IPv6, Unix; plain/TLS | WS/WSS via IPv4, IPv6 and Unix HTTP(S) servers | broker dashboard/API/SSE |
+| MQTTIntegrator | client | IPv4, IPv6, Unix; plain/TLS | WS/WSS via IPv4, IPv6 and Unix HTTP clients | mapping admin IPv4 HTTP/HTTPS, BasicAuth |
+| MQTTBridge | outbound client group | IPv4, IPv6, Unix; plain/TLS | WS/WSS via IPv4, IPv6 and Unix HTTP clients | bridge config/status IPv4 HTTP/HTTPS; no app auth established |
 | MQTTCli | client | IPv4, IPv6, Unix; plain/TLS | WS/WSS via IPv4, IPv6 and Unix HTTP clients | none |
 | MQTTStore | client | IPv4, IPv6, Unix; plain/TLS | WS/WSS via IPv4, IPv6 and Unix HTTP clients | none |
 
-Do not label these cells “supported” or “tested”. The principal runtime proof is plain IPv4 broker + MQTTCli. TLS, WSS, IPv6, Unix-domain and every per-application combination require explicit execution evidence before stronger wording.
+Do not label this table `supported` or `tested`. The principal runtime proof is plain IPv4 MQTTBroker + MQTTCli. TLS, WSS, IPv6, Unix-domain and every per-application combination remain runtime-pending.
 
-Do not add Bluetooth to this application transport matrix. The only current MQTTSuite Bluetooth appearance found in this review is the over-broad MQTTBridge schema plus optional SNode.C package components; the executable path is absent.
+Do not add Bluetooth to this matrix on current master. The bridge schema's `rc`/`l2` entries are not backed by current executable connection paths.
 
-## Shortest real first success
+## 11. Shortest real broker/subscriber/publisher first success
 
 The shortest **already runtime-qualified** MQTTSuite evaluation path is one local MQTTBroker listener plus two MQTTCli processes: subscriber and publisher.
 
-The run used MQTTSuite current HEAD `52de563...`. Its SNode.C runtime dependency was the immediately preceding head `bf01683...`; the source-delta review above establishes that the current SNode.C changes do not touch this path. A fresh current-SNode.C-HEAD rerun should still be performed when Step 5 captures new terminal evidence.
+The run used current MQTTSuite HEAD `52de563...` with SNode.C `bf01683...`. Source-delta review establishes no MQTTSuite-consumed SNode.C changes between `bf01683...` and current `60f26d9...`, but Step 5 should still rerun this exact path against then-current heads before capturing final terminal imagery.
 
 ### Terminal 1 — broker
 
@@ -449,7 +452,7 @@ The run used MQTTSuite current HEAD `52de563...`. Its SNode.C runtime dependency
   un-https --disabled
 ```
 
-This deliberately disables every listener/control surface except one loopback IPv4 MQTT listener so the first-success proof has a narrow exposure and evidence boundary.
+This intentionally leaves only one loopback IPv4 MQTT listener active.
 
 ### Terminal 2 — subscriber
 
@@ -472,116 +475,210 @@ This deliberately disables every listener/control surface except one loopback IP
 
 ### Observed success
 
-The subscriber printed the topic, pretty-printed JSON payload, `QoS: 1`, `Retain: false`, and duplicate state. Ctrl-C teardown was clean.
+The subscriber printed the topic, pretty-printed JSON payload, `QoS: 1`, `Retain: false` and duplicate state. Ctrl-C teardown was clean.
 
-This is the public first-success candidate. Do not replace it with a shorter unexecuted command merely for presentation. Step 5 should rerun the exact path against the then-current MQTTSuite and SNode.C heads before producing final terminal imagery.
+This is the public first-success candidate. Do not substitute a shorter but unexecuted command merely for presentation convenience.
 
-## Dependencies and build/package scope
-
-### Current-head build requirements
+## 12. Build and dependency facts
 
 Current source establishes:
 
-- CMake minimum `3.14` for MQTTSuite;
+- CMake minimum `3.14`;
 - C++20 required;
-- `nlohmann_json` package version floor `3.7.0`;
+- `nlohmann_json` version floor `3.7.0`;
 - recursive `lib/json-schema-validator` submodule;
-- installed SNode.C package; application-level CMake calls request `snodec 2.0.0` as a package-version floor, not an exact SHA or release-tag dependency;
-- SNode.C MQTT, HTTP/Express, networking, TLS and WebSocket components according to enabled MQTTSuite options;
-- SNode.C `db-mariadb` for the MQTTStore library, so a complete default all-five-app build includes the MariaDB client development dependency through SNode.C;
-- embedded Inja template implementation for mapping;
+- installed SNode.C package;
+- application CMake requests `snodec 2.0.0` as a package-version floor for the relevant components, **not** as an exact release/tag dependency;
+- SNode.C MQTT, networking, TLS, HTTP/Express and WebSocket components according to enabled application options;
+- SNode.C `db-mariadb` for MQTTStore, making MariaDB client development support part of a complete all-five-app build;
+- embedded Inja mapping/template implementation;
 - Git for cloning/submodules, not as an application runtime dependency.
 
-The technical dependency baseline for publication remains **the current SNode.C `master`/`HEAD`**, regardless of CMake package-version metadata.
+The publication technical baseline remains current SNode.C `master`/`HEAD`, independent of package-version metadata.
 
-MQTTSuite's transport build options default on for IPv4, IPv6, Unix, TLS and WebSocket families, which means a complete default build expects the corresponding SNode.C components to be present.
+Transport options default on broadly for IPv4, IPv6, Unix, TLS and WebSocket families, so a complete default build expects the corresponding SNode.C components.
 
-Doxygen/Graphviz, IWYU, clang-format, cmake-format, js-beautify and Prettier are maintainer/documentation/format tooling, not core runtime dependencies.
+Doxygen/Graphviz, IWYU, clang-format, cmake-format, js-beautify and Prettier are documentation/maintainer tooling, not core application runtime dependencies.
 
-### Current-head packaging boundary
+## 13. Release and source-distribution scope
 
-Current master defines normal CMake build/install rules for the five executables, internal/shared libraries, MQTTBroker Web assets and MQTTBridge Web assets. That is sufficient to claim **source build/install surfaces exist**.
+### GitHub release state
 
-This Step 3 does not establish a current-head binary distribution, distro package, container image, package-manager publication, or release-level compatibility policy. Do not use historical tags/releases to fill that gap.
+The latest public GitHub release is **`v1.0.1`**, published 7 March 2025. Its tag resolves to commit:
 
-### Platform boundary
+```text
+0138b1c5a4bd95c5c586a6be26c18aa50b9f300e
+```
 
-The recorded MQTTSuite qualification environment was Debian GNU/Linux forky/sid on x86-64 with GCC 16.2.0, CMake 4.3.4 and Ninja 1.13.2. That proves one environment, not a support matrix.
+The release workflow publishes a source archive named `mqttsuite.tar.gz` including submodules.
 
-Current MQTTSuite source contains GCC/Clang-specific compiler handling, but there is no current MQTTSuite application CI matrix proving a compiler range. No OpenWrt packaging manifest was found in the current MQTTSuite tree during this review. ARM, Raspberry Pi, Android/Termux, OpenWrt and broad distribution support are therefore open, even if comments or ecosystem history suggest relevance.
+Current master `52de563...` is **560 commits ahead** of `v1.0.1`. Current top-level CMake still reports project version `1.0.1`, so the version string does not identify the current technical state or the qualified source revision.
 
-## Security, credential and state boundaries
+Safe later wording:
 
-Later README design should communicate these boundaries concisely rather than hide them in qualification prose:
+- a historical `v1.0.1` GitHub release and source archive exist;
+- this workflow documents and qualifies current public master instead;
+- do not present `v1.0.1` as equivalent to current master or as the source of current five-application behavior without separate release qualification.
 
-| Surface | Current-head fact | Safe public interpretation |
+### Current-master install surface
+
+Current master contains CMake build/install rules for all five executables, their libraries and the MQTTBroker/MQTTBridge web assets. This establishes a source build/install surface.
+
+No current-head evidence establishes a binary release, distribution repository, container image or broad package-manager publication corresponding exactly to `52de563...`.
+
+## 14. OpenWrt package evidence and boundary
+
+OpenWrt is **not merely hypothetical**, but the available package source is not equivalent to current MQTTSuite master and must be described precisely.
+
+### MQTTSuite install helper
+
+Current `SNodeC/mqttsuite` contains `misc/owrt-install`. The script:
+
+- adds an external `vchrist` opkg feed selected by architecture;
+- installs a signing key from `SNodeC/OpenWRT`;
+- removes a potentially installed Mosquitto package;
+- installs `mqttsuite-full`.
+
+This proves an intended installation path. It does **not** prove that the external feed currently resolves, that every architecture is built, or that a package install/run is currently qualified.
+
+### Public package source
+
+The separate public `SNodeC/OpenWRT` repository contains `net/mqttsuite/Config.in`, `net/mqttsuite/Makefile` and init scripts for MQTTBroker, MQTTIntegrator and MQTTBridge.
+
+At the reviewed `SNodeC/OpenWRT` `main` state, `net/mqttsuite/Makefile` declares:
+
+```text
+PKG_NAME:=mqttsuite
+PKG_VERSION:=1.0.0
+PKG_RELEASE:=4
+PKG_SOURCE_URL:=https://github.com/SNodeC/mqttsuite
+PKG_SOURCE_VERSION:=OpenWRT
+```
+
+`PKG_SOURCE_VERSION:=OpenWRT` resolves to the MQTTSuite tag:
+
+```text
+OpenWRT -> 24b601818dcb650f28e35ede35a41e6cf6bc573b
+```
+
+That tag is from 9 June 2026 and current MQTTSuite master is six commits ahead. The six-commit delta includes changes across mapping, broker, bridge, CLI, store and semantic logging source, so the OpenWrt package source is **not current master**.
+
+### Package contents are incomplete relative to the five-app suite
+
+The OpenWrt package definitions build:
+
+- `mqttsuite-broker`;
+- `mqttsuite-integrator`;
+- `mqttsuite-bridge`;
+- `mqttsuite-cli`;
+- virtual `mqttsuite-full` pulling those four packages.
+
+**MQTTStore is not packaged and is not part of `mqttsuite-full`.** This is a material mismatch with the current five-application suite identity.
+
+Therefore safe publication wording is limited to:
+
+> Public OpenWrt packaging source exists for a four-application package set tied to the `OpenWRT` MQTTSuite tag, but it is not current-master five-application qualification.
+
+Do **not** claim:
+
+- current-master OpenWrt support;
+- a complete five-application OpenWrt package;
+- a tested architecture matrix;
+- current feed availability;
+- OpenWrt release parity with current master.
+
+If OpenWrt is to become a prominent README install path, Step 5 or a dedicated qualification must update/verify the package source, include MQTTStore if intended, identify the exact OpenWrt version/target/architecture, install from a clean system and execute at least the first-success scenario.
+
+## 15. Platform boundary
+
+The recorded current-MQTTSuite qualification environment is:
+
+- Debian GNU/Linux forky/sid;
+- x86-64;
+- GCC 16.2.0;
+- CMake 4.3.4;
+- Ninja 1.13.2.
+
+All five executables compiled in that environment and the broker/CLI first-success path ran.
+
+That is one qualified environment, not a platform support matrix. Current MQTTSuite has no application CI matrix proving compiler/distribution/architecture coverage.
+
+OpenWrt package source exists as documented above, but current-master OpenWrt runtime is not qualified. ARM, Raspberry Pi and Android/Termux remain open as publication support claims unless separate current evidence is supplied.
+
+## 16. Security, credential and state boundaries
+
+| Surface | Current-head fact | Safe interpretation |
 | --- | --- | --- |
-| MQTTBroker MQTT credentials | username/password fields are parsed and retained, but no broker authentication backend was established | Do not claim broker credential authentication |
-| MQTTBroker Web API | mutating admin endpoints; permissive CORS; no app BasicAuth found | trusted/admin surface; TLS is not authorization |
-| MQTTIntegrator admin | BasicAuth middleware; default `admin` / `admin`; HTTP and HTTPS source listeners | authentication exists, but default credentials must be changed/protected |
+| MQTTBroker MQTT credentials | username/password fields are parsed/stored, no credential-verification backend established | do not claim MQTT broker authentication |
+| MQTTBroker Web API | mutating endpoints, permissive CORS, no app BasicAuth found | trusted/admin surface; TLS is not authorization |
+| MQTTIntegrator admin | BasicAuth exists; defaults `admin` / `admin`; HTTP/HTTPS source listeners | authentication exists but defaults require replacement/protection |
 | Mapping files/history | can contain MQTT username/password | credential-bearing filesystem state |
-| MQTTBridge admin | GET returns active config; PATCH modifies/restarts/persists; no app BasicAuth found | protect externally; do not expose casually |
-| MQTTBridge config/logs | config contains username/password; debug logs print username/password and will data | credential-bearing files/logs |
-| MQTTCli logs | debug logs print MQTT username/password and will data | captures/logs may contain secrets |
-| MQTTStore config | MQTT and MariaDB credentials are ordinary config strings | no secret-store abstraction established |
-| MQTTStore data | raw MQTT payload is stored unredacted | database access/retention/classification are operator-owned |
-| Session stores | ordinary filesystem-backed state | do not imply encryption or managed lifecycle |
+| MQTTBridge admin | config retrieval + live PATCH/restart/persist behavior; no app BasicAuth established | protect externally; do not expose casually |
+| MQTTBridge config/logs | credentials in config; debug output can print username/password/will/address | files/logs can contain secrets |
+| MQTTCli logs | debug output can print MQTT username/password/will | captures/logs can contain secrets |
+| MQTTStore config | MQTT and MariaDB credentials are ordinary strings | no secret-store abstraction established |
+| MQTTStore data | raw payload persisted unredacted | DB access/retention/classification operator-owned |
+| MQTT/SNode.C session stores | filesystem-backed state | no encryption/managed lifecycle claim |
 
 No `secure`, `production-ready`, remote-safe, secret-managed or zero-trust claim is justified by current evidence.
 
-## Genuine differentiators eligible for Step 4
+## 17. Genuine differentiators eligible for later design/writing
 
-The strongest technically credible differentiators are these; none requires hype or unsupported performance claims:
+The strongest technically credible differentiators are:
 
-1. **Five focused applications around one MQTT domain.** Brokerage, terminal inspection, transformation, cross-broker forwarding and persistence are separate runnable responsibilities rather than one oversized daemon.
+1. **Five focused applications around one MQTT domain.** Brokerage, terminal inspection, transformation, cross-broker forwarding and persistence are separate executable responsibilities.
 2. **One mapping engine in two useful forms.** The same schema/template mapper powers standalone MQTTIntegrator behavior and optional in-process MQTTBroker mapping.
-3. **Concrete mapping semantics.** Static payload mapping, scalar and JSON templates, topic transformation, QoS/retain selection, delayed output, suppression and dynamically loaded template callbacks are explicit source capabilities.
-4. **A bridge built from outbound MQTT clients.** Logical bridges make broker membership, source subscriptions, prefixes, session settings and connection lifecycle explicit rather than pretending the bridge is another broker.
-5. **Raw-envelope-first storage.** MQTTStore preserves MQTT metadata and original payload first, then optionally derives typed JSON projections. This separates evidence/data capture from application-specific relational views.
-6. **A real broker operations UI.** The browser dashboard is backed by the live broker model/SSE/API and has existing genuine current-MQTTSuite-HEAD capture evidence.
+3. **Concrete mapping semantics.** Static payload mapping, scalar/JSON templates, mapped topics, QoS/retain selection, delayed output and dynamically loaded template callbacks are explicit source capabilities.
+4. **A bridge built from outbound MQTT clients.** Logical bridge membership, source subscriptions, prefixes, session settings and connection lifecycle are explicit rather than hidden behind another broker role.
+5. **Raw-envelope-first storage.** MQTTStore preserves MQTT metadata/original payload first and only then derives optional typed JSON projections.
+6. **A real broker operations UI.** The browser dashboard is backed by the live broker model/SSE/API and has genuine current-MQTTSuite-HEAD capture evidence.
+7. **Broad source-level transport composition through SNode.C.** This can support the architecture story, but because most combinations are not runtime-qualified it should remain secondary to the five application/message-flow narrative.
 
-Transport breadth can support the story, but because most combinations are source-verified rather than runtime-qualified it should not be the headline differentiator.
+Do not use `lightweight`, `fast`, `small footprint`, `full`, `complete`, `secure` or `production-ready` as differentiators without separate evidence.
 
-Do not use `lightweight`, `fast`, `small footprint`, `complete`, `full`, `secure` or `production-ready` as differentiators without separate current-head evidence.
+## 18. Stale, contradictory or unsupported Landingpages claims
 
-## Stale, contradictory or unsupported Landingpages claims
+Later work must correct or qualify these items rather than copy existing material mechanically:
 
-The current working Landingpages material must not be copied mechanically. The following items need correction or qualification in later stages:
+1. **Tag/release/version as current technical dependency baseline** — incorrect for this workflow. Current public MQTTSuite and SNode.C heads are the technical baseline; CMake version numbers/releases are availability metadata.
+2. **“Enable MQTTSuite RFCOMM/L2CAP targets after rebuilding SNode.C with Bluetooth”** — unsupported. Bridge schema accepts `rc`/`l2`, but current executable has no corresponding MQTTSuite connection path/build target.
+3. **Broker Web UI evidence contradiction** — existing Landingpages text both shows genuine current-head capture and later says evidence does not extend to Web UI. Correct boundary: dashboard load/visible synthetic state is runtime-qualified; complete mutating API behavior is not.
+4. **Broker authentication wording** — do not imply a selectable built-in credential backend. Client credentials can be sent/parsed; broker credential verification was not established.
+5. **All-five-app executed integration flow** — unsupported. The roles compose coherently, but mapping, bridge and database arrows remain runtime-pending.
+6. **MQTTIntegrator Web UI as a shipped portable surface** — unsupported because current source points to a maintainer-local absolute build directory with no packaged UI artifact.
+7. **Generic loop-prevention guarantee** — too broad. Distinguish same-connection suppression from the private SNode.C protocol-level extension; qualify topology/third-party behavior separately.
+8. **Broad ARM/Raspberry Pi/Android platform support** — unsupported by current application build/test evidence.
+9. **Broad current-master OpenWrt support** — unsupported. Public packaging source exists, but it targets the `OpenWRT` tag, is six commits behind current master and excludes MQTTStore from `mqttsuite-full`.
+10. **`lightweight` positioning** — present in historical/source description strings but not backed by current footprint/performance measurement.
+11. **`full MQTT`, MQTT 5, complete conformance, production readiness or universal transport support** — unsupported.
+12. **“Credentials supported” without role qualification** — client applications can send credentials; that is different from MQTTBroker authenticating them.
+13. **Bridge config/admin as harmless monitoring** — false boundary. It can return/persist credential-bearing config and modify/restart live bridge connections.
+14. **MQTTStore user-guide “production pipeline” wording as maturity evidence** — unsupported; treat it as descriptive documentation only.
+15. **`mqttsuite-full` as the five-application suite on OpenWrt** — false in current package source; it pulls Broker, Integrator, Bridge and CLI only.
 
-1. **Any tag/release/version as technical dependency baseline** — superseded for this workflow. Always resolve MQTTSuite and SNode.C from current public `master`/`HEAD`. CMake version numbers are package metadata/floors only.
-2. **“Enable MQTTSuite RFCOMM/L2CAP targets after rebuilding SNode.C with Bluetooth”** — unsupported. The bridge schema accepts `rc`/`l2`, but current `mqttbridge` contains no corresponding executable connection path or MQTTSuite build target.
-3. **Broker Web UI evidence contradiction** — existing Landingpages text both presents a genuine current-head broker UI capture and later says evidence does not extend to Web UI. Correct boundary: dashboard load/visible synthetic state is runtime-qualified; its complete mutating API behavior is not.
-4. **Broker “authentication is an operator decision” wording** — can imply a built-in selectable MQTT authentication backend. Current broker accepts credential fields but no credential-verification backend was established. Say exactly that instead.
-5. **Any all-five-app executed integration flow** — unsupported. The five roles compose coherently in architecture, but mapping, bridge and database arrows remain runtime-pending in this qualification.
-6. **MQTTIntegrator Web UI as a shipped/portable surface** — unsupported on current master because the router points to a maintainer-local absolute build directory and no packaged UI artifact is present.
-7. **Generic loop-prevention guarantee** — too broad. Distinguish same-connection origin suppression from the private protocol-level high-bit extension; qualify cyclic topologies and third-party brokers individually.
-8. **Broad ARM/OpenWrt/Android/Raspberry Pi/platform support** — unsupported by current MQTTSuite build/test evidence.
-9. **`lightweight` positioning** — present in historical/source description strings but not backed by current footprint or performance measurements; do not reuse as a verified differentiator.
-10. **`full MQTT`, MQTT 5, complete conformance, production readiness or universal transport support** — unsupported.
-11. **“Credentials supported” without role qualification** — client applications can send username/password fields; that is different from MQTTBroker authenticating them.
-12. **Bridge config/admin as harmless monitoring** — false boundary. It returns/persists credential-bearing config and PATCH can restart live bridge connections.
+## 19. Open facts and runtime gaps
 
-## Open facts and runtime gaps
+These remain explicit after Step 3 and should be resolved only if later publication work needs the corresponding claim/visual:
 
-The following remain explicit gaps after Step 3 and should be resolved only if Step 4/5 needs the corresponding public claim or visual:
-
-- fresh broker/CLI first-success rerun against both then-current MQTTSuite and then-current SNode.C heads;
+- fresh broker/CLI first-success rerun against both then-current MQTTSuite and SNode.C heads;
 - one deterministic MQTTIntegrator mapping run proving input → mapped output;
-- a two-or-more-broker MQTTBridge run proving subscriptions, exact prefix composition and restart behavior;
-- third-party-broker qualification for the private loop-prevention mechanism;
-- MQTTStore run against a disposable MariaDB schema proving raw envelope + one typed projection;
-- MQTTStore database-loss, restart, malformed payload and retention/migration boundaries;
+- two-or-more-broker MQTTBridge run proving subscriptions, exact prefix composition and restart behavior;
+- third-party-broker qualification for the private loop-prevention extension;
+- MQTTStore run against disposable MariaDB proving raw envelope + one typed projection;
+- MQTTStore database-loss, restart, malformed-payload, migration and retention boundaries;
 - per-application IPv6, Unix, TLS, WS and WSS runtime matrix;
-- MQTTSuite acceptance scenarios for QoS 2, will, retained publication, persistent-session recovery and wildcard subscriptions;
-- exact bind/exposure defaults and production guidance for broker, integrator and bridge admin listeners;
-- broad compiler/distribution/architecture/package support matrix;
+- QoS 2, will, retained-publication, persistent-session-recovery and wildcard acceptance scenarios;
+- exact bind/exposure defaults and hardened deployment guidance for broker/integrator/bridge admin listeners;
+- broad compiler/distribution/architecture support matrix;
 - dedicated MQTTSuite application build/test CI;
-- resolution of the current SNode.C external-echo CTest failure before any “all current heads green” ecosystem claim;
-- portable packaging or removal of the MQTTIntegrator UI route;
-- correction of the MQTTBridge `rc`/`l2` schema/executable mismatch;
-- correction of the `LICENSE` prose defect described below.
+- resolution of current SNode.C external-echo CI failure before any “all current heads green” ecosystem claim;
+- portable packaging/removal of the MQTTIntegrator UI route;
+- correction of MQTTBridge `rc`/`l2` schema/executable mismatch;
+- current-master OpenWrt package qualification, including an explicit decision about MQTTStore;
+- current external opkg feed availability/target matrix;
+- license prose correction described below.
 
-## License fact
+## 20. License fact
 
 Current MQTTSuite `LICENSE` starts with:
 
@@ -589,54 +686,73 @@ Current MQTTSuite `LICENSE` starts with:
 SPDX-License-Identifier: MIT OR GPL-3.0-or-later
 ```
 
-and the repository contains full MIT and GPL-3.0-or-later license texts. However, prose in `LICENSE` incorrectly describes the second option as LGPL. Later public copy should use the SPDX expression and full license files as the source of truth and must not reproduce the stale LGPL sentence.
+and the repository contains full MIT and GPL-3.0-or-later license files. However, prose in `LICENSE` incorrectly describes the second option as LGPL and refers to “GNU LGPL” while the SPDX expression/file name say GPL.
 
-## Step 4 handoff
+Later public copy should use **`MIT OR GPL-3.0-or-later`** as the source-of-truth expression and must not reproduce the stale LGPL prose.
 
-Step 4 may proceed without reopening source for ordinary MQTTSuite claims if it preserves these constraints:
+The separate OpenWrt package source currently records `GPL-3.0-or-later` for its package metadata. That packaging metadata must not be used to rewrite the upstream MQTTSuite dual-license expression.
 
-- narrative center: the five applications and their real MQTT/message/integration responsibilities;
-- principal proof: the local MQTTBroker + MQTTCli subscriber/publisher QoS 1 first success;
-- strongest real product visual: MQTTBroker's live browser dashboard;
-- centerpiece flow may show Broker → Integrator / Bridge / Store relationships, but mapping/bridge/storage arrows must be presented as verified architecture until their runtime scenarios are captured;
-- MQTT 3.1.1 must remain explicit; no MQTT 5/full-conformance language;
-- transport inventory is source-implemented, not a tested support matrix;
+## 21. Step 4 handoff constraints
+
+Step 4 can proceed without reopening ordinary source if it preserves these constraints:
+
+- narrative center: five applications and their real MQTT/message/integration responsibilities;
+- principal runtime proof: local MQTTBroker + MQTTCli subscriber/publisher QoS 1 path;
+- strongest product visual: genuine MQTTBroker browser dashboard;
+- integration figure may show Broker → Integrator / Bridge / Store relationships, but mapped/bridged/stored outputs remain architecture/source truth until runtime-qualified;
+- MQTT 3.1.1 explicit near the top; no MQTT 5/full-conformance language;
+- transport inventory described as source implementation, not tested support matrix;
 - no Bluetooth MQTTSuite transport claim on current master;
-- loop prevention must be described as bounded mechanisms, including a private/non-standard SNode.C broker extension;
+- loop prevention described as bounded mechanisms including a private/non-standard SNode.C extension;
 - raw envelope versus typed projection is the correct MQTTStore distinction;
-- broker/bridge admin surfaces and credential-bearing files/logs require explicit trust boundaries;
-- MQTTIntegrator's current portable UI claim is blocked;
-- package/platform/maturity wording must remain current-head evidence-based and must not depend on tags/releases;
-- omit rather than broaden any unresolved fact.
+- broker/bridge admin surfaces and credential-bearing files/logs receive explicit trust boundaries;
+- MQTTIntegrator portable Web UI claim remains blocked;
+- historical `v1.0.1` and OpenWrt packaging may be mentioned only with their exact staleness/completeness boundaries;
+- OpenWrt `mqttsuite-full` must not be presented as the current five-application suite;
+- omit rather than broaden unresolved facts.
 
-## Primary evidence index
+## 22. Primary evidence index
 
 ### MQTTSuite current HEAD
 
 - Commit: <https://github.com/SNodeC/mqttsuite/commit/52de5631245c6318bfa5b7cca700f0754014f34d>
-- Top-level build: `CMakeLists.txt`
+- Top-level build/version: `CMakeLists.txt`
 - Shared mapper: `lib/MqttMapper.{h,cpp}`, `lib/mapping-schema.json`
-- Mapping admin: `lib/MappingAdminRouter.{h,cpp}`, `lib/ConfigApplication.cpp`
+- Mapping admin: `lib/MappingAdminRouter.{h,cpp}`, `lib/ConfigApplication.{h,cpp}`, `lib/JsonMappingReader.{h,cpp}`
 - MQTTBroker: `mqttbroker/CMakeLists.txt`, `mqttbroker/mqttbroker.cpp`, `mqttbroker/lib/Mqtt.cpp`, `mqttbroker/html/`
 - MQTTIntegrator: `mqttintegrator/CMakeLists.txt`, `mqttintegrator/mqttintegrator.cpp`, `mqttintegrator/lib/Mqtt.cpp`
-- MQTTBridge: `mqttbridge/CMakeLists.txt`, `mqttbridge/mqttbridge.cpp`, `mqttbridge/lib/{Bridge,Broker,BridgeStore,Mqtt}.cpp`, `mqttbridge/lib/bridge-schema.json`
-- MQTTCli: `mqttcli/CMakeLists.txt`, `mqttcli/mqttcli.cpp`, `mqttcli/lib/{ConfigSections,Mqtt}.cpp`
-- MQTTStore: `mqttstore/CMakeLists.txt`, `mqttstore/mqttstore.cpp`, `mqttstore/lib/{Mqtt,MariaDbStorage,StoragePlan}.cpp`, `mqttstore/lib/projection-schema.json`
-- Dependencies: `.gitmodules`, `lib/CMakeLists.txt`, `mqttstore/lib/CMakeLists.txt`
+- MQTTBridge: `mqttbridge/CMakeLists.txt`, `mqttbridge/mqttbridge.cpp`, `mqttbridge/lib/{Bridge,Broker,Mqtt,BridgeStore,SSEDistributor}.*`, `mqttbridge/lib/bridge-schema.json`, `mqttbridge/html/`
+- MQTTCli: `mqttcli/CMakeLists.txt`, `mqttcli/mqttcli.cpp`, `mqttcli/lib/{ConfigSections,Mqtt}.*`
+- MQTTStore: `mqttstore/CMakeLists.txt`, `mqttstore/mqttstore.cpp`, `mqttstore/lib/{ConfigSections,MariaDbStorage,Mqtt,MqttMessage,StoragePlan}.*`, `mqttstore/lib/projection-schema.json`, `docs/mqttstore-user-guide.md`
+- OpenWrt install helper: `misc/owrt-install`
+- CI/release automation: `.github/workflows/main.yml`, `.github/workflows/release-with-submodules.yml`
 - License: `LICENSE`, `LICENSE-MIT`, `LICENSE-GPL-3.0-or-later`
 
 ### SNode.C current HEAD
 
 - Commit: <https://github.com/SNodeC/snode.c/commit/60f26d9ae54b3e9ffde954d0ca75e53f79f31d79>
-- MQTT CONNECT/version/private loop bit: `src/iot/mqtt/packets/Connect.{h,cpp}` and `src/iot/mqtt/server/packets/Connect.cpp`
-- Broker CONNECT/session behavior: `src/iot/mqtt/server/Mqtt.cpp`
-- Subscription/wildcard behavior: `src/iot/mqtt/server/broker/SubscriptionTree.cpp`
-- Persistent/offline session behavior: `src/iot/mqtt/server/broker/{Broker,Session}.cpp`
-- Current-head delta from prior MQTTSuite runtime dependency: <https://github.com/SNodeC/snode.c/compare/bf01683a53b48220a840522e8ccaf3b48e58c240...60f26d9ae54b3e9ffde954d0ca75e53f79f31d79>
+- Delta from runtime baseline: <https://github.com/SNodeC/snode.c/compare/bf01683a53b48220a840522e8ccaf3b48e58c240...60f26d9ae54b3e9ffde954d0ca75e53f79f31d79>
 - Current CI run: <https://github.com/SNodeC/snode.c/actions/runs/33293707417>
+- MQTT client: `src/iot/mqtt/client/Mqtt.cpp`
+- MQTT CONNECT packet: `src/iot/mqtt/packets/Connect.cpp`
+- MQTT server CONNECT: `src/iot/mqtt/server/packets/Connect.cpp`, `src/iot/mqtt/server/Mqtt.cpp`
+- Broker/session/subscription behavior: `src/iot/mqtt/server/broker/{Broker,Session,SubscriptionTree}.cpp`
 
-## Final Step 3 status
+### Release/package evidence
 
-**Technical-fact handoff: COMPLETE.**
+- `v1.0.1` tag: <https://github.com/SNodeC/mqttsuite/commit/0138b1c5a4bd95c5c586a6be26c18aa50b9f300e>
+- Current master vs `v1.0.1`: 560 commits ahead at this review.
+- `OpenWRT` MQTTSuite tag: <https://github.com/SNodeC/mqttsuite/commit/24b601818dcb650f28e35ede35a41e6cf6bc573b>
+- Public package source: <https://github.com/SNodeC/OpenWRT/tree/main/net/mqttsuite>
+- Package definition: `SNodeC/OpenWRT/net/mqttsuite/Makefile`
+- OpenWrt package source points at tag `OpenWRT`, declares package version `1.0.0`, release `4`, and `mqttsuite-full` excludes MQTTStore.
 
-Current-head source truth is sufficient for README design. The document intentionally leaves runtime-pending behavior and platform/package/security gaps explicit rather than converting them into public claims. No README redesign or README prose was performed in Step 3.
+### Landingpages qualification evidence
+
+- `FACTS.md`
+- `MQTTSuite/EVIDENCE.md`
+- Existing synthetic broker/CLI terminal capture and broker-dashboard capture under `MQTTSuite/assets/`
+
+---
+
+**Step 3 completion verdict:** README-relevant technical truth for current MQTTSuite master is sufficiently established for Step 4. The later workflow should not reopen source for ordinary application-role, mapping, bridge, storage, Web UI, first-success, release/package or security-boundary claims. Runtime-pending items above remain intentionally open and must not be silently promoted into tested/support claims.
