@@ -25,7 +25,7 @@ components.
 **[Run the echo pair](#run-the-echo-pair)** ·
 **[See the programming model](#the-programming-model)** ·
 **[Check capabilities](#capabilities-at-a-glance)** ·
-**[Browse examples](https://github.com/SNodeC/snode.c/tree/master/src/apps)**
+**[Open the API reference](https://snodec.github.io/snode.c-doc/html/index.html)**
 
 ## The programming model
 
@@ -41,6 +41,8 @@ protocol/application behavior. One context is active for a connection at a time.
   <img src="assets/programming-model.svg" alt="Diagram of the SNode.C programming model: a SocketServer accepts or a SocketClient completes a connection, the SocketConnection calls its endpoint flow's SocketContextFactory to create one active per-connection SocketContext, and the caller-thread event loop dispatches lifecycle and I/O callbacks.">
 </picture>
 
+<sub>Each endpoint flow retains its own context factory; the established connection owns one active connection-local context.</sub>
+
 | Role | Responsibility |
 | --- | --- |
 | `SocketServer` / `SocketClient` | Configure and initiate the server or client endpoint flow. |
@@ -49,29 +51,34 @@ protocol/application behavior. One context is active for a connection at a time.
 | `SocketContext` | Handle protocol/application callbacks for one connection. |
 | Event loop | Dispatch descriptor, timer, lifecycle, and data work. |
 
-In the echo source, the server alias is written with the build-time `NET` macro.
-For the plain IPv4 target, `NET` resolves to `in`, so the concrete composition is:
+The standalone [external echo example](https://github.com/SNodeC/snode.c/tree/60f26d9ae54b3e9ffde954d0ca75e53f79f31d79/examples/echo)
+uses the concrete installed IPv4/plain-stream types directly. Its server is:
 
 ```cpp
 using EchoSocketServer =
-    net::in::stream::legacy::SocketServer<EchoServerSocketContextFactory>;
+    net::in::stream::legacy::SocketServer<echo::EchoServerSocketContextFactory>;
 ```
 
-The supplied [echo context](https://github.com/SNodeC/snode.c/blob/bf01683a53b48220a840522e8ccaf3b48e58c240/src/apps/echo/model/EchoSocketContext.cpp)
-shows what connection-local behavior looks like (logging omitted):
+The shared [echo context](https://github.com/SNodeC/snode.c/blob/60f26d9ae54b3e9ffde954d0ca75e53f79f31d79/examples/echo/EchoSocketContext.cpp)
+shows what connection-local behavior looks like:
 
 ```cpp
 void EchoSocketContext::onConnected() {
     if (role == Role::CLIENT) {
+        log().info("Echo client: sending initial greeting: '{}'",
+                   "Hello peer! Nice to see you!!!");
         sendToPeer("Hello peer! Nice to see you!!!");
     }
 }
 
 std::size_t EchoSocketContext::onReceivedFromPeer() {
     char chunk[4096];
-    const std::size_t chunklen = readFromPeer(chunk, 4096);
+    const std::size_t chunklen = readFromPeer(chunk, sizeof(chunk));
 
     if (chunklen > 0) {
+        const char* roleName = role == Role::CLIENT ? "client" : "server";
+        log().info("Echo {}: data to reflect: {}", roleName,
+                   std::string(chunk, chunklen));
         sendToPeer(chunk, chunklen);
     }
 
@@ -91,82 +98,115 @@ concrete use of that mechanism.
 
 ## Run the echo pair
 
-The supplied plain IPv4 echo server and client are the shortest independently
-qualified way to see the endpoint/connection/context lifecycle running on
-loopback.
+[`examples/echo`](https://github.com/SNodeC/snode.c/tree/60f26d9ae54b3e9ffde954d0ca75e53f79f31d79/examples/echo)
+is a complete standalone CMake project that consumes an **installed** SNode.C
+package. It builds one plain-IPv4 server and client and therefore exercises the
+same downstream integration path an external application uses.
 
-For this source-build path, provide Git, a project-accepted C++20 compiler,
+For a source installation, provide Git, a project-accepted C++20 compiler,
 CMake 3.18+, Ninja, pkg-config, OpenSSL development files, and nlohmann/json
 3.11+. A fresh default configure also needs network access for its pinned
 dependency fetch.
 
-Clone `master` and build only the two echo targets:
+Clone and install current `master` into an isolated prefix:
 
 ```sh
 git clone https://github.com/SNodeC/snode.c.git
 cd snode.c
 
-cmake -S . -B cmake-build-release -G Ninja \
-  -DCMAKE_BUILD_TYPE=Release \
-  -DSNODEC_BUILD_APPS=ON \
-  -DSNODEC_BUILD_TESTS=OFF \
-  -DCHECK_INCLUDES=OFF
-
-cmake --build cmake-build-release --parallel \
-  --target echoserver-legacy-in echoclient-legacy-in
-
-mkdir -p cmake-build-release/echo-config
+cmake -S . -B build-snodec -G Ninja \
+  -DCMAKE_BUILD_TYPE=Release
+cmake --build build-snodec --parallel
+cmake --install build-snodec --prefix "$PWD/.snodec"
 ```
 
-Here, `legacy` names the plain, non-TLS stream variant. `CHECK_INCLUDES=OFF`
-keeps the optional IWYU include-analysis pass out of this first build when IWYU
-is installed.
+Then configure the external example against that installed package:
 
-The fresh `XDG_CONFIG_HOME` points SNode.C at an isolated configuration root, so
-existing user configuration cannot change the defaults used below.
-Information-level text logging is already the default; `--monochrom=true` makes
-the shown output independent of terminal color support.
+```sh
+cmake -S examples/echo -B build-echo -G Ninja \
+  -DCMAKE_BUILD_TYPE=Release \
+  -DBUILD_TESTING=ON \
+  -DCMAKE_PREFIX_PATH="$PWD/.snodec"
+cmake --build build-echo --parallel
+```
+
+Its CMake contract is intentionally small:
+
+```cmake
+find_package(snodec REQUIRED COMPONENTS net-in-stream-legacy)
+
+target_link_libraries(
+    echo-context PUBLIC
+    snodec::net-in-stream-legacy
+)
+```
+
+The source also includes SNode.C through the installed public header layout,
+for example:
+
+```cpp
+#include <core/SNodeC.h>
+#include <core/socket/State.h>
+#include <net/in/stream/legacy/SocketServer.h>
+```
+
+On Linux, when using a non-system install prefix, expose its library directory
+to the runtime loader before running the example or its CTests:
+
+```sh
+export LD_LIBRARY_PATH="$PWD/.snodec/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+mkdir -p build-echo/echo-config
+```
 
 Start the server:
 
 ```sh
-XDG_CONFIG_HOME="$PWD/cmake-build-release/echo-config" \
-  ./cmake-build-release/src/apps/echo/echoserver-legacy-in \
+XDG_CONFIG_HOME="$PWD/build-echo/echo-config" \
+  ./build-echo/echoserver \
   --monochrom=true \
   echoserver local --host 127.0.0.1 --port 18001
 ```
 
-Then start the client from the same checkout in a second terminal:
+Then start the client in a second terminal:
 
 ```sh
-XDG_CONFIG_HOME="$PWD/cmake-build-release/echo-config" \
-  ./cmake-build-release/src/apps/echo/echoclient-legacy-in \
+XDG_CONFIG_HOME="$PWD/build-echo/echo-config" \
+  ./build-echo/echoclient \
   --monochrom=true \
   echoclient remote --host 127.0.0.1 --port 18001
 ```
 
-Ignoring timestamps and logger prefixes, the run produces:
+The application logger now makes the protocol behavior visible. Representative
+message bodies from the current example include:
 
 ```text
-role=server inst=echoserver — listener started
-echoserver: listening on '127.0.0.1:18001'
-role=server inst=echoserver conn=1 — transport connected
-
-echoclient: connected to '127.0.0.1:18001 (127.0.0.1)'
-role=client inst=echoclient conn=1 — transport connected
+Echo server context attached
+Echo client context attached
+Echo client: sending initial greeting: 'Hello peer! Nice to see you!!!'
+Echo server: data to reflect: Hello peer! Nice to see you!!!
+Echo client: data to reflect: Hello peer! Nice to see you!!!
 ```
 
-These lines prove that the listener started and one plain IPv4 loopback
-connection formed. At the default information level the logger does not print
-the reflected payload; the linked context source reflects each received chunk,
-and the pair continues echoing until you stop both processes with Ctrl-C.
+The same project defines four application-level CTests covering its generated
+configuration surface, the real server against a deterministic external peer,
+the real client against a deterministic external peer, and a bounded real-pair
+smoke run:
 
-Plain IPv6 loopback, a Unix-domain plain stream path, and one mutual-TLS IPv4
-echo arrangement were also separately qualified.
+```sh
+ctest --test-dir build-echo --output-on-failure
+```
 
-Commands and output were verified against
-[`bf01683`](https://github.com/SNodeC/snode.c/commit/bf01683a53b48220a840522e8ccaf3b48e58c240)
-on 29 August 2026.
+Current public `master` at
+[`60f26d9`](https://github.com/SNodeC/snode.c/commit/60f26d9ae54b3e9ffde954d0ca75e53f79f31d79)
+configures and builds this external consumer in CI. Its main repository CTest
+suite passes 181/181 in the observed `gcc-debug` job. The separate external-echo
+CTest step is currently red because the installed shared-library directory is
+not available to that job's runtime loader; this publication therefore does not
+claim that those four external-example tests passed on current `master`.
+
+Recorded qualification from the preceding source baseline also covers plain
+IPv6 loopback, a Unix-domain plain stream path, and one mutual-TLS IPv4 echo
+arrangement. Those transport runs were not repeated by this closure pass.
 
 ## Capabilities at a glance
 
@@ -177,19 +217,20 @@ coverage.
 
 - **Event runtime.** **Available:** Descriptor/timer loop; server/client stream
   endpoints; connection-local contexts. `epoll` is the default; `poll` and
-  `select` are configure-time alternatives. **Exercised:** CI on the reviewed
-  commit ran the root test suite. Current CI/runtime evidence exercised default
-  `epoll` only.
+  `select` are configure-time alternatives. **Exercised:** the current public
+  `master` `gcc-debug` job built the repository and passed the main 181-test
+  CTest suite. Current CI/runtime evidence exercised default `epoll` only.
 - **Configuration.** **Available:** Typed `SubCommand` hierarchy for framework
   and application settings, with API defaults, configuration-file values, and
-  generated CLI/help/inspection surfaces. **Exercised:** the endpoint quick
-  start and downstream MQTTSuite application configuration use the same model.
+  generated CLI/help/inspection surfaces. **Exercised:** the echo application
+  and downstream MQTTSuite application configuration use the same model.
 - **Plain streams.** **Available:** IPv4, IPv6, and Unix-domain server/client
-  paths. **Exercised:** Component tests plus recorded echo runs for all three.
+  paths. **Exercised:** Component tests plus recorded echo runs for all three;
+  the current external example is concrete plain IPv4.
 - **TLS streams.** **Available:** OpenSSL-backed TLS connection layer and
   configuration. **Exercised:** TLS state/ownership/shutdown tests plus one
-  mutual-TLS IPv4 echo run. Trust, hostname, certificate, and cipher policy
-  remain application/operator responsibilities.
+  recorded mutual-TLS IPv4 echo run. Trust, hostname, certificate, and cipher
+  policy remain application/operator responsibilities.
 - **Bluetooth.** **Available:** Conditional RFCOMM and L2CAP stream layers with
   BlueZ. **Exercised:** The reviewed CI build included BlueZ; no hardware runtime
   qualification.
@@ -240,7 +281,7 @@ the active protocol context.
   <img src="assets/http-websocket-context-switch.svg" alt="HTTP-to-WebSocket context switch in SNode.C: an accepted HTTP Upgrade stages a WebSocket context; after the current HTTP read callback, the HTTP context detaches for ContextSwitch, the new context attaches, and the same SocketConnection remains established.">
 </picture>
 
-*Same connection, new active context.*
+<sub>The replacement is staged while HTTP remains active; the same established connection continues through the switch.</sub>
 
 SNode.C's configuration tree is also an extension point. Named endpoints
 contribute typed sections, and applications can attach their own `SubCommand`
@@ -262,7 +303,9 @@ consumers.
 | Understand ownership, lifecycle, composition, and extension points | [Architecture](docs/architecture.md) |
 | Configure endpoints and application settings, CLI/file overrides, retry, reconnect, or TLS | [Configuration](docs/configuration.md) |
 | Check exact protocol, transport, build, platform, and qualification scope | [Capabilities](docs/capabilities.md) |
-| Start from working source examples | [Example applications](https://github.com/SNodeC/snode.c/tree/master/src/apps) |
+| Inspect classes, namespaces, and generated Doxygen documentation | [API reference](https://snodec.github.io/snode.c-doc/html/index.html) |
+| Start from a standalone installed-package example | [External echo example](https://github.com/SNodeC/snode.c/tree/master/examples/echo) |
+| Explore additional application sources | [In-tree applications](https://github.com/SNodeC/snode.c/tree/master/src/apps) |
 | Inspect or discuss the project | [Source](https://github.com/SNodeC/snode.c) · [Issues](https://github.com/SNodeC/snode.c/issues) · [Discussions](https://github.com/SNodeC/snode.c/discussions) · [Releases](https://github.com/SNodeC/snode.c/releases) |
 
 SNode.C is the networking foundation for two distinct ecosystem paths.
@@ -276,4 +319,4 @@ and CodexUI are independent open-source projects, not official OpenAI products.
 
 If the connection/context split matches the architecture you want, continue with
 the [architecture guide](docs/architecture.md). If you prefer to evaluate by
-code, [browse the examples](https://github.com/SNodeC/snode.c/tree/master/src/apps).
+code, start with the standalone [external echo example](https://github.com/SNodeC/snode.c/tree/master/examples/echo).

@@ -36,9 +36,9 @@ measurements and tests for the concrete build and traffic pattern.
 
 Source anchors:
 
-- [`EventLoop`](https://github.com/SNodeC/snode.c/blob/bf01683a53b48220a840522e8ccaf3b48e58c240/src/core/EventLoop.h)
-- [`EventMultiplexer`](https://github.com/SNodeC/snode.c/blob/bf01683a53b48220a840522e8ccaf3b48e58c240/src/core/EventMultiplexer.h)
-- [multiplexer implementations](https://github.com/SNodeC/snode.c/tree/bf01683a53b48220a840522e8ccaf3b48e58c240/src/core/multiplexer)
+- [`EventLoop`](https://github.com/SNodeC/snode.c/blob/60f26d9ae54b3e9ffde954d0ca75e53f79f31d79/src/core/EventLoop.h)
+- [`EventMultiplexer`](https://github.com/SNodeC/snode.c/blob/60f26d9ae54b3e9ffde954d0ca75e53f79f31d79/src/core/EventMultiplexer.h)
+- [multiplexer implementations](https://github.com/SNodeC/snode.c/tree/60f26d9ae54b3e9ffde954d0ca75e53f79f31d79/src/core/multiplexer)
 
 ## 2. Address family and endpoint role
 
@@ -88,9 +88,9 @@ for full queues, slow peers, and shutdown.
 
 Source anchors:
 
-- [`SocketConnection`](https://github.com/SNodeC/snode.c/blob/bf01683a53b48220a840522e8ccaf3b48e58c240/src/core/socket/stream/SocketConnection.h)
-- [`SocketContext`](https://github.com/SNodeC/snode.c/blob/bf01683a53b48220a840522e8ccaf3b48e58c240/src/core/socket/stream/SocketContext.h)
-- [`ConfigConnection`](https://github.com/SNodeC/snode.c/blob/bf01683a53b48220a840522e8ccaf3b48e58c240/src/net/config/ConfigConnection.h)
+- [`SocketConnection`](https://github.com/SNodeC/snode.c/blob/60f26d9ae54b3e9ffde954d0ca75e53f79f31d79/src/core/socket/stream/SocketConnection.h)
+- [`SocketContext`](https://github.com/SNodeC/snode.c/blob/60f26d9ae54b3e9ffde954d0ca75e53f79f31d79/src/core/socket/stream/SocketContext.h)
+- [`ConfigConnection`](https://github.com/SNodeC/snode.c/blob/60f26d9ae54b3e9ffde954d0ca75e53f79f31d79/src/net/config/ConfigConnection.h)
 
 ## 4. Factory and per-connection context
 
@@ -125,9 +125,9 @@ mode changes underneath it.
 
 Source anchors:
 
-- [`SocketContextFactory`](https://github.com/SNodeC/snode.c/blob/bf01683a53b48220a840522e8ccaf3b48e58c240/src/core/socket/stream/SocketContextFactory.h)
-- [echo context and factories](https://github.com/SNodeC/snode.c/blob/bf01683a53b48220a840522e8ccaf3b48e58c240/src/apps/echo/model/EchoSocketContext.h)
-- [echo callback implementation](https://github.com/SNodeC/snode.c/blob/bf01683a53b48220a840522e8ccaf3b48e58c240/src/apps/echo/model/EchoSocketContext.cpp)
+- [`SocketContextFactory`](https://github.com/SNodeC/snode.c/blob/60f26d9ae54b3e9ffde954d0ca75e53f79f31d79/src/core/socket/stream/SocketContextFactory.h)
+- [echo context and factories](https://github.com/SNodeC/snode.c/blob/60f26d9ae54b3e9ffde954d0ca75e53f79f31d79/src/apps/echo/model/EchoSocketContext.h)
+- [echo callback implementation](https://github.com/SNodeC/snode.c/blob/60f26d9ae54b3e9ffde954d0ca75e53f79f31d79/src/apps/echo/model/EchoSocketContext.cpp)
 
 ## 5. Context replacement and protocol upgrades
 
@@ -164,9 +164,9 @@ deployment threat model rather than forming a security boundary.
 
 Source anchors:
 
-- [`SocketContextUpgradeFactory`](https://github.com/SNodeC/snode.c/blob/bf01683a53b48220a840522e8ccaf3b48e58c240/src/web/http/SocketContextUpgradeFactory.h)
-- [server-side upgrade selection](https://github.com/SNodeC/snode.c/blob/bf01683a53b48220a840522e8ccaf3b48e58c240/src/web/http/server/Response.cpp)
-- [WebSocket upgrade context](https://github.com/SNodeC/snode.c/blob/bf01683a53b48220a840522e8ccaf3b48e58c240/src/web/websocket/SocketContextUpgrade.h)
+- [`SocketContextUpgradeFactory`](https://github.com/SNodeC/snode.c/blob/60f26d9ae54b3e9ffde954d0ca75e53f79f31d79/src/web/http/SocketContextUpgradeFactory.h)
+- [server-side upgrade selection](https://github.com/SNodeC/snode.c/blob/60f26d9ae54b3e9ffde954d0ca75e53f79f31d79/src/web/http/server/Response.cpp)
+- [WebSocket upgrade context](https://github.com/SNodeC/snode.c/blob/60f26d9ae54b3e9ffde954d0ca75e53f79f31d79/src/web/websocket/SocketContextUpgrade.h)
 
 ## 6. Higher protocol layers
 

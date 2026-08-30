@@ -4,21 +4,30 @@
 [Configuration](configuration.md)
 
 This page answers a narrow question: what is visible in the reviewed SNode.C
-source, and what did the recorded qualification exercise?
+source, and what did the recorded qualification or current public CI exercise?
 
 It is not a permanent support matrix. The public presentation tracks `master`,
-and the evidence below remains scoped to the reviewed revision.
+and the evidence below remains scoped to the reviewed revision and explicitly
+identified earlier qualification runs.
 
 **Reviewed baseline:** public `master` at
-[`bf01683`](https://github.com/SNodeC/snode.c/commit/bf01683a53b48220a840522e8ccaf3b48e58c240),
-observed 28 August 2026.
+[`60f26d9`](https://github.com/SNodeC/snode.c/commit/60f26d9ae54b3e9ffde954d0ca75e53f79f31d79),
+observed 30 August 2026.
+
+Compared with the preceding qualified baseline `bf01683`, the current revision
+adds the standalone `examples/echo` consumer, its CTests and CI wiring, an
+annotated application walkthrough, and semantic echo logging. It does not change
+the transport, HTTP, WebSocket, SSE, MQTT, configuration, or event-runtime
+implementation used by the existing publication claims.
 
 ## Evidence vocabulary
 
 - **Source-verified** means the component and its build integration exist at the
   reviewed commit.
 - **Test-defined** means the repository contains a focused automated test; it
-  does not say that this documentation pass reran every test.
+  does not say that every invocation passed in this documentation pass.
+- **CI-observed** means the named public workflow/job result was inspected at the
+  reviewed commit.
 - **Runtime-qualified** means the named workflow was run in the recorded
   qualification environment.
 - **Open** means the landing page must not turn the subject into an unqualified
@@ -27,26 +36,30 @@ observed 28 August 2026.
 ## Runtime and connection foundation
 
 - **C++20 event-driven runtime.** **Source:** source-verified. **Runtime
-  evidence:** clean Release configure, selected build, and echo runs completed.
-  **Boundary:** no performance or real-time guarantee.
+  evidence:** the earlier clean Release configure/build/install and echo runs
+  remain recorded; current public `gcc-debug` CI also builds the tree and passes
+  the main 181-test CTest suite. **Boundary:** no performance or real-time
+  guarantee.
 - **select, poll, and epoll multiplexer implementations.** **Source:**
-  source-verified. **Runtime evidence:** the qualified build used its configured
-  implementation; no comparative run. **Boundary:** availability is not a
-  benchmark.
+  source-verified. **Runtime evidence:** the documented qualification and current
+  CI use the configured/default implementation; no comparative run. **Boundary:**
+  availability is not a benchmark.
 - **Timers, descriptor events, event queue, signals.** **Source:**
   source-verified; repository tests exist. **Runtime evidence:** used indirectly
-  by the qualified applications. **Boundary:** no universal ordering/fairness
-  claim.
+  by qualified applications and current tests. **Boundary:** no universal
+  ordering/fairness claim.
 - **Hierarchical application configuration.** **Source:** `ConfigRoot` and
   `SubCommand` provide a typed command tree that applications can extend with
   their own options and nested subcommands while sharing generated help,
   configuration-file, command-line, and inspection surfaces. **Runtime
-  evidence:** downstream MQTTSuite uses application-owned `SubCommand` types.
-  **Boundary:** applications still own their configuration structure, defaults,
-  validation, and secret-management policy.
+  evidence:** the external echo example tests this surface; downstream MQTTSuite
+  uses application-owned `SubCommand` types. **Boundary:** applications still own
+  their configuration structure, defaults, validation, and secret-management
+  policy.
 - **Stream client and server roles.** **Source:** runtime-qualified for echo.
-  **Runtime evidence:** listener and connector completed on selected paths.
-  **Boundary:** other protocols need their own qualification.
+  **Runtime evidence:** listener and connector completed on recorded paths;
+  current `examples/echo` builds as an installed-package consumer. **Boundary:**
+  other protocols need their own qualification.
 - **Connection read/write queues and accounting.** **Source:** source-verified;
   tests exist. **Runtime evidence:** echo exercised ordinary send/read.
   **Boundary:** queue-bound and overload policy remain application concerns.
@@ -54,20 +67,44 @@ observed 28 August 2026.
   source-verified; tests exist. **Runtime evidence:** not part of the launch echo
   evidence. **Boundary:** exact failure sequences remain outside this claim.
 
+## Standalone installed-package example
+
+`examples/echo` is a complete external CMake project. It resolves:
+
+```cmake
+find_package(snodec REQUIRED COMPONENTS net-in-stream-legacy)
+```
+
+and links `snodec::net-in-stream-legacy`. Its source uses installed public
+`<...>` headers and builds `echoserver` plus `echoclient`. Four application-level
+CTest cases cover the generated configuration surface, real server versus an
+external peer, real client versus an external peer, and a bounded real-pair
+smoke run.
+
+At `60f26d9`, public `gcc-debug` CI successfully configured and built the main
+repository, passed **181/181** main CTests, installed SNode.C to a staging prefix,
+then configured and built `examples/echo` against that installed package. The
+subsequent external-example CTest invocation failed **0/4 passed** because the
+example executables could not locate `libsnodec-net-in-stream.so.2` from the
+staged install prefix at runtime. That is recorded as an unresolved CI/runtime-
+loader integration issue; it is not evidence that the four application tests
+passed, and this publication does not describe them as passing.
+
 ## Network and connection variants
 
 - **IPv4 plain stream.** **State:** runtime-qualified. **Runtime evidence:** echo
-  server/client on `127.0.0.1`. **Required environment:** standard Linux
-  networking.
-- **IPv6 plain stream.** **State:** runtime-qualified. **Runtime evidence:** echo
-  server/client on `::1`. **Required environment:** IPv6 loopback enabled.
-- **Unix-domain plain stream.** **State:** runtime-qualified. **Runtime evidence:**
-  echo server/client using an isolated socket path. **Required environment:**
-  Unix-domain sockets.
-- **TLS over IPv4.** **State:** runtime-qualified for one mutual-TLS echo path.
-  **Runtime evidence:** separate CA-signed server and client certificates
-  connected. **Required environment:** OpenSSL and reviewed certificate
-  material.
+  server/client on `127.0.0.1`; current external example is the concrete
+  installed-package IPv4/plain-stream composition.
+- **IPv6 plain stream.** **State:** runtime-qualified on the preceding source
+  baseline. **Runtime evidence:** echo server/client on `::1`. **Boundary:** not
+  rerun in this closure pass.
+- **Unix-domain plain stream.** **State:** runtime-qualified on the preceding
+  source baseline. **Runtime evidence:** echo server/client using an isolated
+  socket path. **Boundary:** not rerun in this closure pass.
+- **TLS over IPv4.** **State:** runtime-qualified for one mutual-TLS echo path on
+  the preceding source baseline. **Runtime evidence:** separate CA-signed server
+  and client certificates connected. **Boundary:** not rerun in this closure
+  pass; no universal TLS matrix.
 - **Bluetooth RFCOMM.** **State:** source-verified. **Runtime evidence:** pending
   in this documentation pass. **Required environment for qualification:** BlueZ,
   adapter, peer, and protocol-specific qualification.
@@ -111,7 +148,7 @@ behavior should not be attributed to SNode.C itself.
 
 ## Build and dependency surface
 
-The reviewed Debian qualification environment used these package names for the
+The recorded Debian qualification environment used these package names for the
 base source-build path:
 
 ```sh
@@ -146,10 +183,11 @@ sudo apt install --yes \
 
 ## Packaging, platforms, and release status
 
-The selected source configured, built, and installed in an isolated Debian
-GNU/Linux forky/sid x86-64 environment with GCC 16.2.0, CMake 4.3.4, and Ninja
-1.13.2. Installed CMake package components and a staged downstream-consumer
-test are defined in the repository.
+The preceding source qualification configured, built, and installed SNode.C in
+an isolated Debian GNU/Linux forky/sid x86-64 environment with GCC 16.2.0,
+CMake 4.3.4, and Ninja 1.13.2. Current public CI at `60f26d9` provides a separate
+Ubuntu/GCC Debug lane and validates the installed CMake consumer through
+configuration and build, with the external example runtime-loader caveat above.
 
 That evidence does not establish:
 
@@ -160,9 +198,10 @@ That evidence does not establish:
 - current binary/package availability;
 - performance, footprint, or production-readiness claims.
 
-The CMake source version at the reviewed commit is `2.0.0`, while public tags
-stop earlier. Use the number to identify source metadata, not as proof that a
-2.0 release, compatibility promise, or maturity level exists.
+The CMake source version at the reviewed commit is `2.0.0`, while the latest
+public GitHub release remains `v1.0.2`. Use the source number to identify project
+metadata, not as proof that a 2.0 release, compatibility promise, or maturity
+level exists.
 
 ## License and public routes
 

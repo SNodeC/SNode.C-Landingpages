@@ -205,13 +205,13 @@ Before publishing application or endpoint configuration:
 
 Source anchors for the reviewed baseline:
 
-- [`Config`](https://github.com/SNodeC/snode.c/blob/bf01683a53b48220a840522e8ccaf3b48e58c240/src/utils/Config.h)
-- [`SubCommand`](https://github.com/SNodeC/snode.c/blob/bf01683a53b48220a840522e8ccaf3b48e58c240/src/utils/SubCommand.h)
-- [`ConfigInstance`](https://github.com/SNodeC/snode.c/blob/bf01683a53b48220a840522e8ccaf3b48e58c240/src/net/config/ConfigInstance.h)
-- [`ConfigConnection`](https://github.com/SNodeC/snode.c/blob/bf01683a53b48220a840522e8ccaf3b48e58c240/src/net/config/ConfigConnection.h)
-- [`ConfigPhysicalSocket`](https://github.com/SNodeC/snode.c/blob/bf01683a53b48220a840522e8ccaf3b48e58c240/src/net/config/ConfigPhysicalSocket.h)
-- [`ConfigTls`](https://github.com/SNodeC/snode.c/blob/bf01683a53b48220a840522e8ccaf3b48e58c240/src/net/config/ConfigTls.h)
-- [generated application configuration](https://github.com/SNodeC/snode.c/blob/bf01683a53b48220a840522e8ccaf3b48e58c240/src/utils/Config.cpp)
+- [`Config`](https://github.com/SNodeC/snode.c/blob/60f26d9ae54b3e9ffde954d0ca75e53f79f31d79/src/utils/Config.h)
+- [`SubCommand`](https://github.com/SNodeC/snode.c/blob/60f26d9ae54b3e9ffde954d0ca75e53f79f31d79/src/utils/SubCommand.h)
+- [`ConfigInstance`](https://github.com/SNodeC/snode.c/blob/60f26d9ae54b3e9ffde954d0ca75e53f79f31d79/src/net/config/ConfigInstance.h)
+- [`ConfigConnection`](https://github.com/SNodeC/snode.c/blob/60f26d9ae54b3e9ffde954d0ca75e53f79f31d79/src/net/config/ConfigConnection.h)
+- [`ConfigPhysicalSocket`](https://github.com/SNodeC/snode.c/blob/60f26d9ae54b3e9ffde954d0ca75e53f79f31d79/src/net/config/ConfigPhysicalSocket.h)
+- [`ConfigTls`](https://github.com/SNodeC/snode.c/blob/60f26d9ae54b3e9ffde954d0ca75e53f79f31d79/src/net/config/ConfigTls.h)
+- [generated application configuration](https://github.com/SNodeC/snode.c/blob/60f26d9ae54b3e9ffde954d0ca75e53f79f31d79/src/utils/Config.cpp)
 
 For how endpoint settings become live connection and context objects, return to
 the [architecture guide](architecture.md).
