@@ -98,6 +98,6 @@ No trustworthy V3 Figma node IDs were retained; none are invented here.
 
 ## Human gate
 
-**Human approval: PENDING**
+**Human approval: APPROVED**
 
-The six-asset Step 5B candidate package is ready for human visual review once this implementation note and the two V1 SVGs are committed. Step 6 remains blocked until explicit approval of the final visual set.
+The complete six-asset Step 5B visual set was explicitly approved by the human reviewer on 30 August 2026. Step 6 may proceed from this repository state.
