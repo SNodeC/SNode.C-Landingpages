@@ -38,6 +38,9 @@ Use one application or compose several around your MQTT deployment.
 | **MQTTBridge** · `mqttbridge` | Forward selected traffic among configured broker connections | Outbound broker clients grouped into logical bridges |
 | **MQTTStore** · `mqttstore` | Persist raw MQTT envelopes and configured projections | MQTT subscription → MariaDB storage plan |
 
+MQTTBridge also distributes bridge and broker lifecycle status through an SSE
+path for its HTTP-facing status consumers.
+
 The applications share SNode.C's configuration model, but they remain separate
 processes. MQTTSuite is not one monolithic daemon, and MQTTBroker alone is not
 the complete suite.

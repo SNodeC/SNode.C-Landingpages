@@ -80,6 +80,10 @@ not promote an unrun composition merely because its types or targets exist.
   and request/response conveniences. **Evidence boundary:** source-verified;
   “Express-style” describes the programming approach, not Node.js API
   compatibility.
+- **SSE/EventSource.** Event-stream client support over HTTP with event dispatch,
+  event IDs, and reconnect handling. **Evidence boundary:** source-verified with
+  plain-IPv4 SSE tests; this remains HTTP streaming rather than a protocol
+  upgrade.
 - **WebSocket.** Client/server HTTP upgrade contexts, frame receiver/transmitter,
   subprotocol factories, and linked/loadable extension paths. **Evidence
   boundary:** source-verified with repository tests; plugin deployment policy is
