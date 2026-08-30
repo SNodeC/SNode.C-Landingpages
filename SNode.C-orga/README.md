@@ -31,7 +31,7 @@ relationships are stated explicitly rather than implied by a shared name.
 ## What you can build
 
 - **Network clients, servers, and gateways** with reusable address, stream,
-  TLS, connection, HTTP, WebSocket, and application-protocol layers.
+  TLS, connection, HTTP, SSE/EventSource, WebSocket, and application-protocol layers.
 - **MQTT 3.1.1 systems** that separate broker, command-line inspection,
   transformation, broker-to-broker routing, and persistence responsibilities.
 - **C++ and browser Codex integrations** with generated protocol types and one
