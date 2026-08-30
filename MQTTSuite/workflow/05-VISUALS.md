@@ -777,3 +777,30 @@ After all retained visuals are `VALIDATED`:
    visuals.
 
 No final visual asset was produced in Step 5A.
+
+# Raw capture handoff repair — Step 5B source material
+
+The missing real-pixel handoff for V2 and V3 was materialized from the existing
+Step 5A qualification build after confirming that public `master` remained at
+MQTTSuite `52de5631245c6318bfa5b7cca700f0754014f34d` and SNode.C
+`60f26d9ae54b3e9ffde954d0ca75e53f79f31d79`.
+
+V2 raw terminal sources:
+
+- `MQTTSuite/assets/src/first-success/broker-raw.png`;
+- `MQTTSuite/assets/src/first-success/subscriber-raw.png`;
+- `MQTTSuite/assets/src/first-success/publisher-raw.png`;
+- provenance: `MQTTSuite/assets/src/first-success/README.md`.
+
+V3 raw dashboard sources:
+
+- `MQTTSuite/assets/src/broker-web-ui/dashboard-desktop-raw.png`;
+- `MQTTSuite/assets/src/broker-web-ui/dashboard-620-raw.png`;
+- provenance: `MQTTSuite/assets/src/broker-web-ui/README.md`.
+
+These are raw source captures for Step 5B, not final publication assets. Step
+5B must import/crop/compose and export them through the approved Figma workflow
+without redrawing, retyping, or otherwise reconstructing terminal or product
+content. The 620px dashboard source is a genuine responsive render at a 620 CSS-
+pixel viewport, not a crop of the desktop capture. This repair does not change
+the existing `VALIDATED` V1/V2/V3 semantics and does not grant human approval.
