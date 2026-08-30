@@ -187,21 +187,43 @@ SNode.C supplies source components above the stream layer:
 
 - HTTP client and server contexts with request and response parsing;
 - Express-style server routing and middleware above the HTTP server context;
+- SSE/EventSource support layered on HTTP, including event-stream parsing,
+  event dispatch, event IDs, and reconnect handling;
 - WebSocket client/server upgrades and subprotocol infrastructure;
 - MQTT 3.1.1 client/broker protocol components, including composition through
   WebSocket.
 
 These layers do not all have the same role. Express-style routing is an
-application-facing API above the HTTP server. WebSocket is reached by replacing
-an HTTP context after a successful upgrade. MQTT supplies protocol framework
-components; MQTTSuite owns the ready-made broker, integration, bridge, CLI, and
+application-facing API above the HTTP server. SSE/EventSource remains inside
+HTTP rather than using the protocol-upgrade mechanism described above. On the
+client, `requestEventSource()` advertises `Accept: text/event-stream`; after a
+matching HTTP response, the existing HTTP `SocketContext` installs the SSE
+receive path instead of being replaced. `EventSourceT` parses the `data`,
+`event`, `id`, and `retry` fields, exposes message/custom-event, open, and error
+listeners plus `CONNECTING`, `OPEN`, and `CLOSED` state, retains the last event
+ID for `Last-Event-ID` on reconnect, and applies `retry` values to reconnect
+timing. On the server side, SSE stays a long-lived streamed HTTP response; it
+does not require a `SocketContextUpgrade`.
+
+WebSocket follows a deliberately different lifecycle: a successful HTTP Upgrade
+replaces the HTTP context with a framed, bidirectional protocol context. MQTT
+supplies protocol framework components and can also be composed through
+WebSocket; MQTTSuite owns the ready-made broker, integration, bridge, CLI, and
 storage application workflows.
 
 Choose the highest layer that already owns the semantics the program needs. Use
-the stream context for a custom byte protocol, HTTP when its message grammar and
-connection rules are required, WebSocket for framed bidirectional messages, and
-MQTT components for an MQTT peer. Avoid wrapping a higher-level protocol in a
-second, competing lifecycle abstraction.
+the stream context for a custom byte protocol, HTTP for ordinary request/response
+semantics, SSE/EventSource for one-way server-to-client event streams that stay
+inside HTTP and need event-ID/reconnect semantics, WebSocket for framed
+bidirectional messages, and MQTT components for an MQTT peer. Avoid wrapping a
+higher-level protocol in a second, competing lifecycle abstraction.
+
+Source anchors:
+
+- [`EventSource`](https://github.com/SNodeC/snode.c/blob/bf01683a53b48220a840522e8ccaf3b48e58c240/src/web/http/client/tools/EventSource.h)
+- [SSE request path](https://github.com/SNodeC/snode.c/blob/bf01683a53b48220a840522e8ccaf3b48e58c240/src/web/http/client/Request.cpp)
+- [HTTP client context](https://github.com/SNodeC/snode.c/blob/bf01683a53b48220a840522e8ccaf3b48e58c240/src/web/http/client/SocketContext.cpp)
+- [HTTP server response streaming](https://github.com/SNodeC/snode.c/blob/bf01683a53b48220a840522e8ccaf3b48e58c240/src/web/http/server/Response.cpp)
 
 ## Extension checklist
 
