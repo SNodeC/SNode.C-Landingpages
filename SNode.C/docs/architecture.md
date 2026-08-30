@@ -137,43 +137,25 @@ same established connection. HTTP-to-WebSocket upgrade is the clearest example.
 
 <sub>The replacement is staged while HTTP remains active; the same established connection continues through the switch.</sub>
 
-The server-side HTTP upgrade path is protocol-generic. `Response::upgrade()`
-first requires the request's `Connection` header to contain `Upgrade`. The
-upgrade selector then reads the comma-separated values of the `Upgrade` header,
-normalizes each protocol name, ignores an optional `/version` suffix for
-selection, and chooses the first matching `SocketContextUpgradeFactory`. A
-factory may be linked into the application or, when dynamic loading is allowed,
-loaded by protocol name. The selected factory receives the HTTP request and
-response and creates the protocol-specific `SocketContextUpgrade`; WebSocket is
-the concrete implementation shown in the figure, not the only possible upgrade
-target.
+The server-side HTTP upgrade path is protocol-generic. An accepted
+`Connection: Upgrade` request is matched through its `Upgrade` header to a
+`SocketContextUpgradeFactory`, which creates the protocol-specific replacement
+context. WebSocket is the concrete implementation shown here, not the only
+possible upgrade target.
 
-Once the selected factory creates a replacement context,
-`setSocketContext(new)` stages it while the HTTP context is still active. The
-protocol-specific factory is responsible for preparing the switching response.
-For WebSocket, the current factory validates WebSocket version 13 and the
-requested subprotocol, sets the WebSocket upgrade/accept headers, and selects
-`101 Switching Protocols`. The upgrade-status or application callback calls
-`response->end()` to queue the prepared response; the framework does not invoke
-that call automatically.
+`setSocketContext(new)` stages the replacement while HTTP is still active, and
+the protocol-specific factory prepares the switching response. After the current
+HTTP read callback returns, the old context detaches with
+`DetachReason::ContextSwitch`, the replacement attaches to the same established
+`SocketConnection`, and no second transport connection is created. For
+WebSocket, the replacement adds frame handling and optional subprotocol
+selection.
 
-The context switch itself is protocol-independent. After the current HTTP read
-callback returns, the old HTTP context detaches with
-`DetachReason::ContextSwitch` and is removed, the active-context pointer changes
-to the staged replacement, and the selected `SocketContextUpgrade` attaches to
-the same established `SocketConnection`. No second transport connection is
-created.
-
-For WebSocket specifically, the attached upgrade context adds WebSocket frame
-receiver/transmitter behavior and selects a subprotocol where configured.
-Upgrade factories can be linked into the application and the current selector
-also supports protocol-named dynamic loading when enabled; WebSocket subprotocol
-factories have their own linked/loadable extension paths.
-
-Those loadable extension paths execute code inside the process. Packaging,
-search paths, ownership, version compatibility, and allowed plugin names belong
-to the deployment threat model. Do not describe dynamic discovery as a security
-boundary.
+Upgrade factories and WebSocket subprotocol factories can be linked into the
+application; the current implementation also contains dynamic loading paths.
+A loadable extension executes code inside the process, so packaging, search
+paths, ownership, version compatibility, and allowed plugin names belong to the
+deployment threat model rather than forming a security boundary.
 
 Source anchors:
 
@@ -187,43 +169,26 @@ SNode.C supplies source components above the stream layer:
 
 - HTTP client and server contexts with request and response parsing;
 - Express-style server routing and middleware above the HTTP server context;
-- SSE/EventSource support layered on HTTP, including event-stream parsing,
-  event dispatch, event IDs, and reconnect handling;
+- SSE/EventSource support for long-lived server-to-client event streams over
+  HTTP, including event IDs and reconnection;
 - WebSocket client/server upgrades and subprotocol infrastructure;
 - MQTT 3.1.1 client/broker protocol components, including composition through
   WebSocket.
 
 These layers do not all have the same role. Express-style routing is an
-application-facing API above the HTTP server. SSE/EventSource remains inside
-HTTP rather than using the protocol-upgrade mechanism described above. On the
-client, `requestEventSource()` advertises `Accept: text/event-stream`; after a
-matching HTTP response, the existing HTTP `SocketContext` installs the SSE
-receive path instead of being replaced. `EventSourceT` parses the `data`,
-`event`, `id`, and `retry` fields, exposes message/custom-event, open, and error
-listeners plus `CONNECTING`, `OPEN`, and `CLOSED` state, retains the last event
-ID for `Last-Event-ID` on reconnect, and applies `retry` values to reconnect
-timing. On the server side, SSE stays a long-lived streamed HTTP response; it
-does not require a `SocketContextUpgrade`.
-
-WebSocket follows a deliberately different lifecycle: a successful HTTP Upgrade
-replaces the HTTP context with a framed, bidirectional protocol context. MQTT
-supplies protocol framework components and can also be composed through
-WebSocket; MQTTSuite owns the ready-made broker, integration, bridge, CLI, and
-storage application workflows.
+application-facing API above HTTP. SSE/EventSource remains within HTTP and adds
+event-stream parsing and reconnection semantics; unlike WebSocket, it does not
+replace the HTTP context through a protocol upgrade. WebSocket uses the upgrade
+mechanism described above to attach a framed bidirectional protocol context.
+MQTT supplies protocol framework components; MQTTSuite owns the ready-made
+broker, integration, bridge, CLI, and storage application workflows.
 
 Choose the highest layer that already owns the semantics the program needs. Use
-the stream context for a custom byte protocol, HTTP for ordinary request/response
-semantics, SSE/EventSource for one-way server-to-client event streams that stay
-inside HTTP and need event-ID/reconnect semantics, WebSocket for framed
-bidirectional messages, and MQTT components for an MQTT peer. Avoid wrapping a
-higher-level protocol in a second, competing lifecycle abstraction.
-
-Source anchors:
-
-- [`EventSource`](https://github.com/SNodeC/snode.c/blob/bf01683a53b48220a840522e8ccaf3b48e58c240/src/web/http/client/tools/EventSource.h)
-- [SSE request path](https://github.com/SNodeC/snode.c/blob/bf01683a53b48220a840522e8ccaf3b48e58c240/src/web/http/client/Request.cpp)
-- [HTTP client context](https://github.com/SNodeC/snode.c/blob/bf01683a53b48220a840522e8ccaf3b48e58c240/src/web/http/client/SocketContext.cpp)
-- [HTTP server response streaming](https://github.com/SNodeC/snode.c/blob/bf01683a53b48220a840522e8ccaf3b48e58c240/src/web/http/server/Response.cpp)
+the stream context for a custom byte protocol, HTTP for request/response
+communication, SSE/EventSource for one-way server-to-client event streams,
+WebSocket for framed bidirectional messages, and MQTT components for an MQTT
+peer. Avoid wrapping a higher-level protocol in a second, competing lifecycle
+abstraction.
 
 ## Extension checklist
 
