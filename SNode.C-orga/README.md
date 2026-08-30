@@ -52,9 +52,9 @@ navigation fields.
 <img src="assets/product-snodec.svg" alt="SNode.C networking foundation identity" width="240">
 
 Build event-driven C++20 network applications from named client/server
-instances, per-connection contexts, and composable network layers. Start here
-when you need the framework itself or when another SNodeC project is a build
-dependency.
+instances, an extensible typed configuration hierarchy, per-connection
+contexts, and composable network layers. Start here when you need the framework
+itself or when another SNodeC project is a build dependency.
 
 **Best for:** C++ networking and systems developers<br>
 **First result:** IPv4, IPv6, Unix-domain, or mutual-TLS echo connection<br>

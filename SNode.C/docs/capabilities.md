@@ -37,6 +37,13 @@ observed 28 August 2026.
   source-verified; repository tests exist. **Runtime evidence:** used indirectly
   by the qualified applications. **Boundary:** no universal ordering/fairness
   claim.
+- **Hierarchical application configuration.** **Source:** `ConfigRoot` and
+  `SubCommand` provide a typed command tree that applications can extend with
+  their own options and nested subcommands while sharing generated help,
+  configuration-file, command-line, and inspection surfaces. **Runtime
+  evidence:** downstream MQTTSuite uses application-owned `SubCommand` types.
+  **Boundary:** applications still own their configuration structure, defaults,
+  validation, and secret-management policy.
 - **Stream client and server roles.** **Source:** runtime-qualified for echo.
   **Runtime evidence:** listener and connector completed on selected paths.
   **Boundary:** other protocols need their own qualification.

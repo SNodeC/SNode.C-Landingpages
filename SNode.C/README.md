@@ -4,9 +4,9 @@
 
 SNode.C is a C++20 networking framework for building network clients, servers,
 and protocol endpoints around a shared event-driven runtime. It centralizes
-connection lifecycle, event dispatch, stream/TLS mechanics, and endpoint
-configuration so protocol code can stay focused on what happens on one
-connection.
+connection lifecycle, event dispatch, stream/TLS mechanics, and hierarchical
+endpoint/application configuration so protocol code can stay focused on what
+happens on one connection.
 
 SNode.C is designed primarily for machine-to-machine (M2M) communication and
 IoT-oriented network applications, while its connection and protocol model is
@@ -180,6 +180,10 @@ coverage.
   `select` are configure-time alternatives. **Exercised:** CI on the reviewed
   commit ran the root test suite. Current CI/runtime evidence exercised default
   `epoll` only.
+- **Configuration.** **Available:** Typed `SubCommand` hierarchy for framework
+  and application settings, with API defaults, configuration-file values, and
+  generated CLI/help/inspection surfaces. **Exercised:** the endpoint quick
+  start and downstream MQTTSuite application configuration use the same model.
 - **Plain streams.** **Available:** IPv4, IPv6, and Unix-domain server/client
   paths. **Exercised:** Component tests plus recorded echo runs for all three.
 - **TLS streams.** **Available:** OpenSSL-backed TLS connection layer and
@@ -238,22 +242,25 @@ the active protocol context.
 
 *Same connection, new active context.*
 
-A named endpoint can expose one typed configuration hierarchy through C++ API
-defaults, a configuration file, and generated command-line sections:
+SNode.C's configuration tree is also an extension point. Named endpoints
+contribute typed sections, and applications can attach their own `SubCommand`
+subclasses to the same root hierarchy. Configurable values then share the same
+three surfaces:
 
 **command line > configuration file > API/default**
 
-The [configuration guide](docs/configuration.md) covers named instances,
-role-specific sections, inspection commands, TLS policy, and the responsive
-configuration figure. SNode.C also installs componentized namespaced CMake
-targets; tests include selected installed consumers.
+The [configuration guide](docs/configuration.md) covers application-owned
+subcommands, named instances, role-specific sections, inspection commands, TLS
+policy, and the responsive configuration figure. SNode.C also installs
+componentized namespaced CMake targets; tests include selected installed
+consumers.
 
 ## Choose your next step
 
 | If you want to… | Go here |
 | --- | --- |
 | Understand ownership, lifecycle, composition, and extension points | [Architecture](docs/architecture.md) |
-| Configure named endpoints, CLI/file overrides, retry, reconnect, or TLS | [Configuration](docs/configuration.md) |
+| Configure endpoints and application settings, CLI/file overrides, retry, reconnect, or TLS | [Configuration](docs/configuration.md) |
 | Check exact protocol, transport, build, platform, and qualification scope | [Capabilities](docs/capabilities.md) |
 | Start from working source examples | [Example applications](https://github.com/SNodeC/snode.c/tree/master/src/apps) |
 | Inspect or discuss the project | [Source](https://github.com/SNodeC/snode.c) · [Issues](https://github.com/SNodeC/snode.c/issues) · [Discussions](https://github.com/SNodeC/snode.c/discussions) · [Releases](https://github.com/SNodeC/snode.c/releases) |

@@ -57,6 +57,11 @@ destination and may optionally bind a local endpoint. The framework reflects
 those differences in its configuration sections rather than forcing both roles
 through an undifferentiated address object.
 
+Application-wide settings use the same configuration tree. `ConfigRoot` is a
+`SubCommand`, and applications can attach their own typed `SubCommand` branches
+alongside the framework-provided endpoint hierarchy; the
+[configuration guide](configuration.md) covers that extension point.
+
 The source tree is broader than the launch qualification. The published echo
 evidence covers IPv4, IPv6, and Unix-domain plain streams plus mutual TLS over
 IPv4. RFCOMM and L2CAP remain source-verified paths requiring suitable hardware
@@ -198,10 +203,11 @@ Before adding a transport or protocol context, answer these questions:
 2. What creates one context for each connection?
 3. Which events attach, deliver data, signal failure, and detach the context?
 4. How are partial reads, queued writes, slow peers, and orderly shutdown handled?
-5. Which settings belong to local, remote, connection, socket, or TLS sections?
+5. Which settings belong to an application-owned configuration subcommand, or
+   to local, remote, connection, socket, or TLS endpoint sections?
 6. Which combinations are built and tested rather than merely expressible?
 7. If a plugin is loaded, who controls its path and compatibility?
 
-For endpoint policy and inspection commands, continue with the
+For application and endpoint policy and inspection commands, continue with the
 [configuration guide](configuration.md). For qualified versus source-only
 scope, use the [capability map](capabilities.md).

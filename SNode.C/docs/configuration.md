@@ -3,11 +3,12 @@
 [← SNode.C](../README.md) · [Architecture](architecture.md) ·
 [Capability map](capabilities.md)
 
-SNode.C applications can expose several client or server endpoints without
-hard-coding deployment policy into their protocol callbacks. Each endpoint is
-represented by an instance with a structured set of configuration sections.
-The same values can be supplied through C++ setters, a configuration file, or
-the generated command line.
+SNode.C applications use a typed configuration hierarchy that can combine
+application-owned settings with one or more client or server endpoints. Each
+endpoint is represented by an instance with reusable network configuration
+sections, while applications can add their own `SubCommand` branches to the
+same hierarchy. Configurable values can be supplied through C++ defaults, a
+configuration file, or the generated command line.
 
 <picture>
   <source media="(max-width: 600px)" srcset="../assets/configuration-model-mobile.svg">
@@ -54,13 +55,34 @@ address. Server-only and client-only options remain separate: backlog and
 accept policy do not belong to a client, while reconnect policy does not belong
 to an accepted server connection.
 
+## Applications extend the same hierarchy
+
+Endpoint sections are framework-provided branches of a more general
+configuration tree. `ConfigRoot` is itself a `SubCommand`, and applications can
+derive their own `SubCommand` types and attach them with `newSubCommand<T>()`.
+Those nodes can contribute options, flags, nested subcommands, requirements, and
+callbacks through the same configuration machinery.
+
+For example, a program can attach an application-owned configuration node to
+the root instead of introducing a second command-line or configuration parser:
+
+```cpp
+auto* appConfig =
+    utils::Config::configRoot.newSubCommand<MyApplicationConfig>();
+```
+
+Configurable application options then participate in the same generated help,
+configuration-file, command-line, and inspection surfaces as the endpoint
+hierarchy. MQTTSuite uses this extension pattern for its application-specific
+configuration.
+
 ## Three configuration surfaces
 
 ### C++ API
 
-Every concrete client or server exposes its assembled configuration through
-`getConfig()`. Scope-qualified setters make the side of the connection clear
-when names would otherwise be ambiguous:
+Every concrete client or server exposes its assembled endpoint configuration
+through `getConfig()`. Scope-qualified setters make the side of the connection
+clear when names would otherwise be ambiguous:
 
 ```cpp
 auto config = server.getConfig();
@@ -72,14 +94,17 @@ config->setReuseAddress();
 ```
 
 API values are useful defaults and are the only configuration surface for an
-anonymous instance. Avoid embedding deployment-specific certificates,
-credentials, external addresses, or machine paths in those defaults.
+anonymous instance. Application-owned `SubCommand` types can establish their
+own option defaults through the same API. Avoid embedding deployment-specific
+certificates, credentials, external addresses, or machine paths in those
+defaults.
 
 ### Configuration file
 
-Named instances can load persistent values from the application configuration
-file. The hierarchy is flattened into qualified keys, keeping the instance and
-section visible. For an instance named `echo`, a local port is represented as:
+Named endpoint instances and application-owned subcommands can contribute
+persistent values to the application configuration file. The hierarchy is
+flattened into qualified keys, keeping the owning command and section visible.
+For an endpoint instance named `echo`, a local port is represented as:
 
 ```ini
 echo.local.port=18001
@@ -91,16 +116,18 @@ credentials, or remote-service details according to the operating environment.
 
 ### Command line
 
-The generated command hierarchy follows the same shape:
+For endpoint configuration, the generated command hierarchy follows the same
+shape:
 
 ```sh
 echoserver-legacy-in echoserver local --host 127.0.0.1 --port 18001
 ```
 
 The executable is followed by the instance, then the section, then its options.
-Application-wide options remain at the application level. This is why a public
-quick start should show the full hierarchy instead of presenting `--port` as an
-unscoped global switch.
+Application-owned `SubCommand` branches appear in the same generated tree;
+application-wide root options remain at the application level. This is why a
+public quick start should show the full hierarchy instead of presenting
+`--port` as an unscoped global switch.
 
 ## Precedence
 
@@ -110,15 +137,17 @@ The effective value is resolved in this order:
 2. configuration-file values override those defaults;
 3. command-line values override the loaded configuration for that invocation.
 
-That makes a command-line override useful for diagnosis without forcing an
-operator to edit the persistent file. It also means the command that happened
-to launch a process is not necessarily the whole configuration: defaults and
-file values may still be active.
+The same ordering applies to configurable options contributed by
+application-owned subcommands. That makes a command-line override useful for
+diagnosis without forcing an operator to edit the persistent file. It also
+means the command that happened to launch a process is not necessarily the
+whole configuration: defaults and file values may still be active.
 
 ## Inspect before running
 
 SNode.C exposes the effective configuration and the generated command surface
-directly from the executable:
+directly from the executable, including application-owned subcommands and
+framework-provided endpoint sections:
 
 ```sh
 # Full hierarchy with descendant sections.
@@ -164,7 +193,7 @@ local example that connects with a test CA is evidence for that test path only.
 
 ## Deployment review
 
-Before publishing an instance configuration:
+Before publishing application or endpoint configuration:
 
 - confirm which local interfaces are exposed;
 - confirm whether the selected variant is plain or TLS;
@@ -176,11 +205,13 @@ Before publishing an instance configuration:
 
 Source anchors for the reviewed baseline:
 
+- [`Config`](https://github.com/SNodeC/snode.c/blob/bf01683a53b48220a840522e8ccaf3b48e58c240/src/utils/Config.h)
+- [`SubCommand`](https://github.com/SNodeC/snode.c/blob/bf01683a53b48220a840522e8ccaf3b48e58c240/src/utils/SubCommand.h)
 - [`ConfigInstance`](https://github.com/SNodeC/snode.c/blob/bf01683a53b48220a840522e8ccaf3b48e58c240/src/net/config/ConfigInstance.h)
 - [`ConfigConnection`](https://github.com/SNodeC/snode.c/blob/bf01683a53b48220a840522e8ccaf3b48e58c240/src/net/config/ConfigConnection.h)
 - [`ConfigPhysicalSocket`](https://github.com/SNodeC/snode.c/blob/bf01683a53b48220a840522e8ccaf3b48e58c240/src/net/config/ConfigPhysicalSocket.h)
 - [`ConfigTls`](https://github.com/SNodeC/snode.c/blob/bf01683a53b48220a840522e8ccaf3b48e58c240/src/net/config/ConfigTls.h)
 - [generated application configuration](https://github.com/SNodeC/snode.c/blob/bf01683a53b48220a840522e8ccaf3b48e58c240/src/utils/Config.cpp)
 
-For how these settings become live connection and context objects, return to
+For how endpoint settings become live connection and context objects, return to
 the [architecture guide](architecture.md).

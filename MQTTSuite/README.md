@@ -41,9 +41,11 @@ Use one application or compose several around your MQTT deployment.
 MQTTBridge also distributes bridge and broker lifecycle status through an SSE
 path for its HTTP-facing status consumers.
 
-The applications share SNode.C's configuration model, but they remain separate
-processes. MQTTSuite is not one monolithic daemon, and MQTTBroker alone is not
-the complete suite.
+The applications extend SNode.C's configuration tree with application-specific
+`SubCommand` types, so their settings share the same generated help,
+configuration, and command-line hierarchy. They remain separate processes:
+MQTTSuite is not one monolithic daemon, and MQTTBroker alone is not the complete
+suite.
 
 ![MQTTBroker dashboard showing a synthetic subscriber and topic activity](assets/broker-web-ui.png)
 
