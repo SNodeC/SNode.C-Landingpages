@@ -49,6 +49,14 @@ protocol/application behavior. One context is active for a connection at a time.
 | `SocketContext` | Handle protocol/application callbacks for one connection. |
 | Event loop | Dispatch descriptor, timer, lifecycle, and data work. |
 
+In the echo source, the server alias is written with the build-time `NET` macro.
+For the plain IPv4 target, `NET` resolves to `in`, so the concrete composition is:
+
+```cpp
+using EchoSocketServer =
+    net::in::stream::legacy::SocketServer<EchoServerSocketContextFactory>;
+```
+
 The supplied [echo context](https://github.com/SNodeC/snode.c/blob/bf01683a53b48220a840522e8ccaf3b48e58c240/src/apps/echo/model/EchoSocketContext.cpp)
 shows what connection-local behavior looks like (logging omitted):
 
@@ -192,9 +200,9 @@ coverage.
   narrower.
 
 The reviewed `master` is source-buildable and locally installable, but it is
-newer than the latest GitHub release and is not represented by a current tagged
-2.0 release or a published current-head binary package. Current platform
-evidence includes one Linux/GCC CI lane and one Debian/x86-64 Release
+newer than the latest GitHub release, `v1.0.2`, and is not represented by a
+current tagged 2.0 release or a published current-head binary package. Current
+platform evidence includes one Linux/GCC CI lane and one Debian/x86-64 Release
 qualification; it does not establish a broad operating-system, compiler, or
 architecture support matrix. No throughput, latency, or footprint claim is made
 here.

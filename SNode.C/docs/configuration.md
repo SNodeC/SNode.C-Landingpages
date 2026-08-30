@@ -94,7 +94,7 @@ credentials, or remote-service details according to the operating environment.
 The generated command hierarchy follows the same shape:
 
 ```sh
-echoserver-legacy-in echo local --host 127.0.0.1 --port 18001
+echoserver-legacy-in echoserver local --host 127.0.0.1 --port 18001
 ```
 
 The executable is followed by the instance, then the section, then its options.
