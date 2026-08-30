@@ -19,7 +19,7 @@ the path it intends to deploy.
   <img src="../assets/layer-architecture.svg" alt="SNode.C composition map showing the event runtime, address families, endpoint roles, connection modes, and application contexts">
 </picture>
 
-<sub>The stack separates application behavior from endpoint and connection mechanics; highlighted qualification boundaries remain part of the documentation.</sub>
+<sub>The stack separates application behavior from endpoint and connection mechanics; dashed RFCOMM and L2CAP entries are present in source but are not runtime-qualified here.</sub>
 
 ## 1. Event runtime
 

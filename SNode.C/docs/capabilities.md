@@ -1,7 +1,8 @@
 # Current-master capability map
 
 [← SNode.C](../README.md) · [Architecture](architecture.md) ·
-[Configuration](configuration.md)
+[Configuration](configuration.md) ·
+[API reference](https://snodec.github.io/snode.c-doc/html/index.html)
 
 This page answers a narrow question: what is visible in the reviewed SNode.C
 source, and what did the recorded qualification or current public CI exercise?
@@ -33,13 +34,19 @@ implementation used by the existing publication claims.
 - **Open** means the landing page must not turn the subject into an unqualified
   public claim.
 
+The README's simpler **Available** label corresponds to source-verified
+availability. Its **Exercised** label can summarize test-defined, CI-observed,
+or runtime-qualified evidence; this page separates those states when the
+distinction matters.
+
 ## Runtime and connection foundation
 
 - **C++20 event-driven runtime.** **Source:** source-verified. **Runtime
   evidence:** the earlier clean Release configure/build/install and echo runs
-  remain recorded; current public `gcc-debug` CI also builds the tree and passes
-  the main 181-test CTest suite. **Boundary:** no performance or real-time
-  guarantee.
+  remain recorded; the current public
+  [`gcc-debug` job](https://github.com/SNodeC/snode.c/actions/runs/33293707417/job/99209664201)
+  also builds the tree and passes the main 181-test CTest suite. **Boundary:** no
+  performance or real-time guarantee.
 - **select, poll, and epoll multiplexer implementations.** **Source:**
   source-verified. **Runtime evidence:** the documented qualification and current
   CI use the configured/default implementation; no comparative run. **Boundary:**
@@ -81,14 +88,16 @@ CTest cases cover the generated configuration surface, real server versus an
 external peer, real client versus an external peer, and a bounded real-pair
 smoke run.
 
-At `60f26d9`, public `gcc-debug` CI successfully configured and built the main
-repository, passed **181/181** main CTests, installed SNode.C to a staging prefix,
-then configured and built `examples/echo` against that installed package. The
-subsequent external-example CTest invocation failed **0/4 passed** because the
-example executables could not locate `libsnodec-net-in-stream.so.2` from the
-staged install prefix at runtime. That is recorded as an unresolved CI/runtime-
-loader integration issue; it is not evidence that the four application tests
-passed, and this publication does not describe them as passing.
+At `60f26d9`, the public
+[`gcc-debug` job](https://github.com/SNodeC/snode.c/actions/runs/33293707417/job/99209664201)
+successfully configured and built the main repository, passed **181/181** main
+CTests, installed SNode.C to a staging prefix, then configured and built
+`examples/echo` against that installed package. The subsequent external-example
+CTest invocation failed **0/4 passed** because the example executables could not
+locate `libsnodec-net-in-stream.so.2` from the staged install prefix at runtime.
+That is recorded as an unresolved CI/runtime-loader integration issue; it is not
+evidence that the four application tests passed, and this publication does not
+describe them as passing.
 
 ## Network and connection variants
 

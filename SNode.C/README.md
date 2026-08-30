@@ -12,12 +12,10 @@ SNode.C is designed primarily for machine-to-machine (M2M) communication and
 IoT-oriented network applications, while its connection and protocol model is
 general-purpose.
 
-The core model is connection-local: a configured `SocketServer` or
-`SocketClient` establishes a `SocketConnection`; that connection asks its
-endpoint flow's `SocketContextFactory` for the `SocketContext` that handles
-protocol and application events. The same model is used by custom stream
-protocols and the framework's HTTP, WebSocket, EventSource/SSE, and MQTT 3.1.1
-components.
+The core model is connection-local: a configured server or client establishes a
+connection, and that connection gets one active protocol/application context.
+The next section names those objects and shows how the same model underpins
+custom stream protocols, HTTP, WebSocket, EventSource/SSE, and MQTT 3.1.1.
 
 **C++20** ·
 [MIT OR LGPL-3.0-or-later](https://github.com/SNodeC/snode.c/blob/master/LICENSE)
@@ -86,6 +84,24 @@ std::size_t EchoSocketContext::onReceivedFromPeer() {
 }
 ```
 
+At the HTTP layer, current source exposes an Express-style `WebApp` above the
+HTTP server context. A health route can be registered as:
+
+```cpp
+const express::legacy::in::WebApp app;
+
+app.use(express::middleware::VerboseRequest());
+
+app.get("/health", [] APPLICATION(req, res) {
+    res->json({{"ok", true}});
+});
+```
+
+`APPLICATION(req, res)` supplies the request/response callback parameters used
+by route handlers. The [current example source](https://github.com/SNodeC/snode.c/blob/60f26d9ae54b3e9ffde954d0ca75e53f79f31d79/src/apps/main.cpp)
+also shows middleware, parameterized routes, nested routers, and SSE on this
+surface.
+
 `start()` runs the framework event loop synchronously on the thread that calls
 it. SNode.C does not create a framework worker pool, so a blocking or
 long-running callback delays other work on that loop. Applications may introduce
@@ -103,10 +119,18 @@ is a complete standalone CMake project that consumes an **installed** SNode.C
 package. It builds one plain-IPv4 server and client and therefore exercises the
 same downstream integration path an external application uses.
 
-For a source installation, provide Git, a project-accepted C++20 compiler,
-CMake 3.18+, Ninja, pkg-config, OpenSSL development files, and nlohmann/json
-3.11+. A fresh default configure also needs network access for its pinned
-dependency fetch.
+For a source installation, use Git, a C++20 compiler, CMake 3.18+, Ninja,
+pkg-config, OpenSSL development files, and nlohmann/json 3.11+. On the recorded
+Debian qualification environment, the base packages were:
+
+```sh
+sudo apt install --yes \
+  build-essential ca-certificates cmake git ninja-build pkgconf \
+  libssl-dev nlohmann-json3-dev
+```
+
+Use the equivalent packages on other distributions. A fresh default configure
+also needs network access for its pinned dependency fetch.
 
 Clone and install current `master` into an isolated prefix:
 
@@ -155,28 +179,29 @@ to the runtime loader before running the example or its CTests:
 
 ```sh
 export LD_LIBRARY_PATH="$PWD/.snodec/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
-mkdir -p build-echo/echo-config
 ```
 
 Start the server:
 
 ```sh
-XDG_CONFIG_HOME="$PWD/build-echo/echo-config" \
-  ./build-echo/echoserver \
-  --monochrom=true \
+./build-echo/echoserver \
   echoserver local --host 127.0.0.1 --port 18001
 ```
 
 Then start the client in a second terminal:
 
 ```sh
-XDG_CONFIG_HOME="$PWD/build-echo/echo-config" \
-  ./build-echo/echoclient \
-  --monochrom=true \
+./build-echo/echoclient \
   echoclient remote --host 127.0.0.1 --port 18001
 ```
 
-The application logger now makes the protocol behavior visible. Representative
+To isolate this walkthrough from existing user configuration and make the shown
+logging independent of terminal color support, create `build-echo/echo-config`,
+set `XDG_CONFIG_HOME="$PWD/build-echo/echo-config"`, and add
+`--monochrom=true` before the instance subcommand. Those controls are
+reproducibility aids, not requirements of the echo application.
+
+The application logger makes the protocol behavior visible. Representative
 message bodies from the current example include:
 
 ```text
@@ -198,15 +223,18 @@ ctest --test-dir build-echo --output-on-failure
 
 Current public `master` at
 [`60f26d9`](https://github.com/SNodeC/snode.c/commit/60f26d9ae54b3e9ffde954d0ca75e53f79f31d79)
-configures and builds this external consumer in CI. Its main repository CTest
-suite passes 181/181 in the observed `gcc-debug` job. The separate external-echo
-CTest step is currently red because the installed shared-library directory is
-not available to that job's runtime loader; this publication therefore does not
+configures and builds this external consumer in the observed
+[`gcc-debug` job](https://github.com/SNodeC/snode.c/actions/runs/33293707417/job/99209664201).
+The main repository CTest step passes 181/181. The separate external-echo CTest
+step is currently red because the installed shared-library directory is not
+available to that job's runtime loader; this publication therefore does not
 claim that those four external-example tests passed on current `master`.
 
 Recorded qualification from the preceding source baseline also covers plain
 IPv6 loopback, a Unix-domain plain stream path, and one mutual-TLS IPv4 echo
-arrangement. Those transport runs were not repeated by this closure pass.
+arrangement. See the [capability map](docs/capabilities.md#network-and-connection-variants)
+for their exact evidence scope; those transport runs were not repeated by this
+closure pass.
 
 ## Capabilities at a glance
 
@@ -218,8 +246,9 @@ coverage.
 - **Event runtime.** **Available:** Descriptor/timer loop; server/client stream
   endpoints; connection-local contexts. `epoll` is the default; `poll` and
   `select` are configure-time alternatives. **Exercised:** the current public
-  `master` `gcc-debug` job built the repository and passed the main 181-test
-  CTest suite. Current CI/runtime evidence exercised default `epoll` only.
+  `master` [`gcc-debug` job](https://github.com/SNodeC/snode.c/actions/runs/33293707417/job/99209664201)
+  built the repository and passed the main 181-test CTest suite. Current
+  CI/runtime evidence exercised default `epoll` only.
 - **Configuration.** **Available:** Typed `SubCommand` hierarchy for framework
   and application settings, with API defaults, configuration-file values, and
   generated CLI/help/inspection surfaces. **Exercised:** the echo application
@@ -265,16 +294,7 @@ around the shared event runtime. Custom `SocketContextFactory` and
 boundaries.
 
 The connection/context split also supports a protocol transition without opening
-a second transport connection. During an HTTP-to-WebSocket upgrade, the selected
-WebSocket factory creates a replacement context while HTTP remains active.
-`setSocketContext(new)` stages it, and the upgrade-status/application callback
-calls `response->end()` to queue `101 Switching Protocols`. After the current
-HTTP read callback returns, the HTTP context detaches with
-`DetachReason::ContextSwitch` and is removed, the active pointer changes, and
-the WebSocket `SocketContextUpgrade` attaches to the same established
-`SocketConnection`. SSE/EventSource follows a different HTTP-layer path: it
-keeps the HTTP context and streams server-to-client events rather than replacing
-the active protocol context.
+a second transport connection.
 
 <picture>
   <source media="(max-width: 600px)" srcset="assets/http-websocket-context-switch-mobile.svg">
@@ -283,12 +303,20 @@ the active protocol context.
 
 <sub>The replacement is staged while HTTP remains active; the same established connection continues through the switch.</sub>
 
+During an HTTP-to-WebSocket upgrade, the replacement is staged while HTTP is
+still active and becomes the active context only after the current HTTP read
+callback returns; the established `SocketConnection` is retained. The
+[architecture guide](docs/architecture.md#5-context-replacement-and-protocol-upgrades)
+carries the identifier-level chronology. SSE/EventSource follows a different
+HTTP-layer path: it keeps the HTTP context and streams server-to-client events
+rather than replacing the active protocol context.
+
 SNode.C's configuration tree is also an extension point. Named endpoints
 contribute typed sections, and applications can attach their own `SubCommand`
 subclasses to the same root hierarchy. Configurable values then share the same
 three surfaces:
 
-**command line > configuration file > API/default**
+**Highest precedence first:** command line > configuration file > API/default
 
 The [configuration guide](docs/configuration.md) covers application-owned
 subcommands, named instances, role-specific sections, inspection commands, TLS

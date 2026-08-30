@@ -14,7 +14,7 @@
 <rect x="868.75" y="170.75" width="278.5" height="90.5" rx="15.25" stroke="#11A474" stroke-width="1.5"/>
 <text fill="#057959" style="white-space: pre" xml:space="preserve" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="13" font-weight="600" letter-spacing="0em"><tspan x="888" y="197.727">ACTIVE AFTER</tspan></text>
 <text fill="#0F172A" style="white-space: pre" xml:space="preserve" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="21" font-weight="bold" letter-spacing="0em"><tspan x="888" y="230.136">SocketContextUpgrade</tspan></text>
-<text fill="#2563EB" style="white-space: pre" xml:space="preserve" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="16" font-weight="600" letter-spacing="0em"><tspan x="382" y="216.318">HTTP active  &#x2192;  replacement staged  &#x2192;  WebSocket active</tspan></text>
+<text fill="#2563EB" style="white-space: pre" xml:space="preserve" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="16" font-weight="600" letter-spacing="0em"><tspan x="382" y="216.318">HTTP active &#x2192; staged &#x2192; WebSocket active</tspan></text>
 <rect x="52.75" y="292.75" width="328.5" height="340.5" rx="17.25" fill="white"/>
 <rect x="52.75" y="292.75" width="328.5" height="340.5" rx="17.25" stroke="#CBD5E1" stroke-width="1.5"/>
 <text fill="#475569" style="white-space: pre" xml:space="preserve" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="13" font-weight="600" letter-spacing="0em"><tspan x="74" y="322.727">01 &#xb7; PREPARE</tspan></text>

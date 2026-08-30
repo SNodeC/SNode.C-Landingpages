@@ -2,15 +2,16 @@
 
 **Integration date:** 29 August 2026  
 **Closure refresh:** 30 August 2026  
+**Post-verdict refresh:** 30 August 2026  
 **Original Landingpages baseline:** `915901ab85805ea31ff9aa210ace28fd8136d0ac`  
-**Current closure source baseline:** `60f26d9ae54b3e9ffde954d0ca75e53f79f31d79`  
+**Current source baseline:** `60f26d9ae54b3e9ffde954d0ca75e53f79f31d79`  
 **Figma design source:** [SNode.C Publication Figures](https://www.figma.com/design/giz3MDZrdwPx71L2HhiQdg)
 
-This handoff records the Figma source-of-truth for the responsive publication
-figures. It supersedes older source/layout dimensions in the Step 8/8c records,
-but does not rewrite their historical technical validation or publication
-decisions. Final closure details, including the two minimal clearance corrections,
-are recorded in `14-FINAL-CLOSURE.md`.
+This handoff records the current Figma source-of-truth for the responsive
+publication figures. It supersedes older source/layout dimensions in the Step
+8/8c/13/14 records where those historical records differ from the current Figma
+node. Historical technical validation and publication decisions remain
+historical rather than being rewritten.
 
 ## Design source
 
@@ -22,17 +23,36 @@ is not a scaled desktop layout.
 | --- | --- | --- |
 | Programming model | `1:3` — 1200×720 | `1:4` — 620×980 |
 | HTTP → WebSocket context replacement | `7:36` — 1200×820 | `7:37` — 620×1320 |
-| Architecture by composition | `7:123` — 1200×760 | `7:124` — 620×1210 |
+| Architecture by composition | `7:123` — 1200×760 | `7:124` — 620×1278 |
 | Configuration model | `7:217` — 1200×700 | `7:218` — 620×1120 |
 
-The architecture-mobile height above corrects the stale 620×1180 value in the
-original Step 9 table; Step 13 already recorded the authoritative 620×1210
-frame after its readability correction.
+The architecture-mobile node is **620×1278** in the authoritative Figma file.
+The earlier 620×1180 and 620×1210 values are stale historical dimensions. The
+committed publication/source SVG pair already used a `620×1278` viewBox; this
+refresh corrects the source-of-truth record rather than changing that figure.
 
 Repository SVGs are Figma-derived, self-contained reproductions/exports of the
 current node geometry, typography, fills, strokes, labels, and hierarchy. The
 repository retains source counterparts under `assets/src/` for all eight
 responsive figure variants; Figma remains the canonical editable source.
+
+## Post-verdict clearance corrections
+
+The independent publication review found two additional fallback-font
+label-versus-neighbour collisions that earlier containment checks did not cover.
+Both were corrected in Figma before repository materialization:
+
+- **HTTP → WebSocket desktop (`7:36`)** — transition label `7:47` changed from
+  `HTTP active → replacement staged → WebSocket active` to the shorter
+  `HTTP active → staged → WebSocket active`. The chronology cards still state
+  explicitly that the replacement context is created and staged.
+- **Programming model mobile (`1:4`)** — the two `own context factory` chips
+  (`3:22`, `3:29`) were moved right and narrowed while preserving their right
+  edge and 20.25-unit text floor. Their local geometry is now `x=254`,
+  `width=276`, leaving positive DejaVu Sans clearance from `connect completes`.
+
+Both corrected frames were re-rendered and visually inspected in Figma. No
+other figure content, hierarchy, or semantics changed.
 
 ## Responsive publication strategy
 
@@ -75,10 +95,9 @@ The responsive figure source/export snapshots are retained at:
 - `assets/src/configuration-model.svg`
 - `assets/src/configuration-model-mobile.svg`
 
-The desktop architecture and configuration counterparts were missing before the
-30 August closure pass and are restored from their current Figma nodes. These
-repository files are provenance/export counterparts; visual editing belongs in
-Figma.
+The desktop architecture and configuration counterparts were restored during
+the 30 August closure pass. These repository files are provenance/export
+counterparts; visual editing belongs in Figma.
 
 ## Public dependency closure
 
@@ -105,12 +124,15 @@ part of the production closure.
 ## Integration validation
 
 - Current Figma desktop and mobile frames were visually inspected before the
-  final closure materialization.
+  post-verdict materialization.
+- DejaVu Sans fallback-width checks now include label-versus-neighbour clearance,
+  not only text containment inside its own box.
 - All publication figures use explicit self-contained surfaces and portable
   system/generic font stacks in the repository materialization.
 - SVGs contain no `<script>`, `<foreignObject>`, external images, external fonts,
   raster payloads, credentials, private paths, or editor metadata.
 - README and linked documentation preserve explicit source/runtime evidence
   boundaries.
-- Final closure status and exact SHAs are recorded in
-  `SNode.C/workflow/14-FINAL-CLOSURE.md`.
+- Step 14 records the preceding closure; accepted findings from the independent
+  publication verdict and this final targeted pass are recorded in
+  `SNode.C/workflow/15-POST-VERDICT-CORRECTIONS.md`.

@@ -1,7 +1,8 @@
 # Configuration without duplicated policy
 
 [← SNode.C](../README.md) · [Architecture](architecture.md) ·
-[Capability map](capabilities.md)
+[Capability map](capabilities.md) ·
+[API reference](https://snodec.github.io/snode.c-doc/html/index.html)
 
 SNode.C applications use a typed configuration hierarchy that can combine
 application-owned settings with one or more client or server endpoints. Each
@@ -104,7 +105,7 @@ defaults.
 Named endpoint instances and application-owned subcommands can contribute
 persistent values to the application configuration file. The hierarchy is
 flattened into qualified keys, keeping the owning command and section visible.
-For an endpoint instance named `echo`, a local port is represented as:
+For an endpoint instance named `echo`, a local address is represented as:
 
 ```ini
 echo.local.host="127.0.0.1"

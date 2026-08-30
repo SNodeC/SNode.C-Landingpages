@@ -1,5 +1,12 @@
 # Step 14 — Final closure and publication consistency
 
+> **Post-verdict provenance correction — 30 August 2026:** direct re-inspection
+> of authoritative Figma node `7:124` establishes the current architecture-mobile
+> frame as **620×1278**, not 620×1210. The dimension table below is corrected to
+> the Figma/current-artifact value. The remainder of this Step 14 record remains
+> the historical account of the closure pass; see Step 15 for the later targeted
+> review corrections.
+
 ## Scope
 
 This is a closure pass only. It does not redesign the approved SNode.C README,
@@ -108,13 +115,13 @@ Current source-of-truth frames are:
 | --- | --- | --- |
 | Programming model | `1:3` — 1200×720 | `1:4` — 620×980 |
 | HTTP → WebSocket | `7:36` — 1200×820 | `7:37` — 620×1320 |
-| Architecture | `7:123` — 1200×760 | `7:124` — 620×1210 |
+| Architecture | `7:123` — 1200×760 | `7:124` — 620×1278 |
 | Configuration | `7:217` — 1200×700 | `7:218` — 620×1120 |
 
-`09-FIGMA-RESPONSIVE-FIGURES.md` is refreshed to these current dimensions. In
-particular, the stale architecture-mobile 620×1180 entry is corrected to
-620×1210. Older dimensions in historical Step 8/8c prose remain historical
-records rather than current source-of-truth metadata.
+`09-FIGMA-RESPONSIVE-FIGURES.md` is the maintained current-dimension handoff.
+The earlier 620×1180 and 620×1210 architecture-mobile values are stale
+historical measurements; direct post-verdict re-inspection of Figma and the
+committed asset agree on 620×1278.
 
 The previously missing desktop repository-side source/export counterparts are
 restored from Figma:

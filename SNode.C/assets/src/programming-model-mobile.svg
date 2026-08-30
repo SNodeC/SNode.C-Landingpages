@@ -11,16 +11,16 @@
 <text fill="#475569" style="white-space: pre" xml:space="preserve" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="20.25" font-weight="600" letter-spacing="0em"><tspan x="56" y="185.864">SERVER ENDPOINT FLOW</tspan></text>
 <text fill="#0F172A" style="white-space: pre" xml:space="preserve" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="28" font-weight="bold" letter-spacing="0em"><tspan x="56" y="220.182">SocketServer</tspan></text>
 <text fill="#2563EB" style="white-space: pre" xml:space="preserve" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="20.25" font-weight="600" letter-spacing="0em"><tspan x="56" y="252.864">listen &#x2192; accept</tspan></text>
-<rect x="254" y="232" width="310" height="38" rx="10" fill="#EFF6FF"/>
-<text fill="#2563EB" style="white-space: pre" xml:space="preserve" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="20.25" font-weight="600" letter-spacing="0em"><tspan x="268" y="258.864">own context factory</tspan></text>
+<rect x="288" y="232" width="276" height="38" rx="10" fill="#EFF6FF"/>
+<text fill="#2563EB" style="white-space: pre" xml:space="preserve" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="20.25" font-weight="600" letter-spacing="0em"><tspan x="302" y="258.864">own context factory</tspan></text>
 <text fill="#475569" style="white-space: pre" xml:space="preserve" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="20.25" font-weight="600" letter-spacing="0em"><tspan x="292" y="319.864">OR</tspan></text>
 <rect x="34.75" y="332.75" width="550.5" height="138.5" rx="17.25" fill="white"/>
 <rect x="34.75" y="332.75" width="550.5" height="138.5" rx="17.25" stroke="#CBD5E1" stroke-width="1.5"/>
 <text fill="#475569" style="white-space: pre" xml:space="preserve" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="20.25" font-weight="600" letter-spacing="0em"><tspan x="56" y="367.864">CLIENT ENDPOINT FLOW</tspan></text>
 <text fill="#0F172A" style="white-space: pre" xml:space="preserve" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="28" font-weight="bold" letter-spacing="0em"><tspan x="56" y="402.182">SocketClient</tspan></text>
 <text fill="#2563EB" style="white-space: pre" xml:space="preserve" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="20.25" font-weight="600" letter-spacing="0em"><tspan x="56" y="434.864">connect completes</tspan></text>
-<rect x="254" y="414" width="310" height="38" rx="10" fill="#EFF6FF"/>
-<text fill="#2563EB" style="white-space: pre" xml:space="preserve" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="20.25" font-weight="600" letter-spacing="0em"><tspan x="268" y="440.864">own context factory</tspan></text>
+<rect x="288" y="414" width="276" height="38" rx="10" fill="#EFF6FF"/>
+<text fill="#2563EB" style="white-space: pre" xml:space="preserve" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="20.25" font-weight="600" letter-spacing="0em"><tspan x="302" y="440.864">own context factory</tspan></text>
 <text fill="#2563EB" style="white-space: pre" xml:space="preserve" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="30" font-weight="600" letter-spacing="0em"><tspan x="294" y="506.909">&#x2193;</tspan></text>
 <rect x="35" y="519" width="550" height="104" rx="17" fill="white"/>
 <rect x="35" y="519" width="550" height="104" rx="17" stroke="#2563EB" stroke-width="2"/>
