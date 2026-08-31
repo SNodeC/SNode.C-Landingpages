@@ -21,7 +21,18 @@ mapping          recursive topic tree and mapping rules
 
 The `mapping` tree is required. `connection` is optional in schema and supplies defaults when omitted.
 
-A representative skeleton is:
+The structural rule that matters throughout this reference is:
+
+```text
+topic_level
+  └─ subscription
+       ├─ qos
+       └─ static | value | json
+```
+
+`static`, `value`, and `json` are properties of the **`subscription` object**. They are not siblings of `subscription` on the topic-level node.
+
+A representative schema-valid skeleton is:
 
 ```json
 {
@@ -43,8 +54,17 @@ A representative skeleton is:
             "topic_level": [
               {
                 "name": "temperature",
-                "subscription": { "qos": 1 },
-                "json": []
+                "subscription": {
+                  "qos": 1,
+                  "json": [
+                    {
+                      "mapped_topic": "normalized/{{ message.device }}/temperature",
+                      "mapping_template": "{{ message.value }}",
+                      "qos": 1,
+                      "retain": false
+                    }
+                  ]
+                }
               }
             ]
           }
@@ -79,7 +99,7 @@ Mapping files and mapping history can therefore contain credentials. Current adm
 
 ## Topic tree
 
-Topics are represented as a tree of MQTT topic levels rather than one flat filter string. Each node has a `name` and may contain child `topic_level` nodes, a `subscription`, and mapping-rule arrays.
+Topics are represented as a tree of MQTT topic levels rather than one flat filter string. Each node has a `name` and may contain child `topic_level` nodes or a `subscription`. A subscription carries the receive QoS and any `static`, `value`, or `json` mapping rules.
 
 For topic:
 
@@ -116,7 +136,7 @@ The matched topic itself remains available to the template context; the mapper d
 <a id="hash-multi-level-wildcard"></a>
 ### Multi-level wildcard (`#`)
 
-A terminal node named `#` now has normal MQTT multi-level wildcard behavior in the mapper. It matches **zero or more remaining topic levels**.
+A terminal node named `#` has normal MQTT multi-level wildcard behavior in the post-PR-#22 mapper. It matches **zero or more remaining topic levels**.
 
 A mapping tree representing `devices/#` can be written as:
 
@@ -171,9 +191,9 @@ For example:
 
 ```json
 "topic_level": [
-  { "name": "temperature", "...": "specific rule" },
-  { "name": "+", "...": "one-level fallback" },
-  { "name": "#", "...": "remaining-subtree fallback" }
+  { "name": "temperature", "subscription": { "qos": 1, "value": { "mapped_topic": "specific/temperature", "mapping_template": "{{ message }}" } } },
+  { "name": "+", "subscription": { "qos": 0, "value": { "mapped_topic": "fallback/one-level", "mapping_template": "{{ message }}" } } },
+  { "name": "#", "subscription": { "qos": 0, "value": { "mapped_topic": "fallback/subtree", "mapping_template": "{{ message }}" } } }
 ]
 ```
 
@@ -185,38 +205,45 @@ A topic-tree node can contain:
 
 ```json
 "subscription": {
-  "qos": 1
+  "qos": 1,
+  "value": {
+    "mapped_topic": "normalized/value",
+    "mapping_template": "{{ message }}"
+  }
 }
 ```
 
 MQTTIntegrator walks the tree and converts subscription points into MQTT topic filters. Subscription QoS is independent from the QoS later chosen for mapped output publications.
 
-A terminal `#` subscription is extracted as an MQTT `#` filter and the mapper now applies the same multi-level meaning when processing delivered publications.
+A terminal `#` subscription is extracted as an MQTT `#` filter and the mapper applies the same multi-level meaning when processing delivered publications.
 
 After CONNACK, the Integrator subscribes to the mapper-derived filters. On a mapping administration update, it computes subscribed/unsubscribed deltas when no reconnect is required.
 
 ## Mapping modes
 
-A matching leaf/node can contain three kinds of mapping rules. The arrays can contain multiple entries, so one input publication can fan out to multiple outputs.
+A matching topic-level node carries mapping rules **inside its `subscription` object**. The `static`, `value`, and `json` properties can each be a single rule object or an array where allowed by the schema, so one input publication can fan out to multiple outputs.
 
 ### Static mapping
 
 Static mapping compares the incoming payload string to configured exact values.
 
-Example:
+Schema-valid subscription fragment:
 
 ```json
-"static": [
-  {
-    "mapped_topic": "normalized/pump/state",
-    "message_mapping": [
-      { "message": "1", "mapped_message": "on" },
-      { "message": "0", "mapped_message": "off" }
-    ],
-    "qos": 1,
-    "retain": true
-  }
-]
+"subscription": {
+  "qos": 1,
+  "static": [
+    {
+      "mapped_topic": "normalized/pump/state",
+      "message_mapping": [
+        { "message": "1", "mapped_message": "on" },
+        { "message": "0", "mapped_message": "off" }
+      ],
+      "qos": 1,
+      "retain": true
+    }
+  ]
+}
 ```
 
 When input payload is `1`, the mapper emits:
@@ -234,17 +261,20 @@ A static rule whose `message_mapping` has no matching input produces no output f
 
 Value mapping treats the incoming MQTT payload as a scalar string and makes it available to Inja templates.
 
-Example:
+Schema-valid subscription fragment:
 
 ```json
-"value": [
-  {
-    "mapped_topic": "normalized/room-01/temperature",
-    "mapping_template": "{{ message }}",
-    "qos": 1,
-    "retain": false
-  }
-]
+"subscription": {
+  "qos": 1,
+  "value": [
+    {
+      "mapped_topic": "normalized/room-01/temperature",
+      "mapping_template": "{{ message }}",
+      "qos": 1,
+      "retain": false
+    }
+  ]
+}
 ```
 
 Use this mode when the payload is already a useful scalar but the output topic or representation needs templating.
@@ -253,17 +283,20 @@ Use this mode when the payload is already a useful scalar but the output topic o
 
 JSON mapping parses the incoming payload with `nlohmann::json` and exposes the parsed JSON to the template environment.
 
-Example:
+Schema-valid subscription fragment:
 
 ```json
-"json": [
-  {
-    "mapped_topic": "normalized/{{ message.device }}/temperature",
-    "mapping_template": "{\"value\":{{ message.value }},\"unit\":\"{{ message.unit }}\"}",
-    "qos": 1,
-    "retain": false
-  }
-]
+"subscription": {
+  "qos": 1,
+  "json": [
+    {
+      "mapped_topic": "normalized/{{ message.device }}/temperature",
+      "mapping_template": "{\"value\":{{ message.value }},\"unit\":\"{{ message.unit }}\"}",
+      "qos": 1,
+      "retain": false
+    }
+  ]
+}
 ```
 
 For an input such as:
@@ -323,7 +356,7 @@ Template mappings can declare suppressions. Current mapper checks rendered outpu
 
 ## Fan-out
 
-The mapping arrays are iterated, so a single matched input can emit more than one mapped publication.
+Mapping arrays inside one selected `subscription` are iterated, so a single matched input can emit more than one mapped publication.
 
 A common pattern is:
 
@@ -334,11 +367,11 @@ vendor/device payload
   └─► derived/alerts/device
 ```
 
-Keep fan-out rules deterministic: overlapping topic branches are subject to first-branch precedence, while multiple rules inside the selected branch can all contribute outputs.
+Keep fan-out rules deterministic: overlapping topic branches are subject to first-branch precedence, while multiple rules inside the selected subscription can all contribute outputs.
 
 ## A non-trivial example
 
-The following example demonstrates literal matching, `+`, JSON templating, fan-out, output QoS/retain, and suppression. For terminal multi-level `#`, use the dedicated example in [Multi-level wildcard (`#`)](#hash-multi-level-wildcard).
+The following schema-valid example demonstrates literal matching, `+`, JSON templating, fan-out, output QoS/retain, and suppression. For terminal multi-level `#`, use the dedicated example in [Multi-level wildcard (`#`)](#hash-multi-level-wildcard).
 
 ```json
 {
@@ -358,22 +391,24 @@ The following example demonstrates literal matching, `+`, JSON templating, fan-o
             "topic_level": [
               {
                 "name": "telemetry",
-                "subscription": { "qos": 1 },
-                "json": [
-                  {
-                    "mapped_topic": "normalized/{{ message.device }}/temperature",
-                    "mapping_template": "{\"value\":{{ message.temperature }},\"unit\":\"C\"}",
-                    "qos": 1,
-                    "retain": false
-                  },
-                  {
-                    "mapped_topic": "normalized/{{ message.device }}/status",
-                    "mapping_template": "{{ message.status }}",
-                    "qos": 0,
-                    "retain": true,
-                    "suppressions": [""]
-                  }
-                ]
+                "subscription": {
+                  "qos": 1,
+                  "json": [
+                    {
+                      "mapped_topic": "normalized/{{ message.device }}/temperature",
+                      "mapping_template": "{\"value\":{{ message.temperature }},\"unit\":\"C\"}",
+                      "qos": 1,
+                      "retain": false
+                    },
+                    {
+                      "mapped_topic": "normalized/{{ message.device }}/status",
+                      "mapping_template": "{{ message.status }}",
+                      "qos": 0,
+                      "retain": true,
+                      "suppressions": [""]
+                    }
+                  ]
+                }
               }
             ]
           }
@@ -525,10 +560,11 @@ Check:
 1. topic-tree order;
 2. literal/`+`/`#` sibling precedence;
 3. whether `+` is being used for exactly one level and `#` as a terminal remaining-subtree wildcard;
-4. selected mapping mode;
-5. JSON validity for `json` mode;
-6. static payload equality for `static` mode;
-7. suppression values.
+4. whether `static`, `value`, or `json` is nested inside the selected `subscription`;
+5. selected mapping mode;
+6. JSON validity for `json` mode;
+7. static payload equality for `static` mode;
+8. suppression values.
 
 For `parent/#`, remember that the zero-level `parent` topic selects the child `#` only when the parent itself has no subscription mapping.
 
