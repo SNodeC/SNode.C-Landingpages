@@ -29,12 +29,12 @@ The applications are separate processes. MQTTBroker is not the whole product, MQ
 
 The shortest useful MQTTSuite path is one Broker, one subscriber, and one publisher. The commands below use an isolated configuration and port `18885`, so they do not depend on an existing user configuration or a conventional broker on `1883`.
 
-From a built source tree, start MQTTBroker:
+From a built source tree, start MQTTBroker. Debug logging (`5`) is used here deliberately because the Broker's listener-state report is emitted at debug level:
 
 ```bash
 ./cmake-build-release/mqttbroker/mqttbroker \
   --config-file /dev/null \
-  --log-level 4 \
+  --log-level 5 \
   in-mqtt local --host 127.0.0.1 --port 18885 \
   in-mqtts --disabled \
   in6-mqtt --disabled \
@@ -74,16 +74,7 @@ In a third terminal, publish one JSON value at QoS 1:
         --message '{"value":21.7,"unit":"C"}'
 ```
 
-The subscriber's current formatter shows the topic and MQTT delivery metadata together with the payload. The qualified run included:
-
-```text
-edge-lab/room-01/temperature
-QoS: 1
-Retain: false
-Dup: false
-```
-
-and the JSON payload was printed in readable form.
+The qualified subscriber run produced one real MQTTCli `MQTT Publish` result. The live formatter places the **topic, `QoS: 1`, `Retain: false`, and `Dup: false` together on the formatted publish headline**, then prints the JSON payload below it in pretty-printed form. The raw terminal pixels are preserved in [`assets/src/first-success/subscriber-raw.png`](assets/src/first-success/subscriber-raw.png), with capture provenance and the exact qualification commands in [`assets/src/first-success/README.md`](assets/src/first-success/README.md). This README deliberately does not replace that captured output with a simplified synthetic transcript.
 
 MQTTCli client endpoints are configured to reconnect. A publish-only command disconnects after the MQTT QoS completion path, but the outer client can reconnect and publish again. For an interactive one-shot verification, stop the publisher with `Ctrl-C` after the first intended result, then stop the subscriber and Broker.
 
