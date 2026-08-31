@@ -1,6 +1,6 @@
 # MQTTSuite configuration reference
 
-MQTTSuite applications inherit SNode.C's hierarchical configuration system and add their own MQTT- and application-specific sections. This page documents the operating model that matters to MQTTSuite users. For the framework-level design and complete SNode.C option surface, see the [SNode.C configuration reference](../../SNode.C/docs/configuration.md).
+MQTTSuite applications inherit SNode.C's hierarchical configuration system and add their own MQTT- and application-specific sections. This page documents the operating model that matters to MQTTSuite users. For the framework-level design and complete SNode.C option surface, see the [SNode.C configuration reference](https://github.com/SNodeC/SNode.C-Landingpages/blob/main/SNode.C/docs/configuration.md).
 
 **Evidence baseline:** [`SNodeC/mqttsuite@52de5631245c6318bfa5b7cca700f0754014f34d`](https://github.com/SNodeC/mqttsuite/tree/52de5631245c6318bfa5b7cca700f0754014f34d) with [`SNodeC/snode.c@5d6453c21df4894083b445cce00b627e7794932a`](https://github.com/SNodeC/snode.c/tree/5d6453c21df4894083b445cce00b627e7794932a).
 
