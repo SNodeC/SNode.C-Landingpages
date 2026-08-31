@@ -4,7 +4,7 @@ MQTTBridge is the MQTTSuite client-side broker interconnection application. It c
 
 MQTTBridge is **not** an MQTT broker. It is also **not** MQTTIntegrator: it does not run `MqttMapper`, parse/transform payloads, or render mapping templates. Its integration-like behavior comes from selecting subscriptions and constructing forwarded topic prefixes while preserving the original payload, QoS, and retain flag.
 
-The suite-level build and common configuration model are in the [MQTTSuite README](../README.md). This README documents `mqttbridge`, its required bridge-definition JSON, forwarding semantics, admin surface, and current transport boundaries.
+The suite-level build and common configuration model are in the [MQTTSuite README](../README.md). This README documents `mqttbridge`, its required bridge-definition JSON, forwarding semantics, admin surface, and current transport boundaries. For deeper operator references, see [Bridge definition and forwarding](../docs/bridge-definition.md), the [complete three-broker example](../docs/bridge-multi-broker-example.md), and [Bridge HTTP API and SSE](../docs/bridge-http-api.md).
 
 ## Quick Start: bridge two local brokers
 
@@ -361,7 +361,7 @@ A -> B
 
 an input received from A is sent to B and C. A is excluded from that forwarding pass.
 
-This fan-out is useful, but it also means loops need to be considered at topology level rather than only pairwise.
+This fan-out is useful, but it also means loops need to be considered at topology level rather than only pairwise. The complete [`three-site-mesh` example](../docs/bridge-multi-broker-example.md) shows the full three-member definition and exact resulting topics.
 
 ## Loop behavior
 
@@ -531,6 +531,8 @@ GET /api/bridge/sse
 
 provides bridge lifecycle state through SSE, including bridge starting/stopping and broker member connection/disconnection events.
 
+The full route, response, restart, replay, heartbeat, and event contract is documented in [Bridge HTTP API and SSE](../docs/bridge-http-api.md).
+
 ### Shipped Web assets
 
 The router redirects:
@@ -648,6 +650,9 @@ The Bridge is still in its close/restart cycle. Let the current apply complete b
 ## Related documentation
 
 - [MQTTSuite overview and build](../README.md)
+- [Bridge definition and forwarding](../docs/bridge-definition.md)
+- [Complete three-broker example](../docs/bridge-multi-broker-example.md)
+- [Bridge HTTP API and SSE](../docs/bridge-http-api.md)
 - [MQTTBroker](../mqttbroker/README.md)
 - [MQTTIntegrator](../mqttintegrator/README.md)
 - [MQTTCli](../mqttcli/README.md)
