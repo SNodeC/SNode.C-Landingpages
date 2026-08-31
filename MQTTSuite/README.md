@@ -9,7 +9,7 @@ MQTTSuite is a C++20 application suite built on [SNode.C](https://github.com/SNo
 **[Run the Broker + CLI quick start](#quick-start-broker-and-cli)** · **[Choose an application](#five-applications-one-suite)** · **[Configure MQTTSuite](docs/configuration.md)** · **[Check evidence and limits](docs/capabilities.md)**
 
 > [!NOTE]
-> The MQTTSuite implementation reviewed for this publication is [`52de563`](https://github.com/SNodeC/mqttsuite/commit/52de5631245c6318bfa5b7cca700f0754014f34d). Shared SNode.C behavior was source-reviewed at [`5d6453c`](https://github.com/SNodeC/snode.c/commit/5d6453c21df4894083b445cce00b627e7794932a). Current SNode.C `master` subsequently advanced to `1f872517…` with a documentation-only logging inventory commit; the implementation surface used here is unchanged. The recorded runtime qualification rebuilt and installed MQTTSuite `52de563…` against SNode.C `60f26d9…` on Debian x86-64. Source availability and runtime qualification are kept separate below.
+> Current MQTTSuite source behavior for this publication is reviewed through merged `master` [`6c0ff62`](https://github.com/SNodeC/mqttsuite/commit/6c0ff62c612694a6111ff971c446327938130cf0). That revision adds only the narrow MQTTIntegrator wildcard correction from [PR #22](https://github.com/SNodeC/mqttsuite/pull/22) / [`d15f70a`](https://github.com/SNodeC/mqttsuite/commit/d15f70a2818d291638c50aa2e2116a9e49ebd9e1): `#` is a true MQTT multi-level wildcard, including the zero-level `parent/#` case, while `+` remains single-level. Shared SNode.C behavior was source-reviewed at [`5d6453c`](https://github.com/SNodeC/snode.c/commit/5d6453c21df4894083b445cce00b627e7794932a). The recorded runtime qualification rebuilt and installed MQTTSuite `52de563…` against SNode.C `60f26d9…` on Debian x86-64, before PR #22. Source availability and runtime qualification are kept separate below.
 
 ## Five applications, one suite
 
@@ -234,7 +234,9 @@ MQTTIntegrator subscribes as an MQTT client, matches received publications again
 The mapper provides:
 
 - mapping-derived subscriptions and subscription QoS;
-- literal and `+` topic-level matching;
+- literal topic-level matching;
+- single-level `+` wildcard matching;
+- terminal multi-level `#` wildcard matching, including the zero-level `parent/#` case when the parent has no own subscription mapping;
 - static message mapping;
 - scalar/value templates;
 - JSON templates;
@@ -248,12 +250,12 @@ The mapper provides:
 
 Two current implementation details matter when operating MQTTIntegrator:
 
-1. **`#` is not MQTT-standard multi-level matching inside the mapper at this revision.** Subscription extraction can produce an MQTT `#` filter, but the mapper's own matching consumes `#` as a one-level candidate. Do not design mappings that rely on normal MQTT remaining-subtree semantics.
+1. **Wildcard matching follows MQTT semantics after PR #22.** `+` matches exactly one level. Terminal `#` matches zero or more remaining levels; for example, `parent/#` can match `parent`, `parent/child`, and deeper descendants when the `parent` node itself has no subscription mapping. Sibling branches are still first-match in document order, so put specific literals before `+` and the broadest `#` fallback last when branches overlap.
 2. **The startup mapping source is not simply the default `mapping.json`.** Current `mqttintegrator.cpp` seeds an inline demo mapping during startup; an explicit mapping file supplied through the supported configuration parse can replace it. Select the mapping file explicitly and inspect the active configuration instead of relying on the implicit default.
 
 The administration API currently uses HTTP Basic Authentication with known defaults `admin/admin`, and those credentials are not exposed through a supported application configuration option in the reviewed source. The active mapping can itself contain MQTT credentials.
 
-See the [MQTTIntegrator README](mqttintegrator/README.md) and the deeper [mapping reference](docs/integrator-mapping.md).
+See the [MQTTIntegrator README](mqttintegrator/README.md), the deeper [mapping reference](docs/integrator-mapping.md), and the [sibling topic example](docs/integrator-sibling-topics-example.md).
 
 > **Figure placeholder — Mapping pipeline.** Show subscribed topic/payload → first matching topic-tree branch → static/value/JSON mapping → rendered output topic/payload → QoS/retain/delay → zero/one/many republishes.
 
@@ -321,7 +323,7 @@ The source surface is broader than the runtime proof. Use this distinction when 
 | five applications | all five executables and top-level build/install | all five built and installed |
 | MQTT protocol | MQTT 3.1.1 client/server paths, QoS/session/retain/will implementation | plain IPv4 Broker + CLI, QoS 1 publish/delivery |
 | Broker Web UI | dashboard/SSE/admin/WebSocket route source | real bundled Broker dashboard |
-| Integrator mapping | mapper, schema, admin lifecycle, plugins | source-reviewed; no complete mapping fixture in this pass |
+| Integrator mapping | mapper, schema, MQTT `+`/`#` wildcard semantics, admin lifecycle, plugins | source-reviewed through PR #22; no complete mapping fixture in this pass |
 | Bridge | logical bridges, forwarding/prefix/session/admin source | source-reviewed; no multi-broker runtime fixture in this pass |
 | Store | raw MariaDB storage and typed projection source | source-reviewed; no MariaDB end-to-end fixture in this pass |
 | IPv6 / Unix / TLS / WS / WSS | multiple source/configuration paths depending on application/build | not a complete transport matrix |
@@ -341,7 +343,7 @@ Each application has a `SocketContextFactory` or equivalent runtime assembly sea
 
 The shared mapper is another deliberate extension surface. Mapper plugins expose native Inja callback vectors and are loaded into the process; they should be treated as trusted native code built for the MQTTSuite ABI in use, not as a sandbox or a promised stable cross-version plugin interface.
 
-Source anchors for this secondary perspective include the pinned [Broker factory/application](https://github.com/SNodeC/mqttsuite/blob/52de5631245c6318bfa5b7cca700f0754014f34d/mqttbroker/mqttbroker.cpp), [Integrator startup](https://github.com/SNodeC/mqttsuite/blob/52de5631245c6318bfa5b7cca700f0754014f34d/mqttintegrator/mqttintegrator.cpp), [Bridge runtime](https://github.com/SNodeC/mqttsuite/blob/52de5631245c6318bfa5b7cca700f0754014f34d/mqttbridge/mqttbridge.cpp), [CLI runtime](https://github.com/SNodeC/mqttsuite/blob/52de5631245c6318bfa5b7cca700f0754014f34d/mqttcli/mqttcli.cpp), [Store runtime](https://github.com/SNodeC/mqttsuite/blob/52de5631245c6318bfa5b7cca700f0754014f34d/mqttstore/mqttstore.cpp), and the [shared mapper](https://github.com/SNodeC/mqttsuite/blob/52de5631245c6318bfa5b7cca700f0754014f34d/lib/MqttMapper.cpp).
+Source anchors for this secondary perspective include the pinned [Broker factory/application](https://github.com/SNodeC/mqttsuite/blob/52de5631245c6318bfa5b7cca700f0754014f34d/mqttbroker/mqttbroker.cpp), [Integrator startup](https://github.com/SNodeC/mqttsuite/blob/52de5631245c6318bfa5b7cca700f0754014f34d/mqttintegrator/mqttintegrator.cpp), [Bridge runtime](https://github.com/SNodeC/mqttsuite/blob/52de5631245c6318bfa5b7cca700f0754014f34d/mqttbridge/mqttbridge.cpp), [CLI runtime](https://github.com/SNodeC/mqttsuite/blob/52de5631245c6318bfa5b7cca700f0754014f34d/mqttcli/mqttcli.cpp), [Store runtime](https://github.com/SNodeC/mqttsuite/blob/52de5631245c6318bfa5b7cca700f0754014f34d/mqttstore/mqttstore.cpp), and the [post-fix shared mapper](https://github.com/SNodeC/mqttsuite/blob/6c0ff62c612694a6111ff971c446327938130cf0/lib/MqttMapper.cpp).
 
 ## Choose your next step
 
