@@ -158,10 +158,12 @@ A input
 
 ## Start the bridge
 
+`--definition` belongs to the required `bridge` application subcommand:
+
 ```bash
 mqttbridge \
   --config-file /dev/null \
-  --definition ./bridge.json \
+  bridge --definition ./bridge.json \
   admin-legacy --disabled \
   admin-tls --disabled
 ```
