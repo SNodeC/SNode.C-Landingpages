@@ -4,7 +4,7 @@ MQTTBroker is the MQTTSuite MQTT 3.1.1 server application. It accepts MQTT clien
 
 Use MQTTBroker when you need the MQTT server role. Use [MQTTIntegrator](../mqttintegrator/README.md) when transformation should run as a separate client service, [MQTTBridge](../mqttbridge/README.md) when selected traffic should cross broker domains, [MQTTCli](../mqttcli/README.md) to inspect or verify traffic, and [MQTTStore](../mqttstore/README.md) to persist it.
 
-The suite-level build, common configuration model, and first-success flow are documented in the [MQTTSuite README](../README.md). This README focuses on operating `mqttbroker`.
+The suite-level build, common configuration model, and first-success flow are documented in the [MQTTSuite README](../README.md). The detailed HTTP administration/SSE contract is in [Broker HTTP API and SSE](../docs/broker-http-api.md). This README focuses on operating `mqttbroker`.
 
 ## Quick Start
 
@@ -254,6 +254,8 @@ POST /api/mqtt/subscribe
 
 They let the Web surface disconnect a client, change a client's subscriptions, or release retained state. These are operational controls, not merely read-only status endpoints.
 
+For exact request/response bodies, error/status behavior, CORS, SSE event vocabulary, replay behavior, and credential-exposure boundaries, see [Broker HTTP API and SSE](../docs/broker-http-api.md).
+
 > **Figure placeholder — Dashboard, SSE, API, and MQTT WebSocket relationship.** Show the HTTP router serving static client pages, SSE live state, mutating JSON operations, and the `/ws` MQTT upgrade beside the direct MQTT listeners.
 
 ## Optional embedded mapping
@@ -365,6 +367,7 @@ First verify the original message reaches normal broker subscribers. Then valida
 ## Related documentation
 
 - [MQTTSuite overview and build](../README.md)
+- [Broker HTTP API and SSE](../docs/broker-http-api.md)
 - [MQTTIntegrator](../mqttintegrator/README.md)
 - [MQTTBridge](../mqttbridge/README.md)
 - [MQTTCli](../mqttcli/README.md)
