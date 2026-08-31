@@ -164,9 +164,7 @@ Broker-domain interconnection
 Broker A <-> MQTTBridge <-> Broker B
 ```
 
-Use Integrator when the contract of a message should change. Use Bridge when selected MQTT traffic should cross broker boundaries while remaining MQTT traffic.
-
-> **Figure placeholder — Representative deployment topologies.** Compare local Broker + CLI, normalization, normalized persistence, and broker-domain bridging so a reader can choose the minimum application set for each job.
+Use Integrator when the contract of a message should change. Use Bridge when selected MQTT traffic should cross broker boundaries while remaining MQTT traffic. This root ASCII block is the concise topology chooser; detailed application diagrams are owned by the relevant application READMEs rather than duplicating the same topology as another root figure.
 
 ## Shared configuration model
 
@@ -250,9 +248,7 @@ Two current implementation details matter when operating MQTTIntegrator:
 
 The administration API currently uses HTTP Basic Authentication with known defaults `admin/admin`, and those credentials are not exposed through a supported application configuration option in the reviewed source. The active mapping can itself contain MQTT credentials.
 
-See the [MQTTIntegrator README](mqttintegrator/README.md), the deeper [mapping reference](docs/integrator-mapping.md), and the [sibling topic example](docs/integrator-sibling-topics-example.md).
-
-> **Figure placeholder — Mapping pipeline.** Show subscribed topic/payload → first matching topic-tree branch → static/value/JSON mapping → rendered output topic/payload → QoS/retain/delay → zero/one/many republishes.
+See the [MQTTIntegrator README](mqttintegrator/README.md), the deeper [mapping reference](docs/integrator-mapping.md), and the [sibling topic example](docs/integrator-sibling-topics-example.md). The **canonical mapping-pipeline visual brief is owned by the MQTTIntegrator README**; this root page routes to that application-owned explanation instead of carrying a duplicate placeholder.
 
 ## Bridging: connect broker domains
 
