@@ -51,8 +51,9 @@ Practical deployment controls include binding the listener to a trusted interfac
 | `POST` | `/config/rollback` | restore a retained version and reload |
 | `GET` | `/` | redirect to `/ui` |
 | `GET` | `/ui` | redirect to `/ui/index.html` |
+| `GET` | `*` | catch-all redirect to `/ui/index.html` |
 
-All routes are behind the router's Basic Authentication middleware.
+All routes are behind the router's Basic Authentication middleware, including the UI redirects/fallback because the authentication middleware is installed before those routes.
 
 ## Authentication example
 
@@ -416,9 +417,10 @@ The router redirects:
 ```text
 /   -> /ui
 /ui -> /ui/index.html
+*   -> /ui/index.html   # final GET catch-all
 ```
 
-and mounts a static UI below `/ui`.
+and mounts a static UI below `/ui`. The catch-all is registered after the explicit routes/static mount, so unmatched GET paths are redirected to the UI entry point.
 
 At the reviewed revision, the static root is a hard-coded maintainer-local path:
 
@@ -467,7 +469,7 @@ This interface does not establish:
 
 ## Evidence boundary
 
-**Source-verified:** route tree, HTTP status/response shapes, Basic Auth defaults, listener defaults, draft/deploy/history/rollback workflow, lack of Integrator SSE, and current UI path.
+**Source-verified:** route tree including the final GET catch-all, HTTP status/response shapes, Basic Auth defaults, listener defaults, draft/deploy/history/rollback workflow, lack of Integrator SSE, and current UI path.
 
 **Not separately runtime-exercised by the landing-page qualification:** the full administration route matrix, authentication failure cases, deploy/rollback through a live broker reconnect, malformed-request fuzzing, or HTTPS certificate policy.
 
