@@ -75,7 +75,7 @@ A representative schema-valid skeleton is:
 }
 ```
 
-> **Figure placeholder — Mapping pipeline.** Show incoming MQTT topic/payload → subscription/matching tree → first matching topic branch → static/value/JSON rule → template rendering → QoS/retain/delay → zero/one/many republishes.
+The canonical mapping-pipeline figure is owned by the [MQTTIntegrator README](../mqttintegrator/README.md#how-the-integrator-is-assembled); this reference concentrates on the exact grammar and execution semantics.
 
 ## Connection block
 
