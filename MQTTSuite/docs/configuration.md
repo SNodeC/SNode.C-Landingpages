@@ -2,7 +2,7 @@
 
 MQTTSuite applications inherit SNode.C's hierarchical configuration system and add their own MQTT- and application-specific sections. This page documents the operating model that matters to MQTTSuite users. For the framework-level design and complete SNode.C option surface, see the [SNode.C configuration reference](https://github.com/SNodeC/SNode.C-Landingpages/blob/main/SNode.C/docs/configuration.md).
 
-**Evidence baseline:** [`SNodeC/mqttsuite@52de5631245c6318bfa5b7cca700f0754014f34d`](https://github.com/SNodeC/mqttsuite/tree/52de5631245c6318bfa5b7cca700f0754014f34d) with [`SNodeC/snode.c@5d6453c21df4894083b445cce00b627e7794932a`](https://github.com/SNodeC/snode.c/tree/5d6453c21df4894083b445cce00b627e7794932a).
+**Current source baseline:** [`SNodeC/mqttsuite@6c0ff62c612694a6111ff971c446327938130cf0`](https://github.com/SNodeC/mqttsuite/tree/6c0ff62c612694a6111ff971c446327938130cf0) with shared SNode.C configuration behavior source-reviewed at [`SNodeC/snode.c@5d6453c21df4894083b445cce00b627e7794932a`](https://github.com/SNodeC/snode.c/tree/5d6453c21df4894083b445cce00b627e7794932a). MQTTSuite PR #22 changed only mapper wildcard matching and did not change the configuration surfaces described here.
 
 ## Configuration hierarchy
 
@@ -275,9 +275,9 @@ Those documents have separate schemas and lifecycles:
 
 ## Evidence and limits
 
-**Available in source:** hierarchical configuration, named instances, config files, command-line overrides, introspection, config writing, retry/reconnect, TLS/HTTP/WebSocket composition, semantic logging, and application-specific extension sections.
+**Available/source-verified:** hierarchical configuration, named instances, config files, command-line overrides, introspection, config writing, retry/reconnect, TLS/HTTP/WebSocket composition, client/listener defaults, semantic logging, and application-specific extension sections in the current source baseline.
 
-**Exercised by the landing-page qualification:** current-head SNode.C/MQTTSuite build and install plus the plain-IPv4 MQTTBroker + MQTTCli first-success path. The complete configuration/transport matrix was not exercised.
+**Runtime-exercised by the recorded landing-page qualification:** MQTTSuite `52de563...` was rebuilt and installed against SNode.C `60f26d9...`, including the plain-IPv4 MQTTBroker + MQTTCli first-success path. That qualification predates the narrow PR #22 mapper-only change; it is not described here as a runtime run of current `6c0ff62...`.
 
 Do not infer from this reference that every address-family × TLS × WebSocket × application combination is equally qualified. Use the [capability and evidence boundaries](capabilities.md) and the application README for the scope that is actually established.
 
@@ -285,6 +285,6 @@ Do not infer from this reference that every address-family × TLS × WebSocket �
 
 - [SNode.C `SubCommand.cpp` — help/config/command reconstruction and multi-file config option](https://github.com/SNodeC/snode.c/blob/5d6453c21df4894083b445cce00b627e7794932a/src/utils/SubCommand.cpp)
 - [SNode.C `Config.cpp` — root logging/configuration behavior](https://github.com/SNodeC/snode.c/blob/5d6453c21df4894083b445cce00b627e7794932a/src/utils/Config.cpp)
-- [MQTTSuite `ConfigApplication.cpp` — mapper/session-store extension](https://github.com/SNodeC/mqttsuite/blob/52de5631245c6318bfa5b7cca700f0754014f34d/lib/ConfigApplication.cpp)
-- [MQTTCli configuration sections](https://github.com/SNodeC/mqttsuite/blob/52de5631245c6318bfa5b7cca700f0754014f34d/mqttcli/lib/ConfigSections.cpp)
-- [MQTTStore configuration sections](https://github.com/SNodeC/mqttsuite/blob/52de5631245c6318bfa5b7cca700f0754014f34d/mqttstore/lib/ConfigSections.cpp)
+- [MQTTSuite `ConfigApplication.cpp` — mapper/session-store extension](https://github.com/SNodeC/mqttsuite/blob/6c0ff62c612694a6111ff971c446327938130cf0/lib/ConfigApplication.cpp)
+- [MQTTCli configuration sections](https://github.com/SNodeC/mqttsuite/blob/6c0ff62c612694a6111ff971c446327938130cf0/mqttcli/lib/ConfigSections.cpp)
+- [MQTTStore configuration sections](https://github.com/SNodeC/mqttsuite/blob/6c0ff62c612694a6111ff971c446327938130cf0/mqttstore/lib/ConfigSections.cpp)
