@@ -6,6 +6,9 @@ Use it when incoming MQTT traffic is valid but not in the namespace, payload sha
 
 The suite-level build and common configuration model live in the [MQTTSuite README](../README.md). This README is the operational guide for `mqttintegrator` and the mapping format.
 
+> [!NOTE]
+> Wildcard behavior in this README follows MQTTSuite `master` after [PR #22](https://github.com/SNodeC/mqttsuite/pull/22), merged as [`6c0ff62`](https://github.com/SNodeC/mqttsuite/commit/6c0ff62c612694a6111ff971c446327938130cf0). `+` matches one topic level; terminal `#` matches zero or more remaining levels, including the zero-level `parent/#` case when the parent has no own subscription mapping.
+
 ## Quick Start
 
 Create `mapping.json`:
@@ -299,9 +302,9 @@ the literal tree is:
 
 MQTTIntegrator extracts the subscription topic from the tree and subscribes with the declared `subscription.qos`.
 
-### `+` and the current `#` limitation
+### `+` and `#`
 
-`topic_level.name` can use MQTT wildcard tokens in the mapping tree, but the current mapper does **not** implement both with normal MQTT filter semantics.
+`topic_level.name` supports MQTT wildcard tokens with the post-PR-#22 mapper semantics.
 
 A `+` node matches exactly one topic level. For example:
 
@@ -330,13 +333,38 @@ This produces the subscription:
 devices/+/temperature
 ```
 
-The schema and subscription extractor also accept a node named `#`, so an extracted MQTT subscription can contain `#`. **However, current `MqttMapper` matching treats `#` as matching only the current topic level; it does not consume the remaining subtree as MQTT multi-level wildcard matching would.** A broker may therefore deliver deeper topics for the extracted `#` subscription that the mapper itself then fails to match.
+A terminal `#` node matches zero or more remaining topic levels. A mapping tree equivalent to the MQTT filter `devices/#` is:
 
-Do not use terminal `#` in an Integrator mapping to mean “the remaining subtree.” Expand the intended depth explicitly or use `+` at each level you want to match. See the [source-aligned mapping reference](../docs/integrator-mapping.md#current--limitation) for the exact behavior.
+```json
+{
+  "name": "devices",
+  "topic_level": {
+    "name": "#",
+    "subscription": {
+      "qos": 0,
+      "value": {
+        "mapped_topic": "archive/{{ topic }}",
+        "mapping_template": "{{ message }}"
+      }
+    }
+  }
+}
+```
 
-When sibling topic-level entries could both match, the current mapper searches them in document order and stops at the first matching branch. Keep overlapping literal/wildcard branches intentional and ordered. For a complete literal-plus-wildcard sibling example, see [Sibling topic branches](../docs/integrator-sibling-topics-example.md).
+That `#` branch can match:
 
-> **Figure placeholder — Topic-tree matching.** Show a nested `devices/+/temperature` mapping tree beside several concrete MQTT topics, including which branch matches and where the subscription QoS is attached.
+```text
+devices
+devices/button
+devices/room-01/temperature
+devices/room-01/sensor/value
+```
+
+The zero-level `devices` match applies when the `devices` parent itself has no subscription mapping; in that case the mapper can select its terminal `#` child. If the parent has its own subscription mapping, that exact parent mapping remains the direct match.
+
+When sibling topic-level entries could both match, the current mapper searches them in document order and stops at the first matching branch. Keep overlapping literal/wildcard branches intentional and ordered: specific literals first, then `+` fallback, then the broadest `#` fallback where appropriate. For a complete sibling example, see [Sibling topic branches](../docs/integrator-sibling-topics-example.md).
+
+> **Figure placeholder — Topic-tree matching.** Show a nested `devices/+/temperature` mapping tree and a terminal `devices/#` branch beside concrete MQTT topics, including the zero-level `devices` case and where subscription QoS is attached.
 
 ## Three mapping modes
 
@@ -544,7 +572,8 @@ The application validates mappings against the embedded schema during load/deplo
 The most important validation is still semantic:
 
 - does the topic tree describe the intended MQTT subscription?
-- do wildcard branches overlap?
+- do literal, `+`, and `#` branches overlap in an intentional order?
+- is `#` terminal where used as the multi-level fallback?
 - is subscribe QoS distinct from publish QoS?
 - can JSON inputs actually satisfy the template?
 - should outputs be retained?
@@ -732,7 +761,7 @@ Check:
 - `suppressions`;
 - delay;
 - mapped topic;
-- overlapping wildcard branches/document order.
+- overlapping literal/`+`/`#` sibling branches and document order.
 
 ### Admin deploy reconnects unexpectedly
 
@@ -745,13 +774,13 @@ That is expected for a normal install from this source revision: the router's `/
 ## Related documentation
 
 - [MQTTSuite overview and build](../README.md)
+- [MQTTIntegrator mapping reference](../docs/integrator-mapping.md)
+- [Sibling topic branches example](../docs/integrator-sibling-topics-example.md)
+- [MQTTIntegrator HTTP administration API](../docs/integrator-http-api.md)
 - [MQTTBroker](../mqttbroker/README.md)
 - [MQTTBridge](../mqttbridge/README.md)
 - [MQTTCli](../mqttcli/README.md)
 - [MQTTStore](../mqttstore/README.md)
-- [Integrator mapping reference](../docs/integrator-mapping.md)
-- [Sibling topic branches example](../docs/integrator-sibling-topics-example.md)
-- [Integrator HTTP administration API](../docs/integrator-http-api.md)
 - [Mapping schema](../lib/mapping-schema.json)
 - [Mapper plugin interface](../lib/MqttMapperPlugin.h)
 
