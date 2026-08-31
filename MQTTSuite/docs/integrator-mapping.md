@@ -311,15 +311,32 @@ If the incoming payload is not valid JSON, JSON-template mappings do not produce
 
 ## Template context
 
-Current mapper code constructs template state from the incoming publication. The context includes the MQTT message and metadata needed by the built-in templates, including:
+`value` and `json` mappings use the same Inja environment but populate `message` differently. The current mapper exposes these exact keys:
 
-- message/payload;
-- topic;
-- QoS;
-- retain flag;
-- packet/package identifier representation used by the mapper.
+| Key | Value in current mapper |
+| --- | --- |
+| `message` | incoming payload string for `value`; parsed JSON value for `json` |
+| `topic` | full incoming MQTT topic string |
+| `qos` | incoming PUBLISH QoS |
+| `retain` | incoming PUBLISH retain flag |
+| `package_identifier` | incoming MQTT packet identifier as exposed by the mapper |
+| `mapped_topic` | rendered output topic; added **after** `mapped_topic` itself is rendered and before the payload template is rendered |
 
-After rendering the configured output topic, the mapper also exposes the rendered `mapped_topic` while producing the mapped payload.
+The spelling `package_identifier` is the current source key. Templates should use that exact name rather than assuming a differently named packet-ID field.
+
+Example value-template context for an incoming publish on `devices/pump/state` with payload `running` includes conceptually:
+
+```json
+{
+  "message": "running",
+  "topic": "devices/pump/state",
+  "qos": 1,
+  "retain": false,
+  "package_identifier": 7
+}
+```
+
+For a `json` mapping, only `message` changes shape: it is the parsed JSON document rather than the original payload string. The output topic is rendered first; the resulting string is then made available as `mapped_topic` while rendering `mapping_template`.
 
 The template engine is [Inja](https://github.com/pantor/inja). MQTTSuite adds plugin functions to the same environment; it does not define a separate template language.
 
@@ -352,7 +369,18 @@ Treat delay as a delayed publish, not as durable queueing. This documentation do
 
 ### Suppressions
 
-Template mappings can declare suppressions. Current mapper checks rendered output against configured suppression values and omits matching outputs. Use suppression when a template result represents “do not publish” rather than a valid MQTT message.
+Template mappings can declare a `suppressions` array. After rendering the payload template, the mapper normally omits an output when the rendered string appears in that list.
+
+There is one important source-level carve-out: **an empty retained output is still published even when `""` is listed in `suppressions`.** The mapper's condition explicitly allows `(retain && renderedMessage.empty())`. This preserves the MQTT retained-message deletion pattern, where publishing an empty retained payload clears retained state for the topic.
+
+Therefore:
+
+```text
+rendered message is in suppressions -> normally no publish
+rendered message == "" and retain == true -> publish anyway
+```
+
+Do not use `suppressions: [""]` to block an empty retained publish; with `retain: true`, that output is intentionally allowed through.
 
 ## Fan-out
 
@@ -418,6 +446,8 @@ The following schema-valid example demonstrates literal matching, `+`, JSON temp
   }
 }
 ```
+
+In the second output rule above, an empty rendered status with `retain: true` is **not** suppressed despite `suppressions: [""]`; it is emitted as an empty retained publish according to the carve-out described above.
 
 This is a **source-aligned example**, not recorded runtime output from the landing-page qualification.
 
