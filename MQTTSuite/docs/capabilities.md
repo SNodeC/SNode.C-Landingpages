@@ -2,9 +2,9 @@
 
 MQTTSuite targets MQTT 3.1.1 through five focused applications. This page separates what the reviewed source contains from what the landing-page qualification actually exercised.
 
-**Source baseline:** [`SNodeC/mqttsuite@52de5631245c6318bfa5b7cca700f0754014f34d`](https://github.com/SNodeC/mqttsuite/tree/52de5631245c6318bfa5b7cca700f0754014f34d) with [`SNodeC/snode.c@5d6453c21df4894083b445cce00b627e7794932a`](https://github.com/SNodeC/snode.c/tree/5d6453c21df4894083b445cce00b627e7794932a).
+**Current source baseline:** [`SNodeC/mqttsuite@6c0ff62c612694a6111ff971c446327938130cf0`](https://github.com/SNodeC/mqttsuite/tree/6c0ff62c612694a6111ff971c446327938130cf0) with shared SNode.C behavior source-reviewed at [`SNodeC/snode.c@5d6453c21df4894083b445cce00b627e7794932a`](https://github.com/SNodeC/snode.c/tree/5d6453c21df4894083b445cce00b627e7794932a). MQTTSuite `6c0ff62...` includes the narrow MQTTIntegrator wildcard fix from [PR #22](https://github.com/SNodeC/mqttsuite/pull/22) / [`d15f70a`](https://github.com/SNodeC/mqttsuite/commit/d15f70a2818d291638c50aa2e2116a9e49ebd9e1): `#` is now a true multi-level wildcard, including the zero-level `parent/#` case, while `+` remains single-level.
 
-**Runtime qualification carried by this documentation workflow:** MQTTSuite `52de563...` rebuilt and installed against SNode.C `60f26d9...` on Debian x86-64 with GCC/G++ 16.2.0, CMake 4.3.4 and Ninja 1.13.2. The subsequent SNode.C change to `5d6453c...` affects the external echo CI/test path rather than the MQTTSuite-consumed MQTT/network/configuration surfaces reviewed for this step.
+**Runtime qualification carried by this documentation workflow:** MQTTSuite `52de563...` rebuilt and installed against SNode.C `60f26d9...` on Debian x86-64 with GCC/G++ 16.2.0, CMake 4.3.4 and Ninja 1.13.2. PR #22 was merged after that qualification and changed only `lib/MqttMapper.cpp`; its wildcard behavior is therefore **Available/source-verified**, not newly runtime-exercised by the landing-page qualification.
 
 ## Evidence vocabulary
 
@@ -61,7 +61,7 @@ Current SNode.C source contains MQTT 3.1.1 CONNECT, PUBLISH, acknowledgement, SU
 - HTTP operations for disconnect, subscribe, unsubscribe and retained-message release;
 - optional in-process use of the shared mapper.
 
-**Exercised:** one plain-IPv4 broker with two MQTTCli clients at QoS 1, plus the real bundled Broker dashboard from the same MQTTSuite head.
+**Exercised:** one plain-IPv4 broker with two MQTTCli clients at QoS 1, plus the real bundled Broker dashboard from the runtime-qualified MQTTSuite head.
 
 **Current trust limitation:** the Broker HTTP administration/event surfaces do not apply application-level authentication; `/api/mqtt` emits permissive CORS and `/api/mqtt/events` uses `Access-Control-Allow-Origin: *`. The event client representation currently includes supplied MQTT password material, and live event JSON can be logged. Treat these surfaces as trusted/protected operational interfaces; do not expose them to untrusted networks without external controls. See [Broker HTTP/event administration](broker-http-api.md).
 
@@ -71,6 +71,8 @@ Current SNode.C source contains MQTT 3.1.1 CONNECT, PUBLISH, acknowledgement, SU
 
 - outbound MQTT client connections across direct and WebSocket SNode.C client families;
 - mapping-derived subscriptions;
+- literal topic matching, single-level `+`, and MQTT multi-level `#` matching;
+- terminal `parent/#` matching for both zero remaining levels (`parent`) and deeper descendants when the parent itself has no subscription mapping;
 - static, scalar-template and JSON-template mapping;
 - fan-out, output QoS, retain, delay and suppressions;
 - mapper plugins exporting Inja functions;
@@ -78,12 +80,12 @@ Current SNode.C source contains MQTT 3.1.1 CONNECT, PUBLISH, acknowledgement, SU
 - hot subscription delta handling when a mapping changes without a connection change;
 - reconnect when mapping connection settings change.
 
-**Source-only:** no deterministic mapping input → output runtime fixture was executed by the landing-page qualification.
+**Source-only:** no deterministic mapping input → output runtime fixture was executed by the landing-page qualification. The corrected `#` behavior was source-verified through merged PR #22 but was not part of the older runtime qualification.
 
 **Current limitations that must remain visible:**
 
 - the application seeds an inline demo mapping during startup; an explicitly parsed `--mqtt-mapping-file` can replace it, but the default effective mapping is not simply the contents of the default `mapping.json` file;
-- mapper-level `#` matching currently consumes one level rather than MQTT's multi-level wildcard semantics;
+- sibling topic branches are first-match in document order, so a broad `+` or `#` fallback placed before a more specific sibling can shadow it;
 - the administration router ships with Basic Authentication defaults `admin/admin` and those credentials are not wired to an application configuration surface in current main;
 - `/config`/history/error paths can expose credential-bearing mapping material;
 - the `/ui` static root is a maintainer-local absolute path, so a portable installed Integrator Web UI is not established.
@@ -181,12 +183,14 @@ This documentation does **not** claim:
 
 ## Primary source anchors
 
+- [MQTTSuite current master after PR #22](https://github.com/SNodeC/mqttsuite/tree/6c0ff62c612694a6111ff971c446327938130cf0)
 - [MQTTSuite top-level CMake](https://github.com/SNodeC/mqttsuite/blob/52de5631245c6318bfa5b7cca700f0754014f34d/CMakeLists.txt)
 - [SNode.C CMake minimum](https://github.com/SNodeC/snode.c/blob/5d6453c21df4894083b445cce00b627e7794932a/CMakeLists.txt)
 - [MQTTBroker router](https://github.com/SNodeC/mqttsuite/blob/52de5631245c6318bfa5b7cca700f0754014f34d/mqttbroker/mqttbroker.cpp)
 - [MQTTBroker event model](https://github.com/SNodeC/mqttsuite/blob/52de5631245c6318bfa5b7cca700f0754014f34d/mqttbroker/lib/MqttModel.cpp)
 - [MQTTIntegrator application startup](https://github.com/SNodeC/mqttsuite/blob/52de5631245c6318bfa5b7cca700f0754014f34d/mqttintegrator/mqttintegrator.cpp)
-- [Mapper implementation](https://github.com/SNodeC/mqttsuite/blob/52de5631245c6318bfa5b7cca700f0754014f34d/lib/MqttMapper.cpp)
+- [Mapper implementation after PR #22](https://github.com/SNodeC/mqttsuite/blob/6c0ff62c612694a6111ff971c446327938130cf0/lib/MqttMapper.cpp)
+- [PR #22 wildcard fix](https://github.com/SNodeC/mqttsuite/pull/22)
 - [MQTTBridge runtime](https://github.com/SNodeC/mqttsuite/blob/52de5631245c6318bfa5b7cca700f0754014f34d/mqttbridge/mqttbridge.cpp)
 - [MQTTCli behavior](https://github.com/SNodeC/mqttsuite/blob/52de5631245c6318bfa5b7cca700f0754014f34d/mqttcli/lib/Mqtt.cpp)
 - [MQTTStore context creation](https://github.com/SNodeC/mqttsuite/blob/52de5631245c6318bfa5b7cca700f0754014f34d/mqttstore/SocketContextFactory.cpp)
