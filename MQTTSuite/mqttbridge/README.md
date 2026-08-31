@@ -546,7 +546,7 @@ and serves `/config` from `--html-dir`.
 
 When using installed assets, point `bridge --html-dir` at the installed Bridge Web directory for your prefix.
 
-> **Figure placeholder — Patch, close, activate, restart, SSE.** Show JSON Patch producing validated staged config, active clients closing, staged activation/persistence, rebuilt clients starting, and lifecycle updates emitted through SSE.
+The canonical PATCH → close → activate → restart → SSE lifecycle figure is owned by the [Bridge HTTP API and SSE reference](../docs/bridge-http-api.md); this README keeps the operational summary only.
 
 ## Persisting the application command
 
