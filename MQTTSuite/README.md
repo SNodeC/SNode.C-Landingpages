@@ -4,9 +4,11 @@
 
 MQTTSuite is a C++20 application suite built on [SNode.C](https://github.com/SNodeC/snode.c). Instead of putting every MQTT concern into one process, it provides five independently runnable applications with separate responsibilities. Start with the applications a deployment needs and compose additional roles around the same MQTT infrastructure.
 
-**C++20** · **MQTT 3.1.1** · **MIT OR GPL-3.0-or-later**
+**C++20** · **MQTT 3.1.1** · **Project version 1.0.1** · **MIT OR GPL-3.0-or-later**
 
-**[Run the Broker + CLI quick start](#quick-start-broker-and-cli)** · **[Choose an application](#five-applications-one-suite)** · **[Configure MQTTSuite](docs/configuration.md)** · **[Check evidence and limits](docs/capabilities.md)**
+The latest published GitHub release is [`v1.0.1`](https://github.com/SNodeC/mqttsuite/releases/tag/v1.0.1), published 7 March 2025. Current `master` contains later development; the source baseline used by this documentation is therefore newer than the latest release artifact.
+
+**[Run the Broker + CLI quick start](#quick-start-broker-and-cli)** · **[Choose an application](#five-applications-one-suite)** · **[Configure MQTTSuite](docs/configuration.md)** · **[Browse reference docs](docs/README.md)** · **[Check evidence and limits](docs/capabilities.md)**
 
 > [!NOTE]
 > Current MQTTSuite source behavior for this publication is reviewed through merged `master` [`6c0ff62`](https://github.com/SNodeC/mqttsuite/commit/6c0ff62c612694a6111ff971c446327938130cf0). That revision adds only the narrow MQTTIntegrator wildcard correction from [PR #22](https://github.com/SNodeC/mqttsuite/pull/22) / [`d15f70a`](https://github.com/SNodeC/mqttsuite/commit/d15f70a2818d291638c50aa2e2116a9e49ebd9e1): `#` is a true MQTT multi-level wildcard, including the zero-level `parent/#` case, while `+` remains single-level. Shared SNode.C behavior was source-reviewed at [`5d6453c`](https://github.com/SNodeC/snode.c/commit/5d6453c21df4894083b445cce00b627e7794932a). The recorded runtime qualification rebuilt and installed MQTTSuite `52de563…` against SNode.C `60f26d9…` on Debian x86-64, before PR #22. Source availability and runtime qualification are kept separate below.
@@ -89,11 +91,13 @@ The top-level CMake project builds all five applications. A complete current sou
 - a C++20 compiler;
 - **CMake 3.18 or newer** for the complete MQTTSuite + current SNode.C source workflow;
 - an installed SNode.C 2.0.0-compatible development installation with the components requested by MQTTSuite;
-- nlohmann/json development support;
+- **nlohmann/json 3.7.0 or newer** (`find_package(nlohmann_json 3.7.0 REQUIRED)` in `lib/CMakeLists.txt`);
 - MariaDB client/development support for MQTTStore;
 - Git and the MQTTSuite `json-schema-validator` submodule.
 
-MQTTSuite's own top-level [`CMakeLists.txt`](https://github.com/SNodeC/mqttsuite/blob/52de5631245c6318bfa5b7cca700f0754014f34d/CMakeLists.txt) still declares CMake `3.14`, while current SNode.C declares `3.18`. The practical minimum for the documented complete source workflow is therefore 3.18. The mismatch is a project declaration limitation, not a reason to advertise 3.14 as the current whole-suite minimum.
+MQTTSuite's own top-level [`CMakeLists.txt`](https://github.com/SNodeC/mqttsuite/blob/6c0ff62c612694a6111ff971c446327938130cf0/CMakeLists.txt) still declares CMake `3.14`, while current SNode.C declares `3.18`. The practical minimum for the documented complete source workflow is therefore 3.18. The mismatch is a project declaration limitation, not a reason to advertise 3.14 as the current whole-suite minimum.
+
+The nlohmann/json floor is declared by [`lib/CMakeLists.txt`](https://github.com/SNodeC/mqttsuite/blob/6c0ff62c612694a6111ff971c446327938130cf0/lib/CMakeLists.txt).
 
 Because the top-level project unconditionally adds `mqttstore`, the normal complete build also pulls in Store's MariaDB dependency. The repository is not currently organized as five independent standalone CMake projects.
 
@@ -345,6 +349,7 @@ Source anchors for this secondary perspective include the pinned [Broker factory
 | Forward selected traffic between broker domains | [MQTTBridge](mqttbridge/README.md) |
 | Publish, subscribe, inspect, or verify a path | [MQTTCli](mqttcli/README.md) |
 | Persist raw messages and optional typed projections | [MQTTStore](mqttstore/README.md) |
+| Browse all deeper references | [Documentation index](docs/README.md) |
 | Understand shared command/configuration behavior | [Configuration](docs/configuration.md) |
 | Design or administer mappings | [Integrator mapping](docs/integrator-mapping.md) |
 | Use the Broker HTTP/SSE administration surface | [Broker HTTP/event API](docs/broker-http-api.md) |
