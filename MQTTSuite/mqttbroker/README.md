@@ -8,12 +8,12 @@ The suite-level build, common configuration model, and first-success flow are do
 
 ## Quick Start
 
-The following command starts one isolated plain MQTT/IPv4 listener on `127.0.0.1:18885` and disables the other built-in listener/Web instances for a predictable local test:
+The following command starts one isolated plain MQTT/IPv4 listener on `127.0.0.1:18885` and disables the other built-in listener/Web instances for a predictable local test. Debug logging (`5`) is intentional here because the Broker's listener-state report is emitted at debug level:
 
 ```bash
 mqttbroker \
   --config-file /dev/null \
-  --log-level 4 \
+  --log-level 5 \
   in-mqtt local --host 127.0.0.1 --port 18885 \
   in-mqtts --disabled \
   in6-mqtt --disabled \
