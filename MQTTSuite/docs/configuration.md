@@ -61,7 +61,37 @@ un-wsmqtt     un-wsmqtts
 
 MQTTCli and MQTTStore create their client instances disabled; enable the one you intend to use with `--disabled=false`. MQTTIntegrator configures reconnecting clients as part of its application startup. MQTTBridge differs: its connection instances are materialized from the bridge-definition document rather than primarily authored as ordinary command-line connection instances.
 
-MQTTBroker exposes server instances for direct MQTT and HTTP/HTTPS listener roles. Common defaults include direct IPv4 MQTT on `1883`, MQTT/TLS on `8883`, HTTP on `8080`, and HTTPS on `8088`; the exact available instances depend on build-time feature switches.
+MQTTBroker exposes server instances for direct MQTT and HTTP/HTTPS listener roles. Common **server** defaults include direct IPv4 MQTT on `1883`, MQTT/TLS on `8883`, HTTP on `8080`, and HTTPS on `8088`; the exact available instances depend on build-time feature switches.
+
+### Client-side remote-port defaults
+
+Do not infer a client default from a server convention or from the `mqtts` suffix. In the current MQTTIntegrator, MQTTCli, and MQTTStore startup code, the source defaults are:
+
+| Client instance family | Stack | Source default remote port |
+| --- | --- | ---: |
+| `in-mqtt`, `in6-mqtt` | direct MQTT over plain stream | `1883` |
+| `in-mqtts`, `in6-mqtts` | direct MQTT over TLS stream | **`1883`** |
+| `in-wsmqtt`, `in6-wsmqtt` | MQTT over WebSocket | `8080` |
+| `in-wsmqtts`, `in6-wsmqtts` | MQTT over secure WebSocket | `8088` |
+
+The non-obvious point is the TLS-client default: **`in-mqtts` and `in6-mqtts` default to remote port `1883`, not `8883`.** If the target broker listens for MQTT/TLS on `8883`, set `remote --port 8883` explicitly. Unix-domain client instances do not use a TCP port.
+
+MQTTBridge members are different again: their host/port/path is supplied by each member's bridge-definition `network` object rather than by these ordinary client-instance defaults.
+
+### HTTP/admin instance names are application-local
+
+Instance names are not globally unique across different executables. In particular, Broker and Integrator both use names such as `in-http`, but those are separate application-local listeners with different roles and defaults:
+
+| Application | Instance | Role | Source default |
+| --- | --- | --- | ---: |
+| MQTTBroker | `in-http` | dashboard/admin/SSE/WebSocket HTTP | `8080` |
+| MQTTBroker | `in-https` | dashboard/admin/SSE/WebSocket HTTPS | `8088` |
+| MQTTIntegrator | `in-http` | mapping administration HTTP | `8085` |
+| MQTTIntegrator | `in-https` | mapping administration HTTPS | `8086` |
+| MQTTBridge | `admin-legacy` | bridge administration HTTP/SSE | `8081` |
+| MQTTBridge | `admin-tls` | bridge administration HTTPS/SSE | `8082` |
+
+So `in-http` in a Broker command and `in-http` in an Integrator command do **not** refer to one shared/global endpoint. Always interpret an instance name in the context of the executable that owns it.
 
 ## Inspect before you run
 
