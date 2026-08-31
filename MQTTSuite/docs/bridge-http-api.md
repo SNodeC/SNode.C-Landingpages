@@ -1,6 +1,6 @@
 # MQTTBridge HTTP administration API and SSE
 
-MQTTBridge exposes an operator-facing HTTP surface for reading and patching the active bridge definition, serving its configuration UI, and streaming bridge/broker lifecycle state through Server-Sent Events (SSE). This reference documents the current contract implemented by [`mqttbridge/mqttbridge.cpp`](https://github.com/SNodeC/mqttsuite/blob/52de5631245c6318bfa5b7cca700f0754014f34d/mqttbridge/mqttbridge.cpp), [`mqttbridge/lib/BridgeStore.cpp`](https://github.com/SNodeC/mqttsuite/blob/52de5631245c6318bfa5b7cca700f0754014f34d/mqttbridge/lib/BridgeStore.cpp), and [`mqttbridge/lib/SSEDistributor.cpp`](https://github.com/SNodeC/mqttsuite/blob/52de5631245c6318bfa5b7cca700f0754014f34d/mqttbridge/lib/SSEDistributor.cpp) at `SNodeC/mqttsuite@52de5631245c6318bfa5b7cca700f0754014f34d`.
+MQTTBridge exposes an operator-facing HTTP surface for reading and patching the active bridge definition, serving its configuration UI, and streaming bridge/broker lifecycle state through Server-Sent Events (SSE). This reference documents the current contract implemented by [`mqttbridge/mqttbridge.cpp`](https://github.com/SNodeC/mqttsuite/blob/52de5631245c6318bfa5b7cca700f0754014f34d/mqttbridge/mqttbridge.cpp), [`mqttbridge/lib/BridgeStore.cpp`](https://github.com/SNodeC/mqttsuite/blob/52de5631245c6318bfa5b7cca700f0754014f34d/mqttbridge/lib/BridgeStore.cpp), [`mqttbridge/lib/Bridge.cpp`](https://github.com/SNodeC/mqttsuite/blob/52de5631245c6318bfa5b7cca700f0754014f34d/mqttbridge/lib/Bridge.cpp), and [`mqttbridge/lib/SSEDistributor.cpp`](https://github.com/SNodeC/mqttsuite/blob/52de5631245c6318bfa5b7cca700f0754014f34d/mqttbridge/lib/SSEDistributor.cpp) at `SNodeC/mqttsuite@52de5631245c6318bfa5b7cca700f0754014f34d`.
 
 The bridge-definition model itself is introduced in [Bridge definition and forwarding](bridge-definition.md). This page owns the HTTP/SSE contract.
 
@@ -211,36 +211,38 @@ The timestamp format is generated in UTC as:
 YYYY-MM-DD HH:MM:SS UTC
 ```
 
-## SSE event vocabulary
+## SSE event vocabulary and runtime emission
+
+The distributor defines the following event helpers. All except `bridges_stopped` have current runtime call sites in the reviewed MQTTSuite source.
 
 ### Suite-of-bridges lifecycle
 
-| Event | Payload fields | Meaning |
+| Event | Payload fields | Current runtime status |
 | --- | --- | --- |
-| `bridges_starting` | `at` | a bridge start/restart sequence begins |
-| `bridges_started` | `at` | current active bridge set reached the distributor's all-connected condition |
-| `bridges_stopping` | `at` | bridge shutdown/restart teardown begins |
-| `bridges_stopped` | `at` | bridge set stopped |
+| `bridges_starting` | `at` | emitted when `startBridges()` begins; also clears replay history |
+| `bridges_started` | `at` | emitted when `BridgeStore` observes all configured bridges connected/disabled |
+| `bridges_stopping` | `at` | emitted when bridge shutdown/restart teardown begins |
+| `bridges_stopped` | `at` | **defined by `SSEDistributor`, but no runtime call site exists in the reviewed revision** |
 
 ### Logical bridge lifecycle
 
-| Event | Payload fields | Meaning |
+| Event | Payload fields | Current runtime status |
 | --- | --- | --- |
-| `bridge_disabled` | `at`, `name` | configured logical bridge is disabled |
-| `bridge_starting` | `at`, `name` | logical bridge startup begins |
-| `bridge_started` | `at`, `name` | logical bridge reached its started state |
-| `bridge_stopping` | `at`, `name` | logical bridge teardown begins |
-| `bridge_stopped` | `at`, `name` | logical bridge stopped |
+| `bridge_disabled` | `at`, `name` | emitted for a disabled logical bridge during startup |
+| `bridge_starting` | `at`, `name` | emitted when a logical bridge startup begins |
+| `bridge_started` | `at`, `name` | emitted when all enabled broker members of that bridge are connected |
+| `bridge_stopping` | `at`, `name` | emitted during teardown/restart |
+| `bridge_stopped` | `at`, `name` | emitted when the bridge's connected MQTT-member list becomes empty |
 
 ### Broker-member lifecycle
 
-| Event | Payload fields | Meaning |
+| Event | Payload fields | Current runtime status |
 | --- | --- | --- |
-| `broker_disabled` | `at`, `bridge`, `instance` | broker member is disabled |
-| `broker_connecting` | `at`, `bridge`, `instance` | outbound MQTT connection is starting |
-| `broker_connected` | `at`, `bridge`, `instance` | broker member connected |
-| `broker_disconnecting` | `at`, `bridge`, `instance` | disconnect/teardown begins |
-| `broker_disconnected` | `at`, `bridge`, `instance` | broker member disconnected |
+| `broker_disabled` | `at`, `bridge`, `instance` | emitted for a disabled broker member during startup |
+| `broker_connecting` | `at`, `bridge`, `instance` | emitted before an outbound MQTT client is started |
+| `broker_connected` | `at`, `bridge`, `instance` | emitted when the member joins the bridge's connected-client list |
+| `broker_disconnecting` | `at`, `bridge`, `instance` | emitted before DISCONNECT/flow termination during teardown |
+| `broker_disconnected` | `at`, `bridge`, `instance` | emitted when the member is removed from the connected-client list |
 
 The event names use underscores exactly as shown; they are not the Broker application's hyphenated event vocabulary.
 
@@ -346,7 +348,7 @@ This surface does not establish:
 
 ## Evidence boundary
 
-**Source-verified:** REST route set, status/response cases, listener defaults, lack of application authentication/CORS policy, staged patch/restart/persistence behavior, SSE event vocabulary, replay semantics, ignored `Last-Event-ID`, and 39-second heartbeat.
+**Source-verified:** REST route set, status/response cases, listener defaults, lack of application authentication/CORS policy, staged patch/restart/persistence behavior, SSE event vocabulary, actual runtime call-site status, replay semantics, ignored `Last-Event-ID`, and 39-second heartbeat.
 
 **Not separately runtime-exercised by the landing-page qualification:** the Bridge REST/SSE route matrix, live multi-broker PATCH restart, long-running SSE reconnect, HTTPS certificate policy, or adversarial malformed-request testing.
 
@@ -354,6 +356,7 @@ This surface does not establish:
 
 - [Bridge router, PATCH lifecycle and admin listeners](https://github.com/SNodeC/mqttsuite/blob/52de5631245c6318bfa5b7cca700f0754014f34d/mqttbridge/mqttbridge.cpp)
 - [Bridge configuration validation/staging/persistence](https://github.com/SNodeC/mqttsuite/blob/52de5631245c6318bfa5b7cca700f0754014f34d/mqttbridge/lib/BridgeStore.cpp)
+- [Bridge connected-member event emission](https://github.com/SNodeC/mqttsuite/blob/52de5631245c6318bfa5b7cca700f0754014f34d/mqttbridge/lib/Bridge.cpp)
 - [Bridge SSE distributor](https://github.com/SNodeC/mqttsuite/blob/52de5631245c6318bfa5b7cca700f0754014f34d/mqttbridge/lib/SSEDistributor.cpp)
 - [Bridge application configuration](https://github.com/SNodeC/mqttsuite/blob/52de5631245c6318bfa5b7cca700f0754014f34d/mqttbridge/ConfigBridge.cpp)
 - [Bridge definition and forwarding](bridge-definition.md)
