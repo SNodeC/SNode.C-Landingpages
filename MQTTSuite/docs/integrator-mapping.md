@@ -1,5 +1,7 @@
 # MQTTIntegrator mapping reference
 
+[← MQTTSuite](../README.md) · [MQTTIntegrator README](../mqttintegrator/README.md) · [Sibling topic branches example](integrator-sibling-topics-example.md) · [Integrator HTTP API](integrator-http-api.md) · [Configuration](configuration.md) · [Capabilities](capabilities.md)
+
 MQTTIntegrator subscribes to MQTT 3.1.1 topics, matches received publications against a hierarchical mapping document, and republishes zero, one, or many derived publications through the same MQTT client connection. MQTTBroker can reuse the same mapper in process.
 
 This reference describes the mapping engine in [`SNodeC/mqttsuite@52de5631245c6318bfa5b7cca700f0754014f34d`](https://github.com/SNodeC/mqttsuite/tree/52de5631245c6318bfa5b7cca700f0754014f34d). It is a source-level contract unless a section says otherwise; the landing-page qualification did not execute a complete mapping scenario.
@@ -145,6 +147,8 @@ Prefer the most specific branches before broader wildcard branches. For example:
 ```
 
 is different from putting `+` first.
+
+For a complete configuration with multiple literal siblings plus a `+` fallback, including the extracted subscriptions and concrete input/output behavior, see [MQTTIntegrator sibling topic branches — complete example](integrator-sibling-topics-example.md).
 
 ## Subscription extraction
 
@@ -421,6 +425,8 @@ The router provides:
 | POST | `/config/rollback` | restore a selected version |
 | GET | `/` | redirect to `/ui` |
 | GET | `/ui` | static UI entry point if available |
+
+For complete request/response/error examples and trust-boundary details, see [MQTTIntegrator HTTP administration API](integrator-http-api.md).
 
 ### Draft
 
