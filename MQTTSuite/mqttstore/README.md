@@ -186,9 +186,7 @@ The automatically managed table contains:
 | `payload_json` | `JSON NULL` | parsed JSON representation when parsing succeeds |
 | `payload_format` | `ENUM('json','text','binary')` | current payload classification |
 
-The table also creates indexes on `received_at` and the first 255 topic characters.
-
-> **Figure placeholder — Raw-envelope-first persistence.** Show one received MQTT PUBLISH becoming a row with topic/QoS/retain/dup/packet id/raw payload plus the derived text/JSON/classification fields.
+The table also creates indexes on `received_at` and the first 255 topic characters. The suite-level raw-versus-projection split figure is owned by the [MQTTSuite root README](../README.md#storage-raw-envelope-first); this README keeps the detailed table and projection figures.
 
 ## Payload classification
 
