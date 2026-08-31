@@ -299,11 +299,11 @@ the literal tree is:
 
 MQTTIntegrator extracts the subscription topic from the tree and subscribes with the declared `subscription.qos`.
 
-### `+` and `#`
+### `+` and the current `#` limitation
 
-`topic_level.name` can also use MQTT wildcards.
+`topic_level.name` can use MQTT wildcard tokens in the mapping tree, but the current mapper does **not** implement both with normal MQTT filter semantics.
 
-Single-level wildcard:
+A `+` node matches exactly one topic level. For example:
 
 ```json
 {
@@ -330,25 +330,11 @@ This produces the subscription:
 devices/+/temperature
 ```
 
-A terminal `#` can represent the remaining subtree:
+The schema and subscription extractor also accept a node named `#`, so an extracted MQTT subscription can contain `#`. **However, current `MqttMapper` matching treats `#` as matching only the current topic level; it does not consume the remaining subtree as MQTT multi-level wildcard matching would.** A broker may therefore deliver deeper topics for the extracted `#` subscription that the mapper itself then fails to match.
 
-```json
-{
-  "name": "devices",
-  "topic_level": {
-    "name": "#",
-    "subscription": {
-      "qos": 0,
-      "value": {
-        "mapped_topic": "archive/{{ topic }}",
-        "mapping_template": "{{ message }}"
-      }
-    }
-  }
-}
-```
+Do not use terminal `#` in an Integrator mapping to mean “the remaining subtree.” Expand the intended depth explicitly or use `+` at each level you want to match. See the [source-aligned mapping reference](../docs/integrator-mapping.md#current--limitation) for the exact behavior.
 
-When sibling topic-level entries could both match, the current mapper searches them in document order and stops at the first matching branch. Keep overlapping literal/wildcard branches intentional and ordered.
+When sibling topic-level entries could both match, the current mapper searches them in document order and stops at the first matching branch. Keep overlapping literal/wildcard branches intentional and ordered. For a complete literal-plus-wildcard sibling example, see [Sibling topic branches](../docs/integrator-sibling-topics-example.md).
 
 > **Figure placeholder — Topic-tree matching.** Show a nested `devices/+/temperature` mapping tree beside several concrete MQTT topics, including which branch matches and where the subscription QoS is attached.
 
@@ -763,6 +749,9 @@ That is expected for a normal install from this source revision: the router's `/
 - [MQTTBridge](../mqttbridge/README.md)
 - [MQTTCli](../mqttcli/README.md)
 - [MQTTStore](../mqttstore/README.md)
+- [Integrator mapping reference](../docs/integrator-mapping.md)
+- [Sibling topic branches example](../docs/integrator-sibling-topics-example.md)
+- [Integrator HTTP administration API](../docs/integrator-http-api.md)
 - [Mapping schema](../lib/mapping-schema.json)
 - [Mapper plugin interface](../lib/MqttMapperPlugin.h)
 
