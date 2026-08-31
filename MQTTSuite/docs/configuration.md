@@ -1,6 +1,6 @@
 # MQTTSuite configuration reference
 
-MQTTSuite applications inherit SNode.C's hierarchical configuration system and add their own MQTT- and application-specific sections. This page documents the operating model that matters to MQTTSuite users. For the framework-level design and complete SNode.C option surface, see the [SNode.C configuration reference](https://github.com/SNodeC/SNode.C-Landingpages/blob/main/SNode.C/docs/configuration.md).
+MQTTSuite applications inherit SNode.C's hierarchical configuration system and add their own MQTT- and application-specific sections. This page documents the operating model that matters to MQTTSuite users. For the framework-level design and complete SNode.C option surface, see the [SNode.C configuration reference](https://github.com/SNodeC/SNode.C-Landingpages/blob/7c19c74865d02c320cfedae7326b2e96b0eddb14/SNode.C/docs/configuration.md).
 
 **Current source baseline:** [`SNodeC/mqttsuite@6c0ff62c612694a6111ff971c446327938130cf0`](https://github.com/SNodeC/mqttsuite/tree/6c0ff62c612694a6111ff971c446327938130cf0) with shared SNode.C configuration behavior source-reviewed at [`SNodeC/snode.c@5d6453c21df4894083b445cce00b627e7794932a`](https://github.com/SNodeC/snode.c/tree/5d6453c21df4894083b445cce00b627e7794932a). MQTTSuite PR #22 changed only mapper wildcard matching and did not change the configuration surfaces described here.
 
