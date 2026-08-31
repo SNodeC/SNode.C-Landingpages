@@ -595,7 +595,9 @@ The router uses HTTP Basic Authentication. The reviewed source initializes the a
 admin / admin
 ```
 
-Those defaults are development defaults, not a remote-management policy. Change the relevant configuration and bind/filter the admin listener according to your trust boundary.
+Those credentials are hard-coded source defaults in the current application wiring. **There is no supported MQTTSuite/SNode.C application configuration option that replaces them in this revision.** Do not tell operators to “change the relevant configuration” because no such built-in configuration path exists.
+
+Treat `admin/admin` as a known development credential. Keep the admin listeners inside a trusted management boundary: bind/filter them appropriately, firewall them, or place them behind a reverse proxy/access-control layer that supplies deployment-specific authentication. TLS on `in-https` protects transport but does not make the fixed Basic Auth credentials suitable for broad exposure.
 
 The API includes:
 
@@ -727,8 +729,8 @@ That sequence avoids treating every missing output as a template problem.
 ## Trust and credential boundaries
 
 - Mapping `connection.username` and `connection.password` are MQTT client credentials and may be persisted in the mapping file/history.
-- The mapping-admin API uses Basic Authentication with weak source defaults. Do not expose those defaults as an administrative security model.
-- TLS on `in-https` encrypts the admin transport when correctly configured; it does not fix weak credentials or broad network exposure.
+- The mapping-admin API uses Basic Authentication with fixed weak source defaults `admin/admin`; the current application wiring has no supported built-in option for replacing them.
+- Keep the admin listener behind deployment-specific network/access controls; TLS alone does not repair fixed known credentials or broad network exposure.
 - Mapping files and saved application config should have filesystem ownership/permissions appropriate to their credentials and operational meaning.
 - Plugins execute native code in the Integrator process. Load only libraries you intentionally deploy and trust.
 - Debug/trace logs may reveal mapping contents, MQTT payloads, or credential-related configuration.
