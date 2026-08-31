@@ -69,12 +69,12 @@ Create `bridge.json`:
 }
 ```
 
-Start the bridge:
+Start the bridge. `--definition` belongs to the required `bridge` application subcommand:
 
 ```bash
 mqttbridge \
   --config-file /dev/null \
-  --definition ./bridge.json \
+  bridge --definition ./bridge.json \
   admin-legacy --disabled \
   admin-tls --disabled
 ```
@@ -153,22 +153,23 @@ and copies the Bridge Web assets to:
 ${CMAKE_INSTALL_PREFIX}/var/www/mqttsuite/mqttbridge
 ```
 
-The runtime `--html-dir` option is separate from that install rule. The current source does not automatically set the installed directory as the `--html-dir` default, so provide it explicitly when you want the shipped Web assets:
+The runtime `--html-dir` option is separate from that install rule. The current source does not automatically set the installed directory as the `--html-dir` default, so provide it explicitly when you want the shipped Web assets. Both `--definition` and `--html-dir` belong to the `bridge` subcommand:
 
 ```bash
 mqttbridge \
-  --definition ./bridge.json \
-  --html-dir /usr/local/var/www/mqttsuite/mqttbridge
+  bridge \
+    --definition ./bridge.json \
+    --html-dir /usr/local/var/www/mqttsuite/mqttbridge
 ```
 
 Adjust the path for your chosen install prefix.
 
 ## The required bridge definition
 
-MQTTBridge requires:
+MQTTBridge requires the `bridge` subcommand's definition option:
 
 ```text
---definition <file>
+bridge --definition <file>
 ```
 
 The current schema is [`lib/bridge-schema.json`](lib/bridge-schema.json).
@@ -541,7 +542,7 @@ The router redirects:
 
 and serves `/config` from `--html-dir`.
 
-When using installed assets, point `--html-dir` at the installed Bridge Web directory for your prefix.
+When using installed assets, point `bridge --html-dir` at the installed Bridge Web directory for your prefix.
 
 > **Figure placeholder — Patch, close, activate, restart, SSE.** Show JSON Patch producing validated staged config, active clients closing, staged activation/persistence, rebuilt clients starting, and lifecycle updates emitted through SSE.
 
@@ -554,8 +555,9 @@ For example:
 ```bash
 mqttbridge \
   --config-file /dev/null \
-  --definition /etc/mqttsuite/bridge.json \
-  --html-dir /usr/local/var/www/mqttsuite/mqttbridge \
+  bridge \
+    --definition /etc/mqttsuite/bridge.json \
+    --html-dir /usr/local/var/www/mqttsuite/mqttbridge \
   admin-legacy --disabled \
   admin-tls --disabled \
   --write-config ./mqttbridge.conf
@@ -601,9 +603,9 @@ Bind or filter the admin surface to a trusted management boundary rather than tr
 
 ## Troubleshooting
 
-### `--definition` is rejected
+### `bridge --definition` is rejected
 
-The option is required and the path must exist. Validate the JSON against [`lib/bridge-schema.json`](lib/bridge-schema.json) and check that each network object includes the address object matching its `protocol`.
+The option is required inside the `bridge` application subcommand and the path must exist. Validate the JSON against [`lib/bridge-schema.json`](lib/bridge-schema.json) and check that each network object includes the address object matching its `protocol`.
 
 ### A bridge member never connects
 
@@ -637,7 +639,7 @@ Reduce the topology to two members and use non-overlapping source filters. Then 
 
 ### Web configuration page is missing
 
-Confirm `--html-dir` points to the installed Bridge Web directory. The install rule and runtime path option are not automatically connected by the current source.
+Confirm `bridge --html-dir` points to the installed Bridge Web directory. The install rule and runtime path option are not automatically connected by the current source.
 
 ### A config patch returns conflict
 
