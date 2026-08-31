@@ -181,6 +181,8 @@ alerts/###2
 
 The second value means MQTT filter `alerts/#` with requested subscription QoS 2. MQTTCli uses the same suffix convention on its publish topic to override publish QoS for that publication.
 
+> **Figure placeholder — Subscription QoS versus publish QoS.** Show one incoming subscription filter with its requested/max delivery QoS on the left and one outgoing PUBLISH with its independently selected publish QoS on the right. Include MQTTIntegrator's `subscription.qos` versus mapped-output `qos`, and MQTTCli's session default plus `##<qos>` override, so readers can see that subscribe QoS never silently becomes publish QoS.
+
 ## Direct MQTT and MQTT over WebSocket
 
 Direct MQTT client paths are built on SNode.C stream/TLS connections. WebSocket paths insert HTTP and a WebSocket upgrade before the MQTT `mqtt` subprotocol.
