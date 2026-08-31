@@ -2,9 +2,9 @@
 
 [← Documentation index](README.md) · [Integrator mapping reference](integrator-mapping.md) · [MQTTIntegrator README](../mqttintegrator/README.md)
 
-This example shows a complete mapping with **sibling `topic_level` branches at the same depth**, including a literal-first fallback pattern. It is source-aligned with [`SNodeC/mqttsuite@52de5631245c6318bfa5b7cca700f0754014f34d`](https://github.com/SNodeC/mqttsuite/tree/52de5631245c6318bfa5b7cca700f0754014f34d).
+This example shows a complete mapping with **sibling `topic_level` branches at the same depth**, including a literal-first fallback pattern. It is source-aligned with [`SNodeC/mqttsuite@6c0ff62c612694a6111ff971c446327938130cf0`](https://github.com/SNodeC/mqttsuite/tree/6c0ff62c612694a6111ff971c446327938130cf0), including the MQTT multi-level `#` fix merged in [PR #22](https://github.com/SNodeC/mqttsuite/pull/22).
 
-The current mapper scans sibling `topic_level` entries in document order and selects the **first** matching literal, `+`, or `#` branch. Put specific literal siblings before a wildcard fallback when that is the intended precedence.
+The current mapper scans sibling `topic_level` entries in document order and selects the **first** matching literal, `+`, or `#` branch. Put specific literal siblings before wildcard fallbacks. `+` matches one level; terminal `#` matches zero or more remaining levels and therefore normally belongs last when used as the broadest sibling fallback.
 
 ## Goal
 
@@ -154,12 +154,16 @@ This ordering:
 
 causes `temperature` to match the first `+` sibling before the mapper reaches the literal branch.
 
+The same principle is even more important for `#`: a `#` sibling matches the entire remaining subtree, so placing it before more specific siblings makes it the selected branch for those topics as well.
+
 The recommended pattern is therefore:
 
 ```text
 specific literal siblings
         then
-broader wildcard fallback
+single-level + fallback if needed
+        then
+multi-level # fallback if needed
 ```
 
 ## Run the example
@@ -199,8 +203,8 @@ mqttcli \
 
 Then publish representative inputs with a second MQTTCli process.
 
-## Important boundary
+## Wildcard boundary
 
-This example deliberately uses `+`, not terminal `#`, for mapper matching. Current `MqttMapper` does **not** implement MQTT-standard multi-level `#` semantics; see [Current `#` limitation](integrator-mapping.md#current--limitation).
+This particular example uses `+` because its fallback is exactly one topic level deep. In the post-fix mapper, terminal `#` has normal MQTT multi-level behavior: it consumes zero or more remaining levels. For example, a `sensors/#` mapping can match `sensors` itself (when the `sensors` parent has no own subscription mapping) as well as `sensors/room-01`, `sensors/room-01/temperature`, and deeper descendants. See [`#` multi-level wildcard](integrator-mapping.md#-multi-level-wildcard) for the full behavior.
 
 **Evidence class:** source-aligned example. The landing-page qualification did not execute this exact sibling-branch scenario end to end.
