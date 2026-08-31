@@ -205,6 +205,6 @@ Then publish representative inputs with a second MQTTCli process.
 
 ## Wildcard boundary
 
-This particular example uses `+` because its fallback is exactly one topic level deep. In the post-fix mapper, terminal `#` has normal MQTT multi-level behavior: it consumes zero or more remaining levels. For example, a `sensors/#` mapping can match `sensors` itself (when the `sensors` parent has no own subscription mapping) as well as `sensors/room-01`, `sensors/room-01/temperature`, and deeper descendants. See [`#` multi-level wildcard](integrator-mapping.md#-multi-level-wildcard) for the full behavior.
+This particular example uses `+` because its fallback is exactly one topic level deep. In the post-fix mapper, terminal `#` has normal MQTT multi-level behavior: it consumes zero or more remaining levels. For example, a `sensors/#` mapping can match `sensors` itself (when the `sensors` parent has no own subscription mapping) as well as `sensors/room-01`, `sensors/room-01/temperature`, and deeper descendants. See [`#` multi-level wildcard](integrator-mapping.md#hash-multi-level-wildcard) for the full behavior.
 
 **Evidence class:** source-aligned example. The landing-page qualification did not execute this exact sibling-branch scenario end to end.
