@@ -2,7 +2,7 @@
 
 This directory is the reference layer behind the MQTTSuite root and application READMEs. The application suite remains the primary documentation entry point; these pages own details that would otherwise overload those READMEs.
 
-**Evidence baseline:** [`SNodeC/mqttsuite@52de5631245c6318bfa5b7cca700f0754014f34d`](https://github.com/SNodeC/mqttsuite/tree/52de5631245c6318bfa5b7cca700f0754014f34d). Shared SNode.C behavior is pinned from the revisions named by each reference.
+**Current source baseline:** [`SNodeC/mqttsuite@6c0ff62c612694a6111ff971c446327938130cf0`](https://github.com/SNodeC/mqttsuite/tree/6c0ff62c612694a6111ff971c446327938130cf0). This includes the narrow MQTTIntegrator wildcard fix from [PR #22](https://github.com/SNodeC/mqttsuite/pull/22) / [`d15f70a`](https://github.com/SNodeC/mqttsuite/commit/d15f70a2818d291638c50aa2e2116a9e49ebd9e1), where `#` became a true multi-level wildcard while `+` remains single-level. The recorded landing-page runtime qualification predates that narrow fix; pages distinguish source behavior from runtime-exercised evidence where relevant. Shared SNode.C behavior is pinned from the revisions named by each reference.
 
 ## Reference index
 
