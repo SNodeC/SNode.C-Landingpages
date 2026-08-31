@@ -4,9 +4,9 @@
 
 MQTTIntegrator subscribes to MQTT 3.1.1 topics, matches received publications against a hierarchical mapping document, and republishes zero, one, or many derived publications through the same MQTT client connection. MQTTBroker can reuse the same mapper in process.
 
-This reference describes the mapping engine in [`SNodeC/mqttsuite@52de5631245c6318bfa5b7cca700f0754014f34d`](https://github.com/SNodeC/mqttsuite/tree/52de5631245c6318bfa5b7cca700f0754014f34d). It is a source-level contract unless a section says otherwise; the landing-page qualification did not execute a complete mapping scenario.
+This reference describes the mapping engine in merged MQTTSuite `master` at [`6c0ff62c612694a6111ff971c446327938130cf0`](https://github.com/SNodeC/mqttsuite/tree/6c0ff62c612694a6111ff971c446327938130cf0). That revision includes the narrow wildcard correction from [PR #22](https://github.com/SNodeC/mqttsuite/pull/22) / [`d15f70a`](https://github.com/SNodeC/mqttsuite/commit/d15f70a2818d291638c50aa2e2116a9e49ebd9e1): `#` now has MQTT multi-level wildcard behavior, including zero remaining levels, while `+` remains single-level. The landing-page qualification did not execute a complete mapping scenario, so wildcard behavior here is source-verified rather than newly runtime-qualified.
 
-The authoritative machine-readable shape is [`lib/mapping-schema.json`](https://github.com/SNodeC/mqttsuite/blob/52de5631245c6318bfa5b7cca700f0754014f34d/lib/mapping-schema.json).
+The authoritative machine-readable shape is [`lib/mapping-schema.json`](https://github.com/SNodeC/mqttsuite/blob/6c0ff62c612694a6111ff971c446327938130cf0/lib/mapping-schema.json). PR #22 did not change the schema.
 
 ## What a mapping contains
 
@@ -105,7 +105,7 @@ A literal node matches the corresponding topic level exactly.
 
 ### `+`
 
-A node named `+` matches one topic level. This is appropriate for trees such as:
+A node named `+` matches exactly one topic level. This is appropriate for trees such as:
 
 ```text
 sensors/+/temperature
@@ -113,42 +113,71 @@ sensors/+/temperature
 
 The matched topic itself remains available to the template context; the mapper does not create a separate named capture variable for `+`.
 
-### Current `#` limitation
+<a id="hash-multi-level-wildcard"></a>
+### Multi-level wildcard (`#`)
 
-The schema and subscription extractor accept a node named `#`, but **current mapper matching does not implement MQTT multi-level wildcard semantics**. In [`MqttMapper.cpp`](https://github.com/SNodeC/mqttsuite/blob/52de5631245c6318bfa5b7cca700f0754014f34d/lib/MqttMapper.cpp), `#` participates in the same one-level branch selection as `+`.
+A terminal node named `#` now has normal MQTT multi-level wildcard behavior in the mapper. It matches **zero or more remaining topic levels**.
 
-Consequences:
+A mapping tree representing `devices/#` can be written as:
 
-- subscription extraction can produce an MQTT subscription containing `#`;
-- the broker can therefore deliver deeper descendant topics;
-- the mapper's own recursive match can still fail after consuming only the level at which `#` matched.
+```json
+{
+  "name": "devices",
+  "topic_level": {
+    "name": "#",
+    "subscription": {
+      "qos": 0,
+      "value": {
+        "mapped_topic": "archive/{{ topic }}",
+        "mapping_template": "{{ message }}"
+      }
+    }
+  }
+}
+```
 
-Do not design a substantial Integrator mapping that depends on MQTT-standard multi-level `#` behavior in the mapper. Expand the relevant tree explicitly or use `+` levels for the depth you intend to match.
+That terminal `#` branch can match all of these:
 
-This limitation is specific to the Integrator/shared mapper. MQTTBroker's underlying subscription tree and MQTTStore's projection topic matcher are different implementations.
+```text
+devices
+devices/button
+devices/room-01/temperature
+devices/room-01/sensor/value
+```
+
+The first line is the MQTT **zero-level** case. The post-fix mapper specifically checks for a terminal `#` child when the concrete parent topic has been fully consumed. If the parent node itself has no `subscription`, the child `#` becomes the match. If the parent already has its own subscription mapping, that exact parent mapping remains the direct match.
+
+Use `#` as a terminal multi-level wildcard. PR #22 changed only `MqttMapper::findMatchingTopicLevel()`; schema and unrelated mapping behavior were unchanged.
 
 ## Branch ordering and precedence
 
-At a given tree level, current `MqttMapper` scans the configured `topic_level` array in document order and stops at the **first** node whose name is either:
+At a given tree level, current `MqttMapper` scans the configured `topic_level` array in document order and stops at the **first** branch that matches.
 
-- the literal incoming level;
-- `+`;
-- `#`.
+Relevant sibling types are:
 
-Order is therefore significant when literal and wildcard siblings overlap.
+- an exact literal;
+- `+`, which matches one level;
+- `#`, which matches the remaining subtree.
 
-Prefer the most specific branches before broader wildcard branches. For example:
+Order is therefore significant when siblings overlap. Prefer the most specific branches before broader wildcard branches. A useful ordering is:
+
+```text
+literal siblings
+then + fallback
+then # fallback
+```
+
+For example:
 
 ```json
 "topic_level": [
   { "name": "temperature", "...": "specific rule" },
-  { "name": "+", "...": "fallback rule" }
+  { "name": "+", "...": "one-level fallback" },
+  { "name": "#", "...": "remaining-subtree fallback" }
 ]
 ```
 
-is different from putting `+` first.
-
-For a complete configuration with multiple literal siblings plus a `+` fallback, including the extracted subscriptions and concrete input/output behavior, see [MQTTIntegrator sibling topic branches — complete example](integrator-sibling-topics-example.md).
+Putting `+` or `#` first can shadow later literal siblings. See the complete [sibling topic branches example](integrator-sibling-topics-example.md) for a runnable literal-plus-`+` case.
 
 ## Subscription extraction
 
@@ -161,6 +190,8 @@ A topic-tree node can contain:
 ```
 
 MQTTIntegrator walks the tree and converts subscription points into MQTT topic filters. Subscription QoS is independent from the QoS later chosen for mapped output publications.
+
+A terminal `#` subscription is extracted as an MQTT `#` filter and the mapper now applies the same multi-level meaning when processing delivered publications.
 
 After CONNACK, the Integrator subscribes to the mapper-derived filters. On a mapping administration update, it computes subscribed/unsubscribed deltas when no reconnect is required.
 
@@ -307,7 +338,7 @@ Keep fan-out rules deterministic: overlapping topic branches are subject to firs
 
 ## A non-trivial example
 
-The following example avoids the current `#` mapper limitation and demonstrates literal matching, `+`, JSON templating, fan-out, output QoS/retain, and suppression:
+The following example demonstrates literal matching, `+`, JSON templating, fan-out, output QoS/retain, and suppression. For terminal multi-level `#`, use the dedicated example in [Multi-level wildcard (`#`)](#hash-multi-level-wildcard).
 
 ```json
 {
@@ -370,7 +401,7 @@ Each entry supplies:
 - number of arguments;
 - callback operating on Inja JSON arguments.
 
-The public ABI types are declared in [`lib/MqttMapperPlugin.h`](https://github.com/SNodeC/mqttsuite/blob/52de5631245c6318bfa5b7cca700f0754014f34d/lib/MqttMapperPlugin.h).
+The public ABI types are declared in [`lib/MqttMapperPlugin.h`](https://github.com/SNodeC/mqttsuite/blob/6c0ff62c612694a6111ff971c446327938130cf0/lib/MqttMapperPlugin.h).
 
 Plugins extend template evaluation; they are native code loaded into the Integrator/Broker process. Treat plugin files as trusted executable code and match them to the MQTTSuite binary/ABI they were built against. This documentation does not claim a stable cross-version plugin ABI.
 
@@ -426,8 +457,6 @@ The router provides:
 | GET | `/` | redirect to `/ui` |
 | GET | `/ui` | static UI entry point if available |
 
-For complete request/response/error examples and trust-boundary details, see [MQTTIntegrator HTTP administration API](integrator-http-api.md).
-
 ### Draft
 
 Draft mutations are written beside the active mapping as:
@@ -479,12 +508,13 @@ No matching portable installed Integrator UI artifact is established by the revi
 ## Operational consequences
 
 - Mapping changes can alter MQTT subscriptions immediately or force a reconnect.
+- `+` matches one level; terminal `#` matches zero or more remaining levels after PR #22.
+- Sibling literal/`+`/`#` branches remain first-match in document order.
 - Delayed mapped publications are in-process scheduled work, not documented durable jobs.
 - Mapping/history files can contain credentials.
 - Administration read-back can reveal active connection credentials.
 - The shipped Basic Auth defaults are known and reusable.
 - Plugins execute native code inside the process.
-- `#` is not MQTT-standard multi-level wildcard matching in the mapper at this revision.
 
 ## Troubleshooting
 
@@ -493,12 +523,14 @@ No matching portable installed Integrator UI artifact is established by the revi
 Check:
 
 1. topic-tree order;
-2. literal/`+` depth;
-3. whether you relied on `#` as multi-level wildcard;
+2. literal/`+`/`#` sibling precedence;
+3. whether `+` is being used for exactly one level and `#` as a terminal remaining-subtree wildcard;
 4. selected mapping mode;
 5. JSON validity for `json` mode;
 6. static payload equality for `static` mode;
 7. suppression values.
+
+For `parent/#`, remember that the zero-level `parent` topic selects the child `#` only when the parent itself has no subscription mapping.
 
 ### Mapping changed but client reconnected
 
@@ -514,10 +546,12 @@ Pass `--mqtt-mapping-file` explicitly and inspect `/config`. Current startup see
 
 ## Source anchors
 
-- [Mapping schema](https://github.com/SNodeC/mqttsuite/blob/52de5631245c6318bfa5b7cca700f0754014f34d/lib/mapping-schema.json)
-- [`MqttMapper.cpp`](https://github.com/SNodeC/mqttsuite/blob/52de5631245c6318bfa5b7cca700f0754014f34d/lib/MqttMapper.cpp)
+- [MQTTSuite master containing PR #22](https://github.com/SNodeC/mqttsuite/tree/6c0ff62c612694a6111ff971c446327938130cf0)
+- [Mapping schema](https://github.com/SNodeC/mqttsuite/blob/6c0ff62c612694a6111ff971c446327938130cf0/lib/mapping-schema.json)
+- [`MqttMapper.cpp` after the wildcard fix](https://github.com/SNodeC/mqttsuite/blob/6c0ff62c612694a6111ff971c446327938130cf0/lib/MqttMapper.cpp)
+- [PR #22 — fix MQTT mapper `#` wildcard matching](https://github.com/SNodeC/mqttsuite/pull/22)
 - [`ConfigApplication.cpp`](https://github.com/SNodeC/mqttsuite/blob/52de5631245c6318bfa5b7cca700f0754014f34d/lib/ConfigApplication.cpp)
 - [`MappingAdminRouter.cpp`](https://github.com/SNodeC/mqttsuite/blob/52de5631245c6318bfa5b7cca700f0754014f34d/lib/MappingAdminRouter.cpp)
 - [`JsonMappingReader.cpp`](https://github.com/SNodeC/mqttsuite/blob/52de5631245c6318bfa5b7cca700f0754014f34d/lib/JsonMappingReader.cpp)
-- [`MqttMapperPlugin.h`](https://github.com/SNodeC/mqttsuite/blob/52de5631245c6318bfa5b7cca700f0754014f34d/lib/MqttMapperPlugin.h)
+- [`MqttMapperPlugin.h`](https://github.com/SNodeC/mqttsuite/blob/6c0ff62c612694a6111ff971c446327938130cf0/lib/MqttMapperPlugin.h)
 - [MQTTIntegrator startup](https://github.com/SNodeC/mqttsuite/blob/52de5631245c6318bfa5b7cca700f0754014f34d/mqttintegrator/mqttintegrator.cpp)
