@@ -520,7 +520,10 @@ The router provides:
 | GET | `/config/history` | list retained deployed versions |
 | POST | `/config/rollback` | restore a selected version |
 | GET | `/` | redirect to `/ui` |
-| GET | `/ui` | static UI entry point if available |
+| GET | `/ui` | redirect to `/ui/index.html` |
+| GET | `*` | catch-all redirect to `/ui/index.html` |
+
+The complete status/body contract belongs to [Integrator HTTP API](integrator-http-api.md).
 
 ### Draft
 
@@ -562,13 +565,15 @@ Rollback accepts a `version_id`, loads and validates that backup against the cur
 
 ### Current UI portability limitation
 
-The API is real, but current `MappingAdminRouter.cpp` serves `/ui` from a hard-coded maintainer-local absolute path:
+The route behavior is explicit: `/` redirects to `/ui`, `/ui` redirects to `/ui/index.html`, and a final GET catch-all also redirects unmatched paths to `/ui/index.html`. The static UI itself is mounted below `/ui`.
+
+However, current `MappingAdminRouter.cpp` serves that static UI from a hard-coded maintainer-local absolute path:
 
 ```text
 /home/voc/tmp/integrator/mqtt-integrator-ui/dist/mqtt-integrator-ui/browser
 ```
 
-No matching portable installed Integrator UI artifact is established by the reviewed repository. Do not use `/ui` availability as an installation promise.
+No matching portable installed Integrator UI artifact is established by the reviewed repository. Do not use the redirects as an installation promise; the portable documented operator surface is the JSON administration API.
 
 ## Operational consequences
 
