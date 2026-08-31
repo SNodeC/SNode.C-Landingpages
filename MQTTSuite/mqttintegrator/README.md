@@ -615,7 +615,7 @@ The API includes:
 
 The current source also redirects `/` to `/ui`, but its static UI path is a maintainer-local build directory and the Integrator CMake target has no corresponding install rule. Use the HTTP API as the portable documented admin surface unless your deployment separately provides a UI build.
 
-> **Figure placeholder — Draft, validate, deploy, history, rollback.** Show active mapping and draft as separate states, validation before deploy, then either hot subscription changes or reconnect, with history feeding rollback.
+The canonical draft/validate/deploy/history/rollback lifecycle figure is owned by the [Integrator HTTP API reference](../docs/integrator-http-api.md#drafthistory-lifecycle); this README keeps the operator summary only.
 
 ## Deploy behavior: hot update or reconnect
 
