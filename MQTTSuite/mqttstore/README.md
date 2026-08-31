@@ -68,7 +68,7 @@ mqttstore \
         --auto-create-raw-table
 ```
 
-The `storage` section is nested below `db` in the current command hierarchy.
+The `storage` section is nested below `db` in the current command hierarchy. `--auto-create-raw-table` defaults to `true`; it is shown explicitly here so the permission requirement is visible in the command itself.
 
 ### 3. Publish a known message
 
@@ -115,7 +115,7 @@ MQTTStore uses the SNode.C MQTT client composition used elsewhere in MQTTSuite. 
 - `db`;
 - nested `storage`
 
-configuration, validates/loads the optional projection plan, and creates an MQTT context with Store-specific behavior.
+configuration, loads/validates the optional projection plan when the MQTT transport reaches context creation, and creates an MQTT context with Store-specific behavior.
 
 The MQTT behavior owns a `MariaDbStorage` object. Each received PUBLISH is represented as an MQTT message envelope and passed to storage.
 
@@ -144,13 +144,18 @@ See [Build and install](../README.md#build-and-install) for the complete suite b
 
 ## The raw envelope table
 
-With:
+`--auto-create-raw-table` is a boolean Store option whose source default is **`true`**. With auto-create enabled, MQTTStore executes `CREATE TABLE IF NOT EXISTS` for the selected raw table.
+
+Explicit forms are:
 
 ```text
-storage --auto-create-raw-table
+storage --auto-create-raw-table=true
+storage --auto-create-raw-table=false
 ```
 
-enabled, MQTTStore executes `CREATE TABLE IF NOT EXISTS` for the selected raw table. The source default name is:
+Use the `false` form when a DBA owns the raw-table DDL and the Store service account should not need `CREATE`/`INDEX` privileges.
+
+The source default table name is:
 
 ```text
 mqtt_messages
@@ -239,9 +244,19 @@ The `db` subcommand exposes:
 --flags
 ```
 
-The source default port is `3306`. The source also provides a default MariaDB Unix socket path `/run/mysqld/mysqld.sock`; the underlying MariaDB connection decides how host/socket values apply.
+The source default port is `3306`. The `--socket` option has a **non-empty source default**:
 
-For an explicitly remote database, set a non-local host:
+```text
+/run/mysqld/mysqld.sock
+```
+
+and its source help text is:
+
+> Database socket file (overrides host and port when set)
+
+That is the configuration contract exposed by MQTTStore. The final connection behavior is still delegated to the underlying MariaDB client API, so inspect the effective configuration with `--show-config` and do not assume that supplying a remote `--host` alone has neutralized a configured socket value.
+
+For an explicitly remote database, set the intended host and port and verify the resolved socket value/connection behavior for that deployment:
 
 ```bash
 db \
@@ -258,10 +273,10 @@ For a deliberately local socket deployment, set `--socket` to the actual server 
 
 Use only the grants required by your operating model.
 
-| Model | Typical service grants | Ownership |
+| Model | Typical service grants | Ownership / required Store setting |
 | --- | --- | --- |
-| raw table auto-create | `CREATE, INSERT, SELECT, INDEX` on the Store database | MQTTStore creates/ensures raw table |
-| DBA-created raw table | `INSERT, SELECT` | DBA owns table DDL |
+| raw table auto-create | `CREATE, INSERT, SELECT, INDEX` on the Store database | MQTTStore creates/ensures raw table; default `--auto-create-raw-table=true` |
+| DBA-created raw table | `INSERT, SELECT` | DBA owns table DDL; start Store with `storage --auto-create-raw-table=false` |
 | raw + projections | raw-table permissions plus `INSERT` on projection tables | DBA/application migrations own projection DDL |
 | diagnostics user | `SELECT` only | separate observer/dashboard account |
 
@@ -345,7 +360,9 @@ The `storage` option is:
 --projection-file <file>
 ```
 
-MQTTStore validates the file at startup. A malformed or schema-invalid projection plan causes fatal startup failure instead of silently ignoring the plan.
+The projection file is loaded and validated in `SocketContextFactory::create()` **when an MQTT transport connection reaches Store context creation**. If loading or schema validation throws, Store logs the error and rethrows it into that connection-establishment path.
+
+The exact process-level/retry/reconnect consequence of a malformed projection file has not been established by the landing-page runtime qualification and remains **[UNVERIFIED-RUNTIME]**. Do not rely on a claim that projection validation always happens before any connection attempt or that every malformed plan necessarily terminates the entire process at initial startup.
 
 ## A complete projection example
 
@@ -746,13 +763,17 @@ Check:
 Confirm:
 
 - database already exists;
-- `storage --auto-create-raw-table` is enabled;
+- `storage --auto-create-raw-table=true` is effective (it is the source default);
 - raw table name contains only letters/digits/underscore;
 - user has `CREATE` and `INDEX` as required by the auto-create workflow.
 
-### Projection file stops startup
+If the raw table is intentionally DBA-managed, use `storage --auto-create-raw-table=false` and verify the table already exists.
 
-That is intentional. Check JSON syntax and [`lib/projection-schema.json`](lib/projection-schema.json). The application reports projection file/schema error context and exits rather than running with an invalid plan.
+### Projection plan fails during MQTT context creation
+
+Check JSON syntax and [`lib/projection-schema.json`](lib/projection-schema.json). Projection loading/validation occurs from `SocketContextFactory::create()` when the MQTT transport reaches Store context creation. The exception is logged and rethrown into that connection path.
+
+The exact whole-process/retry/reconnect consequence is **[UNVERIFIED-RUNTIME]** in the current qualification. Do not diagnose every malformed projection plan as a guaranteed process-startup exit without reproducing that behavior in the deployment being tested.
 
 ### Raw row exists but projection does not
 
@@ -777,8 +798,10 @@ Review the raw payload bytes. The classifier treats NUL and non-text control con
 - [MQTTIntegrator](../mqttintegrator/README.md)
 - [MQTTBridge](../mqttbridge/README.md)
 - [MQTTCli](../mqttcli/README.md)
+- [Store storage and projection reference](../docs/store-storage.md)
 - [Projection schema](lib/projection-schema.json)
-- [`docs/mqttstore-user-guide.md`](../docs/mqttstore-user-guide.md)
+
+The older implementation-repository `docs/mqttstore-user-guide.md` is intentionally not used as a canonical publication route here because it predates the current evidence boundaries and command examples.
 
 ## License
 
