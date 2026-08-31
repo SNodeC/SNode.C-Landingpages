@@ -10,13 +10,33 @@ The previously frozen implementation Decisions A–H were explicitly reverted as
 
 `08-PRODUCT-IMPLEMENTATION-DECISIONS.md` remains historical decision/review evidence. Its statements that README revision or publication is blocked by A–H are superseded by this artifact.
 
-Documentation must therefore describe the **actual current implementation**, including user-relevant limitations and trust boundaries, instead of documenting the desired A–H behavior as though it existed.
+Documentation must therefore describe the **actual current implementation**, including user-relevant limitations and trust boundaries, instead of documenting desired future behavior as though it existed.
 
-Examples of current behavior that remain visible in the publication documentation include:
+## Subsequent narrow implementation correction
+
+After this publication state was first established, MQTTIntegrator wildcard handling was corrected in `SNodeC/mqttsuite` PR #22.
+
+Current source baseline:
+
+```text
+master: 6c0ff62c612694a6111ff971c446327938130cf0
+PR #22 implementation commit: d15f70a2818d291638c50aa2e2116a9e49ebd9e1
+```
+
+The correction is deliberately narrow:
+
+- `MqttMapper::findMatchingTopicLevel()` now treats terminal `#` as a true MQTT multi-level wildcard;
+- `#` consumes zero or more remaining topic levels;
+- `parent/#` can match `parent` itself when the parent has no own subscription mapping;
+- `+` remains single-level;
+- no mapping schema, configuration, or unrelated behavior changed.
+
+The former publication statement that Integrator `#` matched only one level is therefore **obsolete and superseded**. Reader-facing documentation must use the post-fix semantics.
+
+Examples of other current behavior that remain visible in the publication documentation include:
 
 - MQTTBroker HTTP administration/event routes have no application authentication in the reviewed source and currently use permissive CORS on the API surface;
 - Broker client event state can contain MQTT password material and live event JSON can reach normal logs;
-- MQTTIntegrator mapper-level `#` does not implement MQTT multi-level wildcard semantics;
 - MQTTIntegrator startup contains an inline demo mapping before the supported configuration parse, so implicit/default mapping selection must not be oversimplified;
 - MQTTIntegrator administration uses the known Basic Auth defaults `admin/admin` without a supported application configuration path for replacing them in the reviewed wiring;
 - MQTTSuite still declares CMake 3.14 while current SNode.C requires 3.18; the documented whole-source workflow therefore uses 3.18+;
@@ -27,7 +47,7 @@ These are documentation boundaries, not promises to implement the reverted corre
 
 ## Publication-shaped canonical paths
 
-The canonical README/documentation copy in this repository is now shaped to match the eventual `SNodeC/mqttsuite` destination:
+The canonical README/documentation copy in this repository is shaped to match the eventual `SNodeC/mqttsuite` destination:
 
 ```text
 MQTTSuite/README.md
@@ -36,19 +56,26 @@ MQTTSuite/mqttintegrator/README.md
 MQTTSuite/mqttbridge/README.md
 MQTTSuite/mqttcli/README.md
 MQTTSuite/mqttstore/README.md
+MQTTSuite/docs/README.md
 MQTTSuite/docs/configuration.md
 MQTTSuite/docs/capabilities.md
 MQTTSuite/docs/integrator-mapping.md
+MQTTSuite/docs/integrator-sibling-topics-example.md
 MQTTSuite/docs/broker-http-api.md
+MQTTSuite/docs/integrator-http-api.md
+MQTTSuite/docs/bridge-definition.md
+MQTTSuite/docs/bridge-multi-broker-example.md
+MQTTSuite/docs/bridge-http-api.md
+MQTTSuite/docs/store-storage.md
 ```
 
 README draft copies are no longer canonical workflow artifacts and are removed from `MQTTSuite/workflow/`. Workflow remains the home for governance, technical facts, design decisions, visual instructions, reviews, handoffs, limitations, and publication state.
 
 ## Evidence baselines
 
-- MQTTSuite implementation: `SNodeC/mqttsuite@52de5631245c6318bfa5b7cca700f0754014f34d`.
+- Current MQTTSuite source behavior: `SNodeC/mqttsuite@6c0ff62c612694a6111ff971c446327938130cf0`.
+- Narrow Integrator wildcard correction: PR #22 / `d15f70a2818d291638c50aa2e2116a9e49ebd9e1`.
 - SNode.C implementation surface reviewed for shared behavior: `SNodeC/snode.c@5d6453c21df4894083b445cce00b627e7794932a`.
-- SNode.C head observed during publication: `1f8725173c04acd7bc964aa9d6ead289def509e5`; the only commit above `5d6453c...` at this check adds a documentation-only organization logging inventory.
-- Recorded runtime qualification: MQTTSuite `52de563...` rebuilt/installed against SNode.C `60f26d9...` on the environment recorded in `05-VISUALS.md`.
+- Recorded runtime qualification: MQTTSuite `52de563...` rebuilt/installed against SNode.C `60f26d9...` on the environment recorded in `05-VISUALS.md`; this qualification predates PR #22.
 
 No MQTTSuite or SNode.C implementation repository is modified by this publication-state change.
