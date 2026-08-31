@@ -260,6 +260,26 @@ mqttcli \
     pub --topic demo/value --message 42
 ```
 
+### Per-publish QoS override
+
+`pub --topic` accepts the same suffix convention as subscriptions:
+
+```text
+<topic>##<qos>
+```
+
+For example, keep the session default at QoS 0 but send one publication at QoS 2:
+
+```bash
+mqttcli \
+  in-mqtt --disabled=false \
+    remote --host 127.0.0.1 --port 1883 \
+    session --client-id pub-override --qos 0 \
+    pub --topic 'demo/value##2' --message 42
+```
+
+The CLI strips the trailing `##2` before sending the MQTT PUBLISH, so the broker receives topic `demo/value` at QoS 2. Use this form when a publication needs a QoS different from `session --qos` without changing the connection-wide default.
+
 For publish-only operation, QoS 0 disconnects after sending; QoS 1 waits for PUBACK; QoS 2 waits for the QoS 2 completion path before requesting disconnect.
 
 ### JSON publish
@@ -332,7 +352,7 @@ Configure the instance's SNode.C TLS section for CA/certificate/key verification
 mqttcli in-mqtts --help=expanded
 ```
 
-Selecting `in-mqtts` gives you the TLS stream path; it does not by itself define broker authorization.
+Selecting `in-mqtts` gives you the TLS stream path; it does not by itself define broker authorization. Its current source default remote port is `1883`; this example sets `8883` explicitly because that is a common broker-side TLS listener convention. See the shared [configuration reference](../docs/configuration.md#client-side-remote-port-defaults).
 
 ### MQTT over WebSocket
 
