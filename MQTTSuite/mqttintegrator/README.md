@@ -2,12 +2,9 @@
 
 MQTTIntegrator is the MQTTSuite MQTT 3.1.1 transformation service. It connects to a broker as an MQTT client, subscribes according to a mapping document, transforms matching topics and/or payloads, and republishes the resulting messages through the same MQTT connection.
 
-Use it when incoming MQTT traffic is valid but not in the namespace, payload shape, units, or event/state representation that the rest of your system should consume. MQTTIntegrator is deliberately different from [MQTTBridge](../mqttbridge/README.md): Bridge forwards selected messages between broker members; Integrator executes `MqttMapper` rules and can change both topic and payload.
+Use it when incoming MQTT traffic is valid but not in the namespace, payload shape, units, or event/state representation that the rest of your system should consume. MQTTIntegrator is deliberately different from [MQTTBridge](../mqttbridge/README.md): Bridge forwards selected messages between broker members; Integrator can change both topic and payload.
 
-The suite-level build and common configuration model live in the [MQTTSuite README](../README.md). This README is the operational guide for `mqttintegrator` and the mapping format.
-
-> [!NOTE]
-> Wildcard behavior in this README follows MQTTSuite `master` after [PR #22](https://github.com/SNodeC/mqttsuite/pull/22), merged as [`6c0ff62`](https://github.com/SNodeC/mqttsuite/commit/6c0ff62c612694a6111ff971c446327938130cf0). `+` matches one topic level; terminal `#` matches zero or more remaining levels, including the zero-level `parent/#` case when the parent has no own subscription mapping.
+The suite-level build and shared configuration model live in the [MQTTSuite README](../README.md). This README focuses on running and operating `mqttintegrator`. The complete mapping grammar belongs to the [mapping reference](../docs/integrator-mapping.md), and the exact administration contract belongs to the [Integrator HTTP API reference](../docs/integrator-http-api.md).
 
 ## Quick Start
 
@@ -95,42 +92,29 @@ payload: on
 
 The mapping's `subscription.qos` controls how MQTTIntegrator subscribes. The mapping output's `qos` controls the republished message. Those are separate decisions.
 
-## How the Integrator is assembled
+## How it works
 
-MQTTIntegrator is an SNode.C MQTT client application. Its `SocketContextFactory` receives an established SNode.C connection and injects the shared MQTTSuite mapper into the per-connection MQTT behavior:
+MQTTIntegrator is an SNode.C MQTT client application. The selected SNode.C connection instance establishes the transport; the Integrator attaches MQTTSuite mapping behavior to that connection.
 
-```cpp
-return new iot::mqtt::SocketContext(
-    socketConnection,
-    new mqtt::mqttintegrator::lib::Mqtt(
-        socketConnection->getConnectionName(),
-        config->getMqttMapper(),
-        config->getSessionStore()));
-```
-
-The transport/client endpoint is therefore separate from the mapping behavior. A direct TCP connection, Unix-domain connection, or HTTP/WebSocket upgrade can all end in the same Integrator MQTT context.
-
-On successful MQTT CONNACK, the application subscribes to the topics extracted from the mapping tree. For each received PUBLISH, it asks `MqttMapper` for immediate and scheduled mapped publishes and sends those results back through the client connection.
+After MQTT CONNACK, the application subscribes to the topic filters derived from the mapping. Each received PUBLISH is matched against the mapping tree and may produce zero, one, or many immediate or delayed output publications on the same MQTT client connection.
 
 > **Figure placeholder — MQTTIntegrator mapping pipeline.** Show broker subscription → matching topic tree → mapping rule → immediate or delayed output → republish on the same MQTT connection, with subscribe QoS and publish QoS labeled separately.
 
 ## Build and install result
 
-`mqttintegrator` is built and installed by the repository's top-level CMake project. The Integrator CMake target requires the SNode.C client/stream components selected by its build options plus HTTP server components for its mapping-admin API.
-
-A complete suite install places:
+`mqttintegrator` is built and installed by the repository's top-level CMake project. A complete suite install places:
 
 ```text
 ${CMAKE_INSTALL_PREFIX}/bin/mqttintegrator
 ```
 
-The current Integrator target does not install a Web UI directory. Its source router contains a maintainer-local static UI path; treat that as a development artifact, not a portable installed user interface.
+The current Integrator target does not install a Web UI directory. Its portable documented administration surface is the HTTP API.
 
 See [Build and install](../README.md#build-and-install) for the whole-suite command sequence.
 
 ## Connecting to a broker
 
-The Integrator contains source paths for these connection families when compiled in:
+The Integrator contains direct MQTT and MQTT-over-WebSocket client families over IPv4, IPv6, and Unix-domain streams where the corresponding build options are enabled:
 
 ```text
 in-mqtt       in-mqtts
@@ -140,8 +124,6 @@ in-wsmqtt     in-wsmqtts
 in6-wsmqtt    in6-wsmqtts
 un-wsmqtt     un-wsmqtts
 ```
-
-They represent IPv4, IPv6, and Unix-domain streams; direct MQTT or MQTT-over-WebSocket; plain or TLS variants.
 
 ### Plain IPv4
 
@@ -173,7 +155,7 @@ mqttintegrator \
   in-wsmqtt remote --host 127.0.0.1 --port 8080
 ```
 
-The current Integrator WebSocket client requests `/ws` with subprotocol `mqtt`.
+The Integrator WebSocket client requests `/ws` with subprotocol `mqtt`.
 
 ### WSS
 
@@ -183,8 +165,6 @@ mqttintegrator \
   in-wsmqtts remote --host broker.example.net --port 8088
 ```
 
-Again, configure the instance's SNode.C TLS settings separately.
-
 ### Unix-domain MQTT
 
 ```bash
@@ -193,7 +173,7 @@ mqttintegrator \
   un-mqtt remote --sun-path /run/mqttsuite/broker.sock
 ```
 
-Use an explicit stable socket path when Integrator and Broker should communicate only on the same host.
+The shared [configuration reference](../docs/configuration.md) documents the non-obvious client-side default ports and common SNode.C instance behavior.
 
 ## Application configuration
 
@@ -206,7 +186,7 @@ The Integrator application subcommand is `integrator`. Its shared MQTTSuite appl
 
 The first selects the mapping document. The second provides a persistent MQTT client session-store path.
 
-For repeatable operation, first verify the mapping and broker connection explicitly, then persist the SNode.C configuration:
+For repeatable operation, make the explicit command work first, then persist the SNode.C application configuration:
 
 ```bash
 mqttintegrator \
@@ -224,481 +204,171 @@ Then:
 mqttintegrator --config-file ./mqttintegrator.conf
 ```
 
-The mapping JSON remains its own domain document. Writing the SNode.C application config does not inline the mapping rules; it persists the option that points to the mapping file.
+The mapping JSON remains a separate domain document; writing the SNode.C application config persists the option pointing to that mapping file.
 
-## Mapping files
+Use `--mqtt-mapping-file` explicitly for predictable deployments rather than relying on the application's implicit startup mapping state.
 
-The current schema is [`../lib/mapping-schema.json`](../lib/mapping-schema.json). MQTTIntegrator validates the document and applies schema defaults before using it.
+## Mapping model
 
-At the top level, the schema admits:
+Mappings are recursive MQTT topic trees. A `subscription` attaches receive QoS plus one or more mapping rules to a selected topic branch.
 
-- optional metadata;
-- `discover_prefix`;
-- MQTT `connection` settings;
-- required `mapping`.
+The current mapper supports:
 
-The executable currently reads the `connection` object and `mapping` tree directly. `discover_prefix` is accepted by the schema but the reviewed `MqttMapper` execution path does not use it to alter matching or publication; treat it as schema vocabulary rather than an active routing feature in this source revision.
+- literal topic levels;
+- single-level `+` wildcard matching;
+- terminal multi-level `#` matching;
+- static string mapping;
+- scalar/value templates;
+- JSON templates;
+- templated output topics;
+- fan-out;
+- output QoS and retain;
+- delayed output;
+- suppressions;
+- dynamically loaded Inja callbacks.
 
-Similarly, metadata and `subscription.type` can describe a document/subscription but do not drive the mapper's matching decision.
+The complete schema, defaults, wildcard precedence, exact Inja context keys, suppression semantics, plugin interface, and worked examples are documented in [Integrator mapping](../docs/integrator-mapping.md).
 
-## Connection settings inside the mapping
+### Topic matching
 
-The mapping's `connection` object supplies MQTT session values used by Integrator's MQTT behavior:
-
-```json
-{
-  "connection": {
-    "client_id": "normalizer-01",
-    "keep_alive": 60,
-    "clean_session": true,
-    "will_topic": "",
-    "will_message": "",
-    "will_qos": 0,
-    "will_retain": false,
-    "username": "",
-    "password": ""
-  }
-}
-```
-
-These values are different from the SNode.C transport address. The SNode.C instance answers **where/how to connect**; the mapping connection object answers **which MQTT session to establish**.
-
-A mapping deployment that changes the `connection` object has special runtime consequences described under [Deploy behavior: hot update or reconnect](#deploy-behavior-hot-update-or-reconnect).
-
-## The topic tree
-
-Mappings are organized as recursive `topic_level` objects. A level has a `name` and either another level (or array of sibling levels) or a `subscription`.
-
-For:
-
-```text
-devices/room-01/temperature
-```
-
-the literal tree is:
-
-```json
-{
-  "mapping": {
-    "topic_level": {
-      "name": "devices",
-      "topic_level": {
-        "name": "room-01",
-        "topic_level": {
-          "name": "temperature",
-          "subscription": {
-            "qos": 1,
-            "value": {
-              "mapped_topic": "normalized/room-01/temperature",
-              "mapping_template": "{{ message }}"
-            }
-          }
-        }
-      }
-    }
-  }
-}
-```
-
-MQTTIntegrator extracts the subscription topic from the tree and subscribes with the declared `subscription.qos`.
-
-### `+` and `#`
-
-`topic_level.name` supports MQTT wildcard tokens with the post-PR-#22 mapper semantics.
-
-A `+` node matches exactly one topic level. For example:
-
-```json
-{
-  "name": "devices",
-  "topic_level": {
-    "name": "+",
-    "topic_level": {
-      "name": "temperature",
-      "subscription": {
-        "qos": 1,
-        "value": {
-          "mapped_topic": "normalized/{{ topic }}",
-          "mapping_template": "{{ message }}"
-        }
-      }
-    }
-  }
-}
-```
-
-This produces the subscription:
+For a mapping corresponding to:
 
 ```text
 devices/+/temperature
 ```
 
-A terminal `#` node matches zero or more remaining topic levels. A mapping tree equivalent to the MQTT filter `devices/#` is:
+`+` matches one topic level. A terminal `#` matches zero or more remaining levels. When overlapping sibling branches are used, order them from specific to broad so the intended mapping branch is selected.
 
-```json
-{
-  "name": "devices",
-  "topic_level": {
-    "name": "#",
-    "subscription": {
-      "qos": 0,
-      "value": {
-        "mapped_topic": "archive/{{ topic }}",
-        "mapping_template": "{{ message }}"
-      }
-    }
-  }
-}
-```
-
-That `#` branch can match:
-
-```text
-devices
-devices/button
-devices/room-01/temperature
-devices/room-01/sensor/value
-```
-
-The zero-level `devices` match applies when the `devices` parent itself has no subscription mapping; in that case the mapper can select its terminal `#` child. If the parent has its own subscription mapping, that exact parent mapping remains the direct match.
-
-When sibling topic-level entries could both match, the current mapper searches them in document order and stops at the first matching branch. Keep overlapping literal/wildcard branches intentional and ordered: specific literals first, then `+` fallback, then the broadest `#` fallback where appropriate. For a complete sibling example, see [Sibling topic branches](../docs/integrator-sibling-topics-example.md).
+For a complete literal-plus-wildcard example, see [Sibling topic branches](../docs/integrator-sibling-topics-example.md).
 
 > **Figure placeholder — Topic-tree matching.** Show a nested `devices/+/temperature` mapping tree and a terminal `devices/#` branch beside concrete MQTT topics, including the zero-level `devices` case and where subscription QoS is attached.
 
 ## Three mapping modes
 
-A subscription can contain `static`, `value`, and/or `json` mapping sections. Each mapping section can be a single object or an array, which enables fan-out.
-
-### Static mapping
-
-Use `static` when exact incoming strings should become exact outgoing strings.
+Use `static` when exact incoming strings should become exact outgoing strings:
 
 ```json
-{
-  "static": {
-    "mapped_topic": "actuators/light/set",
-    "qos": 1,
-    "retain": false,
-    "message_mapping": [
-      { "message": "pressed", "mapped_message": "on" },
-      { "message": "released", "mapped_message": "off" }
-    ]
-  }
-}
-```
-
-If the incoming payload does not match one of the `message` strings, this static rule produces no mapped publish.
-
-### Scalar/value template
-
-Use `value` when the entire incoming payload should be available to an INJA template as scalar `message`:
-
-```json
-{
-  "value": {
-    "mapped_topic": "normalized/status",
-    "mapping_template": "front {{ message }}",
-    "qos": 0,
-    "retain": false
-  }
-}
-```
-
-Input:
-
-```text
-open
-```
-
-Output payload:
-
-```text
-front open
-```
-
-### JSON template
-
-Use `json` when the MQTT payload is JSON. The mapper parses it and exposes the parsed value as `message`:
-
-```json
-{
-  "json": {
-    "mapped_topic": "normalized/room-01/temperature",
-    "mapping_template": "{{ message.value }}",
-    "qos": 1
-  }
-}
-```
-
-Input:
-
-```json
-{"value":21.7,"unit":"C"}
-```
-
-Output payload:
-
-```text
-21.7
-```
-
-If the incoming payload is not valid JSON, the current JSON mapping path logs the parse failure and produces no JSON-template output for that rule.
-
-## Template context and mapped topics
-
-For `value` and `json` rules, the INJA environment receives more than `message`. The mapper also exposes current publish metadata:
-
-```text
-topic
-qos
-retain
-package_identifier
-```
-
-The output topic is itself rendered as an INJA template before the message template. After rendering, the mapper also makes the rendered value available as `mapped_topic`.
-
-Example:
-
-```json
-{
-  "value": {
-    "mapped_topic": "{{ topic }}_normalized",
-    "mapping_template": "{{ message }}",
-    "qos": 1
-  }
-}
-```
-
-An input on:
-
-```text
-devices/pump/state
-```
-
-is republished to:
-
-```text
-devices/pump/state_normalized
-```
-
-Use templated topics to carry an existing namespace forward; use literal mapped topics when the target contract should be independent of the input name.
-
-## QoS, retain, delay, and suppressions
-
-Every output rule shares these controls:
-
-- `qos`: publish QoS, independent of `subscription.qos`;
-- `retain`: retain flag for the mapped publish;
-- `delay`: negative means immediate; zero or positive is placed on the Integrator's scheduled-publish path;
-- `suppressions`: template-output strings that should not be published for `value`/`json` mappings.
-
-For example:
-
-```json
-{
-  "value": {
-    "mapped_topic": "normalized/state",
-    "mapping_template": "{% if message == \"valid\" %}ok{% endif %}",
-    "suppressions": [""],
-    "qos": 1,
-    "retain": false
-  }
-}
-```
-
-If the template renders an empty string, the rule is suppressed. The current mapper deliberately allows an empty retained output through even when `""` appears in `suppressions`, preserving the ability to emit retained-state deletion semantics.
-
-The numeric delay is validated by the schema and handed to the application's timer queue. Keep delayed mappings sparse and observable: changing when a derived state appears can be as significant as changing its value.
-
-## One input, multiple outputs
-
-Mapping sections accept arrays. This lets one input fan out into multiple output contracts without a second Integrator process.
-
-Example: transform one JSON temperature value into three topics:
-
-```json
-{
-  "json": [
-    {
-      "mapped_topic": "normalized/temperature/celsius",
-      "mapping_template": "{{ message.value }}",
-      "qos": 1,
-      "retain": true
-    },
-    {
-      "mapped_topic": "normalized/temperature/kelvin",
-      "mapping_template": "{{ message.value + 273.15 }}",
-      "qos": 0,
-      "retain": false
-    },
-    {
-      "mapped_topic": "normalized/temperature/fahrenheit",
-      "mapping_template": "{{ message.value * 1.8 + 32 }}",
-      "qos": 0,
-      "retain": false
-    }
+"static": {
+  "mapped_topic": "actuators/light/set",
+  "qos": 1,
+  "message_mapping": [
+    { "message": "pressed", "mapped_message": "on" },
+    { "message": "released", "mapped_message": "off" }
   ]
 }
 ```
 
-> **Figure placeholder — Static, scalar, JSON, and fan-out mapping.** Compare the three mapping modes on one page and show one JSON input branching into multiple independently configured output publishes.
-
-## Plugins
-
-The `mapping` object can name dynamically loaded plugins:
+Use `value` when the whole incoming payload should be available to an Inja template:
 
 ```json
-{
-  "mapping": {
-    "plugins": [
-      "/path/to/mapper-plugin.so"
-    ],
-    "topic_level": {
-      "...": "..."
-    }
-  }
+"value": {
+  "mapped_topic": "normalized/status",
+  "mapping_template": "front {{ message }}",
+  "qos": 0
 }
 ```
 
-The mapper loads each library and looks for exported `functions` and `voidFunctions` collections defined by [`../lib/MqttMapperPlugin.h`](../lib/MqttMapperPlugin.h). Registered callbacks are added to the INJA environment.
+Use `json` when the incoming payload is JSON:
 
-The repository's `lib/plugins/` directory contains example plugin implementations, including calculation/state examples used by the sample mapping. Treat this as an extension interface tied to the current C++ plugin ABI and deployment layout; the README does not promise cross-version binary compatibility.
+```json
+"json": {
+  "mapped_topic": "normalized/room-01/temperature",
+  "mapping_template": "{{ message.value }}",
+  "qos": 1
+}
+```
+
+Each mode can fan out to multiple independently configured outputs.
+
+> **Figure placeholder — Static, scalar, JSON, and fan-out mapping.** Compare the three mapping modes and show one input branching into multiple independently configured output publishes.
+
+## QoS, retain, delay, and suppressions
+
+Output rules can choose their own publish QoS and retain flag independently from subscription QoS. Template mappings can also delay an output or suppress selected rendered values.
+
+An empty retained output is a special case because MQTT uses an empty retained publication to clear retained state. See the [mapping reference](../docs/integrator-mapping.md#suppressions) for the exact suppression behavior.
 
 ## Validate before deployment
 
-The application validates mappings against the embedded schema during load/deploy. For an external preflight, use any JSON Schema tool that supports the schema dialect used by [`../lib/mapping-schema.json`](../lib/mapping-schema.json).
+MQTTIntegrator validates mappings against the embedded schema during load/deploy. For external preflight, use a JSON Schema tool against [`../lib/mapping-schema.json`](../lib/mapping-schema.json).
 
-The most important validation is still semantic:
+Also verify the semantic contract:
 
-- does the topic tree describe the intended MQTT subscription?
-- do literal, `+`, and `#` branches overlap in an intentional order?
-- is `#` terminal where used as the multi-level fallback?
-- is subscribe QoS distinct from publish QoS?
-- can JSON inputs actually satisfy the template?
-- should outputs be retained?
-- can a templated topic create an accidental feedback path?
-- do delayed/fan-out outputs match downstream expectations?
+- does the topic tree describe the intended subscription?
+- are overlapping literal/`+`/`#` branches intentional?
+- are subscribe QoS and publish QoS correct?
+- can the input payload satisfy the selected template?
+- should outputs be retained or delayed?
+- can a mapped topic create an accidental feedback path?
 
 ## Mapping administration API
 
-MQTTIntegrator also creates an HTTP mapping-admin router. The current source starts IPv4 admin listeners named:
+MQTTIntegrator creates IPv4 administration listeners named:
 
 ```text
-in-http   (plain HTTP, source default port 8085)
+in-http   (HTTP, source default port 8085)
 in-https  (HTTPS, source default port 8086)
 ```
 
-The router uses HTTP Basic Authentication. The reviewed source initializes the admin credentials to:
+The API provides mapping schema/config read-back, draft creation/replacement, validation, deploy, history, and rollback.
+
+Current HTTP Basic Authentication credentials are fixed to:
 
 ```text
 admin / admin
 ```
 
-Those credentials are hard-coded source defaults in the current application wiring. **There is no supported MQTTSuite/SNode.C application configuration option that replaces them in this revision.** Do not tell operators to “change the relevant configuration” because no such built-in configuration path exists.
+They are not configurable through the MQTTSuite/SNode.C application configuration in this revision. Keep the admin listeners inside a trusted management boundary or place them behind deployment-specific external access control. HTTPS protects transport but does not make the fixed credentials suitable for broad exposure.
 
-Treat `admin/admin` as a known development credential. Keep the admin listeners inside a trusted management boundary: bind/filter them appropriately, firewall them, or place them behind a reverse proxy/access-control layer that supplies deployment-specific authentication. TLS on `in-https` protects transport but does not make the fixed Basic Auth credentials suitable for broad exposure.
-
-The API includes:
-
-| Method | Route | Purpose |
-| --- | --- | --- |
-| `GET` | `/schema` | return mapping schema |
-| `GET` | `/config` | return active mapping |
-| `PATCH` | `/config` | apply JSON Patch to the active document and save a draft |
-| `POST` | `/config` | replace/save a draft mapping document |
-| `POST` | `/config/validate` | validate a supplied mapping |
-| `GET` | `/config/validateDraft` | validate the staged draft |
-| `POST` | `/config/deploy` | deploy the draft |
-| `GET` | `/config/history` | list mapping history |
-| `POST` | `/config/rollback` | activate a selected historical version |
-
-The current source also redirects `/` to `/ui`, but its static UI path is a maintainer-local build directory and the Integrator CMake target has no corresponding install rule. Use the HTTP API as the portable documented admin surface unless your deployment separately provides a UI build.
-
-The canonical draft/validate/deploy/history/rollback lifecycle figure is owned by the [Integrator HTTP API reference](../docs/integrator-http-api.md#drafthistory-lifecycle); this README keeps the operator summary only.
+The complete route/status/body contract is documented in [Integrator HTTP API](../docs/integrator-http-api.md).
 
 ## Deploy behavior: hot update or reconnect
 
-Deploying a new mapping does not always restart the MQTT connection.
+Deploying a mapping does not always replace the MQTT connection.
 
-The mapper compares the new `connection` object with the active one.
+When the mapping's MQTT `connection` settings stay unchanged, Integrator can apply subscription changes in place. When the `connection` object changes, the client reconnects so the new MQTT session values take effect.
 
-### Mapping rules changed, connection unchanged
-
-The application computes the old and new subscription sets by topic and QoS. It sends only the required unsubscribe/subscribe changes and reports a `hot` reload.
-
-That means changes such as:
-
-- mapped topic/payload template;
-- output QoS/retain/delay;
-- suppressions;
-- adding/removing a mapping branch whose connection settings stay the same
-
-can be applied without deliberately reconnecting the MQTT session. Subscription changes are adjusted in place.
-
-### Connection object changed
-
-If mapper connection settings change, the deploy path reports `reconnect` and sends MQTT DISCONNECT. The client connection is configured for reconnect, so the new MQTT connection/session values take effect on the subsequent connection.
-
-This distinction matters operationally: editing a username, client ID, keep-alive, clean-session setting, or will in the mapping is not merely a template change.
+That distinction matters for edits to client ID, credentials, keep-alive, clean-session settings, or will configuration.
 
 ## Practical examples
 
 ### Normalize a device namespace
-
-Input:
 
 ```text
 vendor/acme/room-01/temp
 {"v":21.7}
 ```
 
-Map to:
+can become:
 
 ```text
 normalized/room-01/temperature
 {"value":21.7,"unit":"C"}
 ```
 
-This is a good fit for JSON templates and templated topics.
-
 ### Convert event vocabulary
 
-Input:
-
 ```text
-devices/button
-pressed
+devices/button  pressed
 ```
 
-Map to:
+can become:
 
 ```text
-actuators/light/set
-on
+actuators/light/set  on
 ```
-
-This is a good fit for `static`.
-
-### Build derived state
-
-An input JSON document can render a concise scalar/status output and set `retain: true` so new subscribers immediately see the latest derived state.
 
 ### Normalize before persistence
-
-A common composition is:
 
 ```text
 device topics -> MQTTIntegrator -> normalized/... -> MQTTStore -> MariaDB
 ```
 
-Let Integrator own transformation; let Store keep the resulting raw MQTT envelope and optional typed projections.
+Let Integrator own transformation; let Store own persistence.
 
 ## Verification with MQTTCli
 
-Use a subscriber on the expected mapped output before publishing a known input.
-
-For a wildcard output check:
+Subscribe to the expected mapped output before publishing a known input:
 
 ```bash
 mqttcli \
@@ -709,82 +379,57 @@ mqttcli \
     sub --topic 'normalized/#'
 ```
 
-Then publish one input that matches exactly one intended mapping branch.
-
 For debugging, verify in this order:
 
 1. Integrator connected successfully.
 2. Mapping validation succeeded.
-3. Extracted subscriptions include the input topic/filter.
-4. Broker receives the input.
-5. Integrator receives the input.
-6. A mapping branch matches.
-7. Template/static conversion succeeds.
-8. Output is not suppressed or waiting on a delay.
-9. Broker sees the mapped publish.
-10. Output subscriber matches the mapped topic.
-
-That sequence avoids treating every missing output as a template problem.
+3. The expected input filter was subscribed.
+4. Integrator receives the input.
+5. The intended mapping branch matches.
+6. Conversion succeeds and is not suppressed or delayed unexpectedly.
+7. The broker receives the mapped publish.
+8. The output subscriber matches the mapped topic.
 
 ## Trust and credential boundaries
 
-- Mapping `connection.username` and `connection.password` are MQTT client credentials and may be persisted in the mapping file/history.
-- The mapping-admin API uses Basic Authentication with fixed weak source defaults `admin/admin`; the current application wiring has no supported built-in option for replacing them.
-- Keep the admin listener behind deployment-specific network/access controls; TLS alone does not repair fixed known credentials or broad network exposure.
-- Mapping files and saved application config should have filesystem ownership/permissions appropriate to their credentials and operational meaning.
-- Plugins execute native code in the Integrator process. Load only libraries you intentionally deploy and trust.
+- Mapping `connection.username` and `connection.password` are MQTT client credentials and may be persisted in mapping/history files.
+- The mapping administration API uses fixed source-known `admin/admin` credentials in this revision.
+- Mapping read-back/history/error paths can expose credential-bearing configuration.
+- Plugins execute native code in the Integrator process; load only libraries you intentionally deploy and trust.
 - Debug/trace logs may reveal mapping contents, MQTT payloads, or credential-related configuration.
+
+Protect mapping files and the admin listener according to their operational sensitivity.
 
 ## Troubleshooting
 
-### Mapping file is rejected
+### Mapping does not produce output
 
-Validate against [`../lib/mapping-schema.json`](../lib/mapping-schema.json). Check field names carefully: the current schema uses singular `mapping`, `topic_level`, `subscription`, `mapped_topic`, `mapping_template`, `message_mapping`, `qos`, `retain`, `delay`, and `suppressions`.
+Check the broker connection, effective mapping file, extracted input subscriptions, branch order, payload format, template/static conversion, suppressions, and delay.
 
-Do not copy older examples that use different pluralization or renamed fields without revalidating them against the current schema.
+### Mapping changed but client reconnected
 
-### Integrator connects but does not subscribe
+Connection settings are part of the mapping. Changes to those settings require reconnect; topic/rule-only changes can use the hot subscription-update path.
 
-Check that:
+### `/ui` is missing
 
-- the mapping has a `subscription` at the intended topic-tree leaf;
-- wildcard/literal nesting yields the expected full filter;
-- the broker CONNACK succeeded;
-- the selected connection instance is the one pointing at the intended broker.
+Use the administration JSON API. The current source tree does not establish a portable installed Integrator UI.
 
-### Input arrives but no mapped publish appears
+### Active mapping differs from the file you expected
 
-Check:
-
-- correct mapping mode (`static`, `value`, or `json`);
-- exact static payload match;
-- valid JSON for `json`;
-- INJA expressions and variable names;
-- `suppressions`;
-- delay;
-- mapped topic;
-- overlapping literal/`+`/`#` sibling branches and document order.
-
-### Admin deploy reconnects unexpectedly
-
-Compare the old and new mapping `connection` objects. Any difference there selects reconnect rather than hot subscription adjustment.
-
-### Admin UI route does not serve a portable UI
-
-That is expected for a normal install from this source revision: the router's `/ui` static directory is not installed by the Integrator target. Use the documented API or supply your own separately built UI assets.
+Pass `--mqtt-mapping-file` explicitly and inspect the active configuration through the application/API.
 
 ## Related documentation
 
 - [MQTTSuite overview and build](../README.md)
-- [MQTTIntegrator mapping reference](../docs/integrator-mapping.md)
+- [Integrator mapping reference](../docs/integrator-mapping.md)
 - [Sibling topic branches example](../docs/integrator-sibling-topics-example.md)
-- [MQTTIntegrator HTTP administration API](../docs/integrator-http-api.md)
+- [Integrator HTTP API](../docs/integrator-http-api.md)
+- [Configuration](../docs/configuration.md)
+- [Capabilities and evidence](../docs/capabilities.md)
 - [MQTTBroker](../mqttbroker/README.md)
 - [MQTTBridge](../mqttbridge/README.md)
 - [MQTTCli](../mqttcli/README.md)
 - [MQTTStore](../mqttstore/README.md)
-- [Mapping schema](../lib/mapping-schema.json)
-- [Mapper plugin interface](../lib/MqttMapperPlugin.h)
 
 ## License
 
