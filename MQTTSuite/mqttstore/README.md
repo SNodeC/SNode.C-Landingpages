@@ -369,7 +369,12 @@ mqttstore \
         --projection-file ./projections.json
 ```
 
-> **Figure placeholder — JSON/topic projection extraction.** Show `topic_level`, `json_pointer`, and `literal` feeding typed SQL columns while raw storage remains independent.
+<picture>
+  <source media="(max-width: 600px)" srcset="../assets/store-projection-extraction-mobile.svg">
+  <img src="../assets/store-projection-extraction.svg" alt="Diagram showing an MQTTStore JSON publication matching a projection and extracting a topic level, JSON Pointer value, and literal into typed SQL columns while the raw MQTT row remains independently stored.">
+</picture>
+
+<sub>Typed projections extract selected values from valid JSON messages without replacing the raw MQTT envelope.</sub>
 
 ## Projection sources
 
