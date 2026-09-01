@@ -34,7 +34,12 @@ No application-specific CORS headers are emitted by `MappingAdminRouter.cpp` in 
 
 Practical deployment controls include binding the listener to a trusted interface, firewalling it, or placing it behind an authenticated reverse proxy that supplies the deployment's real access-control policy.
 
-> **Figure placeholder — Integrator administration trust boundary.** Show the MQTT data-plane client connection separately from the HTTP/HTTPS mapping administration listener, with Basic Auth and secret-bearing mapping state inside a trusted operator boundary.
+<picture>
+  <source media="(max-width: 600px)" srcset="../assets/integrator-trust-boundary-mobile.svg">
+  <img src="../assets/integrator-trust-boundary.svg" alt="Trust-boundary diagram separating MQTTIntegrator's MQTT data-plane client connection from its HTTP and HTTPS mapping administration plane, showing fixed Basic Auth credentials, secret-bearing mapping state, and the need for a trusted deployment boundary.">
+</picture>
+
+<sub>The Integrator administration listener has Basic Auth, but its built-in `admin/admin` credentials are fixed and source-known.</sub>
 
 ## Route summary
 
@@ -408,7 +413,12 @@ history ──► rollback ──► active mapping + reload
 
 The mapping/history files can contain MQTT credentials. Protect their filesystem location as secret-bearing configuration state.
 
-> **Figure placeholder — Mapping administration lifecycle.** Show active → draft via PATCH/POST → validate → deploy → history, plus rollback back to active and the reload branch to subscription delta or reconnect.
+<picture>
+  <source media="(max-width: 600px)" srcset="../assets/mapping-admin-lifecycle-mobile.svg">
+  <img src="../assets/mapping-admin-lifecycle.svg" alt="Diagram showing the MQTTIntegrator mapping administration lifecycle from active mapping to draft via PATCH or POST, validation and deploy, hot subscription update or reconnect, retained history, and rollback to active state.">
+</picture>
+
+<sub>Draft validation and deployment are separate; deployed connection changes can require reconnect while rule-only changes can use subscription deltas.</sub>
 
 ## UI routes
 
