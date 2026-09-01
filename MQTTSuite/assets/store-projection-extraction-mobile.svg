@@ -1,0 +1,38 @@
+<svg width="620" height="1120" viewBox="0 0 620 1120" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect width="620" height="1120" rx="24" fill="#090E0D"/>
+<text fill="#F1F7F4" style="white-space: pre" xml:space="preserve" font-family="Inter" font-size="25" font-weight="bold" letter-spacing="0em"><tspan x="28" y="52.0909">One JSON publish, typed SQL columns</tspan></text>
+<text fill="#8CA59B" style="white-space: pre" xml:space="preserve" font-family="Inter" font-size="13" letter-spacing="0em"><tspan x="28" y="78.7273">Raw storage stays independent; a matching projection can extract a topic level, JSON </tspan><tspan x="28" y="94.7273">Pointer, or literal value into operator-owned typed tables</tspan></text>
+<circle cx="32" cy="1060" r="4" fill="#56D697"/>
+<text fill="#A6C7B8" style="white-space: pre" xml:space="preserve" font-family="Inter" font-size="11" font-weight="600" letter-spacing="0em"><tspan x="46" y="1066.5">Source-verified current behavior &#xb7; not separately runtime-exercised</tspan></text>
+<rect x="34.6" y="155.6" width="550.8" height="118.8" rx="15.4" fill="#10221A"/>
+<rect x="34.6" y="155.6" width="550.8" height="118.8" rx="15.4" stroke="#203D31" stroke-width="1.2"/>
+<text fill="#E7F0EB" style="white-space: pre" xml:space="preserve" font-family="Inter" font-size="18" font-weight="bold" letter-spacing="0em"><tspan x="52" y="189.545">MQTT PUBLISH</tspan></text>
+<text fill="#91AAA0" style="white-space: pre" xml:space="preserve" font-family="Inter" font-size="12" letter-spacing="0em"><tspan x="52" y="210.864">normalized/room-01/temperature</tspan></text>
+<text fill="#91AAA0" style="white-space: pre" xml:space="preserve" font-family="Inter" font-size="12" letter-spacing="0em"><tspan x="52" y="230.864">{&#34;value&#34;:21.7,&#34;unit&#34;:&#34;C&#34;}</tspan></text>
+<rect x="120.5" y="298.5" width="379" height="29" rx="8.5" fill="#10221A"/>
+<rect x="120.5" y="298.5" width="379" height="29" rx="8.5" stroke="#203D31"/>
+<text fill="#A6C7B8" style="white-space: pre" xml:space="preserve" font-family="Inter" font-size="11" font-weight="600" letter-spacing="0em"><tspan x="205.215" y="314.5">raw MQTT row is written independently</tspan></text>
+<text fill="#56D697" style="white-space: pre" xml:space="preserve" font-family="Inter" font-size="18" font-weight="bold" letter-spacing="0em"><tspan x="292" y="355.545">&#x2193;</tspan></text>
+<rect x="34.6" y="375.6" width="550.8" height="103.8" rx="15.4" fill="#0B1713"/>
+<rect x="34.6" y="375.6" width="550.8" height="103.8" rx="15.4" stroke="#203D31" stroke-width="1.2"/>
+<text fill="#E7F0EB" style="white-space: pre" xml:space="preserve" font-family="Inter" font-size="18" font-weight="bold" letter-spacing="0em"><tspan x="52" y="409.545">Matching projection</tspan></text>
+<text fill="#91AAA0" style="white-space: pre" xml:space="preserve" font-family="Inter" font-size="12" letter-spacing="0em"><tspan x="52" y="430.864">topic filter normalized/+/temperature &#xb7; valid JSON</tspan></text>
+<text fill="#8CA59B" style="white-space: pre" xml:space="preserve" font-family="Inter" font-size="11" letter-spacing="0em"><tspan x="34" y="525.5">Column extraction sources</tspan></text>
+<rect x="34.6" y="550.6" width="550.8" height="88.8" rx="15.4" fill="#0B1713"/>
+<rect x="34.6" y="550.6" width="550.8" height="88.8" rx="15.4" stroke="#203D31" stroke-width="1.2"/>
+<text fill="#E7F0EB" style="white-space: pre" xml:space="preserve" font-family="Inter" font-size="18" font-weight="bold" letter-spacing="0em"><tspan x="52" y="584.545">topic_level: 1</tspan></text>
+<text fill="#91AAA0" style="white-space: pre" xml:space="preserve" font-family="Inter" font-size="12" letter-spacing="0em"><tspan x="52" y="605.864">room-01</tspan></text>
+<rect x="34.6" y="655.6" width="550.8" height="88.8" rx="15.4" fill="#0B1713"/>
+<rect x="34.6" y="655.6" width="550.8" height="88.8" rx="15.4" stroke="#203D31" stroke-width="1.2"/>
+<text fill="#E7F0EB" style="white-space: pre" xml:space="preserve" font-family="Inter" font-size="18" font-weight="bold" letter-spacing="0em"><tspan x="52" y="689.545">json_pointer: /value</tspan></text>
+<text fill="#91AAA0" style="white-space: pre" xml:space="preserve" font-family="Inter" font-size="12" letter-spacing="0em"><tspan x="52" y="710.864">21.7</tspan></text>
+<rect x="34.6" y="760.6" width="550.8" height="88.8" rx="15.4" fill="#0B1713"/>
+<rect x="34.6" y="760.6" width="550.8" height="88.8" rx="15.4" stroke="#203D31" stroke-width="1.2"/>
+<text fill="#E7F0EB" style="white-space: pre" xml:space="preserve" font-family="Inter" font-size="18" font-weight="bold" letter-spacing="0em"><tspan x="52" y="794.545">literal: temperature</tspan></text>
+<text fill="#91AAA0" style="white-space: pre" xml:space="preserve" font-family="Inter" font-size="12" letter-spacing="0em"><tspan x="52" y="815.864">temperature</tspan></text>
+<text fill="#56D697" style="white-space: pre" xml:space="preserve" font-family="Inter" font-size="18" font-weight="bold" letter-spacing="0em"><tspan x="292" y="871.545">&#x2193;</tspan></text>
+<rect x="34.6" y="890.6" width="550.8" height="103.8" rx="15.4" fill="#10221A"/>
+<rect x="34.6" y="890.6" width="550.8" height="103.8" rx="15.4" stroke="#203D31" stroke-width="1.2"/>
+<text fill="#E7F0EB" style="white-space: pre" xml:space="preserve" font-family="Inter" font-size="18" font-weight="bold" letter-spacing="0em"><tspan x="52" y="924.545">Typed SQL row</tspan></text>
+<text fill="#91AAA0" style="white-space: pre" xml:space="preserve" font-family="Inter" font-size="12" letter-spacing="0em"><tspan x="52" y="945.864">device_id &#xb7; value &#xb7; metric</tspan></text>
+</svg>

@@ -1,0 +1,55 @@
+<svg width="1200" height="800" viewBox="0 0 1200 800" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect width="1200" height="800" rx="24" fill="#090E0D"/>
+<text fill="#F1F7F4" style="white-space: pre" xml:space="preserve" font-family="Inter" font-size="30" font-weight="bold" letter-spacing="0em"><tspan x="40" y="64.9091">One client command, nested responsibilities</tspan></text>
+<text fill="#8CA59B" style="white-space: pre" xml:space="preserve" font-family="Inter" font-size="15" letter-spacing="0em"><tspan x="40" y="94.4545">Enable one connection instance, then configure remote/HTTP transport, MQTT session, and subscribe/publish actions</tspan></text>
+<circle cx="44" cy="748" r="4" fill="#56D697"/>
+<text fill="#A6C7B8" style="white-space: pre" xml:space="preserve" font-family="Inter" font-size="12" font-weight="600" letter-spacing="0em"><tspan x="58" y="755.864">Source-verified current behavior &#xb7; not separately runtime-exercised</tspan></text>
+<rect x="55.5" y="180.5" width="159" height="29" rx="8.5" fill="#10221A"/>
+<rect x="55.5" y="180.5" width="159" height="29" rx="8.5" stroke="#203D31"/>
+<text fill="#F1F7F4" style="white-space: pre" xml:space="preserve" font-family="Inter" font-size="11" font-weight="600" letter-spacing="0em"><tspan x="116.438" y="196.5">mqttcli</tspan></text>
+<rect x="215" y="195" width="85" height="2" rx="1" fill="#56D697"/>
+<text fill="#56D697" style="white-space: pre" xml:space="preserve" font-family="Inter" font-size="18" font-weight="bold" letter-spacing="0em"><tspan x="276" y="201.545">&#x2192;</tspan></text>
+<rect x="300.6" y="150.6" width="228.8" height="103.8" rx="15.4" fill="#10221A"/>
+<rect x="300.6" y="150.6" width="228.8" height="103.8" rx="15.4" stroke="#203D31" stroke-width="1.2"/>
+<text fill="#E7F0EB" style="white-space: pre" xml:space="preserve" font-family="Inter" font-size="18" font-weight="bold" letter-spacing="0em"><tspan x="318" y="184.545">in-mqtt / in-wsmqtt</tspan></text>
+<text fill="#91AAA0" style="white-space: pre" xml:space="preserve" font-family="Inter" font-size="12" letter-spacing="0em"><tspan x="318" y="205.864">connection instance</tspan></text>
+<text fill="#91AAA0" style="white-space: pre" xml:space="preserve" font-family="Inter" font-size="12" letter-spacing="0em"><tspan x="318" y="225.864">--disabled=false</tspan></text>
+<rect x="530" y="202" width="75" height="2" rx="1" fill="#56D697"/>
+<text fill="#56D697" style="white-space: pre" xml:space="preserve" font-family="Inter" font-size="18" font-weight="bold" letter-spacing="0em"><tspan x="581" y="208.545">&#x2192;</tspan></text>
+<rect x="605.6" y="135.6" width="203.8" height="108.8" rx="15.4" fill="#0B1713"/>
+<rect x="605.6" y="135.6" width="203.8" height="108.8" rx="15.4" stroke="#203D31" stroke-width="1.2"/>
+<text fill="#E7F0EB" style="white-space: pre" xml:space="preserve" font-family="Inter" font-size="18" font-weight="bold" letter-spacing="0em"><tspan x="623" y="169.545">remote</tspan></text>
+<text fill="#91AAA0" style="white-space: pre" xml:space="preserve" font-family="Inter" font-size="12" letter-spacing="0em"><tspan x="623" y="190.864">host &#xb7; port / sun-path</tspan></text>
+<rect x="605.6" y="295.6" width="203.8" height="108.8" rx="15.4" fill="#0B1713"/>
+<rect x="605.6" y="295.6" width="203.8" height="108.8" rx="15.4" stroke="#203D31" stroke-width="1.2"/>
+<text fill="#E7F0EB" style="white-space: pre" xml:space="preserve" font-family="Inter" font-size="18" font-weight="bold" letter-spacing="0em"><tspan x="623" y="329.545">http</tspan></text>
+<text fill="#91AAA0" style="white-space: pre" xml:space="preserve" font-family="Inter" font-size="12" letter-spacing="0em"><tspan x="623" y="350.864">WebSocket only</tspan></text>
+<text fill="#91AAA0" style="white-space: pre" xml:space="preserve" font-family="Inter" font-size="12" letter-spacing="0em"><tspan x="623" y="370.864">target /ws</tspan></text>
+<rect x="605.6" y="455.6" width="203.8" height="108.8" rx="15.4" fill="#0B1713"/>
+<rect x="605.6" y="455.6" width="203.8" height="108.8" rx="15.4" stroke="#203D31" stroke-width="1.2"/>
+<text fill="#E7F0EB" style="white-space: pre" xml:space="preserve" font-family="Inter" font-size="18" font-weight="bold" letter-spacing="0em"><tspan x="623" y="489.545">session</tspan></text>
+<text fill="#91AAA0" style="white-space: pre" xml:space="preserve" font-family="Inter" font-size="12" letter-spacing="0em"><tspan x="623" y="510.864">client-id &#xb7; QoS</tspan></text>
+<text fill="#91AAA0" style="white-space: pre" xml:space="preserve" font-family="Inter" font-size="12" letter-spacing="0em"><tspan x="623" y="530.864">clean-session &#xb7; will</tspan></text>
+<rect x="530" y="202" width="38" height="2" rx="1" fill="#56D697"/>
+<rect x="566" y="202" width="2" height="308" rx="1" fill="#56D697"/>
+<rect x="566" y="350" width="39" height="2" rx="1" fill="#56D697"/>
+<rect x="566" y="510" width="39" height="2" rx="1" fill="#56D697"/>
+<rect x="810" y="510" width="65" height="2" rx="1" fill="#56D697"/>
+<text fill="#56D697" style="white-space: pre" xml:space="preserve" font-family="Inter" font-size="18" font-weight="bold" letter-spacing="0em"><tspan x="851" y="516.545">&#x2192;</tspan></text>
+<rect x="875.6" y="370.6" width="263.8" height="103.8" rx="15.4" fill="#0B1713"/>
+<rect x="875.6" y="370.6" width="263.8" height="103.8" rx="15.4" stroke="#203D31" stroke-width="1.2"/>
+<text fill="#E7F0EB" style="white-space: pre" xml:space="preserve" font-family="Inter" font-size="18" font-weight="bold" letter-spacing="0em"><tspan x="893" y="404.545">sub</tspan></text>
+<text fill="#91AAA0" style="white-space: pre" xml:space="preserve" font-family="Inter" font-size="12" letter-spacing="0em"><tspan x="893" y="425.864">topic filters</tspan></text>
+<text fill="#91AAA0" style="white-space: pre" xml:space="preserve" font-family="Inter" font-size="12" letter-spacing="0em"><tspan x="893" y="445.864">optional ##&#60;qos&#62;</tspan></text>
+<rect x="875.6" y="520.6" width="263.8" height="103.8" rx="15.4" fill="#0B1713"/>
+<rect x="875.6" y="520.6" width="263.8" height="103.8" rx="15.4" stroke="#203D31" stroke-width="1.2"/>
+<text fill="#E7F0EB" style="white-space: pre" xml:space="preserve" font-family="Inter" font-size="18" font-weight="bold" letter-spacing="0em"><tspan x="893" y="554.545">pub</tspan></text>
+<text fill="#91AAA0" style="white-space: pre" xml:space="preserve" font-family="Inter" font-size="12" letter-spacing="0em"><tspan x="893" y="575.864">topic &#xb7; message &#xb7; retain</tspan></text>
+<text fill="#91AAA0" style="white-space: pre" xml:space="preserve" font-family="Inter" font-size="12" letter-spacing="0em"><tspan x="893" y="595.864">optional ##&#60;qos&#62;</tspan></text>
+<rect x="810" y="510" width="32" height="2" rx="1" fill="#56D697"/>
+<rect x="840" y="510" width="2" height="63" rx="1" fill="#56D697"/>
+<rect x="840" y="422" width="35" height="2" rx="1" fill="#56D697"/>
+<rect x="390.5" y="650.5" width="419" height="29" rx="8.5" fill="#10221A"/>
+<rect x="390.5" y="650.5" width="419" height="29" rx="8.5" stroke="#203D31"/>
+<text fill="#56D697" style="white-space: pre" xml:space="preserve" font-family="Inter" font-size="11" font-weight="600" letter-spacing="0em"><tspan x="441.939" y="666.5">subscription and publication can coexist on one connection</tspan></text>
+</svg>
