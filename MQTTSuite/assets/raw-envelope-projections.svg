@@ -1,0 +1,37 @@
+<svg width="1200" height="800" viewBox="0 0 1200 800" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect width="1200" height="800" rx="24" fill="#090E0D"/>
+<text fill="#F1F7F4" style="white-space: pre" xml:space="preserve" font-family="Inter, Arial, sans-serif" font-size="30" font-weight="bold" letter-spacing="0em"><tspan x="40" y="64.9091">Raw envelope first, projections second</tspan></text>
+<text fill="#8CA59B" style="white-space: pre" xml:space="preserve" font-family="Inter, Arial, sans-serif" font-size="15" letter-spacing="0em"><tspan x="40" y="94.4545">Every publish is stored raw; valid JSON may additionally feed typed projection inserts</tspan></text>
+<circle cx="44" cy="748" r="4" fill="#56D697"/>
+<text fill="#A6C7B8" style="white-space: pre" xml:space="preserve" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="600" letter-spacing="0em"><tspan x="58" y="755.864">Source-verified current behavior &#xb7; not separately runtime-exercised</tspan></text>
+<rect x="55.6" y="270.6" width="238.8" height="120.8" rx="15.4" fill="#0B1713"/>
+<rect x="55.6" y="270.6" width="238.8" height="120.8" rx="15.4" stroke="#203D31" stroke-width="1.2"/>
+<text fill="#E7F0EB" style="white-space: pre" xml:space="preserve" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="bold" letter-spacing="0em"><tspan x="73" y="305.545">MQTT PUBLISH</tspan></text>
+<text fill="#91AAA0" style="white-space: pre" xml:space="preserve" font-family="Inter, Arial, sans-serif" font-size="12" letter-spacing="0em"><tspan x="73" y="326.864">topic &#xb7; payload &#xb7; QoS</tspan></text>
+<text fill="#91AAA0" style="white-space: pre" xml:space="preserve" font-family="Inter, Arial, sans-serif" font-size="12" letter-spacing="0em"><tspan x="73" y="346.864">retain &#xb7; dup &#xb7; packet id</tspan></text>
+<line x1="295" y1="330" x2="420" y2="330" stroke="#56D697" stroke-width="2"/>
+<text fill="#56D697" style="white-space: pre" xml:space="preserve" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="bold" letter-spacing="0em"><tspan x="396" y="337.545">&#x2192;</tspan></text>
+<rect x="420.6" y="225.6" width="298.8" height="183.8" rx="15.4" fill="#10221A"/>
+<rect x="420.6" y="225.6" width="298.8" height="183.8" rx="15.4" stroke="#203D31" stroke-width="1.2"/>
+<text fill="#E7F0EB" style="white-space: pre" xml:space="preserve" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="bold" letter-spacing="0em"><tspan x="438" y="260.545">Raw MQTT row &#xb7; always</tspan></text>
+<text fill="#91AAA0" style="white-space: pre" xml:space="preserve" font-family="Inter, Arial, sans-serif" font-size="12" letter-spacing="0em"><tspan x="438" y="281.864">payload LONGBLOB</tspan></text>
+<text fill="#91AAA0" style="white-space: pre" xml:space="preserve" font-family="Inter, Arial, sans-serif" font-size="12" letter-spacing="0em"><tspan x="438" y="301.864">topic / QoS / retain / dup</tspan></text>
+<text fill="#91AAA0" style="white-space: pre" xml:space="preserve" font-family="Inter, Arial, sans-serif" font-size="12" letter-spacing="0em"><tspan x="438" y="321.864">payload_format json | text | binary</tspan></text>
+<line x1="720.6" y1="314.2" x2="820.6" y2="389.2" stroke="#56D697" stroke-width="2" stroke-dasharray="7 7"/>
+<text fill="#56D697" style="white-space: pre" xml:space="preserve" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="bold" letter-spacing="0em"><tspan x="796" y="246.545">&#x2192;</tspan></text>
+<text fill="#56D697" style="white-space: pre" xml:space="preserve" font-family="Inter, Arial, sans-serif" font-size="11" letter-spacing="0em"><tspan x="725" y="274.5">valid JSON only</tspan></text>
+<rect x="820.6" y="170.6" width="298.8" height="138.8" rx="15.4" fill="#0B1713"/>
+<rect x="820.6" y="170.6" width="298.8" height="138.8" rx="15.4" stroke="#203D31" stroke-width="1.2"/>
+<text fill="#E7F0EB" style="white-space: pre" xml:space="preserve" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="bold" letter-spacing="0em"><tspan x="838" y="205.545">Projection A</tspan></text>
+<text fill="#91AAA0" style="white-space: pre" xml:space="preserve" font-family="Inter, Arial, sans-serif" font-size="12" letter-spacing="0em"><tspan x="838" y="226.864">topic filter matches</tspan></text>
+<text fill="#91AAA0" style="white-space: pre" xml:space="preserve" font-family="Inter, Arial, sans-serif" font-size="12" letter-spacing="0em"><tspan x="838" y="246.864">column extraction</tspan></text>
+<line x1="719.232" y1="334.36" x2="819.232" y2="214.36" stroke="#56D697" stroke-width="2" stroke-dasharray="7 7"/>
+<text fill="#56D697" style="white-space: pre" xml:space="preserve" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="bold" letter-spacing="0em"><tspan x="796" y="450.545">&#x2192;</tspan></text>
+<rect x="820.6" y="400.6" width="298.8" height="138.8" rx="15.4" fill="#0B1713"/>
+<rect x="820.6" y="400.6" width="298.8" height="138.8" rx="15.4" stroke="#203D31" stroke-width="1.2"/>
+<text fill="#E7F0EB" style="white-space: pre" xml:space="preserve" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="bold" letter-spacing="0em"><tspan x="838" y="435.545">Projection B</tspan></text>
+<text fill="#91AAA0" style="white-space: pre" xml:space="preserve" font-family="Inter, Arial, sans-serif" font-size="12" letter-spacing="0em"><tspan x="838" y="456.864">independent typed insert</tspan></text>
+<rect x="440.5" y="445.5" width="259" height="29" rx="8.5" fill="#10221A"/>
+<rect x="440.5" y="445.5" width="259" height="29" rx="8.5" stroke="#203D31"/>
+<text fill="#A6C7B8" style="white-space: pre" xml:space="preserve" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="600" letter-spacing="0em"><tspan x="470.065" y="461.5">raw insert independent of projections</tspan></text>
+</svg>

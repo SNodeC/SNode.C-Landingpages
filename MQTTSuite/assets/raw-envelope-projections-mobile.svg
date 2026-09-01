@@ -1,0 +1,31 @@
+<svg width="620" height="1030" viewBox="0 0 620 1030" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect width="620" height="1030" rx="24" fill="#090E0D"/>
+<text fill="#F1F7F4" style="white-space: pre" xml:space="preserve" font-family="Inter, Arial, sans-serif" font-size="25" font-weight="bold" letter-spacing="0em"><tspan x="28" y="52.0909">Raw envelope first, projections second</tspan></text>
+<text fill="#8CA59B" style="white-space: pre" xml:space="preserve" font-family="Inter, Arial, sans-serif" font-size="13" letter-spacing="0em"><tspan x="28" y="78.7273">Every publish is stored raw; valid JSON may additionally feed typed projection inserts</tspan></text>
+<circle cx="32" cy="970" r="4" fill="#56D697"/>
+<text fill="#A6C7B8" style="white-space: pre" xml:space="preserve" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="600" letter-spacing="0em"><tspan x="46" y="976.5">Source-verified current behavior &#xb7; not separately runtime-exercised</tspan></text>
+<rect x="34.6" y="160.6" width="550.8" height="108.8" rx="15.4" fill="#0B1713"/>
+<rect x="34.6" y="160.6" width="550.8" height="108.8" rx="15.4" stroke="#203D31" stroke-width="1.2"/>
+<text fill="#E7F0EB" style="white-space: pre" xml:space="preserve" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="bold" letter-spacing="0em"><tspan x="52" y="195.545">MQTT PUBLISH</tspan></text>
+<text fill="#91AAA0" style="white-space: pre" xml:space="preserve" font-family="Inter, Arial, sans-serif" font-size="12" letter-spacing="0em"><tspan x="52" y="216.864">topic &#xb7; payload &#xb7; QoS &#xb7; retain &#xb7; dup</tspan></text>
+<text fill="#56D697" style="white-space: pre" xml:space="preserve" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="bold" letter-spacing="0em"><tspan x="292" y="292.545">&#x2193;</tspan></text>
+<rect x="34.6" y="315.6" width="550.8" height="163.8" rx="15.4" fill="#10221A"/>
+<rect x="34.6" y="315.6" width="550.8" height="163.8" rx="15.4" stroke="#203D31" stroke-width="1.2"/>
+<text fill="#E7F0EB" style="white-space: pre" xml:space="preserve" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="bold" letter-spacing="0em"><tspan x="52" y="350.545">Raw MQTT row &#xb7; always</tspan></text>
+<text fill="#91AAA0" style="white-space: pre" xml:space="preserve" font-family="Inter, Arial, sans-serif" font-size="12" letter-spacing="0em"><tspan x="52" y="371.864">original payload bytes preserved</tspan></text>
+<text fill="#91AAA0" style="white-space: pre" xml:space="preserve" font-family="Inter, Arial, sans-serif" font-size="12" letter-spacing="0em"><tspan x="52" y="391.864">payload_format = json | text | binary</tspan></text>
+<text fill="#56D697" style="white-space: pre" xml:space="preserve" font-family="Inter, Arial, sans-serif" font-size="11" letter-spacing="0em"><tspan x="198" y="510.5">if payload is valid JSON</tspan></text>
+<text fill="#56D697" style="white-space: pre" xml:space="preserve" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="bold" letter-spacing="0em"><tspan x="292" y="545.545">&#x2193;</tspan></text>
+<rect x="34.6" y="570.6" width="550.8" height="108.8" rx="15.4" fill="#0B1713"/>
+<rect x="34.6" y="570.6" width="550.8" height="108.8" rx="15.4" stroke="#203D31" stroke-width="1.2"/>
+<text fill="#E7F0EB" style="white-space: pre" xml:space="preserve" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="bold" letter-spacing="0em"><tspan x="52" y="605.545">Projection A</tspan></text>
+<text fill="#91AAA0" style="white-space: pre" xml:space="preserve" font-family="Inter, Arial, sans-serif" font-size="12" letter-spacing="0em"><tspan x="52" y="626.864">topic match &#xb7; extract typed columns</tspan></text>
+<text fill="#56D697" style="white-space: pre" xml:space="preserve" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="bold" letter-spacing="0em"><tspan x="292" y="705.545">&#x2193;</tspan></text>
+<rect x="34.6" y="730.6" width="550.8" height="108.8" rx="15.4" fill="#0B1713"/>
+<rect x="34.6" y="730.6" width="550.8" height="108.8" rx="15.4" stroke="#203D31" stroke-width="1.2"/>
+<text fill="#E7F0EB" style="white-space: pre" xml:space="preserve" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="bold" letter-spacing="0em"><tspan x="52" y="765.545">Projection B</tspan></text>
+<text fill="#91AAA0" style="white-space: pre" xml:space="preserve" font-family="Inter, Arial, sans-serif" font-size="12" letter-spacing="0em"><tspan x="52" y="786.864">independent optional insert</tspan></text>
+<rect x="122.5" y="866.5" width="375" height="29" rx="8.5" fill="#10221A"/>
+<rect x="122.5" y="866.5" width="375" height="29" rx="8.5" stroke="#203D31"/>
+<text fill="#A6C7B8" style="white-space: pre" xml:space="preserve" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="600" letter-spacing="0em"><tspan x="172.403" y="882.5">raw storage does not depend on projection success</tspan></text>
+</svg>

@@ -1,0 +1,47 @@
+<svg width="620" height="1120" viewBox="0 0 620 1120" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect width="620" height="1120" rx="24" fill="#090E0D"/>
+<text fill="#F1F7F4" style="white-space: pre" xml:space="preserve" font-family="Inter, Arial, sans-serif" font-size="25" font-weight="bold" letter-spacing="0em"><tspan x="28" y="52.0909">Configuration becomes reusable runtime </tspan><tspan x="28" y="82.0909">state</tspan></text>
+<text fill="#8CA59B" style="white-space: pre" xml:space="preserve" font-family="Inter, Arial, sans-serif" font-size="13" letter-spacing="0em"><tspan x="28" y="108.727">SNode.C configuration is separate from mapping, bridge, and projection documents</tspan></text>
+<circle cx="32" cy="1060" r="4" fill="#56D697"/>
+<text fill="#A6C7B8" style="white-space: pre" xml:space="preserve" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="600" letter-spacing="0em"><tspan x="46" y="1066.5">Source-verified current behavior &#xb7; not separately runtime-exercised</tspan></text>
+<rect x="34.6" y="160.6" width="550.8" height="78.8" rx="15.4" fill="#0B1713"/>
+<rect x="34.6" y="160.6" width="550.8" height="78.8" rx="15.4" stroke="#203D31" stroke-width="1.2"/>
+<text fill="#E7F0EB" style="white-space: pre" xml:space="preserve" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="bold" letter-spacing="0em"><tspan x="52" y="195.545">API / defaults</tspan></text>
+<text fill="#91AAA0" style="white-space: pre" xml:space="preserve" font-family="Inter, Arial, sans-serif" font-size="12" letter-spacing="0em"><tspan x="52" y="216.864">initial values</tspan></text>
+<text fill="#56D697" style="white-space: pre" xml:space="preserve" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="bold" letter-spacing="0em"><tspan x="292" y="259.545">&#x2193;</tspan></text>
+<rect x="34.6" y="276.6" width="550.8" height="78.8" rx="15.4" fill="#0B1713"/>
+<rect x="34.6" y="276.6" width="550.8" height="78.8" rx="15.4" stroke="#203D31" stroke-width="1.2"/>
+<text fill="#E7F0EB" style="white-space: pre" xml:space="preserve" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="bold" letter-spacing="0em"><tspan x="52" y="311.545">Configuration file</tspan></text>
+<text fill="#91AAA0" style="white-space: pre" xml:space="preserve" font-family="Inter, Arial, sans-serif" font-size="12" letter-spacing="0em"><tspan x="52" y="332.864">persistent values</tspan></text>
+<text fill="#56D697" style="white-space: pre" xml:space="preserve" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="bold" letter-spacing="0em"><tspan x="292" y="375.545">&#x2193;</tspan></text>
+<rect x="34.6" y="392.6" width="550.8" height="78.8" rx="15.4" fill="#0B1713"/>
+<rect x="34.6" y="392.6" width="550.8" height="78.8" rx="15.4" stroke="#203D31" stroke-width="1.2"/>
+<text fill="#E7F0EB" style="white-space: pre" xml:space="preserve" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="bold" letter-spacing="0em"><tspan x="52" y="427.545">Command line</tspan></text>
+<text fill="#91AAA0" style="white-space: pre" xml:space="preserve" font-family="Inter, Arial, sans-serif" font-size="12" letter-spacing="0em"><tspan x="52" y="448.864">highest precedence</tspan></text>
+<text fill="#56D697" style="white-space: pre" xml:space="preserve" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="bold" letter-spacing="0em"><tspan x="292" y="491.545">&#x2193;</tspan></text>
+<rect x="34.6" y="510.6" width="550.8" height="130.8" rx="15.4" fill="#10221A"/>
+<rect x="34.6" y="510.6" width="550.8" height="130.8" rx="15.4" stroke="#203D31" stroke-width="1.2"/>
+<text fill="#E7F0EB" style="white-space: pre" xml:space="preserve" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="bold" letter-spacing="0em"><tspan x="52" y="545.545">Named SNode.C instance</tspan></text>
+<text fill="#91AAA0" style="white-space: pre" xml:space="preserve" font-family="Inter, Arial, sans-serif" font-size="12" letter-spacing="0em"><tspan x="52" y="566.864">address / transport / TLS &#xb7; MQTT session &#xb7; application action</tspan></text>
+<text fill="#56D697" style="white-space: pre" xml:space="preserve" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="bold" letter-spacing="0em"><tspan x="292" y="663.545">&#x2193;</tspan></text>
+<rect x="34.6" y="680.6" width="550.8" height="98.8" rx="15.4" fill="#0B1713"/>
+<rect x="34.6" y="680.6" width="550.8" height="98.8" rx="15.4" stroke="#203D31" stroke-width="1.2"/>
+<text fill="#E7F0EB" style="white-space: pre" xml:space="preserve" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="bold" letter-spacing="0em"><tspan x="52" y="715.545">Inspect / persist</tspan></text>
+<text fill="#91AAA0" style="white-space: pre" xml:space="preserve" font-family="Inter, Arial, sans-serif" font-size="12" letter-spacing="0em"><tspan x="52" y="736.864">--show-config &#xb7; --write-config</tspan></text>
+<text fill="#E2B66B" style="white-space: pre" xml:space="preserve" font-family="Inter, Arial, sans-serif" font-size="11" letter-spacing="0em"><tspan x="34" y="818.5">Separate domain documents</tspan></text>
+<rect x="34.6" y="838.6" width="168.8" height="88.8" rx="15.4" fill="#0B1713"/>
+<rect x="34.6" y="838.6" width="168.8" height="88.8" rx="15.4" stroke="#203D31" stroke-width="1.2"/>
+<text fill="#E7F0EB" style="white-space: pre" xml:space="preserve" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="bold" letter-spacing="0em"><tspan x="52" y="873.545">mapping.json</tspan></text>
+<text fill="#91AAA0" style="white-space: pre" xml:space="preserve" font-family="Inter, Arial, sans-serif" font-size="12" letter-spacing="0em"><tspan x="52" y="894.864">mapping rules</tspan></text>
+<rect x="225.6" y="838.6" width="168.8" height="88.8" rx="15.4" fill="#0B1713"/>
+<rect x="225.6" y="838.6" width="168.8" height="88.8" rx="15.4" stroke="#203D31" stroke-width="1.2"/>
+<text fill="#E7F0EB" style="white-space: pre" xml:space="preserve" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="bold" letter-spacing="0em"><tspan x="243" y="873.545">bridge.json</tspan></text>
+<text fill="#91AAA0" style="white-space: pre" xml:space="preserve" font-family="Inter, Arial, sans-serif" font-size="12" letter-spacing="0em"><tspan x="243" y="894.864">topology</tspan></text>
+<rect x="416.6" y="838.6" width="168.8" height="88.8" rx="15.4" fill="#0B1713"/>
+<rect x="416.6" y="838.6" width="168.8" height="88.8" rx="15.4" stroke="#203D31" stroke-width="1.2"/>
+<text fill="#E7F0EB" style="white-space: pre" xml:space="preserve" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="bold" letter-spacing="0em"><tspan x="434" y="873.545">projections.j</tspan><tspan x="434" y="895.545">son</tspan></text>
+<text fill="#91AAA0" style="white-space: pre" xml:space="preserve" font-family="Inter, Arial, sans-serif" font-size="12" letter-spacing="0em"><tspan x="434" y="916.864">typed extraction</tspan></text>
+<rect x="158.5" y="950.5" width="303" height="29" rx="8.5" fill="#241C0D"/>
+<rect x="158.5" y="950.5" width="303" height="29" rx="8.5" stroke="#203D31"/>
+<text fill="#E2B66B" style="white-space: pre" xml:space="preserve" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="600" letter-spacing="0em"><tspan x="234.208" y="966.5">not SNode.C config sections</tspan></text>
+</svg>

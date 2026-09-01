@@ -1,0 +1,34 @@
+<svg width="620" height="1080" viewBox="0 0 620 1080" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect width="620" height="1080" rx="24" fill="#090E0D"/>
+<text fill="#F1F7F4" style="white-space: pre" xml:space="preserve" font-family="Inter, Arial, sans-serif" font-size="25" font-weight="bold" letter-spacing="0em"><tspan x="28" y="52.0909">Logical bridge forwarding</tspan></text>
+<text fill="#8CA59B" style="white-space: pre" xml:space="preserve" font-family="Inter, Arial, sans-serif" font-size="13" letter-spacing="0em"><tspan x="28" y="78.7273">Input subscriptions select traffic; forwarding targets every other connected member</tspan></text>
+<circle cx="32" cy="1020" r="4" fill="#56D697"/>
+<text fill="#A6C7B8" style="white-space: pre" xml:space="preserve" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="600" letter-spacing="0em"><tspan x="46" y="1026.5">Source-verified current behavior &#xb7; not separately runtime-exercised</tspan></text>
+<rect x="34.6" y="160.6" width="550.8" height="110.8" rx="15.4" fill="#0B1713"/>
+<rect x="34.6" y="160.6" width="550.8" height="110.8" rx="15.4" stroke="#203D31" stroke-width="1.2"/>
+<text fill="#E7F0EB" style="white-space: pre" xml:space="preserve" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="bold" letter-spacing="0em"><tspan x="52" y="195.545">Broker A</tspan></text>
+<text fill="#91AAA0" style="white-space: pre" xml:space="preserve" font-family="Inter, Arial, sans-serif" font-size="12" letter-spacing="0em"><tspan x="52" y="216.864">a/temperature &#xb7; member input filter a/#</tspan></text>
+<text fill="#56D697" style="white-space: pre" xml:space="preserve" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="bold" letter-spacing="0em"><tspan x="292" y="293.545">&#x2193;</tspan></text>
+<rect x="34.6" y="314.6" width="550.8" height="168.8" rx="15.4" fill="#10221A"/>
+<rect x="34.6" y="314.6" width="550.8" height="168.8" rx="15.4" stroke="#203D31" stroke-width="1.2"/>
+<text fill="#E7F0EB" style="white-space: pre" xml:space="preserve" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="bold" letter-spacing="0em"><tspan x="52" y="349.545">MQTTBridge &#xb7; lab</tspan></text>
+<text fill="#91AAA0" style="white-space: pre" xml:space="preserve" font-family="Inter, Arial, sans-serif" font-size="12" letter-spacing="0em"><tspan x="52" y="370.864">receive on A member</tspan></text>
+<text fill="#91AAA0" style="white-space: pre" xml:space="preserve" font-family="Inter, Arial, sans-serif" font-size="12" letter-spacing="0em"><tspan x="52" y="390.864">exclude immediate source A</tspan></text>
+<text fill="#91AAA0" style="white-space: pre" xml:space="preserve" font-family="Inter, Arial, sans-serif" font-size="12" letter-spacing="0em"><tspan x="52" y="410.864">forward to every other connected member</tspan></text>
+<rect x="156.5" y="500.5" width="307" height="29" rx="8.5" fill="#10221A"/>
+<rect x="156.5" y="500.5" width="307" height="29" rx="8.5" stroke="#203D31"/>
+<text fill="#A6C7B8" style="white-space: pre" xml:space="preserve" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="600" letter-spacing="0em"><tspan x="225.298" y="516.5">payload &#xb7; QoS &#xb7; retain preserved</tspan></text>
+<text fill="#56D697" style="white-space: pre" xml:space="preserve" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="bold" letter-spacing="0em"><tspan x="292" y="563.545">&#x2193;</tspan></text>
+<rect x="34.6" y="590.6" width="550.8" height="103.8" rx="15.4" fill="#0B1713"/>
+<rect x="34.6" y="590.6" width="550.8" height="103.8" rx="15.4" stroke="#203D31" stroke-width="1.2"/>
+<text fill="#E7F0EB" style="white-space: pre" xml:space="preserve" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="bold" letter-spacing="0em"><tspan x="52" y="625.545">Broker B</tspan></text>
+<text fill="#91AAA0" style="white-space: pre" xml:space="preserve" font-family="Inter, Arial, sans-serif" font-size="12" letter-spacing="0em"><tspan x="52" y="646.864">destination &#xb7; prefixed topic</tspan></text>
+<text fill="#56D697" style="white-space: pre" xml:space="preserve" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="bold" letter-spacing="0em"><tspan x="292" y="719.545">&#x2193;</tspan></text>
+<rect x="34.6" y="742.6" width="550.8" height="103.8" rx="15.4" fill="#0B1713"/>
+<rect x="34.6" y="742.6" width="550.8" height="103.8" rx="15.4" stroke="#203D31" stroke-width="1.2"/>
+<text fill="#E7F0EB" style="white-space: pre" xml:space="preserve" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="bold" letter-spacing="0em"><tspan x="52" y="777.545">Broker C</tspan></text>
+<text fill="#91AAA0" style="white-space: pre" xml:space="preserve" font-family="Inter, Arial, sans-serif" font-size="12" letter-spacing="0em"><tspan x="52" y="798.864">destination &#xb7; prefixed topic</tspan></text>
+<rect x="155.5" y="866.5" width="309" height="29" rx="8.5" fill="#10221A"/>
+<rect x="155.5" y="866.5" width="309" height="29" rx="8.5" stroke="#203D31"/>
+<text fill="#56D697" style="white-space: pre" xml:space="preserve" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="600" letter-spacing="0em"><tspan x="217.478" y="882.5">source A is never immediate target</tspan></text>
+</svg>
