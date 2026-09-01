@@ -22,7 +22,12 @@ Therefore do **not** expose the current administration/event surface to an untru
 
 Practical deployment controls can include loopback/private binding, firewall policy, an authenticated reverse proxy, or another network boundary appropriate to the environment. If MQTT clients use credentials, assume current Broker event/log visibility is credential-sensitive.
 
-> **Figure placeholder — Broker trust boundary.** Show MQTT listeners separately from the dashboard/admin/SSE HTTP surface, with the latter inside a trusted operator boundary and an explicit note that current Broker routes have no application authentication.
+<picture>
+  <source media="(max-width: 600px)" srcset="../assets/broker-trust-boundary-mobile.svg">
+  <img src="../assets/broker-trust-boundary.svg" alt="Trust-boundary diagram separating MQTTBroker's MQTT data plane from its HTTP and HTTPS dashboard, administration API, and SSE operator plane, highlighting the lack of application authentication, wildcard API event CORS, and credential-sensitive event state.">
+</picture>
+
+<sub>The current Broker administration/event surface belongs inside a trusted operator boundary; TLS alone does not authorize callers.</sub>
 
 ## Dashboard relationship
 
