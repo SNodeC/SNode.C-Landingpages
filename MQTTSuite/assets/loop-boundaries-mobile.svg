@@ -1,0 +1,22 @@
+<svg width="620" height="1190" viewBox="0 0 620 1190" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect width="620" height="1190" rx="24" fill="#090E0D"/>
+<text fill="#F1F7F4" style="white-space: pre" xml:space="preserve" font-family="Inter" font-size="25" font-weight="bold"><tspan x="28" y="52.0909">Three different loop boundaries</tspan></text>
+<text fill="#8CA59B" style="white-space: pre" xml:space="preserve" font-family="Inter" font-size="16"><tspan x="28" y="81.3182">Immediate source exclusion is local; topology/subscription design is the </tspan><tspan x="28" y="100.318">general control; loop_prevention is a private cooperating-endpoint </tspan><tspan x="28" y="119.318">mechanism</tspan></text>
+<circle cx="32" cy="1130" r="4" fill="#56D697"/>
+<text fill="#A6C7B8" style="white-space: pre" xml:space="preserve" font-family="Inter" font-size="16" font-weight="600"><tspan x="46" y="1141.32">Source-verified current behavior · not separately runtime-exercised</tspan></text>
+<rect x="34.6" y="155.6" width="550.8" height="123.8" rx="15.4" fill="#10221A"/><rect x="34.6" y="155.6" width="550.8" height="123.8" rx="15.4" stroke="#203D31" stroke-width="1.2"/>
+<text fill="#E7F0EB" style="white-space: pre" xml:space="preserve" font-family="Inter" font-size="18" font-weight="bold"><tspan x="52" y="189.545">1 · Immediate source exclusion</tspan></text>
+<text fill="#91AAA0" style="white-space: pre" xml:space="preserve" font-family="Inter" font-size="16"><tspan x="52" y="214.318">do not send straight back through the source member</tspan></text>
+<rect x="34.6" y="322.6" width="550.8" height="143.8" rx="15.4" fill="#10221A"/><rect x="34.6" y="322.6" width="550.8" height="143.8" rx="15.4" stroke="#203D31" stroke-width="1.2"/>
+<text fill="#E7F0EB" style="white-space: pre" xml:space="preserve" font-family="Inter" font-size="18" font-weight="bold"><tspan x="52" y="356.545">2 · Topology / subscriptions</tspan></text>
+<text fill="#91AAA0" style="white-space: pre" xml:space="preserve" font-family="Inter" font-size="16"><tspan x="52" y="381.318">partition input filters · design prefixes</tspan><tspan x="52" y="405.318">general loop-control mechanism</tspan></text>
+<rect x="34.6" y="509.6" width="550.8" height="153.8" rx="15.4" fill="#10221A"/><rect x="34.6" y="509.6" width="550.8" height="153.8" rx="15.4" stroke="#203D31" stroke-width="1.2"/>
+<text fill="#E7F0EB" style="white-space: pre" xml:space="preserve" font-family="Inter" font-size="18" font-weight="bold"><tspan x="52" y="543.545">3 · loop_prevention</tspan></text>
+<text fill="#91AAA0" style="white-space: pre" xml:space="preserve" font-family="Inter" font-size="16"><tspan x="52" y="568.318">private SNode.C mechanism</tspan><tspan x="52" y="592.318">requires cooperating endpoint</tspan><tspan x="52" y="616.318">not standard MQTT 3.1.1</tspan></text>
+<text fill="#E9897B" style="white-space: pre" xml:space="preserve" font-family="Inter" font-size="16"><tspan x="34" y="715.318">A cycle can still exist</tspan></text>
+<rect x="34.6" y="735.6" width="550.8" height="118.8" rx="15.4" fill="#281310"/><rect x="34.6" y="735.6" width="550.8" height="118.8" rx="15.4" stroke="#E9897B" stroke-width="1.2"/>
+<text fill="#E7F0EB" style="white-space: pre" xml:space="preserve" font-family="Inter" font-size="18" font-weight="bold"><tspan x="52" y="769.545">A → B → A</tspan></text>
+<text fill="#91AAA0" style="white-space: pre" xml:space="preserve" font-family="Inter" font-size="16"><tspan x="52" y="794.318">when forwarded traffic matches the other member input</tspan></text>
+<rect x="70.5" y="884.5" width="479" height="29" rx="8.5" fill="#241C0D"/><rect x="70.5" y="884.5" width="479" height="29" rx="8.5" stroke="#203D31"/>
+<text fill="#E2B66B" style="white-space: pre" xml:space="preserve" font-family="Inter" font-size="16" font-weight="600"><tspan x="106.805" y="905.318">source exclusion ≠ proof of arbitrary topology safety</tspan></text>
+</svg>

@@ -23,7 +23,10 @@ Treat both admin listeners as trusted operational surfaces. HTTPS protects traff
 
 Recommended deployment controls include loopback/private binding, firewalling, or an authenticated reverse proxy in front of the Bridge administration listener.
 
-> **Figure placeholder — Bridge administration trust boundary.** Show outbound MQTT broker connections as the data plane and the HTTP/HTTPS configuration + SSE surface as a separate trusted operator plane with no current application authentication.
+<picture>
+  <source media="(max-width: 600px)" srcset="../assets/bridge-trust-boundary-mobile.svg">
+  <img src="../assets/bridge-trust-boundary.svg" alt="Diagram separating MQTTBridge's outbound MQTT broker connections as the data plane from its HTTP/HTTPS configuration and SSE operator plane, which currently has no application authentication and belongs inside a trusted deployment boundary.">
+</picture>
 
 ## Route summary
 
@@ -300,7 +303,10 @@ A useful operator sequence is:
 
 The HTTP PATCH acknowledgement alone is deliberately not the whole operational proof.
 
-> **Figure placeholder — Bridge PATCH + SSE lifecycle.** Show JSON Patch acceptance → staged configuration → disconnect/close → activate/persist → restart clients, with SSE events spanning stopping, starting and connected states.
+<picture>
+  <source media="(max-width: 600px)" srcset="../assets/bridge-patch-sse-lifecycle-mobile.svg">
+  <img src="../assets/bridge-patch-sse-lifecycle.svg" alt="Diagram of the MQTTBridge PATCH lifecycle: JSON Patch acceptance and staged configuration, current-client teardown, activation and persistence, new-client startup, and SSE lifecycle events spanning stopping, starting, connecting, connected, and started states.">
+</picture>
 
 ## Security and secret handling
 

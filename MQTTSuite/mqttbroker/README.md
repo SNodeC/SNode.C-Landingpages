@@ -59,7 +59,10 @@ Each enabled SNode.C server endpoint creates a per-connection MQTT context aroun
 
 MQTTSuite adds the application-visible `MqttModel` used by the dashboard/event stream and can invoke the shared `MqttMapper` for optional in-process transformation.
 
-> **Figure placeholder — Listener families around one broker core.** Show direct MQTT and HTTP/WebSocket listener instances converging on one shared broker/session model, with per-connection MQTT contexts created by the Broker factory.
+<picture>
+  <source media="(max-width: 600px)" srcset="../assets/broker-listener-families-mobile.svg">
+  <img src="../assets/broker-listener-families.svg" alt="MQTTBroker architecture showing direct MQTT and HTTP/HTTPS-WebSocket listener families converging on one shared Broker core with common session, subscription, retained-message, and observable state.">
+</picture>
 
 ## Build and install
 
@@ -162,7 +165,10 @@ POST /api/mqtt/subscribe
 
 For exact bodies, status behavior, CORS, SSE event vocabulary, snapshot/replay behavior, and credential exposure, use [Broker HTTP API and SSE](../docs/broker-http-api.md).
 
-> **Figure placeholder — Dashboard, SSE, API, and MQTT WebSocket relationship.** Show the HTTP router serving static client pages, SSE live state, mutating JSON operations, and the `/ws` MQTT upgrade beside the direct MQTT listeners.
+<picture>
+  <source media="(max-width: 600px)" srcset="../assets/broker-http-surfaces-mobile.svg">
+  <img src="../assets/broker-http-surfaces.svg" alt="MQTTBroker HTTP-router diagram showing the dashboard, SSE live-state routes, mutating JSON administration API, and MQTT-over-WebSocket upgrade as four distinct surfaces on the Broker HTTP/HTTPS listener family.">
+</picture>
 
 ## Optional embedded mapping
 
@@ -178,7 +184,10 @@ With a mapper configured, incoming publishes can produce zero or more mapped pub
 
 Use embedded mapping for a compact Broker-owned deployment. Use standalone [MQTTIntegrator](../mqttintegrator/README.md) when transformation should have its own MQTT connection and administration lifecycle.
 
-> **Figure placeholder — Optional embedded mapper.** Show normal broker routing with a side branch through `MqttMapper`, then mapped publishes re-entering the broker without a second process.
+<picture>
+  <source media="(max-width: 600px)" srcset="../assets/broker-embedded-mapper-mobile.svg">
+  <img src="../assets/broker-embedded-mapper.svg" alt="MQTTBroker embedded-mapping diagram showing an incoming PUBLISH following normal broker routing while the optional shared MqttMapper produces mapped publications that re-enter the same Broker without a child MQTTIntegrator process.">
+</picture>
 
 The mapping grammar is documented in [Integrator mapping](../docs/integrator-mapping.md).
 

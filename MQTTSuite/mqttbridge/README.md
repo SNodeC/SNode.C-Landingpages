@@ -113,7 +113,10 @@ Use Bridge when selected MQTT traffic should cross broker domains. Use Integrato
 
 A bridge-definition document is validated and turned into logical bridges and broker members. Each member becomes an outbound SNode.C MQTT client. On CONNACK it subscribes to its configured filters; on PUBLISH it hands the message to its owning logical bridge for forwarding.
 
-> **Figure placeholder — Bridge definition to runtime clients.** Show `bridges[]` → logical bridge → `brokers[]` → SNode.C client connection/MQTT context, including the internal relationship between a definition member and its runtime client.
+<picture>
+  <source media="(max-width: 600px)" srcset="../assets/bridge-runtime-clients-mobile.svg">
+  <img src="../assets/bridge-runtime-clients.svg" alt="MQTTBridge architecture showing bridge.json validated by BridgeStore, materialized as a logical bridge with broker members, and each enabled member becoming its own outbound SNode.C MQTT client and MQTT context.">
+</picture>
 
 A complete installation places `mqttbridge` in `${CMAKE_INSTALL_PREFIX}/bin` and Web assets under `${CMAKE_INSTALL_PREFIX}/var/www/mqttsuite/mqttbridge`.
 
@@ -160,7 +163,10 @@ Each logical bridge has a name, optional disabled flag/prefix, and one or more b
 - member `prefix`;
 - `topics` subscriptions.
 
-> **Figure placeholder — Bridge-definition hierarchy.** Show root `bridges[]`, one bridge's `name/disabled/prefix`, and nested broker members with network, MQTT session, subscriptions, member prefix, and session store.
+<picture>
+  <source media="(max-width: 600px)" srcset="../assets/bridge-definition-hierarchy-mobile.svg">
+  <img src="../assets/bridge-definition-hierarchy.svg" alt="MQTTBridge definition hierarchy showing root bridges, bridge-wide name, disabled state and prefix, and per-broker member network, MQTT session, topic subscriptions, member prefix, and session-store settings.">
+</picture>
 
 ### Network
 
@@ -232,7 +238,10 @@ bridge/from-a/to-b/a/temperature
 
 Prefixes are literal concatenation; include separators such as `/` deliberately. Payload, QoS, and retain are preserved.
 
-> **Figure placeholder — Prefix and forwarding construction.** Trace one publish from source member to destination member and build the output topic token by token as bridge prefix + source prefix + destination prefix + original topic.
+<picture>
+  <source media="(max-width: 600px)" srcset="../assets/bridge-prefix-construction-mobile.svg">
+  <img src="../assets/bridge-prefix-construction.svg" alt="MQTTBridge forwarding-topic construction showing literal concatenation in the exact order bridge prefix, source-member prefix, destination-member prefix, and original MQTT topic, with payload, incoming QoS, and retain preserved.">
+</picture>
 
 ## Multi-member forwarding and loops
 
@@ -254,7 +263,10 @@ The definition also exposes:
 
 This requests a private SNode.C origin-reflection mechanism. It is not a standard MQTT 3.1.1 loop-prevention feature and does not prove arbitrary cyclic topologies safe, especially when third-party brokers or additional bridges are involved.
 
-> **Figure placeholder — Loop boundaries.** Contrast immediate source exclusion, subscription/prefix topology design, and the private cooperating-endpoint mechanism, and show one cycle that still requires operator reasoning.
+<picture>
+  <source media="(max-width: 600px)" srcset="../assets/loop-boundaries-mobile.svg">
+  <img src="../assets/loop-boundaries.svg" alt="MQTTBridge loop-boundary diagram distinguishing immediate source-member exclusion, topology and subscription-prefix design, and the private SNode.C loop-prevention mechanism, while showing that a later A-to-B-to-A cycle can still require operator reasoning.">
+</picture>
 
 ## Transport boundaries
 

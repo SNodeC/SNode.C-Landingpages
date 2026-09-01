@@ -369,7 +369,10 @@ mqttstore \
         --projection-file ./projections.json
 ```
 
-> **Figure placeholder — JSON/topic projection extraction.** Show `topic_level`, `json_pointer`, and `literal` feeding typed SQL columns while raw storage remains independent.
+<picture>
+  <source media="(max-width: 600px)" srcset="../assets/json-topic-projection-extraction-mobile.svg">
+  <img src="../assets/json-topic-projection-extraction.svg" alt="MQTTStore projection diagram showing raw MQTT storage written independently while a matching valid-JSON projection extracts topic_level, json_pointer, and literal values as parallel column sources for a typed SQL row.">
+</picture>
 
 ## Projection sources
 

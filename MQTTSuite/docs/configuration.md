@@ -24,7 +24,10 @@ Read this as:
 
 Server applications use analogous `local` address sections. WebSocket clients add an HTTP section. MQTTStore adds `db` and nested `storage`; MQTTBroker and MQTTIntegrator add application options; MQTTBridge builds its outbound client instances from a separate bridge-definition document.
 
-> **Figure placeholder — MQTTSuite configuration hierarchy.** Show application → named connection instance → address/transport/TLS → MQTT session → application-specific action, with the same hierarchy feeding command-line, config-file, and inspection output.
+<picture>
+  <source media="(max-width: 600px)" srcset="../assets/mqttsuite-configuration-hierarchy-mobile.svg">
+  <img src="../assets/mqttsuite-configuration-hierarchy.svg" alt="MQTTSuite command and configuration hierarchy showing application root, named connection instance selecting address family and stream, TLS or WebSocket transport, remote or Unix address and optional WebSocket HTTP target, MQTT session, subscribe or publish actions, and the same tree exposed through CLI, configuration files, and inspection.">
+</picture>
 
 ## Values and precedence
 
@@ -166,7 +169,10 @@ alerts/###2
 
 The second value means MQTT filter `alerts/#` with requested subscription QoS 2. MQTTCli uses the same suffix convention on its publish topic to override publish QoS for that publication.
 
-> **Figure placeholder — Subscription QoS versus publish QoS.** Show one incoming subscription filter with its requested/max delivery QoS on the left and one outgoing PUBLISH with its independently selected publish QoS on the right. Include MQTTIntegrator's `subscription.qos` versus mapped-output `qos`, and MQTTCli's session default plus `##<qos>` override semantics.
+<picture>
+  <source media="(max-width: 600px)" srcset="../assets/qos-subscribe-vs-publish-mobile.svg">
+  <img src="../assets/qos-subscribe-vs-publish.svg" alt="MQTTSuite QoS diagram distinguishing requested subscription delivery QoS from outgoing PUBLISH QoS, including MQTTCli topic ##qos overrides and MQTTIntegrator subscription.qos versus mapped-output qos.">
+</picture>
 
 ## Direct MQTT and MQTT over WebSocket
 

@@ -98,7 +98,10 @@ MQTTIntegrator is an SNode.C MQTT client application. The selected SNode.C conne
 
 After MQTT CONNACK, the application subscribes to the topic filters derived from the mapping. Each received PUBLISH is matched against the mapping tree and may produce zero, one, or many immediate or delayed output publications on the same MQTT client connection.
 
-> **Figure placeholder — MQTTIntegrator mapping pipeline.** Show broker subscription → matching topic tree → mapping rule → immediate or delayed output → republish on the same MQTT connection, with subscribe QoS and publish QoS labeled separately.
+<picture>
+  <source media="(max-width: 600px)" srcset="../assets/integrator-mapping-pipeline-mobile.svg">
+  <img src="../assets/integrator-mapping-pipeline.svg" alt="MQTTIntegrator pipeline showing broker delivery to the MQTT client, topic-tree matching, mapping rules, immediate or scheduled output, and mapped PUBLISH messages returning to the broker through the same outbound MQTT client connection, with subscription and output QoS kept separate.">
+</picture>
 
 ## Build and install result
 
@@ -241,7 +244,10 @@ devices/+/temperature
 
 For a complete literal-plus-wildcard example, see [Sibling topic branches](../docs/integrator-sibling-topics-example.md).
 
-> **Figure placeholder — Topic-tree matching.** Show a nested `devices/+/temperature` mapping tree and a terminal `devices/#` branch beside concrete MQTT topics, including the zero-level `devices` case and where subscription QoS is attached.
+<picture>
+  <source media="(max-width: 600px)" srcset="../assets/integrator-topic-tree-matching-mobile.svg">
+  <img src="../assets/integrator-topic-tree-matching.svg" alt="MQTTIntegrator topic-tree matching diagram showing literal branches, single-level plus wildcard, terminal hash wildcard including the zero-level parent/hash case, subscription QoS attachment, and first-match sibling document order.">
+</picture>
 
 ## Three mapping modes
 
@@ -280,7 +286,10 @@ Use `json` when the incoming payload is JSON:
 
 Each mode can fan out to multiple independently configured outputs.
 
-> **Figure placeholder — Static, scalar, JSON, and fan-out mapping.** Compare the three mapping modes and show one input branching into multiple independently configured output publishes.
+<picture>
+  <source media="(max-width: 600px)" srcset="../assets/integrator-mapping-modes-mobile.svg">
+  <img src="../assets/integrator-mapping-modes.svg" alt="MQTTIntegrator mapping-mode comparison showing static exact-string mapping, scalar value templating, JSON templating, their common mapped-PUBLISH output model, and mapping arrays fanning one input out to multiple independently configured outputs.">
+</picture>
 
 ## QoS, retain, delay, and suppressions
 

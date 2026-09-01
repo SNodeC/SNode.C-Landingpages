@@ -34,7 +34,10 @@ No application-specific CORS headers are emitted by `MappingAdminRouter.cpp` in 
 
 Practical deployment controls include binding the listener to a trusted interface, firewalling it, or placing it behind an authenticated reverse proxy that supplies the deployment's real access-control policy.
 
-> **Figure placeholder — Integrator administration trust boundary.** Show the MQTT data-plane client connection separately from the HTTP/HTTPS mapping administration listener, with Basic Auth and secret-bearing mapping state inside a trusted operator boundary.
+<picture>
+  <source media="(max-width: 600px)" srcset="../assets/integrator-trust-boundary-mobile.svg">
+  <img src="../assets/integrator-trust-boundary.svg" alt="Diagram separating MQTTIntegrator's outbound MQTT data plane from its HTTP/HTTPS mapping administration plane, with fixed Basic Authentication and secret-bearing mapping state inside a trusted deployment boundary.">
+</picture>
 
 ## Route summary
 
@@ -408,7 +411,10 @@ history ──► rollback ──► active mapping + reload
 
 The mapping/history files can contain MQTT credentials. Protect their filesystem location as secret-bearing configuration state.
 
-> **Figure placeholder — Mapping administration lifecycle.** Show active → draft via PATCH/POST → validate → deploy → history, plus rollback back to active and the reload branch to subscription delta or reconnect.
+<picture>
+  <source media="(max-width: 600px)" srcset="../assets/mapping-administration-lifecycle-mobile.svg">
+  <img src="../assets/mapping-administration-lifecycle.svg" alt="Diagram of MQTTIntegrator mapping administration: active mapping to draft via PATCH or POST, validation and deploy, a reload branch to subscription delta or reconnect, version history, and rollback back to the active mapping.">
+</picture>
 
 ## UI routes
 

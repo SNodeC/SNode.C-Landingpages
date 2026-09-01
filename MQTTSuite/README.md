@@ -22,7 +22,10 @@ The latest published GitHub release is [`v1.0.1`](https://github.com/SNodeC/mqtt
 
 The applications are separate processes. MQTTBroker is not the whole product, MQTTBridge is not another broker, and MQTTIntegrator is not a general-purpose stream-processing platform.
 
-> **Figure placeholder — Five applications, five responsibilities.** Show one representative MQTT message around the five applications, making brokerage, transformation, forwarding, inspection, and persistence visually distinct while preserving the separate-process boundaries.
+<picture>
+  <source media="(max-width: 600px)" srcset="assets/application-message-flow-mobile.svg">
+  <img src="assets/application-message-flow.svg" alt="MQTTSuite application-role diagram showing one representative MQTT publication around MQTTBroker, MQTTIntegrator, MQTTBridge, MQTTCli, and MQTTStore, with brokerage, transformation, forwarding, inspection, and persistence kept as separate application responsibilities.">
+</picture>
 
 ## Quick Start: Broker and CLI
 
@@ -77,7 +80,10 @@ The subscriber prints the topic together with QoS/retain/dup metadata and the pa
 
 MQTTCli client endpoints reconnect. For an interactive one-shot verification, stop the publisher with `Ctrl-C` after the first intended result.
 
-> **Figure placeholder — Broker + CLI first success.** Show the real Broker, subscriber, and publisher terminal result for the canonical `edge-lab/room-01/temperature` QoS 1 message.
+<picture>
+  <source media="(max-width: 600px)" srcset="assets/first-success-terminal-mobile.png">
+  <img src="assets/first-success-terminal.png" alt="Runtime-qualified terminal capture of the canonical MQTTSuite first-success scenario: MQTTBroker with an MQTTCli subscriber and publisher exchanging the edge-lab/room-01/temperature JSON message at QoS 1.">
+</picture>
 
 ## Build and install
 
@@ -195,7 +201,10 @@ MQTTSuite also uses domain configuration documents that are separate from the SN
 
 See the [configuration reference](docs/configuration.md) for named instances, client defaults, persistence, retry/reconnect, TLS, logging, and application-local admin listener names.
 
-> **Figure placeholder — Configuration hierarchy and persistence.** Show defaults/config files/CLI converging on a named endpoint hierarchy, then separate that SNode.C configuration from mapping, bridge, and Store projection documents.
+<picture>
+  <source media="(max-width: 600px)" srcset="assets/configuration-hierarchy-persistence-mobile.svg">
+  <img src="assets/configuration-hierarchy-persistence.svg" alt="MQTTSuite configuration diagram showing API defaults, configuration files, and command-line values converging on effective SNode.C instance state, while mapping, bridge, and projection JSON remain separate domain documents.">
+</picture>
 
 ## Connection and transport composition
 
@@ -236,7 +245,10 @@ Bridge is a forwarding application, not a mapper. Loops must be controlled throu
 
 See the [MQTTBridge README](mqttbridge/README.md), [complete three-broker example](docs/bridge-multi-broker-example.md), and [Bridge HTTP API and SSE](docs/bridge-http-api.md).
 
-> **Figure placeholder — Logical bridge forwarding.** Show one message entering a logical bridge member, source exclusion, forwarding to peer members, and the prefix order used to construct each destination topic.
+<picture>
+  <source media="(max-width: 600px)" srcset="assets/logical-bridge-forwarding-mobile.svg">
+  <img src="assets/logical-bridge-forwarding.svg" alt="Logical MQTTBridge forwarding diagram showing a publication selected by Broker A member subscriptions, immediate source A excluded, and the publication forwarded independently to connected Broker B and Broker C members with payload, QoS, and retain preserved.">
+</picture>
 
 ## Inspection: verify paths with MQTTCli
 
@@ -265,7 +277,10 @@ device topics
 
 See the [MQTTStore README](mqttstore/README.md) for database bootstrap, raw-table schema, payload classification, permissions, projections, and verification.
 
-> **Figure placeholder — Raw envelope and optional projections.** Show every received MQTT publication going to the raw table, with valid JSON optionally feeding one or more typed projection tables independently.
+<picture>
+  <source media="(max-width: 600px)" srcset="assets/raw-envelope-projections-mobile.svg">
+  <img src="assets/raw-envelope-projections.svg" alt="MQTTStore persistence diagram showing every MQTT PUBLISH written to the raw MQTT row first, while valid JSON can independently feed one or more optional typed projection inserts.">
+</picture>
 
 ## Trust and deployment boundaries
 
