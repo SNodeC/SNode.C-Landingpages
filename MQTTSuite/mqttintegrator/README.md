@@ -92,7 +92,7 @@ payload: on
 
 The mapping's `subscription.qos` controls how MQTTIntegrator subscribes. The mapping output's `qos` controls the republished message. Those are separate decisions.
 
-## How it works
+## How the Integrator is assembled
 
 MQTTIntegrator is an SNode.C MQTT client application. The selected SNode.C connection instance establishes the transport; the Integrator attaches MQTTSuite mapping behavior to that connection.
 
@@ -208,7 +208,7 @@ The mapping JSON remains a separate domain document; writing the SNode.C applica
 
 Use `--mqtt-mapping-file` explicitly for predictable deployments rather than relying on the application's implicit startup mapping state.
 
-## Mapping model
+## Mapping files
 
 Mappings are recursive MQTT topic trees. A `subscription` attaches receive QoS plus one or more mapping rules to a selected topic branch.
 
