@@ -1,95 +1,108 @@
 # MQTTSuite README publication state
 
-**Status:** post-review text-correction state established 31 August 2026  
+**Status:** post-review text-correction and editorial-reduction state established 1 September 2026  
 **Supersedes as a publication gate:** `08-PRODUCT-IMPLEMENTATION-DECISIONS.md` Decisions A–H  
 **Documentation architecture:** application-suite-first Step-6 architecture remains accepted  
 **Current visual-production scope:** [`10-VISUAL-PRODUCTION-PLAN.md`](10-VISUAL-PRODUCTION-PLAN.md)
 
 ## Human decision
 
-The previously frozen implementation Decisions A–H were explicitly reverted as prerequisites for the README publication workflow. They are **not blockers for README revision or Landingpages publication**, and their proposed implementation changes are not scheduled as part of this documentation pass.
+The previously frozen implementation Decisions A–H were explicitly reverted as prerequisites for the README publication workflow. They are **not blockers for README revision or Landingpages publication**. Documentation describes the actual current implementation, including user-relevant limitations and trust boundaries, instead of documenting desired future behavior as though it existed.
 
-`08-PRODUCT-IMPLEMENTATION-DECISIONS.md` remains historical decision/review evidence. Its statements that README revision or publication is blocked by A–H are superseded by this artifact.
+`08-PRODUCT-IMPLEMENTATION-DECISIONS.md` remains historical decision/review evidence.
 
-Documentation must therefore describe the **actual current implementation**, including user-relevant limitations and trust boundaries, instead of documenting desired future behavior as though it existed.
-
-## Subsequent narrow implementation correction
-
-After this publication state was first established, MQTTIntegrator wildcard handling was corrected in `SNodeC/mqttsuite` PR #22.
-
-Current source baseline:
+## Current implementation baseline
 
 ```text
-master: 6c0ff62c612694a6111ff971c446327938130cf0
+SNodeC/mqttsuite master: 6c0ff62c612694a6111ff971c446327938130cf0
 PR #22 implementation commit: d15f70a2818d291638c50aa2e2116a9e49ebd9e1
 ```
 
-The correction is deliberately narrow:
+PR #22 corrected MQTTIntegrator terminal `#` matching to MQTT multi-level semantics while leaving `+` single-level. No mapping schema change accompanied that correction.
 
-- `MqttMapper::findMatchingTopicLevel()` treats terminal `#` as a true MQTT multi-level wildcard;
-- `#` consumes zero or more remaining topic levels;
-- `parent/#` can match `parent` itself when the parent has no own subscription mapping;
-- `+` remains single-level;
-- no mapping schema, configuration, or unrelated behavior changed.
+Shared SNode.C behavior used by the reader-facing documentation remains pinned from the source revisions named by the individual references. The recorded runtime qualification remains MQTTSuite `52de563...` against SNode.C `60f26d9...`; it predates PR #22 and is not rewritten as current runtime evidence.
 
-The former publication statement that Integrator `#` matched only one level is **obsolete and superseded**. Reader-facing documentation uses the post-fix semantics.
+## Completed correctness pass
 
-## Post-review documentation correction pass
+The post-review correction pass closed the previously identified publication defects, including:
 
-Two independent reviews were reconciled against the current Landingpages tree and current MQTTSuite source. The resulting correction pass is complete in the reader-facing documentation.
+1. schema-valid Integrator mapping examples;
+2. publication-safe SNode.C configuration routing;
+3. correct MQTTBridge subcommand hierarchy;
+4. correct MQTTStore projection-validation/runtime boundary wording;
+5. correct MQTTIntegrator fixed-admin-credential guidance;
+6. removal of the stale Store user-guide route;
+7. real quick-start output wording and Broker debug visibility;
+8. actual client-side port defaults and application-local admin listener names;
+9. Store auto-create/socket defaults and DBA-managed mode;
+10. MQTTCli publication `##<qos>` overrides;
+11. direct application → deep-reference navigation;
+12. explicit Bridge/Store routing-page ownership;
+13. exact Integrator template/suppression semantics in the deep mapping reference;
+14. aligned Integrator HTTP/UI routing;
+15. project/release/dependency positioning.
 
-Closed correctness/consistency items include:
+The effective dependency wording is now explicit: MQTTSuite itself declares nlohmann/json `3.7.0`, while the current SNode.C MQTT component requires `3.11+`; therefore the complete current SNode.C + MQTTSuite source workflow documents `3.11+`.
 
-1. Integrator mapping examples now nest `static`, `value`, and `json` inside `subscription`, matching the unchanged schema.
-2. The SNode.C configuration reference route no longer depends on the Landingpages sibling-directory layout.
-3. MQTTBridge commands scope `--definition` and `--html-dir` under the required `bridge` subcommand.
-4. MQTTStore no longer overclaims malformed projection files as guaranteed process-startup failure; loading/validation is located at MQTT context creation and the whole-process consequence remains `[UNVERIFIED-RUNTIME]`.
-5. MQTTIntegrator documentation no longer implies that fixed `admin/admin` administration credentials can be changed through a supported application configuration option.
-6. The stale implementation-repository MQTTStore user-guide route is no longer canonical publication guidance.
-7. Quick-start output wording follows the real MQTTCli formatter/capture rather than a reconstructed four-line transcript, and Broker quick starts use debug-level logging where listener-state visibility is expected.
-8. Shared documentation states the actual client-side remote-port defaults, including direct TLS client instances defaulting to `1883`, and distinguishes application-local HTTP/admin instance names and ports.
-9. MQTTStore documents `--auto-create-raw-table=true` as the default, the explicit `false` DBA-managed-table mode, and the non-empty MariaDB socket default/help semantics.
-10. MQTTCli documents publish-topic `##<qos>` overrides as well as subscription overrides.
-11. Broker, Integrator, Bridge, and Store application documentation routes directly to the relevant deeper references.
-12. Bridge/Store signpost pages are described honestly as routing pages rather than falsely as independent deep owners.
-13. The Integrator mapping reference documents exact template context names and the retained-empty suppression carve-out.
-14. Integrator UI/catch-all routing is consistent between mapping and HTTP references.
-15. The root README states project/release positioning and the `nlohmann_json >= 3.7.0` build requirement.
+## Post-audit editorial reduction
 
-These corrections do not constitute new runtime qualification beyond the evidence classes stated in the individual documents.
+After `11-FINAL-DOCUMENTATION-AUDIT.md` passed the correctness/completeness review, the reader-facing tree received a non-structural **de-forensics / progressive-disclosure pass**.
 
-## Visual-production state
+Purpose:
 
-The original [`05-VISUALS.md`](05-VISUALS.md) is preserved as the historical Step-5A validation/provenance record for V1–V3 and its runtime-capture evidence. Its original “three visuals only” production scope is **not** the current figure-count/ownership plan after the later README/reference expansion.
+- remove review chronology and audit rationale from public-facing prose;
+- keep source evidence behind the claims rather than narrating the review process;
+- let the root README remain an application-suite landing page;
+- let application READMEs stay operationally complete without duplicating deep references;
+- keep exhaustive mapping/API/configuration contracts in the documents that own them;
+- preserve all user-relevant limitations, trust boundaries, commands, defaults, examples, and figure briefs.
 
-The canonical post-review production scope is [`10-VISUAL-PRODUCTION-PLAN.md`](10-VISUAL-PRODUCTION-PLAN.md):
+Files materially reduced:
 
-- **24** reader-facing canonical figure briefs;
-- duplicate mapping-pipeline, Integrator-admin, Bridge-restart/SSE, Store-raw-persistence, and root-topology briefs consolidated;
-- a missing subscription-QoS-versus-publish-QoS brief added;
-- explicit figure ownership assigned by document;
-- the three trust-boundary figures retained as separate application-specific instances of one shared visual template.
+```text
+MQTTSuite/README.md
+MQTTSuite/mqttintegrator/README.md
+MQTTSuite/mqttstore/README.md
+MQTTSuite/mqttcli/README.md
+MQTTSuite/docs/configuration.md
+```
 
-Figure production is gated on the final documentation audit. If that audit changes a contract, the relevant brief must be updated before Figma production.
+MQTTBroker and MQTTBridge were intentionally not broadly reduced in this pass because their current detail remains primarily application-operational rather than review-forensic.
+
+This editorial pass does **not** constitute new runtime qualification and does not change the accepted documentation architecture or the current 24-figure production inventory.
+
+## Relationship to the final audit
+
+[`11-FINAL-DOCUMENTATION-AUDIT.md`](11-FINAL-DOCUMENTATION-AUDIT.md) is the historical final correctness/completeness audit for its recorded input HEAD. Its technical closure remains valid as review evidence, but its exact prose inventory predates the editorial reduction above.
+
+Future publication validation must therefore run against the current reader-facing tree, not assume byte-for-byte identity with the audit input.
+
+## Current visual-production state
+
+The original [`05-VISUALS.md`](05-VISUALS.md) remains the historical Step-5A runtime/capture provenance record.
+
+The canonical figure-production scope remains [`10-VISUAL-PRODUCTION-PLAN.md`](10-VISUAL-PRODUCTION-PLAN.md):
+
+- 24 reader-facing figure briefs;
+- single conceptual ownership;
+- source-only vs runtime-qualified evidence kept visually distinct where relevant;
+- real product output required for runtime-proof terminal/UI figures.
 
 ## Current behavior that remains intentionally visible
 
-Examples of current implementation boundaries that remain in the publication documentation include:
+Reader-facing documentation continues to expose material current boundaries, including:
 
-- MQTTBroker HTTP administration/event routes have no application authentication in the reviewed source and use permissive CORS on the documented API/event surface;
-- Broker client event state can contain MQTT password material and live event JSON can reach normal logs;
-- MQTTIntegrator startup contains an inline demo mapping before the supported configuration parse, so implicit/default mapping selection must not be oversimplified;
-- MQTTIntegrator administration uses the known fixed Basic Auth defaults `admin/admin` without a supported application configuration path for replacing them in the reviewed wiring;
-- MQTTSuite declares CMake 3.14 while current SNode.C requires 3.18; the documented whole-source workflow therefore uses 3.18+;
-- clean arbitrary custom-prefix execution of the installed suite remains `UNVERIFIED-RUNTIME`;
-- MQTTStore projection configuration is loaded during MQTT context creation; the exact malformed-plan process/reconnect consequence remains `UNVERIFIED-RUNTIME`;
-- MQTTBridge schema/runtime discrepancies and bounded loop-prevention behavior remain documented rather than hidden.
+- unauthenticated Broker and Bridge administration surfaces;
+- fixed source-known Integrator `admin/admin` credentials with no built-in replacement option;
+- credential-sensitive logs/configuration state;
+- MQTTIntegrator startup-mapping ambiguity unless a mapping file is selected explicitly;
+- current Bridge schema/runtime transport discrepancies;
+- Store projection loading during MQTT context creation with exact whole-process/retry behavior remaining `[UNVERIFIED-RUNTIME]`;
+- clean arbitrary custom-prefix execution remaining outside the recorded runtime qualification.
 
-These are documentation boundaries, not promises to implement additional corrections.
+These are current product/documentation boundaries, not promises to implement additional corrections.
 
 ## Publication-shaped canonical paths
-
-The canonical README/documentation copy in this repository is shaped to match the eventual `SNodeC/mqttsuite` destination:
 
 ```text
 MQTTSuite/README.md
@@ -111,13 +124,4 @@ MQTTSuite/docs/bridge-http-api.md
 MQTTSuite/docs/store-storage.md
 ```
 
-README draft copies are no longer canonical workflow artifacts and are removed from `MQTTSuite/workflow/`. Workflow remains the home for governance, technical facts, design decisions, visual instructions, reviews, handoffs, limitations, and publication state.
-
-## Evidence baselines
-
-- Current MQTTSuite source behavior: `SNodeC/mqttsuite@6c0ff62c612694a6111ff971c446327938130cf0`.
-- Narrow Integrator wildcard correction: PR #22 / `d15f70a2818d291638c50aa2e2116a9e49ebd9e1`.
-- SNode.C implementation surface reviewed for shared behavior: `SNodeC/snode.c@5d6453c21df4894083b445cce00b627e7794932a`.
-- Recorded runtime qualification: MQTTSuite `52de563...` rebuilt/installed against SNode.C `60f26d9...` on the environment recorded in `05-VISUALS.md`; this qualification predates PR #22.
-
-No MQTTSuite or SNode.C implementation repository was modified by this documentation correction pass.
+README draft copies in `MQTTSuite/workflow/` are not canonical publication content.
