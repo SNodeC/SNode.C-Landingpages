@@ -61,15 +61,17 @@ Files materially reduced:
 
 ```text
 MQTTSuite/README.md
+MQTTSuite/mqttbroker/README.md
 MQTTSuite/mqttintegrator/README.md
-MQTTSuite/mqttstore/README.md
+MQTTSuite/mqttbridge/README.md
 MQTTSuite/mqttcli/README.md
+MQTTSuite/mqttstore/README.md
+MQTTSuite/docs/README.md
 MQTTSuite/docs/configuration.md
+MQTTSuite/docs/integrator-mapping.md
 ```
 
-MQTTBroker and MQTTBridge were intentionally not broadly reduced in this pass because their current detail remains primarily application-operational rather than review-forensic.
-
-This editorial pass does **not** constitute new runtime qualification and does not change the accepted documentation architecture or the current 24-figure production inventory.
+The reduction preserves the accepted application-suite-first architecture and keeps exhaustive API contracts in their dedicated HTTP references. It does **not** constitute new runtime qualification and does not change the current 24-figure production inventory.
 
 ## Relationship to the final audit
 
