@@ -37,13 +37,13 @@ mqttcli \
         --message '{"value":21.7,"unit":"C"}'
 ```
 
-Received publishes are printed with topic, QoS, retain, duplicate flag, and payload. If the payload parses as JSON, MQTTCli pretty-prints it.
+Received publishes are printed with topic, QoS, retain, duplicate flag, and payload. JSON payloads are pretty-printed.
 
-The current client connection is configured for reconnect. A publish-only command can therefore reconnect after the first acknowledged result; for a one-shot check, stop it with `Ctrl-C` after the first success.
+MQTTCli client endpoints reconnect. For a manual one-shot publish, stop the publisher with `Ctrl-C` after the first verified result when repetition is not desired.
 
 ## Command anatomy
 
-A normal MQTTCli invocation follows the SNode.C hierarchy:
+A normal invocation follows the SNode.C hierarchy:
 
 ```text
 mqttcli
@@ -66,9 +66,7 @@ mqttcli \
     sub --topic 'demo/#'
 ```
 
-> **Figure placeholder — MQTTCli command hierarchy.** Show root application → enabled connection instance → remote/HTTP transport settings → session → subscribe/publish actions, with one real command aligned to the tree.
-
-Use expanded help at any level to inspect the options compiled into your current SNode.C/MQTTSuite installation:
+Use expanded help to inspect the options compiled into the current installation:
 
 ```bash
 mqttcli --help=expanded
@@ -76,9 +74,11 @@ mqttcli in-mqtt --help=expanded
 mqttcli in-mqtt session --help=expanded
 ```
 
+> **Figure placeholder — MQTTCli command hierarchy.** Show root application → enabled connection instance → remote/HTTP transport settings → session → subscribe/publish actions, with one real command aligned to the tree.
+
 ## Connection instances
 
-When their build options are enabled, MQTTCli creates:
+When compiled in, MQTTCli creates:
 
 ```text
 in-mqtt       in-mqtts
@@ -89,19 +89,17 @@ in6-wsmqtt    in6-wsmqtts
 un-wsmqtt     un-wsmqtts
 ```
 
-These instances are created disabled by the current application startup code. Enable the one you want with:
+These instances are created disabled. Enable the one you want with:
 
 ```text
 --disabled=false
 ```
 
-This makes CLI commands explicit and avoids accidental parallel connection attempts.
+The shared [configuration reference](../docs/configuration.md) documents the client-side default ports and common instance behavior.
 
 ## Session settings
 
-The `session` subcommand controls MQTT CONNECT/session behavior.
-
-Current application options include:
+The `session` subcommand controls MQTT CONNECT/session behavior. Current application options include:
 
 ```text
 --client-id <string>
@@ -116,48 +114,24 @@ Current application options include:
 --password <string>
 ```
 
-### Client ID
+### Client ID and persistent session
 
-```bash
-session --client-id inspector-01
-```
-
-Use a stable unique client ID when you need a persistent MQTT session. For quick disposable checks, choose a descriptive test ID.
-
-### QoS
-
-`session --qos` is the CLI's default QoS value used by its MQTT behavior. It is used for publish QoS and as the default subscription QoS unless a topic-specific subscription override is supplied.
-
-```bash
-session --qos 1
-```
-
-### Retained session / clean-session semantics
-
-The current option name is:
-
-```text
---retain-session
-```
-
-When true, the factory passes `clean_session=false` to the MQTT client. In other words:
+Use a stable unique client ID when you need a persistent MQTT session. `--retain-session` sets `clean_session=false` and requires a client ID.
 
 ```text
 --retain-session=false   -> clean_session=true
 --retain-session=true    -> clean_session=false
 ```
 
-`--retain-session` requires a client ID.
+MQTTCli does not expose the persistent session-store path option used by Integrator/Store.
 
-MQTTCli itself does not expose the persistent session-store path option that Integrator/Store do; the flag controls MQTT session semantics on the broker connection.
+### Default QoS
 
-### Keep alive
+`session --qos` is the default QoS used for publications and subscriptions unless a topic-specific override is supplied.
 
 ```bash
-session --keep-alive 60
+session --qos 1
 ```
-
-The source default is 60 seconds.
 
 ### Username and password
 
@@ -165,7 +139,7 @@ The source default is 60 seconds.
 session --username alice --password 'example-secret'
 ```
 
-These fields are sent in MQTT CONNECT. Whether they authenticate or authorize anything depends on the broker.
+These values are sent in MQTT CONNECT. Whether they authenticate or authorize anything depends on the broker.
 
 ### Last Will
 
@@ -178,7 +152,7 @@ session \
   --will-retain
 ```
 
-The MQTT will is intended for an unexpected connection loss. A normal client shutdown that sends DISCONNECT should not be used to test will delivery.
+The will is intended for unexpected connection loss; a clean shutdown that sends DISCONNECT is not a will-delivery test.
 
 ## Subscribing
 
@@ -192,7 +166,7 @@ mqttcli \
     sub --topic sensors/room-01/temperature
 ```
 
-### Wildcard filter
+### Wildcards
 
 ```bash
 sub --topic 'sensors/+/temperature'
@@ -208,8 +182,6 @@ Quote wildcard-containing filters in shell commands.
 
 ### Multiple topics
 
-`sub --topic` accepts multiple values:
-
 ```bash
 sub \
   --topic 'sensors/+/temperature' \
@@ -219,7 +191,7 @@ sub \
 
 ### Per-topic QoS override
 
-MQTTCli accepts the MQTTSuite suffix:
+MQTTCli accepts:
 
 ```text
 <topic-filter>##<qos>
@@ -234,13 +206,11 @@ sub \
   --topic 'alerts/###2'
 ```
 
-The first means filter `sensors/+/temperature` at QoS 1. The second looks unusual because the MQTT filter itself ends in `#`: `alerts/###2` is parsed as filter `alerts/#` plus override `##2`.
-
-Use the explicit suffix only when the topic's subscription QoS should differ from `session --qos`.
+The second string is parsed as filter `alerts/#` with QoS override `2`.
 
 ## Publishing
 
-### Simple text publish
+### Text publish
 
 ```bash
 mqttcli \
@@ -250,25 +220,15 @@ mqttcli \
     pub --topic demo/state --message online
 ```
 
-### QoS 1 publish
-
-```bash
-mqttcli \
-  in-mqtt --disabled=false \
-    remote --host 127.0.0.1 --port 1883 \
-    session --client-id pub-qos1 --qos 1 \
-    pub --topic demo/value --message 42
-```
-
 ### Per-publish QoS override
 
-`pub --topic` accepts the same suffix convention as subscriptions:
+`pub --topic` accepts the same suffix convention:
 
 ```text
 <topic>##<qos>
 ```
 
-For example, keep the session default at QoS 0 but send one publication at QoS 2:
+Example: keep the session default at QoS 0 but send one publication at QoS 2:
 
 ```bash
 mqttcli \
@@ -278,7 +238,7 @@ mqttcli \
     pub --topic 'demo/value##2' --message 42
 ```
 
-The CLI strips the trailing `##2` before sending the MQTT PUBLISH, so the broker receives topic `demo/value` at QoS 2. Use this form when a publication needs a QoS different from `session --qos` without changing the connection-wide default.
+The broker receives topic `demo/value` at QoS 2.
 
 For publish-only operation, QoS 0 disconnects after sending; QoS 1 waits for PUBACK; QoS 2 waits for the QoS 2 completion path before requesting disconnect.
 
@@ -290,7 +250,7 @@ pub \
   --message '{"value":21.7,"unit":"C"}'
 ```
 
-MQTTCli does not assign semantic meaning to the JSON; it is just the MQTT payload. Pretty-printing occurs on received messages when parsing succeeds.
+MQTTCli does not assign semantic meaning to the JSON; pretty-printing occurs only when receiving a payload that parses successfully.
 
 ### Retained publish
 
@@ -304,11 +264,11 @@ mqttcli \
         --retain
 ```
 
-A newly connected subscriber to that topic should receive the retained state according to broker behavior.
+A newly connected subscriber should receive the retained state according to broker behavior.
 
 ## Subscribe and publish on one connection
 
-The CLI factory configures both `sub` and `pub` behavior on the same MQTT client. If both are present, MQTTCli subscribes and publishes after connection:
+If both `sub` and `pub` are present, MQTTCli subscribes and publishes on the same MQTT connection:
 
 ```bash
 mqttcli \
@@ -319,11 +279,11 @@ mqttcli \
     pub --topic demo/request --message ping
 ```
 
-Because a subscription is active, the client remains connected to receive matching messages instead of behaving like a one-shot publisher.
+Because a subscription is active, the client remains connected to receive matching messages.
 
 ## Transport examples
 
-The application behavior stays the same; choose a different connection instance and transport/address section.
+The MQTT behavior stays the same; choose a different connection instance and address/HTTP section.
 
 ### IPv4
 
@@ -346,13 +306,7 @@ in-mqtts --disabled=false \
   remote --host broker.example.net --port 8883
 ```
 
-Configure the instance's SNode.C TLS section for CA/certificate/key verification appropriate to your peer:
-
-```bash
-mqttcli in-mqtts --help=expanded
-```
-
-Selecting `in-mqtts` gives you the TLS stream path; it does not by itself define broker authorization. Its current source default remote port is `1883`; this example sets `8883` explicitly because that is a common broker-side TLS listener convention. See the shared [configuration reference](../docs/configuration.md#client-side-remote-port-defaults).
+Configure the instance's SNode.C TLS section for the required CA/certificate/key verification. The source default remote port for `in-mqtts` is `1883`; `8883` is set explicitly here because it is a common broker-side TLS listener convention.
 
 ### MQTT over WebSocket
 
@@ -378,8 +332,6 @@ mqttcli \
     sub --topic 'demo/#'
 ```
 
-Configure SNode.C TLS settings for that instance separately.
-
 ### Unix-domain MQTT
 
 ```bash
@@ -389,8 +341,6 @@ mqttcli \
     session --client-id unix-check --qos 1 \
     sub --topic 'demo/#'
 ```
-
-The Broker must be listening on the same socket path.
 
 ### MQTT over Unix-domain WebSocket
 
@@ -403,13 +353,9 @@ mqttcli \
     sub --topic 'demo/#'
 ```
 
-This uses the same HTTP upgrade and `mqtt` subprotocol over a Unix-domain stream.
-
 ## Persist a command
 
-Once a command is correct, `--write-config` writes the resolved configurable state and exits.
-
-Subscriber example:
+Once a command is correct, `--write-config` writes the resolved configurable state and exits:
 
 ```bash
 mqttcli \
@@ -427,9 +373,7 @@ Then:
 mqttcli --config-file ./mqttcli.conf
 ```
 
-Review saved files before treating them as service configuration, especially when they contain MQTT credentials.
-
-Persisting a publish action means the client will publish whenever that configured connection reaches its normal publication point. For truly one-off messages, an explicit command is usually clearer than a saved publisher config.
+Review saved files before treating them as service configuration, especially when they contain MQTT credentials. For truly one-off publications, an explicit command is usually clearer than a saved publisher configuration.
 
 ## Verify the other MQTTSuite applications
 
@@ -449,32 +393,18 @@ mqttcli \
     sub --topic 'normalized/#'
 ```
 
-Then publish the exact topic/payload your mapping file matches.
-
 ### MQTTBridge
 
-Connect the observer to the **destination** broker and subscribe to the exact topic Bridge should construct after prefixes. Publish on the source broker. This isolates forwarding from broker routing.
+Connect the observer to the destination broker and subscribe to the exact topic Bridge should construct after prefixes. Publish on the source broker.
 
 ### MQTTStore
 
-Start Store on a narrow test filter, publish JSON/text/retained/QoS examples with MQTTCli, then query MariaDB. MQTTStore's README includes the expected raw-table fields.
-
-## Current reconnect behavior
-
-MQTTCli's client endpoints enable retry/reconnect. That is helpful for long-lived subscribers but surprising for a one-shot publisher: after a successful publish and disconnect, the connection machinery can reconnect and republish.
-
-For manual one-shot verification:
-
-1. wait for the first successful publish result;
-2. confirm it at the subscriber/destination;
-3. stop the publisher with `Ctrl-C`.
-
-Do not mistake repeated output from a reconnecting test publisher for Broker duplication until you have ruled this behavior out.
+Start Store on a narrow test filter, publish a known message, then query MariaDB. MQTTStore's README includes the expected raw-table fields.
 
 ## Trust and diagnostic boundaries
 
 - `session --username` and `--password` are command-line/configuration data; command histories, process inspection, and saved config files may expose them.
-- The current MQTTCli debug logging path includes username and password values. Avoid broad debug logs when credentials are present.
+- The current MQTTCli debug logging path includes username and password values.
 - TLS/WSS protects the connection when configured correctly, but broker access control is separate.
 - Received payloads are printed to the terminal. Treat terminal logs/transcripts as data-bearing artifacts.
 
@@ -482,36 +412,25 @@ Do not mistake repeated output from a reconnecting test publisher for Broker dup
 
 ### No connection
 
-Check:
-
-- selected instance has `--disabled=false`;
-- host/port or `--sun-path`;
-- Broker listener is enabled;
-- transport pairing matches (plain vs TLS, direct vs WebSocket);
-- WebSocket target is correct;
-- TLS trust material/options for encrypted instances.
+Check the selected instance, host/port or Unix socket, transport pairing, WebSocket target, and TLS trust settings.
 
 ### Connected but no subscription data
 
-Check:
+Check topic filter spelling/quoting, wildcard placement, per-topic QoS parsing, publisher topic, and broker retained/routing expectations.
 
-- topic filter spelling and shell quoting;
-- wildcard placement;
-- per-topic `##qos` parsing;
-- publisher topic;
-- Broker routing/retained-state expectations.
+### Publish repeats
 
-### Publish exits or reconnects unexpectedly
-
-Publish-only operation intentionally disconnects after the required MQTT acknowledgement path. The SNode.C client endpoint can then reconnect. Use `Ctrl-C` after the first intended result for a manual one-shot test.
+A publish-only client can reconnect after completing its MQTT acknowledgement path. Stop the publisher after the first intended result for a manual one-shot test.
 
 ### JSON is not pretty-printed
 
-Pretty printing is only a display convenience. If payload parsing fails, MQTTCli prints the payload as ordinary data; it does not reject non-JSON MQTT messages.
+Pretty printing is a display convenience. If payload parsing fails, MQTTCli prints the payload as ordinary data; it does not reject non-JSON MQTT messages.
 
 ## Related documentation
 
 - [MQTTSuite overview and build](../README.md)
+- [Configuration](../docs/configuration.md)
+- [Capabilities and evidence](../docs/capabilities.md)
 - [MQTTBroker](../mqttbroker/README.md)
 - [MQTTIntegrator](../mqttintegrator/README.md)
 - [MQTTBridge](../mqttbridge/README.md)
