@@ -74,7 +74,12 @@ mqttcli in-mqtt --help=expanded
 mqttcli in-mqtt session --help=expanded
 ```
 
-> **Figure placeholder — MQTTCli command hierarchy.** Show root application → enabled connection instance → remote/HTTP transport settings → session → subscribe/publish actions, with one real command aligned to the tree.
+<picture>
+  <source media="(max-width: 600px)" srcset="../assets/mqttcli-command-hierarchy-mobile.svg">
+  <img src="../assets/mqttcli-command-hierarchy.svg" alt="Diagram showing the MQTTCli command hierarchy from the application root to an enabled connection instance, remote and optional HTTP transport settings, MQTT session settings, and subscribe or publish actions on the same connection.">
+</picture>
+
+<sub>One selected connection instance owns its transport, MQTT session, and optional subscribe/publish actions.</sub>
 
 ## Connection instances
 
