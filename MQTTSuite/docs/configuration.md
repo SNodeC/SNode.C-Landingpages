@@ -24,7 +24,12 @@ Read this as:
 
 Server applications use analogous `local` address sections. WebSocket clients add an HTTP section. MQTTStore adds `db` and nested `storage`; MQTTBroker and MQTTIntegrator add application options; MQTTBridge builds its outbound client instances from a separate bridge-definition document.
 
-> **Figure placeholder — MQTTSuite configuration hierarchy.** Show application → named connection instance → address/transport/TLS → MQTT session → application-specific action, with the same hierarchy feeding command-line, config-file, and inspection output.
+<picture>
+  <source media="(max-width: 600px)" srcset="../assets/mqttsuite-configuration-hierarchy-mobile.svg">
+  <img src="../assets/mqttsuite-configuration-hierarchy.svg" alt="Diagram showing the MQTTSuite hierarchical configuration path from application to named connection instance, remote or HTTP transport settings, MQTT session, and application action, with the same tree addressable from command line, configuration file, and inspection output.">
+</picture>
+
+<sub>The application command tree and persisted configuration describe the same named-instance hierarchy.</sub>
 
 ## Values and precedence
 
@@ -166,7 +171,12 @@ alerts/###2
 
 The second value means MQTT filter `alerts/#` with requested subscription QoS 2. MQTTCli uses the same suffix convention on its publish topic to override publish QoS for that publication.
 
-> **Figure placeholder — Subscription QoS versus publish QoS.** Show one incoming subscription filter with its requested/max delivery QoS on the left and one outgoing PUBLISH with its independently selected publish QoS on the right. Include MQTTIntegrator's `subscription.qos` versus mapped-output `qos`, and MQTTCli's session default plus `##<qos>` override semantics.
+<picture>
+  <source media="(max-width: 600px)" srcset="../assets/subscription-vs-publish-qos-mobile.svg">
+  <img src="../assets/subscription-vs-publish-qos.svg" alt="Diagram distinguishing subscription QoS from publish QoS, including MQTTCli topic suffix overrides and MQTTIntegrator's independent subscription.qos and mapped-output qos fields.">
+</picture>
+
+<sub>Subscription QoS limits requested delivery; publish QoS independently selects the outgoing PUBLISH service level.</sub>
 
 ## Direct MQTT and MQTT over WebSocket
 
