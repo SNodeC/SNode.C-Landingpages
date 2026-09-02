@@ -1,0 +1,503 @@
+% mqttsystem-figure-system.tex
+% Canonical TikZ visual system for MQTTSuite technical figures.
+%
+% Usage:
+%   \documentclass[tikz,border=10pt]{standalone}
+%   \input{mqttsystem-figure-system.tex}
+%   \begin{document}
+%   \begin{tikzpicture}[mqtt desktop]
+%     ...
+%   \end{tikzpicture}
+%   \end{document}
+%
+% Canonical source rule:
+% - figure .tex sources + this file are authoritative;
+% - generated SVGs are publication output and are never hand-edited;
+% - real runtime/UI evidence remains real raster capture.
+
+\usetikzlibrary{
+  arrows.meta,
+  backgrounds,
+  calc,
+  fit,
+  matrix,
+  positioning,
+  shapes.geometric,
+  shapes.misc,
+  shadows.blur
+}
+
+% ---------------------------------------------------------------------------
+% Canonical palette
+% ---------------------------------------------------------------------------
+
+\definecolor{MQText}{HTML}{0F172A}
+\definecolor{MQTextMuted}{HTML}{475569}
+\definecolor{MQLine}{HTML}{475569}
+\definecolor{MQBorder}{HTML}{CBD5E1}
+
+\definecolor{MQSurface}{HTML}{F8FAFC}
+\definecolor{MQSurfaceAlt}{HTML}{F1F5F9}
+\definecolor{MQWhite}{HTML}{FFFFFF}
+
+\definecolor{MQDecisionFill}{HTML}{FFF7ED}
+\definecolor{MQDecisionLine}{HTML}{D97706}
+
+\definecolor{MQSuccessFill}{HTML}{ECFDF5}
+\definecolor{MQSuccessLine}{HTML}{10B981}
+
+\definecolor{MQErrorFill}{HTML}{FEF2F2}
+\definecolor{MQErrorLine}{HTML}{EF4444}
+
+\definecolor{MQControlFill}{HTML}{EFF6FF}
+\definecolor{MQControlLine}{HTML}{3B82F6}
+
+\definecolor{MQWarningFill}{HTML}{FFF7ED}
+\definecolor{MQWarningLine}{HTML}{F59E0B}
+
+\definecolor{MQCrossLane}{HTML}{2563EB}
+
+\definecolor{MQDataPlaneFill}{HTML}{EFF6FF}
+\definecolor{MQDataPlaneLine}{HTML}{2563EB}
+
+\definecolor{MQAdminPlaneFill}{HTML}{F8FAFC}
+\definecolor{MQAdminPlaneLine}{HTML}{64748B}
+
+\definecolor{MQTrustFill}{HTML}{FFF7ED}
+\definecolor{MQTrustLine}{HTML}{D97706}
+
+\definecolor{MQEvidenceRuntimeFill}{HTML}{ECFDF5}
+\definecolor{MQEvidenceRuntimeLine}{HTML}{10B981}
+
+\definecolor{MQEvidenceSourceFill}{HTML}{EFF6FF}
+\definecolor{MQEvidenceSourceLine}{HTML}{3B82F6}
+
+% ---------------------------------------------------------------------------
+% Canonical radius system
+% ---------------------------------------------------------------------------
+%
+% Small informational elements stay subtle; ordinary nodes are moderately
+% rounded; structural containers are more rounded. Decision diamonds and
+% database cylinders do not use these radii.
+
+\newcommand{\MQRadiusXS}{1.2pt}
+\newcommand{\MQRadiusS}{1.8pt}
+\newcommand{\MQRadiusM}{2.8pt}
+\newcommand{\MQRadiusL}{5.0pt}
+\newcommand{\MQRadiusXL}{7.0pt}
+
+% ---------------------------------------------------------------------------
+% Canonical shading / elevation system
+% ---------------------------------------------------------------------------
+%
+% Flat rendering is the default. Shadows are opt-in and reserved for semantic
+% emphasis, never general decoration.
+
+\newcommand{\MQShadowXSubtle}{0.7pt}
+\newcommand{\MQShadowYSubtle}{-0.7pt}
+\newcommand{\MQShadowBlurSubtle}{1.6pt}
+\newcommand{\MQShadowOpacitySubtle}{0.12}
+
+\newcommand{\MQShadowXRaised}{1.0pt}
+\newcommand{\MQShadowYRaised}{-1.0pt}
+\newcommand{\MQShadowBlurRaised}{2.4pt}
+\newcommand{\MQShadowOpacityRaised}{0.16}
+
+\tikzset{
+  mqtt elevated none/.style={},
+  mqtt elevated subtle/.style={
+    blur shadow={
+      shadow xshift=\MQShadowXSubtle,
+      shadow yshift=\MQShadowYSubtle,
+      shadow blur radius=\MQShadowBlurSubtle,
+      opacity=\MQShadowOpacitySubtle
+    }
+  },
+  mqtt elevated raised/.style={
+    blur shadow={
+      shadow xshift=\MQShadowXRaised,
+      shadow yshift=\MQShadowYRaised,
+      shadow blur radius=\MQShadowBlurRaised,
+      opacity=\MQShadowOpacityRaised
+    }
+  }
+}
+
+% ---------------------------------------------------------------------------
+% Canonical spacing system
+% ---------------------------------------------------------------------------
+%
+% Base grid: 1 spacing unit = 2 mm. Ordinary figure spacing should use these
+% semantic constants rather than ad-hoc gaps wherever practical. Exact geometry
+% remains valid when a figure needs deterministic alignment, but should still
+% follow this grid.
+
+\newcommand{\MQU}{2mm}
+
+% Generic scale
+\newcommand{\MQGapXS}{2\MQU}      % 4 mm
+\newcommand{\MQGapS}{3\MQU}       % 6 mm
+\newcommand{\MQGapM}{5\MQU}       % 10 mm
+\newcommand{\MQGapL}{7\MQU}       % 14 mm
+\newcommand{\MQGapXL}{10\MQU}     % 20 mm
+
+% Node interior
+\newcommand{\MQNodePadX}{2.5\MQU} % 5 mm
+\newcommand{\MQNodePadY}{2\MQU}   % 4 mm
+
+% Sequential node spacing
+\newcommand{\MQNodeGapTight}{3\MQU} % 6 mm
+\newcommand{\MQNodeGap}{5\MQU}      % 10 mm
+\newcommand{\MQNodeGapLoose}{7\MQU} % 14 mm
+
+% Decision / branch geometry
+\newcommand{\MQBranchGap}{7\MQU}    % 14 mm
+\newcommand{\MQBranchRun}{5\MQU}    % 10 mm orthogonal run before turn
+
+% Lanes and semantic containers
+\newcommand{\MQLaneGap}{12\MQU}     % 24 mm between major lanes
+\newcommand{\MQLanePadX}{4\MQU}     % 8 mm
+\newcommand{\MQLanePadY}{4\MQU}     % 8 mm
+\newcommand{\MQGroupPad}{3\MQU}     % 6 mm
+\newcommand{\MQTrustPad}{4\MQU}     % 8 mm
+
+% Titles and labels
+\newcommand{\MQTitleGap}{2\MQU}     % 4 mm
+\newcommand{\MQLabelGap}{1\MQU}     % 2 mm
+\newcommand{\MQCrossLaneGap}{4\MQU} % 8 mm reserved clearance
+
+% Figure safe area
+\newcommand{\MQFigureSafeX}{5\MQU}  % 10 mm
+\newcommand{\MQFigureSafeY}{5\MQU}  % 10 mm
+
+% Compatibility aliases
+\newcommand{\MQDesktopSafe}{\MQFigureSafeX}
+\newcommand{\MQMobileSafe}{4\MQU}   % 8 mm
+
+% Mobile art direction: mobile is not a scaled desktop composition.
+\newcommand{\MQMobileNodeGap}{6\MQU}   % 12 mm
+\newcommand{\MQMobileBranchGap}{8\MQU} % 16 mm
+\newcommand{\MQMobileLaneGap}{10\MQU}  % 20 mm
+\newcommand{\MQMobileGroupPad}{4\MQU}  % 8 mm
+
+% ---------------------------------------------------------------------------
+% Typography
+% ---------------------------------------------------------------------------
+
+\tikzset{
+  mqtt text/.style={
+    font=\sffamily\small,
+    text=MQText,
+    align=center
+  },
+  mqtt text left/.style={
+    mqtt text,
+    align=left
+  },
+  mqtt title/.style={
+    font=\sffamily\bfseries\large,
+    text=MQText,
+    align=left
+  },
+  mqtt section title/.style={
+    font=\sffamily\bfseries\small,
+    text=MQText,
+    align=left,
+    anchor=west
+  },
+  mqtt annotation/.style={
+    font=\sffamily\scriptsize,
+    text=MQTextMuted,
+    align=center
+  },
+  mqtt code/.style={
+    font=\ttfamily\small,
+    text=MQText
+  },
+  mqtt code small/.style={
+    font=\ttfamily\scriptsize,
+    text=MQText
+  }
+}
+
+% ---------------------------------------------------------------------------
+% Figure presets
+% ---------------------------------------------------------------------------
+%
+% These establish common defaults only. Desktop/mobile variants may and often
+% should use different geometry.
+
+\tikzset{
+  mqtt desktop/.style={
+    x=1cm,
+    y=1cm,
+    every node/.append style={transform shape=false}
+  },
+  mqtt mobile/.style={
+    x=1cm,
+    y=1cm,
+    every node/.append style={
+      transform shape=false,
+      font=\sffamily\normalsize
+    }
+  }
+}
+
+% ---------------------------------------------------------------------------
+% Core node families
+% ---------------------------------------------------------------------------
+
+\tikzset{
+  mqtt process/.style={
+    mqtt text,
+    draw=MQLine,
+    fill=MQWhite,
+    rounded corners=\MQRadiusM,
+    line width=.75pt,
+    minimum height=10mm,
+    minimum width=25mm,
+    inner xsep=\MQNodePadX,
+    inner ysep=\MQNodePadY
+  },
+  mqtt application/.style={
+    mqtt process,
+    minimum width=31mm,
+    minimum height=13mm,
+    line width=.9pt
+  },
+  mqtt external/.style={
+    mqtt process,
+    fill=MQSurfaceAlt,
+    draw=MQBorder
+  },
+  mqtt state/.style={
+    mqtt process,
+    fill=MQSurface
+  },
+  mqtt decision/.style={
+    mqtt text,
+    diamond,
+    aspect=1.75,
+    draw=MQDecisionLine,
+    fill=MQDecisionFill,
+    line width=.8pt,
+    inner sep=1.2pt,
+    minimum width=27mm,
+    minimum height=14mm
+  },
+  mqtt success/.style={
+    mqtt process,
+    fill=MQSuccessFill,
+    draw=MQSuccessLine
+  },
+  mqtt error/.style={
+    mqtt process,
+    fill=MQErrorFill,
+    draw=MQErrorLine
+  },
+  mqtt control/.style={
+    mqtt process,
+    fill=MQControlFill,
+    draw=MQControlLine
+  },
+  mqtt warning/.style={
+    mqtt process,
+    fill=MQWarningFill,
+    draw=MQWarningLine
+  },
+  mqtt note/.style={
+    mqtt text,
+    draw=MQBorder,
+    fill=MQSurfaceAlt,
+    rounded corners=\MQRadiusS,
+    line width=.65pt,
+    font=\sffamily\scriptsize,
+    minimum height=8mm,
+    inner xsep=\MQNodePadX,
+    inner ysep=\MQNodePadY
+  },
+  mqtt config/.style={
+    mqtt process,
+    fill=MQSurfaceAlt,
+    draw=MQBorder,
+    rounded corners=\MQRadiusS
+  },
+  mqtt data/.style={
+    mqtt process,
+    fill=MQWhite,
+    draw=MQBorder
+  },
+  mqtt database/.style={
+    mqtt text,
+    cylinder,
+    shape border rotate=90,
+    aspect=.25,
+    draw=MQLine,
+    fill=MQWhite,
+    line width=.75pt,
+    minimum width=24mm,
+    minimum height=13mm,
+    inner xsep=\MQNodePadX,
+    inner ysep=\MQNodePadY
+  }
+}
+
+% ---------------------------------------------------------------------------
+% Semantic containers
+% ---------------------------------------------------------------------------
+
+\tikzset{
+  mqtt lane/.style={
+    draw=MQBorder,
+    fill=MQSurface,
+    rounded corners=\MQRadiusL,
+    line width=.8pt,
+    inner xsep=\MQLanePadX,
+    inner ysep=\MQLanePadY
+  },
+  mqtt group/.style={
+    draw=MQBorder,
+    fill=MQWhite,
+    rounded corners=\MQRadiusL,
+    line width=.75pt,
+    inner sep=\MQGroupPad
+  },
+  mqtt data plane/.style={
+    draw=MQDataPlaneLine,
+    fill=MQDataPlaneFill,
+    rounded corners=\MQRadiusL,
+    line width=.9pt,
+    inner sep=\MQGroupPad
+  },
+  mqtt admin plane/.style={
+    draw=MQAdminPlaneLine,
+    fill=MQAdminPlaneFill,
+    rounded corners=\MQRadiusL,
+    line width=.9pt,
+    inner sep=\MQGroupPad
+  },
+  mqtt trust boundary/.style={
+    draw=MQTrustLine,
+    fill=none,
+    rounded corners=\MQRadiusXL,
+    line width=1.0pt,
+    dashed,
+    inner sep=\MQTrustPad
+  }
+}
+
+% ---------------------------------------------------------------------------
+% Arrow semantics
+% ---------------------------------------------------------------------------
+
+\tikzset{
+  mqtt flow/.style={
+    -{Stealth[length=2.2mm,width=1.5mm]},
+    draw=MQLine,
+    line width=.8pt
+  },
+  mqtt data flow/.style={
+    -{Stealth[length=2.2mm,width=1.5mm]},
+    draw=MQDataPlaneLine,
+    line width=.9pt
+  },
+  mqtt control flow/.style={
+    -{Stealth[length=2.2mm,width=1.5mm]},
+    draw=MQControlLine,
+    line width=.9pt
+  },
+  mqtt observation/.style={
+    -{Stealth[length=2.0mm,width=1.4mm]},
+    draw=MQLine,
+    line width=.75pt,
+    dashed
+  },
+  mqtt handoff/.style={
+    -{Stealth[length=2.3mm,width=1.6mm]},
+    draw=MQCrossLane,
+    line width=1.0pt
+  },
+  mqtt association/.style={
+    draw=MQBorder,
+    line width=.7pt
+  },
+  mqtt dependency/.style={
+    -{Stealth[length=2.0mm,width=1.4mm]},
+    draw=MQLine,
+    line width=.7pt,
+    dashed
+  }
+}
+
+% ---------------------------------------------------------------------------
+% Labels and evidence
+% ---------------------------------------------------------------------------
+
+\tikzset{
+  mqtt branch label/.style={
+    font=\sffamily\scriptsize\bfseries,
+    text=MQTextMuted,
+    fill=MQWhite,
+    inner sep=1.4pt
+  },
+  mqtt edge label/.style={
+    font=\sffamily\scriptsize,
+    text=MQTextMuted,
+    fill=MQWhite,
+    inner sep=1.4pt
+  },
+  mqtt topic label/.style={
+    font=\ttfamily\scriptsize,
+    text=MQText,
+    fill=MQWhite,
+    inner sep=1.4pt
+  },
+  mqtt route label/.style={
+    font=\ttfamily\scriptsize,
+    text=MQText,
+    fill=MQWhite,
+    inner sep=1.4pt
+  },
+  mqtt evidence runtime/.style={
+    font=\sffamily\scriptsize\bfseries,
+    text=MQSuccessLine,
+    draw=MQEvidenceRuntimeLine,
+    fill=MQEvidenceRuntimeFill,
+    rounded corners=\MQRadiusXS,
+    line width=.6pt,
+    inner xsep=4pt,
+    inner ysep=2pt
+  },
+  mqtt evidence source/.style={
+    font=\sffamily\scriptsize\bfseries,
+    text=MQControlLine,
+    draw=MQEvidenceSourceLine,
+    fill=MQEvidenceSourceFill,
+    rounded corners=\MQRadiusXS,
+    line width=.6pt,
+    inner xsep=4pt,
+    inner ysep=2pt
+  }
+}
+
+% ---------------------------------------------------------------------------
+% Canonical publication rules
+% ---------------------------------------------------------------------------
+%
+% 1. Figure .tex + this style file are canonical technical sources.
+% 2. Generated SVGs are never hand-edited.
+% 3. SVG is the publication format for technical diagrams.
+% 4. PNG is reserved for genuine runtime/UI evidence or raster-only input.
+% 5. Desktop/mobile may share semantics but use independently art-directed geometry.
+% 6. No arrow exists without real directional semantics.
+% 7. Dashed arrows mean observation/secondary relation, not primary flow.
+% 8. Containers denote real process/runtime/trust/configuration/lifecycle boundaries.
+% 9. Color never carries the only semantic distinction.
+% 10. Data plane, admin/control plane, trust boundaries and evidence classes use
+%     the canonical semantic styles above.
+% 11. Prefer explicit anchors/ports and orthogonal routing where clarity improves.
+% 12. Preserve readable text size at actual GitHub desktop/mobile rendering widths.
+% 13. Ordinary spacing follows the semantic spacing system above; avoid ad-hoc gaps.
+% 14. Rounded corners follow the semantic radius scale above; avoid one-off radii.
+% 15. Flat rendering is the default; elevation/shadows are explicit and semantically
+%     justified.
