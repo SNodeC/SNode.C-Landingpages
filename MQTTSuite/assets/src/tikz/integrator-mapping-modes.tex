@@ -1,0 +1,26 @@
+\documentclass[tikz,border=8pt]{standalone}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\input{mqttsystem-figure-system.tex}
+\begin{document}
+\begin{tikzpicture}[mqtt desktop]
+\tikzset{mode/.style={mqtt control,minimum width=48mm,text width=43mm,minimum height=25mm}}
+\node[mqtt external,minimum width=43mm,text width=39mm] (input) {matched MQTT PUBLISH\\topic + payload\\+ metadata};
+\node[mode,right=\MQHorizontalGapLoose of input,yshift=28mm] (static) {\textbf{static}\\exact payload string lookup\\→ exact mapped message};
+\node[mode,right=\MQHorizontalGapLoose of input] (value) {\textbf{value}\\Inja context: whole payload\\as \texttt{message}};
+\node[mode,right=\MQHorizontalGapLoose of input,yshift=-28mm] (json) {\textbf{json}\\parse payload as JSON\\Inja context: JSON \texttt{message}};
+\draw[mqtt control flow] (input.east) -- (static.west);
+\draw[mqtt control flow] (input.east) -- (value.west);
+\draw[mqtt control flow] (input.east) -- (json.west);
+\node[mqtt process,minimum width=53mm,text width=48mm,right=\MQHorizontalGapLoose of value] (common) {common mapped-output model\\mapped topic + payload\\QoS + retain + delay\\suppression where applicable};
+\draw[mqtt control flow] (static.east) -- (common.west);
+\draw[mqtt control flow] (value.east) -- (common.west);
+\draw[mqtt control flow] (json.east) -- (common.west);
+\node[mqtt success,minimum width=45mm,text width=41mm,right=\MQHorizontalGapLoose of common] (fanout) {one mapping object\\or mapping array\\→ one-to-many outputs};
+\draw[mqtt data flow] (common.east) -- (fanout.west);
+\begin{pgfonlayer}{background}
+  \node[mqtt lane,fit=(input)(static)(value)(json)(common)(fanout)] (frame) {};
+\end{pgfonlayer}
+\node[mqtt section title] at ($(frame.north west)+(\MQTitleGap,-\MQTitleGap)$) {Static, scalar/value, JSON, and fan-out mapping};
+\end{tikzpicture}
+\end{document}
