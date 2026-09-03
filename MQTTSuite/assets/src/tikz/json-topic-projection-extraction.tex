@@ -8,11 +8,14 @@
 \node[mqtt data,box] (publish) {MQTT PUBLISH\\topic + payload\\+ metadata};
 \node[mqtt database,minimum width=42mm,right=\MQHorizontalGap of publish] (raw) {raw MQTT row\\always attempted};
 \draw[mqtt data flow] (publish.east) -- (raw.west);
-\node[mqtt decision,right=\MQHorizontalGapLoose of raw] (json) {payload\\valid JSON?};
+
+\node[mqtt decision,minimum width=34mm,right=\MQHorizontalGapLoose of raw] (json) {valid JSON\\+ topic match?};
 \draw[mqtt flow] (raw.east) -- (json.west);
+
 \node[mqtt config,box,right=\MQHorizontalGap of json,yshift=22mm] (topic) {\texttt{topic\_level}\\one topic segment};
 \node[mqtt config,box,right=\MQHorizontalGap of json] (pointer) {\texttt{json\_pointer}\\value from parsed JSON};
 \node[mqtt config,box,right=\MQHorizontalGap of json,yshift=-22mm] (literal) {\texttt{literal}\\configured constant};
+
 \node[mqtt database,minimum width=45mm,right=\MQHorizontalGap of pointer] (typed) {typed projection row\\matching projection only};
 \draw[mqtt flow] (json.east) -- node[mqtt branch label,above]{YES} (pointer.west);
 \draw[mqtt association] (json.east) |- (topic.west);
@@ -20,8 +23,9 @@
 \draw[mqtt data flow] (topic.east) -- (typed.west);
 \draw[mqtt data flow] (pointer.east) -- (typed.west);
 \draw[mqtt data flow] (literal.east) -- (typed.west);
+
 \node[mqtt note,minimum width=72mm,text width=66mm,below=22mm of raw,xshift=18mm] (note)
- {Projection writes are independent of raw storage. Invalid/non-JSON payloads simply do not enter JSON projections.};
+ {Raw storage and projection writes are independent.\\Invalid JSON or a nonmatching topic produces no typed projection insert.};
 \begin{pgfonlayer}{background}
   \node[mqtt lane,fit=(publish)(raw)(json)(topic)(pointer)(literal)(typed)(note)] (frame) {};
 \end{pgfonlayer}
