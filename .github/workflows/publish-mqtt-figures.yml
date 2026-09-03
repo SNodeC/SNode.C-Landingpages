@@ -9,6 +9,7 @@ on:
       - .github/workflows/publish-mqtt-figures.yml
       - MQTTSuite/assets/src/tikz/**
       - MQTTSuite/assets/src/first-success/**
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -86,6 +87,7 @@ jobs:
 
   publish:
     needs: validate
+    if: github.event_name == 'workflow_dispatch' || github.event.head_commit.message == 'Run one-time MQTTSuite figure publication'
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
@@ -101,7 +103,6 @@ jobs:
             texlive-fonts-recommended \
             lmodern \
             poppler-utils \
-            inkscape \
             scour \
             python3-pil
 
@@ -111,40 +112,18 @@ jobs:
           cmake --build cmake-build-figures --target figures --parallel 8
           python3 MQTTSuite/assets/src/first-success/compose.py
 
-      - name: Publish outputs for changed figure sources
+      - name: Publish complete reviewed output family
         shell: bash
         run: |
           set -euo pipefail
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-
-          changed="$(git diff-tree --no-commit-id --name-only -r HEAD)"
-          printf '%s\n' "$changed"
-
-          if grep -Eq '^(CMakeLists\.txt|MQTTSuite/assets/src/tikz/mqttsystem-figure-system\.tex)$' <<<"$changed"; then
-            git add MQTTSuite/assets/*.svg
-          else
-            while IFS= read -r source; do
-              case "$source" in
-                MQTTSuite/assets/src/tikz/*.tex)
-                  stem="$(basename "${source%.tex}")"
-                  if [[ "$stem" != "mqttsystem-figure-system" ]]; then
-                    git add "MQTTSuite/assets/${stem}.svg"
-                  fi
-                  ;;
-              esac
-            done <<<"$changed"
-          fi
-
-          if grep -q '^MQTTSuite/assets/src/first-success/' <<<"$changed"; then
-            git add MQTTSuite/assets/first-success-terminal.png \
-                    MQTTSuite/assets/first-success-terminal-mobile.png
-          fi
-
+          git add MQTTSuite/assets/*.svg \
+                  MQTTSuite/assets/first-success-terminal.png \
+                  MQTTSuite/assets/first-success-terminal-mobile.png
           if git diff --cached --quiet; then
             echo 'No generated output changes to publish.'
             exit 0
           fi
-
-          git commit -m 'Publish generated output for reviewed MQTTSuite figure'
+          git commit -m 'Publish reviewed MQTTSuite figure family'
           git push origin HEAD:main
