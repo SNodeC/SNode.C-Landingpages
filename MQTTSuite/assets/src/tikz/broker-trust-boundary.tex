@@ -4,31 +4,45 @@
 \input{mqttsystem-figure-system.tex}
 \begin{document}
 \begin{tikzpicture}[mqtt desktop]
-\tikzset{box/.style={mqtt process,minimum width=38mm,text width=34mm}}
+\tikzset{box/.style={mqtt process,minimum width=42mm,text width=37mm}}
 
-\node[mqtt external,box] (clients) {MQTT clients};
-\node[mqtt data,box,right=\MQHorizontalGap of clients] (data) {MQTT data plane\\direct MQTT +\\MQTT/WebSocket};
-\node[mqtt application,box,right=\MQHorizontalGap of data] (core) {MQTTBroker\\shared Broker / session state};
-\draw[mqtt data flow] (clients.east) -- (data.west);
-\draw[mqtt data flow] (data.east) -- (core.west);
+\node[mqtt external,box] (mqttclients) {direct MQTT clients};
+\node[mqtt data,box,right=\MQHorizontalGap of mqttclients] (direct) {direct MQTT listeners};
+\node[mqtt application,minimum width=46mm,text width=41mm,right=\MQHorizontalGap of direct] (core)
+  {MQTTBroker\\shared Broker / session state};
+\draw[mqtt data flow] (mqttclients.east) -- (direct.west);
+\draw[mqtt data flow] (direct.east) -- \MQPortWest{core}{.70};
 
-\node[mqtt external,minimum width=38mm,text width=34mm,right=18mm of core,yshift=18mm] (operator) {browser / operator};
-\node[mqtt control,minimum width=48mm,text width=43mm,below=\MQGapS of operator] (admin)
+\node[mqtt external,box,below=30mm of mqttclients] (httpclients)
+  {browser / HTTP or MQTT-WebSocket client};
+\node[mqtt control,minimum width=52mm,text width=47mm,right=\MQHorizontalGap of httpclients] (router)
+  {shared HTTP / HTTPS listener + Express router};
+\draw[mqtt control flow] (httpclients.east) -- (router.west);
+
+\node[mqtt data,box,right=30mm of router,yshift=15mm] (ws)
+  {MQTT WebSocket\\\texttt{/}, \texttt{/ws}, \texttt{/mqtt}};
+\node[mqtt control,box,right=30mm of router,yshift=-15mm] (admin)
   {dashboard + JSON admin API + SSE};
-\node[mqtt warning,minimum width=60mm,text width=54mm,below=\MQGapS of admin] (risk)
-  {No application authentication.\\Wildcard API/event CORS.\\Client events can include\\supplied MQTT password data.};
-\node[mqtt note,minimum width=60mm,text width=54mm,below=\MQGapS of risk] (tls)
-  {HTTPS protects transport only.\\Use external access control or a trusted network boundary.};
-\draw[mqtt control flow] (operator.south) -- (admin.north);
-\draw[mqtt association] (core.east) -- (admin.west);
+\draw[mqtt data flow] \MQPortEast{router}{.68} -- ++(8mm,0) |- (ws.west);
+\draw[mqtt control flow] \MQPortEast{router}{.32} -- ++(8mm,0) |- (admin.west);
+\draw[mqtt data flow] (ws.east) -- ++(8mm,0) |- \MQPortSouth{core}{.70};
+\draw[mqtt control flow] \MQPortNorth{admin}{.70} -- ++(0,8mm) -| \MQPortSouth{core}{.30};
+
+\node[mqtt warning,minimum width=66mm,text width=60mm,below=\MQGapM of admin] (risk)
+  {No application authentication on the Broker operator routes. API/event CORS is wildcard. Client event representation can include the supplied MQTT password.};
+\node[mqtt note,minimum width=66mm,text width=60mm,below=\MQGapS of risk] (tls)
+  {HTTPS protects transport only. Protect the shared HTTP exposure with a trusted network policy or path-aware external access control.};
 \draw[mqtt association] (admin.south) -- (risk.north);
 \draw[mqtt association] (risk.south) -- (tls.north);
 
 \begin{pgfonlayer}{background}
-  \node[mqtt lane,fit=(clients)(data)(core)(operator)(admin)(risk)(tls)] (frame) {};
-  \node[mqtt trust boundary,fit=(operator)(admin)(risk)(tls)] (trust) {};
+  \node[mqtt figure frame,fit=(mqttclients)(direct)(core)(httpclients)(router)(ws)(admin)(risk)(tls)] (frame) {};
+  \node[mqtt trust boundary,fit=(router)(ws)(admin)(risk)(tls)] (trust) {};
 \end{pgfonlayer}
-\node[mqtt section title] at ($(frame.north west)+(\MQTitleGap,-\MQTitleGap)$) {MQTTBroker trust boundary};
-\node[mqtt annotation,anchor=west,fill=MQSurface] at ($(trust.north west)+(\MQTitleGap,0)$) {trusted management boundary};
+\node[mqtt section title] at ($(frame.north west)+(\MQTitleGap,-\MQTitleGap)$)
+  {MQTTBroker exposure and required trust boundary};
+\node[mqtt annotation,anchor=west,fill=MQSurface] at ($(trust.north west)+(\MQTitleGap,0)$)
+  {required external / trusted deployment boundary — not enforced by MQTTBroker};
+
 \end{tikzpicture}
 \end{document}
