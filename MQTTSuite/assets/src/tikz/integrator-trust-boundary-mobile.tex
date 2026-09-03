@@ -4,20 +4,38 @@
 \input{mqttsystem-figure-system.tex}
 \begin{document}
 \begin{tikzpicture}[mqtt mobile]
-\tikzset{wide/.style={minimum width=74mm,text width=67mm}}
-\node[mqtt data,wide] (data) {MQTT data plane\\outbound client + MqttMapper\\subscribe / transform / republish};
-\node[mqtt external,wide,below=\MQGapL of data] (operator) {admin client};
-\node[mqtt control,wide,below=\MQGapS of operator] (admin) {HTTP / HTTPS mapping administration};
-\node[mqtt warning,wide,below=\MQGapS of admin] (risk) {Basic Auth is present\\source-known fixed defaults: \texttt{admin/admin}};
-\node[mqtt note,wide,below=\MQGapS of risk] (note) {mapping read-back, draft, and history\\can contain MQTT credentials};
+\tikzset{wide/.style={minimum width=72mm,text width=64mm}}
+
+\node[mqtt external,wide] (broker) {remote MQTT broker};
+\node[mqtt data,wide,below=\MQGapS of broker] (client)
+  {one outbound MQTT client connection};
+\node[mqtt application,wide,below=\MQGapS of client] (core)
+  {MQTTIntegrator + \texttt{MqttMapper}};
+
+\draw[mqtt data flow] \MQPortSouth{broker}{.32} -- node[mqtt edge label,right]{subscribed PUBLISH} \MQPortNorth{client}{.32};
+\draw[mqtt data flow] \MQPortSouth{client}{.32} -- \MQPortNorth{core}{.32};
+\draw[mqtt data flow] \MQPortEast{core}{.55} -- ++(8mm,0) |- \MQPortEast{client}{.70};
+\draw[mqtt data flow] \MQPortEast{client}{.30} -- ++(8mm,0) |- node[mqtt edge label,near end,right]{mapped PUBLISH} \MQPortEast{broker}{.68};
+
+\node[mqtt external,wide,below=\MQMobileLaneGap of core] (operator) {admin client};
+\node[mqtt control,wide,below=\MQGapS of operator] (admin)
+  {HTTP / HTTPS mapping administration};
+\node[mqtt warning,wide,below=\MQGapS of admin] (risk)
+  {Basic Auth is present; built-in defaults are source-known \texttt{admin/admin}.};
+\node[mqtt note,wide,below=\MQGapS of risk] (note)
+  {Mapping read-back, draft, and history can contain MQTT credentials.};
 \draw[mqtt control flow] (operator.south) -- (admin.north);
 \draw[mqtt association] (admin.south) -- (risk.north);
 \draw[mqtt association] (risk.south) -- (note.north);
+
 \begin{pgfonlayer}{background}
-  \node[mqtt lane,fit=(data)(operator)(admin)(risk)(note)] (frame) {};
+  \node[mqtt figure frame,fit=(broker)(client)(core)(operator)(admin)(risk)(note)] (frame) {};
   \node[mqtt trust boundary,fit=(operator)(admin)(risk)(note)] (trust) {};
 \end{pgfonlayer}
-\node[mqtt section title] at ($(frame.north west)+(\MQTitleGap,-\MQTitleGap)$) {Integrator trust boundary};
-\node[mqtt annotation,anchor=west,fill=MQSurface] at ($(trust.north west)+(\MQTitleGap,0)$) {trusted management boundary};
+\node[mqtt section title] at ($(frame.north west)+(\MQTitleGap,-\MQTitleGap)$)
+  {Integrator administration exposure};
+\node[mqtt annotation,anchor=west,fill=MQSurface] at ($(trust.north west)+(\MQTitleGap,0)$)
+  {required external / trusted deployment boundary};
+
 \end{tikzpicture}
 \end{document}
