@@ -2,52 +2,59 @@
 \usepackage[T1]{fontenc}
 \usepackage{lmodern}
 \input{mqttsystem-figure-system.tex}
+\input{snodec-canonical-figure-system.tex}
 \begin{document}
 \begin{tikzpicture}[mqtt mobile]
 \tikzset{
   wide/.style={minimum width=72mm,text width=64mm},
-  half/.style={minimum width=36mm,text width=32mm}
+  half/.style={minimum width=34mm,text width=29mm}
 }
 
 \node[mqtt config,wide] (defaults) {API / compiled defaults};
 \node[mqtt config,wide,below=\MQGapS of defaults] (file) {configuration file};
 \node[mqtt config,wide,below=\MQGapS of file] (cli) {command line};
+\node[mqtt annotation,above=3mm of defaults] (precedence)
+  {precedence: defaults $<$ file $<$ command line};
 
 \begin{pgfonlayer}{background}
-  \node[mqtt group,fit=(defaults)(file)(cli)] (inputs) {};
+  \node[mqtt group,fit=(precedence)(defaults)(file)(cli)] (inputs) {};
 \end{pgfonlayer}
-\node[mqtt annotation,anchor=west] at ($(inputs.north west)+(\MQTitleGap,-\MQTitleGap)$)
-  {precedence inputs: defaults $<$ file $<$ command line};
 
 \node[mqtt control,wide,below=\MQBranchGap of inputs] (effective)
   {effective parsed SNode.C application / instance configuration};
 \draw[mqtt control flow] (inputs.south) -- (effective.north);
 
-\node[mqtt process,half,below=\MQBranchGap of effective,xshift=-20mm] (inspect)
+\node[mqtt process,half,below=\MQBranchGap of effective,xshift=-19mm] (inspect)
   {inspect\\\texttt{--show-config}\\\texttt{--command-line}\\\texttt{=active}};
-\node[mqtt process,half,below=\MQBranchGap of effective,xshift=20mm] (write)
-  {serialize\\\texttt{--write-config}};
+\node[mqtt process,half,below=\MQBranchGap of effective,xshift=19mm] (write)
+  {serialize\\effective state\\\texttt{--write-config}};
 \draw[mqtt observation] \MQPortSouth{effective}{.32} -- ++(0,-6mm) -| (inspect.north);
 \draw[mqtt control flow] \MQPortSouth{effective}{.68} -- ++(0,-6mm) -| (write.north);
 
-\node[mqtt config,half,below=\MQGapS of write] (saved) {written configuration file};
+\node[mqtt process,half,below=\MQGapS of write] (saved)
+  {written config file\\\textbf{not runtime success}};
 \draw[mqtt control flow] (write.south) -- (saved.north);
 
-\node[mqtt config,wide,below=\MQMobileLaneGap of saved,xshift=-20mm] (mapping)
+\coordinate (apptitleguard) at ($(inputs.north)+(0,\MQGapL)$);
+\begin{pgfonlayer}{background}
+  \node[mqtt figure frame,fit=(apptitleguard)(inputs)(effective)(inspect)(write)(saved)] (appframe) {};
+\end{pgfonlayer}
+\node[mqtt section title] at ($(appframe.north west)+(\MQTitleGap,-\MQTitleGap)$)
+  {Configuration hierarchy and persistence};
+
+\node[mqtt config,wide,below=\MQGapXL of appframe] (mapping)
   {mapping JSON — Integrator / optional Broker mapper};
 \node[mqtt config,wide,below=\MQGapS of mapping] (bridge)
   {bridge-definition JSON — MQTTBridge};
 \node[mqtt config,wide,below=\MQGapS of bridge] (projection)
   {projection JSON — MQTTStore};
 \node[mqtt note,wide,below=\MQGapS of projection] (note)
-  {separate domain documents; not merged into the SNode.C precedence chain};
+  {separate domain documents with separate schemas / lifecycles;\\not merged into the SNode.C precedence chain};
 
+\coordinate (domaintitleguard) at ($(mapping.north)+(0,\MQGapL)$);
 \begin{pgfonlayer}{background}
-  \node[mqtt figure frame,fit=(inputs)(effective)(inspect)(write)(saved)] (appframe) {};
-  \node[mqtt group,fit=(mapping)(bridge)(projection)(note)] (domainframe) {};
+  \node[mqtt group,fit=(domaintitleguard)(mapping)(bridge)(projection)(note)] (domainframe) {};
 \end{pgfonlayer}
-\node[mqtt section title] at ($(appframe.north west)+(\MQTitleGap,-\MQTitleGap)$)
-  {Configuration hierarchy and persistence};
 \node[mqtt section title] at ($(domainframe.north west)+(\MQTitleGap,-\MQTitleGap)$)
   {Separate domain documents};
 

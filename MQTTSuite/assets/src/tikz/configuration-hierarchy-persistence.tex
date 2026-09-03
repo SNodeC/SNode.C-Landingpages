@@ -2,53 +2,60 @@
 \usepackage[T1]{fontenc}
 \usepackage{lmodern}
 \input{mqttsystem-figure-system.tex}
+\input{snodec-canonical-figure-system.tex}
 \begin{document}
 \begin{tikzpicture}[mqtt desktop]
 \tikzset{
-  src/.style={mqtt config,minimum width=37mm,text width=32mm},
-  main/.style={mqtt control,minimum width=56mm,text width=50mm},
-  outcome/.style={mqtt process,minimum width=42mm,text width=37mm},
-  doc/.style={mqtt config,minimum width=42mm,text width=37mm}
+  src/.style={mqtt config,minimum width=32mm,text width=27mm},
+  main/.style={mqtt control,minimum width=44mm,text width=38mm},
+  outcome/.style={mqtt process,minimum width=36mm,text width=31mm},
+  doc/.style={mqtt config,minimum width=39mm,text width=34mm}
 }
 
 \node[src] (defaults) {API / compiled defaults\\lowest precedence};
 \node[src,below=\MQGapS of defaults] (file) {SNode.C configuration file};
 \node[src,below=\MQGapS of file] (cli) {command line\\highest precedence};
+\node[mqtt annotation,above=3mm of defaults] (precedence)
+  {precedence increases: defaults $\rightarrow$ file $\rightarrow$ command line};
 
-\node[main,right=\MQHorizontalGapLoose of file] (effective)
-  {effective parsed SNode.C configuration\\application $\rightarrow$ named instance $\rightarrow$ sections / options};
+\node[main,right=\MQHorizontalGap of file] (effective)
+  {effective parsed SNode.C configuration\\application $\rightarrow$ named instance\\$\rightarrow$ sections / options};
 
-\draw[mqtt control flow] (defaults.east) -- ++(8mm,0) |- \MQPortWest{effective}{.75};
+\draw[mqtt control flow] (defaults.east) -- ++(6mm,0) |- \MQPortWest{effective}{.75};
 \draw[mqtt control flow] (file.east) -- \MQPortWest{effective}{.50};
-\draw[mqtt control flow] (cli.east) -- ++(8mm,0) |- \MQPortWest{effective}{.25};
+\draw[mqtt control flow] (cli.east) -- ++(6mm,0) |- \MQPortWest{effective}{.25};
 
-\node[outcome,right=\MQHorizontalGapLoose of effective,yshift=13mm] (inspect)
+\node[outcome,right=\MQHorizontalGapLoose of effective,yshift=12mm] (inspect)
   {inspect effective state\\\texttt{--show-config}\\\texttt{--command-line=active}};
-\node[outcome,right=\MQHorizontalGapLoose of effective,yshift=-13mm] (write)
+\node[outcome,right=\MQHorizontalGapLoose of effective,yshift=-12mm] (write)
   {serialize effective parsed state\\\texttt{--write-config}};
-\node[src,right=\MQHorizontalGap of write] (saved) {written application\\configuration file};
+\node[outcome,below=\MQGapS of write] (saved)
+  {written application configuration file\\\textbf{not runtime success}};
 
-\draw[mqtt observation] \MQPortEast{effective}{.70} -- ++(8mm,0) |- (inspect.west);
-\draw[mqtt control flow] \MQPortEast{effective}{.30} -- ++(8mm,0) |- (write.west);
-\draw[mqtt control flow] (write.east) -- (saved.west);
+\draw[mqtt observation] \MQPortEast{effective}{.70} -- ++(6mm,0) |- (inspect.west);
+\draw[mqtt control flow] \MQPortEast{effective}{.30} -- ++(6mm,0) |- (write.west);
+\draw[mqtt control flow] (write.south) -- (saved.north);
 
-\node[doc] (mapping) at ($(defaults |- cli.south)+(0,-26mm)$)
-  {mapping JSON\\Integrator / optional Broker mapper};
-\node[doc,right=\MQHorizontalGap of mapping] (bridge)
-  {bridge-definition JSON\\MQTTBridge};
-\node[doc,right=\MQHorizontalGap of bridge] (projection)
-  {projection JSON\\MQTTStore};
-\node[mqtt note,right=\MQHorizontalGap of projection,minimum width=47mm,text width=42mm] (separate)
-  {separate domain documents; not merged by SNode.C precedence};
-
+\coordinate (apptitleguard) at ($(precedence.north)+(0,\MQGapL)$);
 \begin{pgfonlayer}{background}
-  \node[mqtt figure frame,fit=(defaults)(file)(cli)(effective)(inspect)(write)(saved)] (appframe) {};
-  \node[mqtt group,fit=(mapping)(bridge)(projection)(separate)] (domainframe) {};
+  \node[mqtt figure frame,fit=(apptitleguard)(precedence)(defaults)(file)(cli)(effective)(inspect)(write)(saved)] (appframe) {};
 \end{pgfonlayer}
 \node[mqtt section title] at ($(appframe.north west)+(\MQTitleGap,-\MQTitleGap)$)
   {SNode.C application configuration};
-\node[mqtt annotation,anchor=east] at ($(appframe.north east)+(-\MQTitleGap,-\MQTitleGap)$)
-  {precedence increases: defaults $\rightarrow$ configuration file $\rightarrow$ command line};
+
+\node[doc] (bridge) at ($(effective |- saved.south)+(0,-22mm)$)
+  {bridge-definition JSON\\MQTTBridge};
+\node[doc,left=\MQHorizontalGap of bridge] (mapping)
+  {mapping JSON\\Integrator / optional Broker mapper};
+\node[doc,right=\MQHorizontalGap of bridge] (projection)
+  {projection JSON\\MQTTStore};
+\node[mqtt note,below=\MQGapS of bridge,minimum width=86mm,text width=80mm] (separate)
+  {separate domain documents with separate schemas / lifecycles;\\not merged by SNode.C precedence};
+
+\coordinate (domaintitleguard) at ($(mapping.north)+(0,\MQGapL)$);
+\begin{pgfonlayer}{background}
+  \node[mqtt group,fit=(domaintitleguard)(mapping)(bridge)(projection)(separate)] (domainframe) {};
+\end{pgfonlayer}
 \node[mqtt section title] at ($(domainframe.north west)+(\MQTitleGap,-\MQTitleGap)$)
   {Application-specific domain documents};
 
