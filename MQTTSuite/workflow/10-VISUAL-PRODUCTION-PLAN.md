@@ -99,6 +99,10 @@ The 24 figures should read as one product family rather than 24 unrelated illust
 - application names, MQTT topic tokens, prefixes, QoS, HTTP/SSE routes, and evidence labels use a consistent typography hierarchy;
 - diagrams use the MQTTSuite visual language established for V1, while application-specific figures may emphasize the owning application;
 - arrow direction always represents real message/state/configuration flow, never vague association;
+- every directional connector is one continuous path with the arrowhead attached to that path; never draw a line and place a separate arrowhead on top of or beside it;
+- connectors leave and enter a box border orthogonally at 90 degrees, using the middle of the relevant border by default;
+- when several connectors share one border, distribute their source and destination attachment points evenly along that border rather than stacking them at one point;
+- off-axis connectors use orthogonal/Manhattan routing; unmotivated diagonal lines or arrows are forbidden, and a diagonal is acceptable only when a specific semantic or geometric reason makes it clearer than orthogonal routing;
 - use labels/shapes in addition to color; meaning must survive grayscale and color-vision differences;
 - separate data plane from operator/control plane where relevant;
 - mark source-only versus runtime-qualified evidence where the distinction affects interpretation;
