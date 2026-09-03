@@ -1,0 +1,36 @@
+\documentclass[tikz,border=8pt]{standalone}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\input{mqttsystem-figure-system.tex}
+\begin{document}
+\begin{tikzpicture}[mqtt desktop]
+\tikzset{card/.style={mqtt process,minimum width=68mm,text width=62mm,minimum height=22mm}}
+
+\node[mqtt control,card] (pass) {1. Immediate source exclusion\\\texttt{Bridge::publish()} sends to each connected destination where destination $\neq$ origin};
+\node[mqtt external,minimum width=31mm,left=\MQHorizontalGap of pass] (a) {Broker A\\origin};
+\node[mqtt success,minimum width=31mm,right=\MQHorizontalGap of pass,yshift=13mm] (b) {Broker B};
+\node[mqtt success,minimum width=31mm,right=\MQHorizontalGap of pass,yshift=-13mm] (c) {Broker C};
+\draw[mqtt data flow] (a.east) -- (pass.west);
+\draw[mqtt data flow] (pass.east) -- (b.west);
+\draw[mqtt data flow] (pass.east) -- (c.west);
+\node[mqtt note,minimum width=36mm,text width=32mm,above=\MQGapS of a] (sourceNote) {A is not a destination\\in this forwarding pass.};
+\draw[mqtt association] (a.north) -- (sourceNote.south);
+
+\node[mqtt warning,card,below=\MQGapM of pass] (cycle)
+  {2. Topology / subscription / prefix design\\A later cycle such as A → B → A is still possible when forwarded topics match another member's input subscriptions.};
+\node[mqtt note,minimum width=47mm,text width=42mm,left=\MQHorizontalGap of cycle] (operator)
+  {Operator-owned control:\\partition filters, prefixes, and topology.};
+\draw[mqtt association] (operator.east) -- (cycle.west);
+
+\node[mqtt control,card,below=\MQGapM of cycle] (private)
+  {3. Private SNode.C reflection suppression\\\texttt{loop\_prevention=true} sets the CONNECT protocol-level MSB (try-private style) for cooperating SNode.C MQTT peers.};
+\node[mqtt note,minimum width=49mm,text width=44mm,right=\MQHorizontalGap of private] (nonguarantee)
+  {Non-standard MQTT extension.\\Not a proof that arbitrary cyclic / third-party topologies are loop-safe.};
+\draw[mqtt association] (private.east) -- (nonguarantee.west);
+
+\begin{pgfonlayer}{background}
+  \node[mqtt lane,fit=(a)(sourceNote)(pass)(b)(c)(operator)(cycle)(private)(nonguarantee)] (frame) {};
+\end{pgfonlayer}
+\node[mqtt section title] at ($(frame.north west)+(\MQTitleGap,-\MQTitleGap)$) {Three distinct loop boundaries};
+\end{tikzpicture}
+\end{document}
