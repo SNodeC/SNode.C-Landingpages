@@ -4,33 +4,43 @@
 \input{mqttsystem-figure-system.tex}
 \begin{document}
 \begin{tikzpicture}[mqtt desktop]
-\tikzset{card/.style={mqtt process,minimum width=82mm,text width=76mm,minimum height=22mm}}
+\tikzset{
+  card/.style={mqtt process,minimum width=64mm,text width=58mm,minimum height=37mm},
+  mini/.style={mqtt external,minimum width=23mm,text width=19mm,minimum height=10mm}
+}
 
-\node[mqtt control,card] (pass) {1. Immediate source exclusion\\\texttt{Bridge::publish()} sends to\\every connected destination except\\the origin member};
-\node[mqtt external,minimum width=31mm,left=\MQHorizontalGap of pass] (a) {Broker A\\origin};
-\node[mqtt success,minimum width=31mm,right=\MQHorizontalGap of pass,yshift=13mm] (b) {Broker B};
-\node[mqtt success,minimum width=31mm,right=\MQHorizontalGap of pass,yshift=-13mm] (c) {Broker C};
-\draw[mqtt data flow] (a.east) -- (pass.west);
-\draw[mqtt data flow] (pass.east) -- (b.west);
-\draw[mqtt data flow] (pass.east) -- (c.west);
-\node[mqtt note,minimum width=36mm,text width=32mm,above=\MQGapS of a] (sourceNote) {A is not a destination\\in this forwarding pass.};
-\draw[mqtt association] (a.north) -- (sourceNote.south);
+\node[mqtt control,card] (pass)
+  {\textbf{1. Immediate source exclusion}\\[2mm]
+   \texttt{Bridge::publish()} forwards to every connected destination except the origin member.};
+\node[mqtt warning,card,right=\MQHorizontalGap of pass] (cycle)
+  {\textbf{2. Topology / subscription design}\\[2mm]
+   A later cycle such as A → B → A is still possible when forwarded topics match another member's input subscriptions.};
+\node[mqtt control,card,right=\MQHorizontalGap of cycle] (private)
+  {\textbf{3. Private reflection suppression}\\[2mm]
+   \texttt{loop\_prevention=true} requests the private SNode.C CONNECT protocol-level MSB for cooperating SNode.C MQTT peers.};
 
-\node[mqtt warning,card,below=\MQGapM of pass] (cycle)
-  {2. Topology / subscription / prefix design\\A later cycle such as A → B → A is still possible when forwarded topics match another member's input subscriptions.};
-\node[mqtt note,minimum width=47mm,text width=42mm,left=\MQHorizontalGap of cycle] (operator)
-  {Operator-owned control:\\partition subscriptions,\\prefix design, and topology.};
-\draw[mqtt association] (operator.east) -- (cycle.west);
+\node[mini,below=\MQGapM of pass,xshift=-20mm] (a) {Broker A\\origin};
+\node[mqtt process,minimum width=29mm,text width=24mm,right=\MQHorizontalGapTight of a] (forward) {one forwarding pass};
+\node[mini,right=\MQHorizontalGapTight of forward,yshift=8mm] (b) {Broker B};
+\node[mini,right=\MQHorizontalGapTight of forward,yshift=-8mm] (c) {Broker C};
+\draw[mqtt data flow] (a.east) -- (forward.west);
+\draw[mqtt data flow] \MQPortEast{forward}{.68} -- ++(6mm,0) |- (b.west);
+\draw[mqtt data flow] \MQPortEast{forward}{.32} -- ++(6mm,0) |- (c.west);
+\node[mqtt note,minimum width=64mm,text width=58mm,below=\MQGapM of forward] (exclude)
+  {A is not a destination in this pass. This does not prevent a later topology cycle.};
 
-\node[mqtt control,card,below=\MQGapM of cycle] (private)
-  {3. Private SNode.C reflection suppression\\\texttt{loop\_prevention=true} sets CONNECT\\protocol-level MSB (try-private style)\\for cooperating SNode.C MQTT peers.};
-\node[mqtt note,minimum width=49mm,text width=44mm,right=\MQHorizontalGap of private] (nonguarantee)
-  {Non-standard MQTT extension.\\Not a proof that arbitrary cyclic / third-party topologies are loop-safe.};
-\draw[mqtt association] (private.east) -- (nonguarantee.west);
+\node[mqtt note,minimum width=64mm,text width=58mm,below=\MQGapM of cycle] (operator)
+  {Operator-owned controls: subscription partitioning, prefix design, and topology.};
+\node[mqtt note,minimum width=64mm,text width=58mm,below=\MQGapM of private] (nonguarantee)
+  {Non-standard MQTT extension; not a guarantee that arbitrary cyclic or third-party topologies are loop-safe.};
 
 \begin{pgfonlayer}{background}
-  \node[mqtt lane,fit=(a)(sourceNote)(pass)(b)(c)(operator)(cycle)(private)(nonguarantee)] (frame) {};
+  \node[mqtt figure frame,fit=(pass)(cycle)(private)(a)(forward)(b)(c)(exclude)(operator)(nonguarantee)] (frame) {};
 \end{pgfonlayer}
-\node[mqtt section title] at ($(frame.north west)+(\MQTitleGap,-\MQTitleGap)$) {Three distinct loop boundaries};
+\node[mqtt section title] at ($(frame.north west)+(\MQTitleGap,-\MQTitleGap)$)
+  {Three distinct loop boundaries};
+\node[mqtt annotation,anchor=east] at ($(frame.north east)+(-\MQTitleGap,-\MQTitleGap)$)
+  {independent safeguards and limits — not a sequential algorithm};
+
 \end{tikzpicture}
 \end{document}
