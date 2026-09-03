@@ -1,0 +1,26 @@
+\documentclass[tikz,border=8pt]{standalone}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\input{mqttsystem-figure-system.tex}
+\begin{document}
+\begin{tikzpicture}[mqtt mobile]
+\tikzset{wide/.style={minimum width=74mm,text width=67mm}}
+\node[mqtt application,wide] (app) {application root};
+\node[mqtt config,wide,below=\MQGapS of app] (instance) {named connection / listener instance};
+\node[mqtt config,wide,below=\MQGapS of instance] (transport) {address + transport\\+ TLS / WebSocket layer when selected};
+\node[mqtt config,wide,below=\MQGapS of transport] (session) {MQTT session};
+\node[mqtt success,wide,below=\MQGapS of session] (action) {application action};
+\node[mqtt note,wide,below=\MQGapM of action] (surfaces) {CLI / config file / inspection\\same hierarchical state};
+\node[mqtt note,wide,below=\MQGapS of surfaces] (precedence) {API/default < config file < command line};
+\draw[mqtt flow] (app.south) -- (instance.north);
+\draw[mqtt flow] (instance.south) -- (transport.north);
+\draw[mqtt flow] (transport.south) -- (session.north);
+\draw[mqtt flow] (session.south) -- (action.north);
+\draw[mqtt association] (action.south) -- (surfaces.north);
+\draw[mqtt association] (surfaces.south) -- (precedence.north);
+\begin{pgfonlayer}{background}
+  \node[mqtt lane,fit=(app)(instance)(transport)(session)(action)(surfaces)(precedence)] (frame) {};
+\end{pgfonlayer}
+\node[mqtt section title] at ($(frame.north west)+(\MQTitleGap,-\MQTitleGap)$) {Configuration hierarchy};
+\end{tikzpicture}
+\end{document}
