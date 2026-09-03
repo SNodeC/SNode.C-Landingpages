@@ -1,0 +1,40 @@
+\documentclass[tikz,border=8pt]{standalone}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\input{mqttsystem-figure-system.tex}
+\begin{document}
+\begin{tikzpicture}[mqtt desktop]
+\tikzset{
+  broker/.style={mqtt external,minimum width=39mm,text width=35mm},
+  member/.style={mqtt process,minimum width=42mm,text width=38mm},
+  core/.style={mqtt control,minimum width=44mm,text width=40mm}
+}
+
+\node[broker] (a) {Broker A\\source domain};
+\node[member,right=\MQHorizontalGap of a] (ma) {member A\\subscribes selected filters};
+\node[core,right=\MQHorizontalGapLoose of ma] (bridge) {logical bridge\\fan-out forwarding};
+
+\node[member,above right=\MQGapL and \MQHorizontalGapLoose of bridge] (mb) {member B\\connected destination};
+\node[broker,right=\MQHorizontalGap of mb] (b) {Broker B};
+\node[member,below right=\MQGapL and \MQHorizontalGapLoose of bridge] (mc) {member C\\connected destination};
+\node[broker,right=\MQHorizontalGap of mc] (c) {Broker C};
+
+\draw[mqtt data flow] (a.east) -- node[mqtt topic label,above]{selected PUBLISH} (ma.west);
+\draw[mqtt data flow] (ma.east) -- (bridge.west);
+\draw[mqtt data flow] (bridge.east) |- (mb.west);
+\draw[mqtt data flow] (bridge.east) |- (mc.west);
+\draw[mqtt data flow] (mb.east) -- node[mqtt edge label,above]{forward} (b.west);
+\draw[mqtt data flow] (mc.east) -- node[mqtt edge label,below]{forward} (c.west);
+
+\node[mqtt note,below=\MQGapL of ma,minimum width=55mm,text width=49mm] (preserve)
+  {source member A is excluded from this forwarding pass\\payload, received QoS, and retain are preserved for B and C};
+
+\begin{pgfonlayer}{background}
+  \node[mqtt lane,fit=(a)(ma)(bridge)(mb)(b)(mc)(c)(preserve)] (frame) {};
+\end{pgfonlayer}
+\node[mqtt section title] at ($(frame.north west)+(\MQTitleGap,-\MQTitleGap)$) {Logical bridge forwarding};
+\node[mqtt annotation,anchor=east] at ($(frame.north east)+(-\MQTitleGap,-\MQTitleGap)$)
+  {input is selected by the source member's subscriptions};
+
+\end{tikzpicture}
+\end{document}
