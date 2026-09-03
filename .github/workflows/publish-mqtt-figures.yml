@@ -1,5 +1,6 @@
 name: MQTTSuite figure validation and publication
 # Review artifacts carry both raster review renders and exact generated SVG bytes.
+# Review publication trigger: Figure 4
 
 on:
   push:
