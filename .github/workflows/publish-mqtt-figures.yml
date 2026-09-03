@@ -32,10 +32,12 @@ jobs:
             texlive-latex-extra \
             texlive-fonts-recommended \
             lmodern \
+            poppler-utils \
             inkscape \
             scour
-          inkscape --version
           pdflatex --version | head -n 1
+          pdftocairo -v 2>&1 | head -n 1
+          inkscape --version
           scour --version
 
       - name: Generate figures
@@ -91,6 +93,7 @@ jobs:
             texlive-latex-extra \
             texlive-fonts-recommended \
             lmodern \
+            poppler-utils \
             inkscape \
             scour
 
