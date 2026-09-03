@@ -4,19 +4,40 @@
 \input{mqttsystem-figure-system.tex}
 \begin{document}
 \begin{tikzpicture}[mqtt mobile]
-\tikzset{wide/.style={minimum width=74mm,text width=67mm}}
-\node[mqtt control,wide] (root) {topic level: \texttt{devices}};
-\node[mqtt process,wide,below=\MQGapS of root] (literal) {1. literal \texttt{room-01} — exact level};
-\node[mqtt process,wide,below=\MQGapS of literal] (plus) {2. \texttt{+} — exactly one level};
-\node[mqtt process,wide,below=\MQGapS of plus] (hash) {3. terminal \texttt{\#} — remaining levels};
-\draw[mqtt flow] (root.south) -- (literal.north);
-\draw[mqtt association] (literal.south) -- (plus.north);
-\draw[mqtt association] (plus.south) -- (hash.north);
-\node[mqtt note,wide,below=\MQGapM of hash] (examples) {Examples: \texttt{devices/room-01} → literal;\\\texttt{devices/lab} → \texttt{+};\\\texttt{devices/lab/x} → terminal \texttt{\#};\\\texttt{devices} → child terminal \texttt{\#} may match zero levels.};
-\node[mqtt warning,wide,below=\MQGapM of examples] (order) {Sibling branches are tried in\\document order; the first match wins.};
+\tikzset{wide/.style={minimum width=72mm,text width=64mm}}
+
+\node[mqtt control,wide] (root) {parent topic level: \texttt{devices}};
+\node[mqtt process,wide,below=\MQGapM of root] (literal)
+  {literal sibling — \texttt{room-01}};
+\node[mqtt process,wide,below=\MQGapS of literal] (plus)
+  {single-level sibling — \texttt{+}};
+\node[mqtt process,wide,below=\MQGapS of plus] (hash)
+  {terminal multi-level sibling — \texttt{\#}};
+
+\coordinate (literalbus) at ($(literal.west)+(-7mm,0)$);
+\coordinate (plusbus) at ($(plus.west)+(-7mm,0)$);
+\coordinate (hashbus) at ($(hash.west)+(-7mm,0)$);
+\draw[mqtt association] (literalbus) -- (hashbus);
+\draw[mqtt association] (root.west) -- ++(-7mm,0) |- (plusbus);
+\draw[mqtt flow] (literalbus) -- (literal.west);
+\draw[mqtt flow] (plusbus) -- (plus.west);
+\draw[mqtt flow] (hashbus) -- (hash.west);
+
+\node[mqtt note,wide,below=\MQGapM of hash] (examples)
+  {Examples: \texttt{devices/room-01} → literal;\\
+   \texttt{devices/lab} → \texttt{+};\\
+   \texttt{devices/lab/x} → terminal \texttt{\#}.\\
+   A child terminal \texttt{\#} may match zero remaining levels only when the matched parent has no subscription.};
+\node[mqtt warning,wide,below=\MQGapM of examples] (order)
+  {Sibling alternatives are tried in document order; the first match wins. There is no built-in literal → \texttt{+} → \texttt{\#} precedence.};
+\node[mqtt note,wide,below=\MQGapS of order] (qos)
+  {Subscription QoS belongs to the selected topic branch.};
+
 \begin{pgfonlayer}{background}
-  \node[mqtt lane,fit=(root)(literal)(plus)(hash)(examples)(order)] (frame) {};
+  \node[mqtt figure frame,fit=(root)(literal)(plus)(hash)(examples)(order)(qos)] (frame) {};
 \end{pgfonlayer}
-\node[mqtt section title] at ($(frame.north west)+(\MQTitleGap,-\MQTitleGap)$) {Topic-tree matching};
+\node[mqtt section title] at ($(frame.north west)+(\MQTitleGap,-\MQTitleGap)$)
+  {Topic-tree matching};
+
 \end{tikzpicture}
 \end{document}
