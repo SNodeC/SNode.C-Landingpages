@@ -5,7 +5,6 @@
 \begin{document}
 \begin{tikzpicture}[mqtt desktop]
 \tikzset{
-  family/.style={mqtt group,minimum width=48mm},
   core/.style={mqtt application,minimum width=48mm,text width=43mm},
   statebox/.style={mqtt state,minimum width=43mm,text width=39mm}
 }
@@ -18,7 +17,7 @@
 \node[mqtt process,minimum width=40mm,text width=36mm,right=\MQHorizontalGapLoose of direct] (directctx)
   {per-connection\\MQTT server context};
 \node[mqtt process,minimum width=40mm,text width=36mm,right=\MQHorizontalGapLoose of http] (wsctx)
-  {HTTP upgrade to\\WebSocket + MQTT context};
+  {per-connection HTTP upgrade to\\WebSocket + MQTT context};
 
 \node[core,right=\MQHorizontalGapLoose of directctx,yshift=-18mm] (broker)
   {shared Broker core\\session routing + subscriptions};
@@ -29,14 +28,14 @@
 
 \draw[mqtt data flow] (direct.east) -- (directctx.west);
 \draw[mqtt data flow] (http.east) -- (wsctx.west);
-\draw[mqtt data flow] (directctx.east) -| (broker.north west);
-\draw[mqtt data flow] (wsctx.east) -| (broker.south west);
+\draw[mqtt data flow] (directctx.east) -- ++(8mm,0) |- \MQPortWest{broker}{.70};
+\draw[mqtt data flow] (wsctx.east) -- ++(8mm,0) |- \MQPortWest{broker}{.30};
 \draw[mqtt flow] (broker.east) -- (state.west);
-\draw[mqtt observation] (broker.east) |- (model.west);
+\draw[mqtt observation] \MQPortEast{broker}{.30} -- ++(8mm,0) |- (model.west);
 
 \begin{pgfonlayer}{background}
+  \node[mqtt figure frame,fit=(direct)(http)(directctx)(wsctx)(broker)(state)(model)] (frame) {};
   \node[mqtt data plane,fit=(direct)(http)(directctx)(wsctx)(broker)(state)] (plane) {};
-  \node[mqtt lane,fit=(plane)(model)] (frame) {};
 \end{pgfonlayer}
 \node[mqtt section title] at ($(frame.north west)+(\MQTitleGap,-\MQTitleGap)$)
   {Listener families converge on one Broker core};
