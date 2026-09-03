@@ -1,0 +1,39 @@
+\documentclass[tikz,border=8pt]{standalone}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\input{mqttsystem-figure-system.tex}
+\begin{document}
+\begin{tikzpicture}[mqtt desktop]
+\tikzset{
+  stage/.style={mqtt process,minimum width=43mm,text width=39mm},
+  row/.style={mqtt database,minimum width=47mm,text width=43mm}
+}
+
+\node[mqtt external,stage] (publish) {received MQTT PUBLISH\\topic + payload + QoS + flags};
+\node[mqtt control,stage,right=\MQHorizontalGapLoose of publish] (store) {MQTTStore\\receive path};
+\node[row,right=\MQHorizontalGapLoose of store] (raw)
+  {raw MQTT row\\always written\\\scriptsize topic, payload, QoS\\\scriptsize retain / DUP, packet id};
+\draw[mqtt data flow] (publish.east) -- (store.west);
+\draw[mqtt data flow] (store.east) -- node[mqtt edge label,above]{primary persistence} (raw.west);
+
+\node[mqtt decision,below=\MQGapL of raw] (eligible) {valid JSON\\+ projection match?};
+\node[mqtt process,left=\MQHorizontalGap of eligible,minimum width=48mm,text width=44mm] (projection)
+  {optional projection extraction\\topic / JSON / literal values};
+\node[row,left=\MQHorizontalGap of projection] (typed) {typed application row\\one or more inserts};
+\draw[mqtt control flow] (raw.south) -- node[mqtt edge label,right]{optional projection evaluation} (eligible.north);
+\draw[mqtt control flow] (eligible.west) -- node[mqtt branch label,above]{YES} (projection.east);
+\draw[mqtt data flow] (projection.west) -- (typed.east);
+
+\node[mqtt note,right=\MQHorizontalGap of eligible,minimum width=44mm,text width=40mm] (skip)
+  {NO: projection path is skipped\\raw row remains complete};
+\draw[mqtt association] (eligible.east) -- node[mqtt branch label,above]{NO} (skip.west);
+
+\begin{pgfonlayer}{background}
+  \node[mqtt lane,fit=(publish)(store)(raw)(eligible)(projection)(typed)(skip)] (frame) {};
+\end{pgfonlayer}
+\node[mqtt section title] at ($(frame.north west)+(\MQTitleGap,-\MQTitleGap)$) {Raw envelope first, optional typed projections};
+\node[mqtt annotation,anchor=east] at ($(frame.north east)+(-\MQTitleGap,-\MQTitleGap)$)
+  {raw insert is issued before optional projection inserts};
+
+\end{tikzpicture}
+\end{document}
