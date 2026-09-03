@@ -1,17 +1,75 @@
-name: One-time MQTTSuite figure publication
+name: MQTTSuite figure validation and publication
 
 on:
   push:
     branches:
       - main
     paths:
+      - CMakeLists.txt
       - .github/workflows/publish-mqtt-figures.yml
+      - MQTTSuite/assets/src/tikz/**
 
 permissions:
   contents: write
 
 jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install figure toolchain
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            texlive-latex-extra \
+            texlive-fonts-recommended \
+            lmodern \
+            inkscape \
+            scour
+          inkscape --version
+          pdflatex --version | head -n 1
+          scour --version
+
+      - name: Generate figures
+        shell: bash
+        run: |
+          set -o pipefail
+          cmake -S . -B cmake-build-figures
+          cmake --build cmake-build-figures --target figures --parallel 8 2>&1 | tee figure-build.log
+
+      - name: Rasterize review renders
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p figure-review
+          for svg in MQTTSuite/assets/*.svg; do
+            name="$(basename "${svg%.svg}")"
+            if [[ "$name" == *-mobile ]]; then
+              width=350
+            else
+              width=830
+            fi
+            inkscape "$svg" \
+              --export-type=png \
+              --export-width="$width" \
+              --export-filename="figure-review/${name}.png"
+          done
+          cp figure-build.log figure-review/
+
+      - name: Upload review renders
+        uses: actions/upload-artifact@v4
+        with:
+          name: mqttsuite-figure-review-${{ github.sha }}
+          path: figure-review/
+          if-no-files-found: error
+          retention-days: 14
+
   publish:
+    needs: validate
     if: github.event.head_commit.message == 'Run one-time MQTTSuite figure publication'
     runs-on: ubuntu-latest
     steps:
@@ -34,12 +92,6 @@ jobs:
         run: |
           cmake -S . -B cmake-build-figures
           cmake --build cmake-build-figures --target figures --parallel 8
-
-      - name: Preserve excluded figure 24
-        run: |
-          git restore --source=HEAD -- \
-            MQTTSuite/assets/bridge-patch-sse-lifecycle.svg \
-            MQTTSuite/assets/bridge-patch-sse-lifecycle-mobile.svg
 
       - name: Publish generated SVG assets
         run: |
