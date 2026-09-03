@@ -1,0 +1,38 @@
+\documentclass[tikz,border=8pt]{standalone}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\input{mqttsystem-figure-system.tex}
+\begin{document}
+\begin{tikzpicture}[mqtt mobile]
+\tikzset{wide/.style={minimum width=70mm,text width=64mm}}
+
+\node[mqtt config,wide] (defaults) {API / compiled defaults};
+\node[mqtt config,wide,below=\MQGapS of defaults] (file) {configuration file};
+\node[mqtt config,wide,below=\MQGapS of file] (cli) {command line};
+\node[mqtt control,wide,below=\MQGapM of cli] (effective)
+  {effective SNode.C application / instance state};
+\draw[mqtt control flow] (defaults.south) -- (file.north);
+\draw[mqtt control flow] (file.south) -- (cli.north);
+\draw[mqtt control flow] (cli.south) -- node[mqtt edge label,right]{highest precedence wins} (effective.north);
+
+\node[mqtt process,wide,below=\MQGapM of effective] (inspect)
+  {inspect: \texttt{--show-config} / \texttt{--command-line=active}};
+\node[mqtt success,wide,below=\MQGapS of inspect] (persist)
+  {\texttt{--write-config} $\rightarrow$ saved application configuration};
+\draw[mqtt observation] (effective.south) -- (inspect.north);
+\draw[mqtt control flow] (inspect.south) -- (persist.north);
+
+\node[mqtt config,wide,below=\MQMobileLaneGap of persist] (mapping) {mapping JSON — Integrator / optional Broker mapper};
+\node[mqtt config,wide,below=\MQGapS of mapping] (bridge) {bridge-definition JSON — MQTTBridge};
+\node[mqtt config,wide,below=\MQGapS of bridge] (projection) {projection JSON — MQTTStore};
+\node[mqtt note,wide,below=\MQGapS of projection] (note) {separate domain documents; not merged into the SNode.C precedence chain};
+
+\begin{pgfonlayer}{background}
+  \node[mqtt lane,fit=(defaults)(file)(cli)(effective)(inspect)(persist)] (appframe) {};
+  \node[mqtt group,fit=(mapping)(bridge)(projection)(note)] (domainframe) {};
+\end{pgfonlayer}
+\node[mqtt section title] at ($(appframe.north west)+(\MQTitleGap,-\MQTitleGap)$) {Configuration hierarchy and persistence};
+\node[mqtt section title] at ($(domainframe.north west)+(\MQTitleGap,-\MQTitleGap)$) {Separate domain documents};
+
+\end{tikzpicture}
+\end{document}
