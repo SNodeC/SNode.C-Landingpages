@@ -4,21 +4,31 @@
 \input{mqttsystem-figure-system.tex}
 \begin{document}
 \begin{tikzpicture}[mqtt mobile]
-\tikzset{wide/.style={minimum width=74mm,text width=67mm}}
+\tikzset{wide/.style={minimum width=72mm,text width=64mm}}
+
 \node[mqtt config,wide] (bridge) {1. bridge prefix — \texttt{bridge/}};
-\node[mqtt config,wide,below=\MQGapS of bridge] (source) {2. source-member prefix — \texttt{from-a/}};
-\node[mqtt config,wide,below=\MQGapS of source] (dest) {3. destination-member prefix — \texttt{to-b/}};
-\node[mqtt config,wide,below=\MQGapS of dest] (topic) {4. original topic — \texttt{a/temperature}};
-\node[mqtt success,wide,below=\MQGapM of topic] (result) {\texttt{bridge/from-a/to-b/a/temperature}};
-\node[mqtt note,wide,below=\MQGapS of result] (meta) {literal concatenation; payload +\\received QoS + retain are preserved};
+\node[mqtt config,wide,below=\MQGapS of bridge] (source)
+  {2. source-member prefix — \texttt{from-a/}};
+\node[mqtt config,wide,below=\MQGapS of source] (dest)
+  {3. destination-member prefix — \texttt{to-b/}};
+\node[mqtt config,wide,below=\MQGapS of dest] (topic)
+  {4. original topic — \texttt{a/temperature}};
+\node[mqtt process,wide,below=\MQGapM of topic] (result)
+  {forwarded topic\\\texttt{bridge/from-a/to-b/a/temperature}};
+\node[mqtt note,wide,below=\MQGapS of result] (meta)
+  {literal concatenation: include separators such as \texttt{/} deliberately; payload, received QoS, and retain are preserved};
+
 \draw[mqtt flow] (bridge.south) -- node[mqtt edge label,right]{+} (source.north);
 \draw[mqtt flow] (source.south) -- node[mqtt edge label,right]{+} (dest.north);
 \draw[mqtt flow] (dest.south) -- node[mqtt edge label,right]{+} (topic.north);
 \draw[mqtt data flow] (topic.south) -- (result.north);
 \draw[mqtt association] (result.south) -- (meta.north);
+
 \begin{pgfonlayer}{background}
-  \node[mqtt lane,fit=(bridge)(source)(dest)(topic)(result)(meta)] (frame) {};
+  \node[mqtt figure frame,fit=(bridge)(source)(dest)(topic)(result)(meta)] (frame) {};
 \end{pgfonlayer}
-\node[mqtt section title] at ($(frame.north west)+(\MQTitleGap,-\MQTitleGap)$) {Prefix construction};
+\node[mqtt section title] at ($(frame.north west)+(\MQTitleGap,-\MQTitleGap)$)
+  {Prefix construction};
+
 \end{tikzpicture}
 \end{document}
