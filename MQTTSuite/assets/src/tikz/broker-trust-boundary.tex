@@ -11,7 +11,7 @@
 \node[mqtt application,minimum width=46mm,text width=41mm,right=\MQHorizontalGap of direct] (core)
   {MQTTBroker\\shared Broker / session state};
 \draw[mqtt data flow] (mqttclients.east) -- (direct.west);
-\draw[mqtt data flow] (direct.east) -- \MQPortWest{core}{.70};
+\draw[mqtt data flow] (direct.east) -- ++(8mm,0) |- \MQPortWest{core}{.70};
 
 \node[mqtt external,box,below=30mm of mqttclients] (httpclients)
   {browser / HTTP or MQTT-WebSocket client};
