@@ -2,29 +2,30 @@
 \usepackage[T1]{fontenc}
 \usepackage{lmodern}
 \input{mqttsystem-figure-system.tex}
+\input{snodec-canonical-figure-system.tex}
 \begin{document}
 \begin{tikzpicture}[mqtt mobile]
 \tikzset{
   wide/.style={minimum width=72mm,text width=64mm},
-  dst/.style={minimum width=31mm,text width=26mm}
+  peer/.style={minimum width=32mm,text width=27mm}
 }
 
 \node[mqtt external,wide] (a) {Broker A — source domain};
-\node[mqtt process,wide,below=\MQGapS of a] (ma)
-  {member A — selected subscription input};
+\node[mqtt application,wide,below=\MQGapS of a] (ma)
+  {member A — configured subscriptions select the input};
 \node[mqtt control,wide,below=\MQGapM of ma] (bridge)
   {logical bridge — fan-out forwarding};
-\node[mqtt state,wide,below=\MQGapS of bridge] (fanout)
-  {destination set — origin member A excluded};
+\node[mqtt state,wide,below=\MQGapM of bridge] (fanout)
+  {destination set = currently connected members\\except origin member A};
 
 \draw[mqtt data flow] (a.south) -- node[mqtt topic label,right]{selected PUBLISH} (ma.north);
 \draw[mqtt data flow] (ma.south) -- (bridge.north);
 \draw[mqtt data flow] (bridge.south) -- (fanout.north);
 
-\node[mqtt process,dst,below=\MQGapM of fanout,xshift=-20mm] (mb) {member B};
-\node[mqtt process,dst,below=\MQGapM of fanout,xshift=20mm] (mc) {member C};
-\node[mqtt external,dst,below=\MQGapS of mb] (b) {Broker B};
-\node[mqtt external,dst,below=\MQGapS of mc] (c) {Broker C};
+\node[mqtt application,peer,below=\MQGapM of fanout,xshift=-20mm] (mb) {member B};
+\node[mqtt application,peer,below=\MQGapM of fanout,xshift=20mm] (mc) {member C};
+\node[mqtt external,peer,below=\MQGapS of mb] (b) {Broker B};
+\node[mqtt external,peer,below=\MQGapS of mc] (c) {Broker C};
 
 \draw[mqtt data flow] \MQPortSouth{fanout}{.30} -- ++(0,-6mm) -| (mb.north);
 \draw[mqtt data flow] \MQPortSouth{fanout}{.70} -- ++(0,-6mm) -| (mc.north);
@@ -32,15 +33,14 @@
 \draw[mqtt data flow] (mc.south) -- (c.north);
 
 \node[mqtt note,wide,below=\MQGapM of b,xshift=20mm] (note)
-  {payload, received QoS, and retain are preserved for B and C};
+  {payload / message bytes, received QoS, and retain are preserved;\\topic prefix construction is separate — see Figure 14};
 
+\coordinate (titleguard) at ($(a.north)+(0,\MQGapL)$);
 \begin{pgfonlayer}{background}
-  \node[mqtt figure frame,fit=(a)(ma)(bridge)(fanout)(mb)(mc)(b)(c)(note)] (frame) {};
+  \node[mqtt figure frame,fit=(titleguard)(a)(ma)(bridge)(fanout)(mb)(mc)(b)(c)(note)] (frame) {};
 \end{pgfonlayer}
 \node[mqtt section title] at ($(frame.north west)+(\MQTitleGap,-\MQTitleGap)$)
   {Logical bridge forwarding};
-\node[mqtt annotation,anchor=east] at ($(frame.north east)+(-\MQTitleGap,-\MQTitleGap)$)
-  {source subscriptions select the input};
 
 \end{tikzpicture}
 \end{document}
