@@ -6,46 +6,25 @@
 \begin{tikzpicture}[mqtt mobile]
 
 \tikzset{
-  app/.style={mqtt application,minimum width=64mm,text width=58mm},
-  context/.style={mqtt state,minimum width=31mm,text width=27mm,font=\sffamily\small},
-  ext/.style={mqtt external,minimum width=31mm,text width=27mm,font=\sffamily\small}
+  role/.style={mqtt application,minimum width=72mm,text width=64mm,minimum height=18mm}
 }
 
-\node[app] (broker) {\textbf{MQTTBroker}\\brokerage + shared session state};
-\node[ext,above=\MQMobileHorizontalGap of broker] (clients) {MQTT clients};
-\draw[mqtt data flow] (clients.south) -- (broker.north);
+\node[role] (broker)
+  {\textbf{MQTTBroker}\\MQTT 3.1.1 brokerage + topic space\\shared session / subscription state};
+\node[role,below=\MQBranchGap of broker] (integrator)
+  {\textbf{MQTTIntegrator}\\transform payloads/topics and republish};
+\node[role,below=\MQBranchGap of integrator] (bridge)
+  {\textbf{MQTTBridge}\\forward selected publications between broker domains};
+\node[role,below=\MQBranchGap of bridge] (cli)
+  {\textbf{MQTTCli}\\publish, subscribe, and inspect traffic};
+\node[role,below=\MQBranchGap of cli] (store)
+  {\textbf{MQTTStore}\\persist raw MQTT envelopes and optional projections};
 
-\node[app,below=\MQMobileLaneGap of broker] (integrator)
-  {\textbf{MQTTIntegrator}\\transform + republish};
-\node[context,left=\MQMobileHorizontalGap of integrator] (i-in) {broker\\delivery};
-\node[context,right=\MQMobileHorizontalGap of integrator] (i-out) {broker\\mapped publish};
-\draw[mqtt data flow] (i-in.east) -- (integrator.west);
-\draw[mqtt data flow] (integrator.east) -- (i-out.west);
-
-\node[app,below=\MQMobileLaneGap of integrator] (bridge)
-  {\textbf{MQTTBridge}\\forward between broker domains};
-\node[context,left=\MQMobileHorizontalGap of bridge] (b-a) {Broker A};
-\node[context,right=\MQMobileHorizontalGap of bridge] (b-b) {Broker B};
-\draw[mqtt data flow] (b-a.east) -- (bridge.west);
-\draw[mqtt data flow] (bridge.east) -- (b-b.west);
-
-\node[app,below=\MQMobileLaneGap of bridge] (cli)
-  {\textbf{MQTTCli}\\publish / subscribe / inspect};
-\node[context,left=\MQMobileHorizontalGap of cli] (c-broker) {broker};
-\draw[
-  {Stealth[length=2.2mm,width=1.5mm]}-{Stealth[length=2.2mm,width=1.5mm]},
-  draw=MQDataPlaneLine,line width=.9pt
-] (c-broker.east) -- node[mqtt edge label,above]{publish / inspect} (cli.west);
-
-\node[app,below=\MQMobileLaneGap of cli] (store)
-  {\textbf{MQTTStore}\\persist raw + project};
-\node[context,left=\MQMobileHorizontalGap of store] (s-broker) {broker\\delivery};
-\node[mqtt database,right=\MQMobileHorizontalGap of store,minimum width=31mm] (db) {MariaDB};
-\draw[mqtt data flow] (s-broker.east) -- (store.west);
-\draw[mqtt data flow] (store.east) -- (db.west);
+\node[mqtt note,below=\MQBranchGap of store,minimum width=72mm,text width=64mm] (note)
+  {Five separate executables; compose only the roles a deployment needs.};
 
 \begin{pgfonlayer}{background}
-  \node[mqtt lane,fit=(clients)(broker)(i-in)(integrator)(i-out)(b-a)(bridge)(b-b)(c-broker)(cli)(s-broker)(store)(db)] (frame) {};
+  \node[mqtt figure frame,fit=(broker)(integrator)(bridge)(cli)(store)(note)] (frame) {};
 \end{pgfonlayer}
 \node[mqtt section title] at ($(frame.north west)+(\MQTitleGap,-\MQTitleGap)$)
   {Five applications, five responsibilities};
