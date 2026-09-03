@@ -11,8 +11,8 @@
   {SUBSCRIBE\\topic filter + requested QoS};
 \node[mqtt process,box,left=\MQHorizontalGapLoose of broker,yshift=-18mm] (pub)
   {PUBLISH\\topic + outgoing QoS};
-\draw[mqtt data flow] (sub.east) -- node[mqtt edge label,above]{delivery request} \MQPortWest{broker}{.70};
-\draw[mqtt data flow] (pub.east) -- node[mqtt edge label,below]{message send} \MQPortWest{broker}{.30};
+\draw[mqtt data flow] (sub.east) -- node[mqtt edge label,above]{delivery request} ++(10mm,0) |- \MQPortWest{broker}{.70};
+\draw[mqtt data flow] (pub.east) -- node[mqtt edge label,below]{message send} ++(10mm,0) |- \MQPortWest{broker}{.30};
 
 \node[mqtt config,minimum width=55mm,text width=49mm,left=\MQHorizontalGap of sub] (integrator)
   {Integrator mapping:\\\texttt{subscription.qos}\\is separate from output \texttt{qos}};
