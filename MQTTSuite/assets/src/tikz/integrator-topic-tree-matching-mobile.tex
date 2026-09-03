@@ -1,0 +1,22 @@
+\documentclass[tikz,border=8pt]{standalone}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\input{mqttsystem-figure-system.tex}
+\begin{document}
+\begin{tikzpicture}[mqtt mobile]
+\tikzset{wide/.style={minimum width=74mm,text width=67mm}}
+\node[mqtt control,wide] (root) {topic level: \texttt{devices}};
+\node[mqtt process,wide,below=\MQGapS of root] (literal) {1. literal \texttt{room-01} — exact level};
+\node[mqtt process,wide,below=\MQGapS of literal] (plus) {2. \texttt{+} — exactly one level};
+\node[mqtt process,wide,below=\MQGapS of plus] (hash) {3. terminal \texttt{\#} — remaining levels};
+\draw[mqtt flow] (root.south) -- (literal.north);
+\draw[mqtt association] (literal.south) -- (plus.north);
+\draw[mqtt association] (plus.south) -- (hash.north);
+\node[mqtt note,wide,below=\MQGapM of hash] (examples) {Examples: \texttt{devices/room-01} → literal;\\\texttt{devices/lab} → \texttt{+};\\\texttt{devices/lab/x} → terminal \texttt{\#};\\\texttt{devices} → child terminal \texttt{\#} may match zero levels.};
+\node[mqtt warning,wide,below=\MQGapM of examples] (order) {Sibling branches are tried in\\document order; the first match wins.};
+\begin{pgfonlayer}{background}
+  \node[mqtt lane,fit=(root)(literal)(plus)(hash)(examples)(order)] (frame) {};
+\end{pgfonlayer}
+\node[mqtt section title] at ($(frame.north west)+(\MQTitleGap,-\MQTitleGap)$) {Topic-tree matching};
+\end{tikzpicture}
+\end{document}
