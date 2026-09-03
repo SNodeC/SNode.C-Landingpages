@@ -1,211 +1,234 @@
 #!/usr/bin/env python3
-"""Compose the canonical MQTTSuite first-success runtime evidence.
+"""Compose canonical first-success runtime evidence from qualified raw pixels.
 
-The terminal pixels come exclusively from the three qualified raw captures in
-this directory.  This script crops/scales those real pixels and adds only
-external publication framing and explanatory labels.
-
-The layout was approved in Figma `MQTTSuite Publication Visuals`:
-- desktop frame: 183:2
-- mobile frame: 183:36
-
-Two relationships are deliberately shown separately:
-- setup order: Broker -> Subscriber -> Publisher;
-- MQTT delivery: Publisher -> Broker -> Subscriber.
+The terminal content is never reconstructed. This script crops/scales the three
+qualified raw captures and adds only publication framing plus explanatory labels.
+Visual constants mirror SNode.C-Book/assets/figures/src/snodec-figure-style.tex.
 """
-
-from __future__ import annotations
-
-import subprocess
 from pathlib import Path
-
 from PIL import Image, ImageDraw, ImageFont
 
-HERE = Path(__file__).resolve().parent
-OUT = HERE.parent.parent
+ROOT = Path(__file__).resolve().parent
+BROKER = ROOT / 'broker-raw.png'
+SUBSCRIBER = ROOT / 'subscriber-raw.png'
+PUBLISHER = ROOT / 'publisher-raw.png'
+OUT_DESKTOP = ROOT.parent.parent / 'first-success-terminal.png'
+OUT_MOBILE = ROOT.parent.parent / 'first-success-terminal-mobile.png'
 
-BG = (251, 253, 255)
-INK = (15, 33, 74)
-MUTED = (56, 82, 133)
-BLUE = (38, 103, 240)
-PURPLE = (109, 54, 230)
-ORANGE = (235, 87, 13)
-PANEL = (246, 250, 255)
-BLACK = (9, 15, 24)
+# Canonical SNode.C figure palette, mirrored from snodec-figure-style.tex.
+INK = '#17212B'
+MUTED = '#4B5F68'
+RULE = '#7A8B93'
+BLUE = '#0B4F6C'
+BLUE_SOFT = '#E3F2F8'
+GREEN = '#1F7A68'
+GREEN_SOFT = '#E5F4EF'
+GRAY_SOFT = '#F1F3F2'
+WHITE = '#FFFFFF'
 
-
-def font_path(pattern: str) -> str:
-    return subprocess.check_output(
-        ["fc-match", "-f", "%{file}\n", pattern], text=True
-    ).splitlines()[0]
-
-
-FONT_REGULAR = font_path("Inter:style=Regular")
-FONT_BOLD = font_path("Inter:style=Bold")
+import subprocess
 
 
-def font(size: int, bold: bool = False) -> ImageFont.FreeTypeFont:
-    return ImageFont.truetype(FONT_BOLD if bold else FONT_REGULAR, size)
+def tex_font(name: str) -> str:
+    return subprocess.check_output(['kpsewhich', name], text=True).strip()
 
 
-def rounded(draw, box, radius, fill, outline, width=1):
+FONT_REG = tex_font('lmsans10-regular.otf')
+FONT_BOLD = tex_font('lmsans10-bold.otf')
+
+
+def font(size, bold=False):
+    return ImageFont.truetype(FONT_BOLD if bold else FONT_REG, size)
+
+
+def rounded(draw, box, fill, outline=RULE, width=2, radius=10):
     draw.rounded_rectangle(box, radius=radius, fill=fill, outline=outline, width=width)
 
 
-def text(draw, xy, value, size, bold=False, fill=INK):
-    draw.text(xy, value, font=font(size, bold), fill=fill)
+def crop_scale(src, crop, width):
+    im = Image.open(src).convert('RGB').crop(crop)
+    scale = width / im.width
+    return im.resize((width, max(1, round(im.height * scale))), Image.Resampling.LANCZOS)
 
 
-def fit_capture(base: Image.Image, capture: Image.Image, box):
-    x0, y0, x1, y1 = box
-    width, height = x1 - x0, y1 - y0
-    base.paste(BLACK, box)
-    scale = min(width / capture.width, height / capture.height)
-    resized = capture.resize(
-        (round(capture.width * scale), round(capture.height * scale)),
-        Image.Resampling.LANCZOS,
-    )
-    x = x0 + (width - resized.width) // 2
-    base.paste(resized, (x, y0))
+def arrow(draw, x1, y, x2, color=MUTED, width=3):
+    # One continuous shaft with attached triangular head, matching the canonical
+    # directionality rule even though this composition is raster evidence.
+    head = 12
+    draw.line((x1, y, x2 - head, y), fill=color, width=width)
+    draw.polygon([(x2, y), (x2 - head, y - 7), (x2 - head, y + 7)], fill=color)
 
 
-def pill(draw, x, y, width, label, color, height=34, size=14):
-    rounded(draw, (x, y, x + width, y + height), 8, (246, 249, 255), color)
-    draw.text(
-        (x + width / 2, y + height / 2),
-        label,
-        font=font(size, True),
-        fill=color,
-        anchor="mm",
-    )
+def role_chip(draw, x, y, w, h, text, kind='client'):
+    if kind == 'broker':
+        fill, line = BLUE_SOFT, BLUE
+    else:
+        fill, line = GREEN_SOFT, GREEN
+    rounded(draw, (x, y, x+w, y+h), fill, line, 2, 8)
+    f = font(17, True)
+    bbox = draw.textbbox((0, 0), text, font=f)
+    draw.text((x + (w - (bbox[2]-bbox[0]))/2,
+               y + (h - (bbox[3]-bbox[1]))/2 - bbox[1]), text, font=f, fill=INK)
 
 
-def arrow(draw, x1, y, x2, color=BLUE, thickness=3, head=10):
-    """Draw one filled connector shape; shaft and arrowhead cannot drift apart."""
-    xh = x2 - head
-    draw.polygon(
-        [
-            (x1, y - thickness / 2),
-            (xh, y - thickness / 2),
-            (xh, y - head / 2),
-            (x2, y),
-            (xh, y + head / 2),
-            (xh, y + thickness / 2),
-            (x1, y + thickness / 2),
-        ],
-        fill=color,
-    )
+def semantic_row(draw, y, label, roles, canvas_w, left=40):
+    label_f = font(18, True)
+    draw.text((left, y + 8), label, font=label_f, fill=INK)
+    label_w = draw.textbbox((0, 0), label, font=label_f)[2]
+    x = max(left + label_w + 28, 250)
+    chip_w, chip_h, gap = 122, 38, 40
+    for i, role in enumerate(roles):
+        role_chip(draw, x, y, chip_w, chip_h, role, 'broker' if role == 'Broker' else 'client')
+        if i < len(roles)-1:
+            arrow(draw, x + chip_w + 8, y + chip_h/2, x + chip_w + gap - 8)
+        x += chip_w + gap
 
 
-def raw_captures():
-    broker = Image.open(HERE / "broker-raw.png").convert("RGB").crop((0, 0, 1588, 170))
-    subscriber = Image.open(HERE / "subscriber-raw.png").convert("RGB").crop((0, 0, 1588, 590))
-    publisher = Image.open(HERE / "publisher-raw.png").convert("RGB").crop((0, 0, 1588, 450))
-    return broker, subscriber, publisher
+def evidence_card(canvas, xy, size, title, number, source, crop, accent, soft):
+    x, y = xy
+    w, h = size
+    d = ImageDraw.Draw(canvas)
+    rounded(d, (x, y, x+w, y+h), WHITE, accent, 2, 10)
+    header_h = 50
+    d.rounded_rectangle((x, y, x+w, y+header_h), radius=10, fill=soft)
+    d.rectangle((x, y+header_h-10, x+w, y+header_h), fill=soft)
+    r = 16
+    d.ellipse((x+18, y+9, x+18+2*r, y+9+2*r), fill=accent)
+    nf = font(17, True)
+    nb = d.textbbox((0,0), str(number), font=nf)
+    d.text((x+18+r-(nb[2]-nb[0])/2, y+9+r-(nb[3]-nb[1])/2-nb[1]), str(number), font=nf, fill=WHITE)
+    d.text((x+62, y+13), title, font=font(20, True), fill=accent)
+    pad = 14
+    screenshot_w = w - 2*pad
+    shot = crop_scale(source, crop, screenshot_w)
+    max_h = h - header_h - 2*pad
+    if shot.height > max_h:
+        shot = shot.resize((screenshot_w, max_h), Image.Resampling.LANCZOS)
+    canvas.paste(shot, (x+pad, y+header_h+pad))
 
 
-def desktop(broker, subscriber, publisher):
-    image = Image.new("RGB", (1500, 860), BG)
-    draw = ImageDraw.Draw(image)
+def make_desktop():
+    W = 1536
+    margin = 28
+    # Full-width evidence cards keep terminal text legible at GitHub's typical
+    # ~830 px content width. The historical side-by-side layout made the proof
+    # unreadably small after README scaling.
+    broker_crop = (0, 0, 1588, 150)
+    subscriber_crop = (0, 0, 1588, 575)
+    publisher_crop = (0, 0, 1588, 430)
+    card_w = W - 2*margin
+    shot_w = card_w - 28
+    def card_height(crop):
+        crop_h = crop[3] - crop[1]
+        crop_w = crop[2] - crop[0]
+        shot_h = round(crop_h * shot_w / crop_w)
+        return 50 + 28 + shot_h
 
-    text(draw, (36, 24), "First successful end-to-end MQTT publication", 38, True)
-    text(
-        draw,
-        (36, 76),
-        "Real runtime capture · setup order and MQTT delivery shown separately",
-        18,
-        fill=MUTED,
-    )
+    broker_h = card_height(broker_crop)
+    subscriber_h = card_height(subscriber_crop)
+    publisher_h = card_height(publisher_crop)
+    note_h = 78
+    top = 238
+    gap = 24
+    H = top + broker_h + gap + subscriber_h + gap + publisher_h + gap + note_h + 24
 
-    text(draw, (36, 119), "Setup order", 15, True)
-    pill(draw, 145, 111, 125, "1  Broker", BLUE)
-    arrow(draw, 278, 128, 330)
-    pill(draw, 338, 111, 150, "2  Subscriber", ORANGE)
-    arrow(draw, 496, 128, 548)
-    pill(draw, 556, 111, 142, "3  Publisher", PURPLE)
+    im = Image.new('RGB', (W, H), WHITE)
+    d = ImageDraw.Draw(im)
 
-    text(draw, (790, 119), "MQTT delivery", 15, True)
-    pill(draw, 914, 111, 120, "Publisher", PURPLE)
-    arrow(draw, 1042, 128, 1094)
-    pill(draw, 1102, 111, 105, "Broker", BLUE)
-    arrow(draw, 1215, 128, 1267)
-    pill(draw, 1275, 111, 145, "Subscriber", ORANGE)
+    d.text((margin, 20), 'First successful end-to-end MQTT publication', font=font(41, True), fill=INK)
+    d.text((margin, 72), 'Real runtime evidence · startup and MQTT delivery shown separately', font=font(21), fill=MUTED)
 
-    rounded(draw, (28, 165, 1472, 375), 14, PANEL, BLUE, 2)
-    text(draw, (48, 180), "Broker", 20, True, BLUE)
-    rounded(draw, (46, 214, 1454, 355), 10, BLACK, BLACK)
-    fit_capture(image, broker, (46, 214, 1454, 355))
+    rounded(d, (margin, 112, W-margin, 214), GRAY_SOFT, RULE, 2, 10)
+    semantic_row(d, 124, 'Startup order', ['Broker', 'Subscriber', 'Publisher'], W, margin+20)
+    semantic_row(d, 169, 'MQTT delivery', ['Publisher', 'Broker', 'Subscriber'], W, margin+20)
 
-    rounded(draw, (28, 395, 734, 750), 14, (251, 249, 255), ORANGE, 2)
-    text(draw, (48, 410), "Subscriber", 20, True, ORANGE)
-    rounded(draw, (46, 444, 716, 730), 10, BLACK, BLACK)
-    fit_capture(image, subscriber, (46, 444, 716, 730))
+    y = top
+    evidence_card(im, (margin, y), (card_w, broker_h),
+                  'MQTTBroker — listener ready', 1,
+                  BROKER, broker_crop, BLUE, BLUE_SOFT)
+    y += broker_h + gap
+    evidence_card(im, (margin, y), (card_w, subscriber_h),
+                  'MQTTCli subscriber — subscribe before publish', 2,
+                  SUBSCRIBER, subscriber_crop, GREEN, GREEN_SOFT)
+    y += subscriber_h + gap
+    evidence_card(im, (margin, y), (card_w, publisher_h),
+                  'MQTTCli publisher — one PUBLISH', 3,
+                  PUBLISHER, publisher_crop, GREEN, GREEN_SOFT)
+    y += publisher_h + gap
 
-    rounded(draw, (766, 395, 1472, 750), 14, (252, 250, 255), PURPLE, 2)
-    text(draw, (786, 410), "Publisher", 20, True, PURPLE)
-    rounded(draw, (784, 444, 1454, 730), 10, BLACK, BLACK)
-    fit_capture(image, publisher, (784, 444, 1454, 730))
+    rounded(d, (margin, y, W-margin, y+note_h), BLUE_SOFT, BLUE, 2, 10)
+    note = 'Observed delivery · QoS 1 · Retain false · Dup false · edge-lab/room-01/temperature · {"value":21.7,"unit":"C"}'
+    d.text((margin+20, y+26), note, font=font(18), fill=INK)
+    return im
 
-    rounded(draw, (28, 780, 1472, 832), 14, (247, 250, 255), (180, 204, 245))
-    text(
-        draw,
-        (50, 797),
-        "QoS 1 representative publication · edge-lab/room-01/temperature · subscriber receipt: QoS 1 · Retain false · Dup false",
-        14,
-        fill=MUTED,
-    )
-    image.save(OUT / "first-success-terminal.png", optimize=True)
-
-
-def mobile(broker, subscriber, publisher):
-    image = Image.new("RGB", (620, 1350), BG)
-    draw = ImageDraw.Draw(image)
-
-    text(draw, (24, 20), "First successful end-to-end", 29, True)
-    text(draw, (24, 55), "MQTT publication", 29, True)
-    text(draw, (24, 98), "Real runtime capture", 16, fill=MUTED)
-
-    text(draw, (24, 135), "Setup order", 14, True)
-    pill(draw, 116, 127, 110, "1  Broker", BLUE, 32, 12)
-    arrow(draw, 234, 143, 266, thickness=2, head=8)
-    pill(draw, 274, 127, 134, "2  Subscriber", ORANGE, 32, 12)
-    arrow(draw, 416, 143, 448, thickness=2, head=8)
-    pill(draw, 456, 127, 140, "3  Publisher", PURPLE, 32, 12)
-
-    def panel(y, height, label, color, capture):
-        rounded(draw, (20, y, 600, y + height), 14, (249, 251, 255), color, 2)
-        text(draw, (38, y + 12), label, 18, True, color)
-        rounded(draw, (36, y + 44, 584, y + height - 16), 10, BLACK, BLACK)
-        fit_capture(image, capture, (36, y + 44, 584, y + height - 16))
-
-    panel(180, 205, "1  Broker", BLUE, broker)
-    panel(405, 330, "2  Subscriber", ORANGE, subscriber)
-    panel(755, 290, "3  Publisher", PURPLE, publisher)
-
-    text(draw, (24, 1070), "MQTT delivery", 14, True)
-    pill(draw, 125, 1062, 105, "Publisher", PURPLE, 32, 12)
-    arrow(draw, 238, 1078, 270, thickness=2, head=8)
-    pill(draw, 278, 1062, 90, "Broker", BLUE, 32, 12)
-    arrow(draw, 376, 1078, 408, thickness=2, head=8)
-    pill(draw, 416, 1062, 135, "Subscriber", ORANGE, 32, 12)
-
-    rounded(draw, (20, 1120, 600, 1200), 14, (247, 250, 255), (180, 204, 245))
-    text(draw, (38, 1137), "QoS 1 · edge-lab/room-01/temperature", 13, fill=MUTED)
-    text(
-        draw,
-        (38, 1162),
-        "Subscriber receipt proves delivery (QoS 1 · Retain false · Dup false)",
-        12,
-        fill=MUTED,
-    )
-    image.save(OUT / "first-success-terminal-mobile.png", optimize=True)
+def mobile_semantic_line(d, y, label, roles, W):
+    d.text((28, y), label, font=font(19, True), fill=INK)
+    value = '  →  '.join(roles)
+    d.text((28, y+27), value, font=font(17), fill=MUTED)
 
 
-def main():
-    captures = raw_captures()
-    desktop(*captures)
-    mobile(*captures)
+def make_mobile():
+    W = 887
+    margin = 24
+    broker_crop = (0, 0, 1588, 150)
+    subscriber_crop = (0, 0, 1588, 575)
+    publisher_crop = (0, 0, 1588, 430)
+    card_w = W - 2*margin
+    shot_w = card_w - 28
+    def card_height(crop):
+        crop_h = crop[3] - crop[1]
+        crop_w = crop[2] - crop[0]
+        shot_h = round(crop_h * shot_w / crop_w)
+        return 50 + 28 + shot_h
+
+    broker_h = card_height(broker_crop)
+    subscriber_h = card_height(subscriber_crop)
+    publisher_h = card_height(publisher_crop)
+    top = 302
+    gap = 24
+    note_h = 82
+    H = top + broker_h + gap + subscriber_h + gap + publisher_h + gap + note_h + 24
+
+    im = Image.new('RGB', (W, H), WHITE)
+    d = ImageDraw.Draw(im)
+
+    d.text((margin, 18), 'First successful', font=font(38, True), fill=INK)
+    d.text((margin, 63), 'end-to-end MQTT publication', font=font(38, True), fill=INK)
+    d.text((margin, 112), 'Real runtime evidence', font=font(20), fill=MUTED)
+
+    rounded(d, (margin, 150, W-margin, 276), GRAY_SOFT, RULE, 2, 10)
+    mobile_semantic_line(d, 164, 'Startup order', ['Broker', 'Subscriber', 'Publisher'], W)
+    mobile_semantic_line(d, 218, 'MQTT delivery', ['Publisher', 'Broker', 'Subscriber'], W)
+
+    y = top
+    evidence_card(im, (margin, y), (card_w, broker_h),
+                  'MQTTBroker — listener ready', 1,
+                  BROKER, broker_crop, BLUE, BLUE_SOFT)
+    y += broker_h + gap
+    evidence_card(im, (margin, y), (card_w, subscriber_h),
+                  'MQTTCli subscriber — subscribed first', 2,
+                  SUBSCRIBER, subscriber_crop, GREEN, GREEN_SOFT)
+    y += subscriber_h + gap
+    evidence_card(im, (margin, y), (card_w, publisher_h),
+                  'MQTTCli publisher — one PUBLISH', 3,
+                  PUBLISHER, publisher_crop, GREEN, GREEN_SOFT)
+    y += publisher_h + gap
+
+    rounded(d, (margin, y, W-margin, y+note_h), BLUE_SOFT, BLUE, 2, 10)
+    d.text((margin+18, y+14), 'Observed: QoS 1 · Retain false · Dup false', font=font(18), fill=INK)
+    d.text((margin+18, y+43), 'edge-lab/room-01/temperature · {"value":21.7,"unit":"C"}', font=font(15), fill=MUTED)
+    return im
 
 
-if __name__ == "__main__":
-    main()
+def save_indexed(image, path):
+    # The scene uses a constrained palette; indexed PNG keeps repository assets
+    # compact without changing the captured terminal content.
+    indexed = image.quantize(colors=256, method=Image.Quantize.MEDIANCUT, dither=Image.Dither.NONE)
+    indexed.save(path, optimize=True)
+
+
+if __name__ == '__main__':
+    save_indexed(make_desktop(), OUT_DESKTOP)
+    save_indexed(make_mobile(), OUT_MOBILE)
+    print(OUT_DESKTOP)
+    print(OUT_MOBILE)
