@@ -1,5 +1,5 @@
 name: MQTTSuite figure validation and publication
-# Review publication trigger: Figure 1
+# Review artifacts carry both raster review renders and exact generated SVG bytes.
 
 on:
   push:
@@ -62,7 +62,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p figure-review/generated figure-review/runtime-publication figure-review/runtime-source
+          mkdir -p figure-review/generated figure-review/generated-svg figure-review/runtime-publication figure-review/runtime-source
           for svg in MQTTSuite/assets/*.svg; do
             name="$(basename "${svg%.svg}")"
             if [[ "$name" == *-mobile ]]; then
@@ -75,6 +75,7 @@ jobs:
               --export-width="$width" \
               --export-filename="figure-review/generated/${name}.png"
           done
+          cp MQTTSuite/assets/*.svg figure-review/generated-svg/
           cp MQTTSuite/assets/*.png figure-review/runtime-publication/
           cp MQTTSuite/assets/src/first-success/*.png figure-review/runtime-source/
           cp figure-build.log figure-review/
