@@ -105,6 +105,21 @@
 \newcommand{\MQMobileLaneGap}{20mm}
 
 % ---------------------------------------------------------------------------
+% Canonical connector ports
+% ---------------------------------------------------------------------------
+%
+% Directional connectors attach to node borders orthogonally. Use the middle
+% of the relevant border by default (fraction .5). If several connectors share
+% one border, distribute the fractions evenly, e.g. .25/.5/.75 for three.
+% These helpers provide explicit, reproducible border ports without detached
+% arrowheads or diagonal shortcuts.
+
+\newcommand{\MQPortNorth}[2]{($(#1.north west)!#2!(#1.north east)$)}
+\newcommand{\MQPortSouth}[2]{($(#1.south west)!#2!(#1.south east)$)}
+\newcommand{\MQPortWest}[2]{($(#1.south west)!#2!(#1.north west)$)}
+\newcommand{\MQPortEast}[2]{($(#1.south east)!#2!(#1.north east)$)}
+
+% ---------------------------------------------------------------------------
 % Canonical shading / elevation system
 % ---------------------------------------------------------------------------
 %
@@ -214,17 +229,24 @@
 }
 
 % ---------------------------------------------------------------------------
-% Arrow semantics
+% Arrow and connector semantics
 % ---------------------------------------------------------------------------
+%
+% Every directional connector is one TikZ path whose arrow tip is part of that
+% same path. Never draw a line and place a separate arrowhead on top of it.
+% Off-axis routing is orthogonal (Manhattan-style) using |- / -| and explicit
+% border ports. A diagonal is permitted only when the geometry or semantics
+% genuinely require it; it is never the default shortcut between boxes.
 
 \tikzset{
-  mqtt flow/.style={-{Stealth[length=2.2mm,width=1.5mm]},draw=MQLine,line width=.8pt},
-  mqtt data flow/.style={-{Stealth[length=2.2mm,width=1.5mm]},draw=MQDataPlaneLine,line width=.9pt},
-  mqtt control flow/.style={-{Stealth[length=2.2mm,width=1.5mm]},draw=MQControlLine,line width=.9pt},
-  mqtt observation/.style={-{Stealth[length=2.0mm,width=1.4mm]},draw=MQLine,line width=.75pt,dashed},
-  mqtt handoff/.style={-{Stealth[length=2.3mm,width=1.6mm]},draw=MQCrossLane,line width=1pt},
-  mqtt association/.style={draw=MQBorder,line width=.7pt},
-  mqtt dependency/.style={-{Stealth[length=2.0mm,width=1.4mm]},draw=MQLine,line width=.7pt,dashed}
+  mqtt connector/.style={line cap=butt,line join=round},
+  mqtt flow/.style={mqtt connector,-{Stealth[length=2.2mm,width=1.5mm]},draw=MQLine,line width=.8pt},
+  mqtt data flow/.style={mqtt connector,-{Stealth[length=2.2mm,width=1.5mm]},draw=MQDataPlaneLine,line width=.9pt},
+  mqtt control flow/.style={mqtt connector,-{Stealth[length=2.2mm,width=1.5mm]},draw=MQControlLine,line width=.9pt},
+  mqtt observation/.style={mqtt connector,-{Stealth[length=2.0mm,width=1.4mm]},draw=MQLine,line width=.75pt,dashed},
+  mqtt handoff/.style={mqtt connector,-{Stealth[length=2.3mm,width=1.6mm]},draw=MQCrossLane,line width=1pt},
+  mqtt association/.style={mqtt connector,draw=MQBorder,line width=.7pt},
+  mqtt dependency/.style={mqtt connector,-{Stealth[length=2.0mm,width=1.4mm]},draw=MQLine,line width=.7pt,dashed}
 }
 
 % ---------------------------------------------------------------------------
@@ -266,3 +288,7 @@
 % 12. Flat rendering is the default; elevation/shadows are explicit and justified.
 % 13. Prefer explicit anchors/ports and orthogonal routing where clarity improves.
 % 14. Preserve readable text size at actual GitHub desktop/mobile rendering widths.
+% 15. Every directional connector is a single path with its arrowhead attached to that path; detached or separately placed arrowheads are forbidden.
+% 16. Connectors leave and enter box borders orthogonally at 90 degrees. Use the middle of the relevant border by default.
+% 17. If several connectors share one border, distribute their attachment ports evenly across that border on both source and destination sides.
+% 18. Do not use unmotivated diagonal connectors. Use orthogonal Manhattan routing between ports unless a diagonal has a specific semantic or geometric justification.
