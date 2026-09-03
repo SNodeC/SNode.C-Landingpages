@@ -4,23 +4,43 @@
 \input{mqttsystem-figure-system.tex}
 \begin{document}
 \begin{tikzpicture}[mqtt mobile]
-\tikzset{wide/.style={minimum width=74mm,text width=67mm}}
+\tikzset{wide/.style={minimum width=72mm,text width=64mm}}
+
 \node[mqtt application,wide] (app) {application root};
-\node[mqtt config,wide,below=\MQGapS of app] (instance) {named connection / listener instance};
-\node[mqtt config,wide,below=\MQGapS of instance] (transport) {address + transport\\+ TLS / WebSocket layer when selected};
-\node[mqtt config,wide,below=\MQGapS of transport] (session) {MQTT session};
-\node[mqtt success,wide,below=\MQGapS of session] (action) {application action};
-\node[mqtt note,wide,below=\MQGapM of action] (surfaces) {CLI / config file / inspection\\same hierarchical state};
-\node[mqtt note,wide,below=\MQGapS of surfaces] (precedence) {API/default < config file < command line};
-\draw[mqtt flow] (app.south) -- (instance.north);
-\draw[mqtt flow] (instance.south) -- (transport.north);
-\draw[mqtt flow] (transport.south) -- (session.north);
-\draw[mqtt flow] (session.south) -- (action.north);
-\draw[mqtt association] (action.south) -- (surfaces.north);
-\draw[mqtt association] (surfaces.south) -- (precedence.north);
+\node[mqtt control,wide,below=\MQGapS of app] (instance)
+  {named connection / listener instance};
+\draw[mqtt contains] (app.south) -- (instance.north);
+
+\node[mqtt config,wide,below=\MQGapM of instance] (network)
+  {network / endpoint sections — address + transport};
+\node[mqtt config,wide,below=\MQGapS of network] (http)
+  {optional HTTP / WebSocket / TLS-related sections when used};
+\node[mqtt config,wide,below=\MQGapS of http] (session)
+  {MQTT session section where the application uses MQTT};
+\node[mqtt config,wide,below=\MQGapS of session] (appsection)
+  {application-specific section(s): e.g. \texttt{sub}, \texttt{pub}, storage, mapper options};
+
+\coordinate (bus-network) at ($(network.west)+(-7mm,0)$);
+\coordinate (bus-http) at ($(http.west)+(-7mm,0)$);
+\coordinate (bus-session) at ($(session.west)+(-7mm,0)$);
+\coordinate (bus-app) at ($(appsection.west)+(-7mm,0)$);
+\draw[mqtt contains] (bus-network) -- (bus-app);
+\draw[mqtt contains] (instance.west) -- ++(-7mm,0) |- (bus-session);
+\draw[mqtt contains] (bus-network) -- (network.west);
+\draw[mqtt contains] (bus-http) -- (http.west);
+\draw[mqtt contains] (bus-session) -- (session.west);
+\draw[mqtt contains] (bus-app) -- (appsection.west);
+
+\node[mqtt note,wide,below=\MQGapM of appsection] (ownership)
+  {Peer sections are owned by the instance; runtime protocol layering/order is separate. Exact section sets differ by application and instance family.};
+\node[mqtt note,wide,below=\MQGapS of ownership] (surfaces)
+  {API/default $<$ configuration file $<$ command line; supported inspection surfaces expose the parsed hierarchy.};
+
 \begin{pgfonlayer}{background}
-  \node[mqtt lane,fit=(app)(instance)(transport)(session)(action)(surfaces)(precedence)] (frame) {};
+  \node[mqtt figure frame,fit=(app)(instance)(network)(http)(session)(appsection)(ownership)(surfaces)] (frame) {};
 \end{pgfonlayer}
-\node[mqtt section title] at ($(frame.north west)+(\MQTitleGap,-\MQTitleGap)$) {Configuration hierarchy};
+\node[mqtt section title] at ($(frame.north west)+(\MQTitleGap,-\MQTitleGap)$)
+  {Configuration ownership hierarchy};
+
 \end{tikzpicture}
 \end{document}
