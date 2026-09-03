@@ -4,19 +4,42 @@
 \input{mqttsystem-figure-system.tex}
 \begin{document}
 \begin{tikzpicture}[mqtt mobile]
-\tikzset{wide/.style={minimum width=74mm,text width=67mm}}
+\tikzset{
+  wide/.style={minimum width=72mm,text width=64mm},
+  half/.style={minimum width=32mm,text width=27mm}
+}
+
 \node[mqtt data,wide] (publish) {MQTT PUBLISH};
-\node[mqtt database,minimum width=66mm,below=\MQGapS of publish] (raw) {raw MQTT row\\independent persistence};
-\node[mqtt control,wide,below=\MQGapM of raw] (projection) {if payload is valid JSON\\and topic matches a projection};
-\node[mqtt config,wide,below=\MQGapS of projection] (sources) {column sources:\\\texttt{topic\_level} / \texttt{json\_pointer} / \texttt{literal}};
-\node[mqtt database,minimum width=66mm,below=\MQGapS of sources] (typed) {typed SQL row};
-\draw[mqtt data flow] (publish.south) -- (raw.north);
-\draw[mqtt association] (raw.south) -- (projection.north);
-\draw[mqtt flow] (projection.south) -- (sources.north);
+\node[mqtt control,wide,below=\MQGapS of publish] (store)
+  {MQTTStore receive / store step};
+\draw[mqtt data flow] (publish.south) -- (store.north);
+
+\node[mqtt database,half,below=\MQBranchGap of store,xshift=-20mm] (raw)
+  {raw INSERT attempt\\independent outcome};
+\node[mqtt decision,below=\MQBranchGap of store,xshift=20mm] (eligible)
+  {valid JSON\\+ topic match?};
+\draw[mqtt data flow] \MQPortSouth{store}{.30} -- ++(0,-6mm) -| (raw.north);
+\draw[mqtt control flow] \MQPortSouth{store}{.70} -- ++(0,-6mm) -| (eligible.north);
+
+\node[mqtt config,wide,below=\MQGapM of eligible,xshift=-20mm] (sources)
+  {matching projection column sources:\\\texttt{topic\_level} / \texttt{json\_pointer} / \texttt{literal}};
+\node[mqtt note,half,right=8mm of sources] (no)
+  {NO: no typed projection insert};
+\draw[mqtt control flow] \MQPortSouth{eligible}{.30} -- ++(0,-6mm) -| node[mqtt branch label,near end,left]{YES} (sources.north);
+\draw[mqtt association] (eligible.east) -- ++(8mm,0) |- node[mqtt branch label,near end,right]{NO} (no.north);
+
+\node[mqtt database,wide,below=\MQGapS of sources] (typed)
+  {typed projection INSERT attempt(s)};
 \draw[mqtt data flow] (sources.south) -- (typed.north);
+
+\node[mqtt note,wide,below=\MQGapM of typed] (note)
+  {Raw persistence and projection processing are independent. Invalid JSON or a nonmatching topic produces no typed projection insert.};
+
 \begin{pgfonlayer}{background}
-  \node[mqtt lane,fit=(publish)(raw)(projection)(sources)(typed)] (frame) {};
+  \node[mqtt figure frame,fit=(publish)(store)(raw)(eligible)(sources)(no)(typed)(note)] (frame) {};
 \end{pgfonlayer}
-\node[mqtt section title] at ($(frame.north west)+(\MQTitleGap,-\MQTitleGap)$) {Projection extraction};
+\node[mqtt section title] at ($(frame.north west)+(\MQTitleGap,-\MQTitleGap)$)
+  {Projection extraction};
+
 \end{tikzpicture}
 \end{document}
