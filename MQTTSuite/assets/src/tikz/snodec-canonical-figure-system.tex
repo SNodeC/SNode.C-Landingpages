@@ -1,0 +1,223 @@
+% snodec-canonical-figure-system.tex
+% MQTTSuite adapter for the authoritative SNode.C TikZ visual contract.
+%
+% Authority:
+%   SNodeC/SNode.C-Book/assets/figures/src/snodec-figure-style.tex
+%
+% Load this AFTER mqttsystem-figure-system.tex.  It preserves the MQTT-specific
+% semantic vocabulary while overriding presentation constants and base styles
+% with the canonical SNode.C palette, geometry, typography and connector grammar.
+
+% ---------------------------------------------------------------------------
+% Authoritative SNode.C palette
+% ---------------------------------------------------------------------------
+
+\definecolor{snodecInk}{HTML}{17212B}
+\definecolor{snodecMuted}{HTML}{4B5F68}
+\definecolor{snodecRule}{HTML}{7A8B93}
+\definecolor{snodecBlue}{HTML}{0B4F6C}
+\definecolor{snodecBlueSoft}{HTML}{E3F2F8}
+\definecolor{snodecGreen}{HTML}{1F7A68}
+\definecolor{snodecGreenSoft}{HTML}{E5F4EF}
+\definecolor{snodecOrange}{HTML}{C46A1B}
+\definecolor{snodecOrangeSoft}{HTML}{FAEFE3}
+\definecolor{snodecRed}{HTML}{B24A4A}
+\definecolor{snodecRedSoft}{HTML}{F8E8E8}
+\definecolor{snodecGraySoft}{HTML}{F1F3F2}
+\definecolor{snodecTitleGreen}{HTML}{155F51}
+\definecolor{snodecTitleOrange}{HTML}{A95516}
+
+\colorlet{MQText}{snodecInk}
+\colorlet{MQTextMuted}{snodecMuted}
+\colorlet{MQLine}{snodecMuted!76}
+\colorlet{MQBorder}{snodecRule!85}
+\colorlet{MQSurface}{white}
+\colorlet{MQSurfaceAlt}{snodecGraySoft}
+\colorlet{MQDecisionFill}{snodecOrangeSoft}
+\colorlet{MQDecisionLine}{snodecOrange!80}
+\colorlet{MQSuccessFill}{snodecGreenSoft}
+\colorlet{MQSuccessLine}{snodecGreen!78}
+\colorlet{MQErrorFill}{snodecRedSoft}
+\colorlet{MQErrorLine}{snodecRed!82}
+\colorlet{MQControlFill}{snodecBlueSoft}
+\colorlet{MQControlLine}{snodecBlue!78}
+\colorlet{MQWarningFill}{snodecOrangeSoft}
+\colorlet{MQWarningLine}{snodecOrange!80}
+\colorlet{MQCrossLane}{snodecBlue!70}
+\colorlet{MQDataPlaneFill}{snodecBlueSoft}
+\colorlet{MQDataPlaneLine}{snodecBlue!78}
+\colorlet{MQAdminPlaneFill}{snodecGraySoft}
+\colorlet{MQAdminPlaneLine}{snodecRule!85}
+\colorlet{MQTrustFill}{white}
+\colorlet{MQTrustLine}{snodecRule!82}
+\colorlet{MQEvidenceRuntimeFill}{snodecGreenSoft}
+\colorlet{MQEvidenceRuntimeLine}{snodecGreen!78}
+\colorlet{MQEvidenceSourceFill}{snodecBlueSoft}
+\colorlet{MQEvidenceSourceLine}{snodecBlue!78}
+
+% ---------------------------------------------------------------------------
+% Authoritative geometry and spacing
+% ---------------------------------------------------------------------------
+
+\renewcommand{\MQRadiusXS}{2.5pt}
+\renewcommand{\MQRadiusS}{2.5pt}
+\renewcommand{\MQRadiusM}{2.5pt}
+\renewcommand{\MQRadiusL}{3pt}
+\renewcommand{\MQRadiusXL}{3pt}
+
+\renewcommand{\MQGapXS}{6mm}
+\renewcommand{\MQGapS}{6mm}
+\renewcommand{\MQGapM}{8mm}
+\renewcommand{\MQGapL}{11mm}
+\renewcommand{\MQGapXL}{14mm}
+
+\renewcommand{\MQNodePadX}{3mm}
+\renewcommand{\MQNodePadY}{2.5mm}
+\renewcommand{\MQHorizontalGapTight}{6mm}
+\renewcommand{\MQHorizontalGap}{8mm}
+\renewcommand{\MQHorizontalGapLoose}{11mm}
+\renewcommand{\MQHorizontalMilestoneGap}{14mm}
+\renewcommand{\MQBranchGapTight}{6mm}
+\renewcommand{\MQBranchGap}{8mm}
+\renewcommand{\MQLaneGap}{14mm}
+\renewcommand{\MQLanePadX}{4.5mm}
+\renewcommand{\MQLanePadY}{4.5mm}
+\renewcommand{\MQGroupPad}{4.5mm}
+\renewcommand{\MQTrustPad}{4.5mm}
+\renewcommand{\MQDesktopSafe}{8mm}
+\renewcommand{\MQMobileSafe}{8mm}
+\renewcommand{\MQMobileHorizontalGap}{8mm}
+\renewcommand{\MQMobileLaneGap}{11mm}
+\renewcommand{\MQDesktopMaxWidth}{160mm}
+\renewcommand{\MQMobileMaxWidth}{100mm}
+
+% Canonical desktop annotation size is footnotesize. Mobile keeps the existing
+% intentional uplift because the responsive variant is rendered at phone width.
+\renewcommand{\MQDesktopTypography}{%
+  \renewcommand{\MQBodyFont}{\sffamily\small}%
+  \renewcommand{\MQTitleFont}{\sffamily\bfseries\large}%
+  \renewcommand{\MQSectionFont}{\sffamily\bfseries\small}%
+  \renewcommand{\MQAnnotationFont}{\sffamily\footnotesize}%
+  \renewcommand{\MQCodeFont}{\ttfamily\small}%
+  \renewcommand{\MQCodeSmallFont}{\ttfamily\footnotesize}%
+}
+
+% ---------------------------------------------------------------------------
+% Flat canonical node grammar
+% ---------------------------------------------------------------------------
+
+\tikzset{
+  mqtt elevated none/.style={},
+  mqtt elevated subtle/.style={},
+  mqtt elevated raised/.style={},
+
+  mqtt process/.style={
+    mqtt text,draw=snodecRule!85,fill=white,rounded corners=2.5pt,
+    line width=.70pt,minimum height=10mm,minimum width=25mm,
+    inner xsep=3mm,inner ysep=2.5mm
+  },
+  mqtt application/.style={
+    mqtt text,draw=snodecGreen!78,fill=snodecGreenSoft,rounded corners=2.5pt,
+    line width=.70pt,minimum height=10mm,minimum width=25mm,
+    inner xsep=3mm,inner ysep=2.5mm
+  },
+  mqtt external/.style={mqtt process,fill=snodecGraySoft,draw=snodecRule!85},
+  mqtt state/.style={mqtt process,fill=snodecBlueSoft,draw=snodecBlue!78},
+  mqtt decision/.style={
+    mqtt text,diamond,aspect=1.75,draw=snodecOrange!80,fill=snodecOrangeSoft,
+    line width=.70pt,inner sep=1.2pt,minimum width=27mm,minimum height=14mm
+  },
+  mqtt success/.style={mqtt process,fill=snodecGreenSoft,draw=snodecGreen!78},
+  mqtt error/.style={mqtt process,fill=snodecRedSoft,draw=snodecRed!82},
+  mqtt control/.style={mqtt process,fill=snodecBlueSoft,draw=snodecBlue!78},
+  mqtt warning/.style={mqtt process,fill=snodecOrangeSoft,draw=snodecOrange!80},
+  mqtt note/.style={
+    mqtt text,draw=snodecRule!85,fill=snodecGraySoft,rounded corners=2.5pt,
+    line width=.58pt,font=\MQAnnotationFont,minimum height=8mm,
+    inner xsep=3mm,inner ysep=2.5mm
+  },
+  mqtt config/.style={mqtt process,fill=snodecGraySoft,draw=snodecRule!85},
+  mqtt data/.style={mqtt process,fill=white,draw=snodecRule!85},
+  mqtt database/.style={
+    mqtt text,cylinder,shape border rotate=90,aspect=.25,
+    draw=snodecRule!85,fill=snodecGraySoft,line width=.70pt,
+    minimum width=24mm,minimum height=13mm,inner xsep=3mm,inner ysep=2.5mm
+  },
+
+  mqtt figure frame/.style={
+    draw=snodecRule!82,fill=white,rounded corners=3pt,line width=.58pt,
+    inner xsep=4.5mm,inner ysep=4.5mm
+  },
+  mqtt lane/.style={
+    draw=snodecRule!82,fill=none,dashed,rounded corners=3pt,line width=.58pt,
+    inner xsep=4.5mm,inner ysep=4.5mm
+  },
+  mqtt group/.style={
+    draw=snodecRule!82,fill=none,rounded corners=3pt,line width=.58pt,inner sep=4.5mm
+  },
+  mqtt data plane/.style={
+    draw=snodecBlue!78,fill=snodecBlueSoft,rounded corners=3pt,
+    line width=.58pt,inner sep=4.5mm
+  },
+  mqtt admin plane/.style={
+    draw=snodecRule!85,fill=snodecGraySoft,rounded corners=3pt,
+    line width=.58pt,inner sep=4.5mm
+  },
+  mqtt trust boundary/.style={
+    draw=snodecRule!82,fill=none,dashed,rounded corners=3pt,
+    line width=.58pt,inner sep=4.5mm
+  }
+}
+
+% ---------------------------------------------------------------------------
+% Authoritative connector grammar: round joins/caps + Latex tips
+% ---------------------------------------------------------------------------
+
+\tikzset{
+  mqtt connector/.style={line cap=round,line join=round},
+  mqtt flow/.style={
+    mqtt connector,-{Latex[length=2.2mm,width=1.6mm]},
+    draw=snodecMuted!76,line width=.70pt
+  },
+  mqtt data flow/.style={
+    mqtt connector,-{Latex[length=2.2mm,width=1.6mm]},
+    draw=snodecBlue!70,line width=.70pt
+  },
+  mqtt control flow/.style={
+    mqtt connector,-{Latex[length=2.2mm,width=1.6mm]},
+    draw=snodecBlue!70,line width=.70pt
+  },
+  mqtt observation/.style={
+    mqtt connector,-{Latex[length=2.0mm,width=1.4mm]},
+    draw=snodecMuted!72,line width=.58pt,dashed
+  },
+  mqtt handoff/.style={
+    mqtt connector,-{Latex[length=2.2mm,width=1.6mm]},
+    draw=snodecBlue!70,line width=.70pt
+  },
+  mqtt association/.style={mqtt connector,draw=snodecMuted!68,line width=.58pt},
+  mqtt contains/.style={mqtt connector,draw=snodecMuted!68,line width=.58pt},
+  mqtt dependency/.style={
+    mqtt connector,-{Latex[length=2.0mm,width=1.4mm]},
+    draw=snodecMuted!68,line width=.58pt,densely dotted
+  },
+
+  mqtt section title/.style={
+    mqtt no hyphenation,font=\MQSectionFont,text=snodecBlue,align=left,anchor=west
+  },
+  mqtt annotation/.style={
+    mqtt no hyphenation,font=\MQAnnotationFont,text=snodecMuted,align=center
+  },
+  mqtt branch label/.style={
+    mqtt no hyphenation,font=\MQAnnotationFont\bfseries,text=snodecInk,
+    fill=white,inner sep=1pt
+  },
+  mqtt edge label/.style={
+    mqtt no hyphenation,font=\MQAnnotationFont,text=snodecMuted,
+    fill=white,inner sep=1pt
+  },
+  mqtt topic label/.style={
+    mqtt no hyphenation,font=\MQCodeSmallFont,text=snodecInk,
+    fill=white,inner sep=1pt
+  }
+}

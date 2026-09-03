@@ -2,12 +2,13 @@
 \usepackage[T1]{fontenc}
 \usepackage{lmodern}
 \input{mqttsystem-figure-system.tex}
+\input{snodec-canonical-figure-system.tex}
 \begin{document}
 \begin{tikzpicture}[mqtt desktop]
 
 \tikzset{
-  role/.style={mqtt application,minimum width=54mm,text width=48mm,minimum height=20mm},
-  brokerrole/.style={mqtt application,minimum width=58mm,text width=52mm,minimum height=48mm}
+  role/.style={mqtt application,minimum width=38mm,text width=32mm,minimum height=18mm},
+  brokerrole/.style={mqtt control,minimum width=42mm,text width=36mm,minimum height=42mm}
 }
 
 \node[brokerrole] (broker)
@@ -15,18 +16,18 @@
    MQTT 3.1.1 broker + topic space\\
    shared session / subscription state};
 
-\node[role,right=\MQHorizontalGapLoose of broker,yshift=17mm] (integrator)
+\node[role,right=\MQHorizontalGapLoose of broker,yshift=15mm] (integrator)
   {\textbf{MQTTIntegrator}\\transform payloads/topics\\and republish};
 \node[role,right=\MQHorizontalGap of integrator] (bridge)
   {\textbf{MQTTBridge}\\forward selected publications\\between broker domains};
 
-\node[role,right=\MQHorizontalGapLoose of broker,yshift=-17mm] (cli)
+\node[role,right=\MQHorizontalGapLoose of broker,yshift=-15mm] (cli)
   {\textbf{MQTTCli}\\publish, subscribe,\\and inspect traffic};
 \node[role,right=\MQHorizontalGap of cli] (store)
   {\textbf{MQTTStore}\\persist raw MQTT envelopes\\and optional projections};
 
 \node[mqtt note,below=\MQBranchGap of broker,anchor=north west,
-      minimum width=126mm,text width=118mm] (note)
+      minimum width=126mm,text width=120mm] (note)
   {Five separate executables. MQTTIntegrator, MQTTBridge, MQTTCli, and MQTTStore
    act as MQTT clients where configured; compose only the roles a deployment needs.};
 

@@ -2,14 +2,16 @@
 \usepackage[T1]{fontenc}
 \usepackage{lmodern}
 \input{mqttsystem-figure-system.tex}
+\input{snodec-canonical-figure-system.tex}
 \begin{document}
 \begin{tikzpicture}[mqtt mobile]
 
 \tikzset{
-  role/.style={mqtt application,minimum width=72mm,text width=64mm,minimum height=18mm}
+  role/.style={mqtt application,minimum width=72mm,text width=66mm,minimum height=18mm},
+  brokerrole/.style={mqtt control,minimum width=72mm,text width=66mm,minimum height=18mm}
 }
 
-\node[role] (broker)
+\node[brokerrole] (broker)
   {\textbf{MQTTBroker}\\MQTT 3.1.1 brokerage + topic space\\shared session / subscription state};
 \node[role,below=\MQBranchGap of broker] (integrator)
   {\textbf{MQTTIntegrator}\\transform payloads/topics and republish};
@@ -20,7 +22,7 @@
 \node[role,below=\MQBranchGap of cli] (store)
   {\textbf{MQTTStore}\\persist raw MQTT envelopes and optional projections};
 
-\node[mqtt note,below=\MQBranchGap of store,minimum width=72mm,text width=64mm] (note)
+\node[mqtt note,below=\MQBranchGap of store,minimum width=72mm,text width=66mm] (note)
   {Five separate executables; compose only the roles a deployment needs.};
 
 \begin{pgfonlayer}{background}
