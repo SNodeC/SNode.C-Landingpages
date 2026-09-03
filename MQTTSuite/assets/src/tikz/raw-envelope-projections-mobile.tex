@@ -41,7 +41,7 @@
 
 \node[mqtt database,wide,below=\MQGapM of match,xshift=-19mm] (typed)
   {for each match: build projected row + issue projection INSERT attempt\\zero / one / many independent attempts};
-\draw[mqtt data flow] (match.south) -- ++(0,-6mm) |- (typed.east);
+\draw[mqtt data flow] (match.south) -- ++(0,-6mm) -| (typed.north);
 
 \node[mqtt note,wide,below=\MQGapM of typed] (boundary)
   {raw \texttt{exec()} is issued first; code then evaluates projections\\without waiting for or requiring raw-insert success};
