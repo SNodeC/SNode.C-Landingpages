@@ -1,0 +1,33 @@
+\documentclass[tikz,border=8pt]{standalone}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\input{mqttsystem-figure-system.tex}
+\begin{document}
+\begin{tikzpicture}[mqtt mobile]
+\tikzset{wide/.style={minimum width=68mm,text width=62mm},dst/.style={minimum width=43mm,text width=39mm}}
+
+\node[mqtt external,wide] (a) {Broker A — source domain};
+\node[mqtt process,wide,below=\MQGapS of a] (ma) {member A — selected subscription input};
+\node[mqtt control,wide,below=\MQGapM of ma] (bridge) {logical bridge — fan-out forwarding};
+\draw[mqtt data flow] (a.south) -- node[mqtt topic label,right]{selected PUBLISH} (ma.north);
+\draw[mqtt data flow] (ma.south) -- (bridge.north);
+
+\node[mqtt process,dst,below left=\MQGapL and 8mm of bridge] (mb) {member B};
+\node[mqtt process,dst,below right=\MQGapL and 8mm of bridge] (mc) {member C};
+\node[mqtt external,dst,below=\MQGapS of mb] (b) {Broker B};
+\node[mqtt external,dst,below=\MQGapS of mc] (c) {Broker C};
+\draw[mqtt data flow] (bridge.south west) -- (mb.north);
+\draw[mqtt data flow] (bridge.south east) -- (mc.north);
+\draw[mqtt data flow] (mb.south) -- (b.north);
+\draw[mqtt data flow] (mc.south) -- (c.north);
+
+\node[mqtt note,wide] (note) at ($(bridge.south)+(0,-58mm)$)
+  {source member A is excluded from this forwarding pass\\payload, QoS, and retain are preserved for B and C};
+
+\begin{pgfonlayer}{background}
+  \node[mqtt lane,fit=(a)(ma)(bridge)(mb)(mc)(b)(c)(note)] (frame) {};
+\end{pgfonlayer}
+\node[mqtt section title] at ($(frame.north west)+(\MQTitleGap,-\MQTitleGap)$) {Logical bridge forwarding};
+
+\end{tikzpicture}
+\end{document}
