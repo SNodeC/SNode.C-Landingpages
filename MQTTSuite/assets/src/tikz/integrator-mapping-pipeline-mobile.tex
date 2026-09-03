@@ -29,10 +29,10 @@
 \draw[mqtt data flow] (brokerout.west) -- ++(-8mm,0) |- ($(client.west)+(-8mm,0)$) -- (client.west);
 
 \node[mqtt note,side,right=8mm of tree] (subqos)
-  {SUBSCRIBE uses \texttt{subscription.qos}};
+  {SUBSCRIBE uses the mapping's subscription QoS};
 \draw[mqtt association] (tree.east) -- (subqos.west);
 \node[mqtt note,side,right=8mm of outputs] (pubqos)
-  {output \texttt{qos} controls outgoing PUBLISH};
+  {output QoS controls outgoing PUBLISH};
 \draw[mqtt association] (outputs.east) -- (pubqos.west);
 
 \begin{pgfonlayer}{background}
