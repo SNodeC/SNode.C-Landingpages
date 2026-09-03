@@ -1,50 +1,72 @@
-\documentclass[tikz,border=8pt]{standalone}
+\documentclass[tikz,border=0pt]{standalone}
 \usepackage[T1]{fontenc}
 \usepackage{lmodern}
 \input{mqttsystem-figure-system.tex}
+\input{snodec-canonical-figure-system.tex}
 \begin{document}
 \begin{tikzpicture}[mqtt desktop]
 \tikzset{
-  stage/.style={mqtt process,minimum width=45mm,text width=40mm},
-  row/.style={mqtt database,minimum width=49mm,text width=44mm}
+  input/.style={mqtt external,minimum width=30mm,text width=25mm},
+  parse/.style={mqtt process,minimum width=38mm,text width=33mm},
+  raw/.style={mqtt database,minimum width=45mm,text width=39mm},
+  stage/.style={mqtt control,minimum width=42mm,text width=36mm},
+  branch/.style={mqtt process,minimum width=42mm,text width=36mm},
+  typed/.style={mqtt database,minimum width=45mm,text width=39mm},
+  note/.style={mqtt note,minimum width=43mm,text width=37mm}
 }
 
-\node[mqtt external,stage] (publish)
+\node[input] (publish)
   {received MQTT PUBLISH\\topic + payload + QoS + flags};
-\node[mqtt control,stage,right=\MQHorizontalGapLoose of publish] (store)
-  {MQTTStore\\receive / store path};
-\draw[mqtt data flow] (publish.east) -- (store.west);
+\node[parse,right=\MQHorizontalGap of publish] (parse)
+  {parse / classify payload once\\JSON when valid, otherwise text / binary};
+\node[raw,right=\MQHorizontalGap of parse] (raw)
+  {issue raw-table INSERT attempt\\via \texttt{mariaDB.exec(...)}\\for every PUBLISH};
 
-\node[row,right=38mm of store,yshift=17mm] (raw)
-  {raw-table INSERT attempt\\for every PUBLISH\\topic, payload, QoS, retain / DUP, packet id};
-\node[mqtt decision,right=38mm of store,yshift=-17mm] (eligible)
-  {valid JSON\\+ projection match?};
+\draw[mqtt data flow] (publish.east) -- (parse.west);
+\draw[mqtt data flow] (parse.east) -- (raw.west);
 
-\draw[mqtt data flow] \MQPortEast{store}{.70} -- ++(8mm,0) |- node[mqtt edge label,near end,above]{1 · issue raw insert} (raw.west);
-\draw[mqtt control flow] \MQPortEast{store}{.30} -- ++(8mm,0) |- node[mqtt edge label,near end,below]{2 · evaluate projections} (eligible.west);
+\node[stage,below=\MQGapM of raw] (projections)
+  {next source-level call\\\texttt{storeProjections(message, payloadJson)}};
+\node[note,left=\MQHorizontalGap of projections] (rawoutcome)
+  {raw INSERT success / failure callback is independent\\and does not gate projection processing};
 
-\node[mqtt process,right=\MQHorizontalGapLoose of eligible,minimum width=50mm,text width=45mm] (projection)
-  {optional projection extraction\\topic / JSON / literal values};
-\node[row,right=\MQHorizontalGap of projection] (typed)
-  {typed-row INSERT attempt\\zero / one / many writes};
-\draw[mqtt control flow] (eligible.east) -- node[mqtt branch label,above]{YES} (projection.west);
-\draw[mqtt data flow] (projection.east) -- node[mqtt edge label,above]{independent insert attempt(s)} (typed.west);
+\draw[mqtt control flow] (raw.south) -- node[mqtt edge label,right]{after issuing the raw exec call} (projections.north);
+\draw[mqtt observation] \MQPortSouth{raw}{.28} -- ++(0,-6mm) -| (rawoutcome.north);
 
-\node[mqtt note,below=\MQGapM of eligible,minimum width=49mm,text width=44mm] (skip)
-  {NO: projection path is skipped};
-\draw[mqtt association] (eligible.south) -- node[mqtt branch label,right]{NO} (skip.north);
+\node[mqtt decision,below=\MQGapM of projections] (json)
+  {parsed JSON\\available?};
+\draw[mqtt control flow] (projections.south) -- (json.north);
 
-\node[mqtt note,below=\MQGapM of raw,minimum width=49mm,text width=44mm] (independent)
-  {raw insert success/failure does not gate projection processing};
-\draw[mqtt association] (raw.south) -- (independent.north);
+\node[mqtt note,right=\MQHorizontalGap of json,minimum width=39mm,text width=33mm] (skip)
+  {NO: projection path returns\\raw outcome remains independent};
+\draw[mqtt association] (json.east) -- node[mqtt branch label,above]{NO} (skip.west);
 
+\node[branch,below=\MQGapM of json] (match)
+  {YES: match topic against storage plan\\$0..n$ matching projections};
+\draw[mqtt control flow] (json.south) -- node[mqtt branch label,right]{YES} (match.north);
+
+\node[typed,below=\MQGapM of match] (typed)
+  {for each match: build projected row\\+ issue projection INSERT attempt\\$0..n$ independent writes};
+\draw[mqtt data flow] (match.south) -- (typed.north);
+
+\node[mqtt note,below=\MQGapS of typed,minimum width=88mm,text width=82mm] (boundary)
+  {The code orders the \emph{attempts}: raw \texttt{exec()} first, projection processing next.\\It does not wait for or require successful raw persistence before projection INSERT attempts.};
+
+\coordinate (titleguard) at ($(publish.north)+(0,\MQGapL)$);
 \begin{pgfonlayer}{background}
-  \node[mqtt figure frame,fit=(publish)(store)(raw)(eligible)(projection)(typed)(skip)(independent)] (frame) {};
+  \node[mqtt figure frame,fit=(titleguard)(publish)(parse)(raw)(projections)(rawoutcome)(json)(skip)(match)(typed)(boundary)] (frame) {};
 \end{pgfonlayer}
 \node[mqtt section title] at ($(frame.north west)+(\MQTitleGap,-\MQTitleGap)$)
-  {Raw envelope first, optional typed projections};
-\node[mqtt annotation,anchor=east] at ($(frame.north east)+(-\MQTitleGap,-\MQTitleGap)$)
-  {raw INSERT is issued before optional projection INSERTs; their outcomes are independent};
+  {Raw envelope and optional projections};
+
+% Authoritative SNode.C desktop canvas: exactly 160 mm wide, native drawing.
+\coordinate (snodecCanvasCenter) at (current bounding box.center);
+\coordinate (snodecCanvasSW)
+  at ($(snodecCanvasCenter)+(-80mm,0)$ |- current bounding box.south);
+\coordinate (snodecCanvasNE)
+  at ($(snodecCanvasCenter)+(80mm,0)$ |- current bounding box.north);
+\path[use as bounding box]
+  ([yshift=-7pt]snodecCanvasSW) rectangle ([yshift=7pt]snodecCanvasNE);
 
 \end{tikzpicture}
 \end{document}

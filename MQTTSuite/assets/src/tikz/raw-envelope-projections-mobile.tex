@@ -2,47 +2,56 @@
 \usepackage[T1]{fontenc}
 \usepackage{lmodern}
 \input{mqttsystem-figure-system.tex}
+\input{snodec-canonical-figure-system.tex}
 \begin{document}
 \begin{tikzpicture}[mqtt mobile]
 \tikzset{
   wide/.style={minimum width=72mm,text width=64mm},
-  half/.style={minimum width=32mm,text width=27mm}
+  half/.style={minimum width=33mm,text width=28mm}
 }
 
-\node[mqtt external,wide] (publish) {received MQTT PUBLISH};
-\node[mqtt control,wide,below=\MQGapS of publish] (store) {MQTTStore receive / store path};
-\draw[mqtt data flow] (publish.south) -- (store.north);
+\node[mqtt external,wide] (publish)
+  {received MQTT PUBLISH\\topic + payload + QoS + flags};
+\node[mqtt process,wide,below=\MQGapS of publish] (parse)
+  {parse / classify payload once\\JSON when valid, otherwise text / binary};
+\node[mqtt database,wide,below=\MQGapM of parse] (raw)
+  {issue raw-table INSERT attempt\\via \texttt{mariaDB.exec(...)} for every PUBLISH};
 
-\node[mqtt database,half,below=\MQBranchGap of store,xshift=-20mm] (raw)
-  {raw INSERT attempt\\for every PUBLISH};
-\node[mqtt decision,below=\MQBranchGap of store,xshift=20mm] (eligible)
-  {valid JSON\\+ projection match?};
-\draw[mqtt data flow] \MQPortSouth{store}{.30} -- ++(0,-6mm) -| node[mqtt edge label,near end,left]{1} (raw.north);
-\draw[mqtt control flow] \MQPortSouth{store}{.70} -- ++(0,-6mm) -| node[mqtt edge label,near end,right]{2} (eligible.north);
+\draw[mqtt data flow] (publish.south) -- (parse.north);
+\draw[mqtt data flow] (parse.south) -- (raw.north);
 
-\node[mqtt note,half,below=\MQGapS of raw] (rawnote)
-  {raw success/failure does not gate projections};
-\draw[mqtt association] (raw.south) -- (rawnote.north);
+\node[mqtt note,half,below=\MQGapM of raw,xshift=-19mm] (rawoutcome)
+  {raw success / failure callback\\does not gate projections};
+\node[mqtt control,half,below=\MQGapM of raw,xshift=19mm] (projections)
+  {next call\\\texttt{storeProjections(...)}\\after raw \texttt{exec()}};
 
-\node[mqtt process,half,below=\MQGapM of eligible,xshift=-20mm] (projection)
-  {extract topic / JSON / literal values};
-\node[mqtt note,half,below=\MQGapM of eligible,xshift=20mm] (skip)
-  {NO: projection skipped};
-\draw[mqtt control flow] \MQPortSouth{eligible}{.32} -- ++(0,-6mm) -| node[mqtt branch label,near end,left]{YES} (projection.north);
-\draw[mqtt association] \MQPortSouth{eligible}{.68} -- ++(0,-6mm) -| node[mqtt branch label,near end,right]{NO} (skip.north);
+\draw[mqtt observation] \MQPortSouth{raw}{.28} -- ++(0,-6mm) -| (rawoutcome.north);
+\draw[mqtt control flow] \MQPortSouth{raw}{.72} -- ++(0,-6mm) -| (projections.north);
 
-\node[mqtt database,half,below=\MQGapS of projection] (typed)
-  {typed INSERT attempt(s)\\zero / one / many};
-\draw[mqtt data flow] (projection.south) -- (typed.north);
+\node[mqtt decision,below=\MQGapM of projections] (json)
+  {parsed JSON\\available?};
+\draw[mqtt control flow] (projections.south) -- (json.north);
 
-\node[mqtt note,wide,below=\MQGapM of typed,xshift=20mm] (note)
-  {raw INSERT is issued first; projection INSERT outcomes remain independent};
+\node[mqtt note,half,below=\MQGapM of json,xshift=-19mm] (skip)
+  {NO: projection path returns};
+\node[mqtt process,half,below=\MQGapM of json,xshift=19mm] (match)
+  {YES: storage-plan match\\$0..n$ projections};
+\draw[mqtt association] \MQPortSouth{json}{.28} -- ++(0,-6mm) -| node[mqtt branch label,near end,left]{NO} (skip.north);
+\draw[mqtt control flow] \MQPortSouth{json}{.72} -- ++(0,-6mm) -| node[mqtt branch label,near end,right]{YES} (match.north);
 
+\node[mqtt database,wide,below=\MQGapM of match,xshift=-19mm] (typed)
+  {for each match: build projected row + issue projection INSERT attempt\\zero / one / many independent attempts};
+\draw[mqtt data flow] (match.south) -- ++(0,-6mm) |- (typed.east);
+
+\node[mqtt note,wide,below=\MQGapM of typed] (boundary)
+  {raw \texttt{exec()} is issued first; code then evaluates projections\\without waiting for or requiring raw-insert success};
+
+\coordinate (titleguard) at ($(publish.north)+(0,\MQGapL)$);
 \begin{pgfonlayer}{background}
-  \node[mqtt figure frame,fit=(publish)(store)(raw)(eligible)(rawnote)(projection)(skip)(typed)(note)] (frame) {};
+  \node[mqtt figure frame,fit=(titleguard)(publish)(parse)(raw)(rawoutcome)(projections)(json)(skip)(match)(typed)(boundary)] (frame) {};
 \end{pgfonlayer}
 \node[mqtt section title] at ($(frame.north west)+(\MQTitleGap,-\MQTitleGap)$)
-  {Raw envelope first, optional projections};
+  {Raw envelope and optional projections};
 
 \end{tikzpicture}
 \end{document}
