@@ -62,7 +62,7 @@
 \newcommand{\MQRadiusXL}{7.0pt}
 
 % ---------------------------------------------------------------------------
-% Canonical spacing system
+% Canonical spacing and responsive budgets
 % ---------------------------------------------------------------------------
 %
 % Base grid: 1 unit = 2 mm. Derived dimensions are explicit so TeX does not
@@ -103,6 +103,11 @@
 \newcommand{\MQMobileSafe}{8mm}
 \newcommand{\MQMobileHorizontalGap}{12mm}
 \newcommand{\MQMobileLaneGap}{20mm}
+
+% Review budgets. These are composition limits, not scaling instructions.
+% A figure that exceeds the budget must be recomposed rather than shrunk.
+\newcommand{\MQDesktopMaxWidth}{245mm}
+\newcommand{\MQMobileMaxWidth}{100mm}
 
 % ---------------------------------------------------------------------------
 % Canonical connector ports
@@ -158,15 +163,47 @@
 % ---------------------------------------------------------------------------
 % Typography
 % ---------------------------------------------------------------------------
+%
+% Figure presets select these macros at picture start. Node styles consume the
+% macros directly, so mobile typography cannot be silently overwritten by a
+% later node style. Technical labels disable automatic word hyphenation.
+
+\newcommand{\MQBodyFont}{\sffamily\small}
+\newcommand{\MQTitleFont}{\sffamily\bfseries\large}
+\newcommand{\MQSectionFont}{\sffamily\bfseries\small}
+\newcommand{\MQAnnotationFont}{\sffamily\scriptsize}
+\newcommand{\MQCodeFont}{\ttfamily\small}
+\newcommand{\MQCodeSmallFont}{\ttfamily\scriptsize}
+
+\newcommand{\MQDesktopTypography}{%
+  \renewcommand{\MQBodyFont}{\sffamily\small}%
+  \renewcommand{\MQTitleFont}{\sffamily\bfseries\large}%
+  \renewcommand{\MQSectionFont}{\sffamily\bfseries\small}%
+  \renewcommand{\MQAnnotationFont}{\sffamily\scriptsize}%
+  \renewcommand{\MQCodeFont}{\ttfamily\small}%
+  \renewcommand{\MQCodeSmallFont}{\ttfamily\scriptsize}%
+}
+
+\newcommand{\MQMobileTypography}{%
+  \renewcommand{\MQBodyFont}{\sffamily\normalsize}%
+  \renewcommand{\MQTitleFont}{\sffamily\bfseries\large}%
+  \renewcommand{\MQSectionFont}{\sffamily\bfseries\normalsize}%
+  \renewcommand{\MQAnnotationFont}{\sffamily\small}%
+  \renewcommand{\MQCodeFont}{\ttfamily\normalsize}%
+  \renewcommand{\MQCodeSmallFont}{\ttfamily\small}%
+}
 
 \tikzset{
-  mqtt text/.style={font=\sffamily\small,text=MQText,align=center},
+  mqtt no hyphenation/.style={
+    execute at begin node={\hyphenpenalty=10000\exhyphenpenalty=10000\relax}
+  },
+  mqtt text/.style={mqtt no hyphenation,font=\MQBodyFont,text=MQText,align=center},
   mqtt text left/.style={mqtt text,align=left},
-  mqtt title/.style={font=\sffamily\bfseries\large,text=MQText,align=left},
-  mqtt section title/.style={font=\sffamily\bfseries\small,text=MQText,align=left,anchor=west},
-  mqtt annotation/.style={font=\sffamily\scriptsize,text=MQTextMuted,align=center},
-  mqtt code/.style={font=\ttfamily\small,text=MQText},
-  mqtt code small/.style={font=\ttfamily\scriptsize,text=MQText}
+  mqtt title/.style={mqtt no hyphenation,font=\MQTitleFont,text=MQText,align=left},
+  mqtt section title/.style={mqtt no hyphenation,font=\MQSectionFont,text=MQText,align=left,anchor=west},
+  mqtt annotation/.style={mqtt no hyphenation,font=\MQAnnotationFont,text=MQTextMuted,align=center},
+  mqtt code/.style={mqtt no hyphenation,font=\MQCodeFont,text=MQText},
+  mqtt code small/.style={mqtt no hyphenation,font=\MQCodeSmallFont,text=MQText}
 }
 
 % ---------------------------------------------------------------------------
@@ -174,8 +211,16 @@
 % ---------------------------------------------------------------------------
 
 \tikzset{
-  mqtt desktop/.style={x=1cm,y=1cm,every node/.append style={transform shape=false}},
-  mqtt mobile/.style={x=1cm,y=1cm,every node/.append style={transform shape=false,font=\sffamily\normalsize}}
+  mqtt desktop/.style={
+    x=1cm,y=1cm,
+    execute at begin picture={\MQDesktopTypography},
+    every node/.append style={transform shape=false}
+  },
+  mqtt mobile/.style={
+    x=1cm,y=1cm,
+    execute at begin picture={\MQMobileTypography},
+    every node/.append style={transform shape=false}
+  }
 }
 
 % ---------------------------------------------------------------------------
@@ -201,7 +246,7 @@
   mqtt warning/.style={mqtt process,fill=MQWarningFill,draw=MQWarningLine},
   mqtt note/.style={
     mqtt text,draw=MQBorder,fill=MQSurfaceAlt,rounded corners=\MQRadiusS,
-    line width=.65pt,font=\sffamily\scriptsize,minimum height=8mm,
+    line width=.65pt,font=\MQAnnotationFont,minimum height=8mm,
     inner xsep=\MQNodePadX,inner ysep=\MQNodePadY
   },
   mqtt config/.style={mqtt process,fill=MQSurfaceAlt,draw=MQBorder,rounded corners=\MQRadiusS},
@@ -216,10 +261,18 @@
 % ---------------------------------------------------------------------------
 % Semantic containers
 % ---------------------------------------------------------------------------
+%
+% mqtt figure frame is the neutral enclosing surface and is drawn first.
+% Semantic lanes/groups/planes are distinct concepts. mqtt lane deliberately has
+% no opaque fill so drawing it after an inner plane cannot erase that plane.
 
 \tikzset{
-  mqtt lane/.style={
+  mqtt figure frame/.style={
     draw=MQBorder,fill=MQSurface,rounded corners=\MQRadiusL,line width=.8pt,
+    inner xsep=\MQLanePadX,inner ysep=\MQLanePadY
+  },
+  mqtt lane/.style={
+    draw=MQBorder,fill=none,rounded corners=\MQRadiusL,line width=.8pt,
     inner xsep=\MQLanePadX,inner ysep=\MQLanePadY
   },
   mqtt group/.style={draw=MQBorder,fill=MQWhite,rounded corners=\MQRadiusL,line width=.75pt,inner sep=\MQGroupPad},
@@ -246,7 +299,8 @@
   mqtt observation/.style={mqtt connector,-{Stealth[length=2.0mm,width=1.4mm]},draw=MQLine,line width=.75pt,dashed},
   mqtt handoff/.style={mqtt connector,-{Stealth[length=2.3mm,width=1.6mm]},draw=MQCrossLane,line width=1pt},
   mqtt association/.style={mqtt connector,draw=MQBorder,line width=.7pt},
-  mqtt dependency/.style={mqtt connector,-{Stealth[length=2.0mm,width=1.4mm]},draw=MQLine,line width=.7pt,dashed}
+  mqtt contains/.style={mqtt connector,draw=MQBorder,line width=.8pt},
+  mqtt dependency/.style={mqtt connector,-{Stealth[length=2.0mm,width=1.4mm]},draw=MQLine,line width=.7pt,densely dotted}
 }
 
 % ---------------------------------------------------------------------------
@@ -254,17 +308,17 @@
 % ---------------------------------------------------------------------------
 
 \tikzset{
-  mqtt branch label/.style={font=\sffamily\scriptsize\bfseries,text=MQTextMuted,fill=MQWhite,inner sep=1.4pt},
-  mqtt edge label/.style={font=\sffamily\scriptsize,text=MQTextMuted,fill=MQWhite,inner sep=1.4pt},
-  mqtt topic label/.style={font=\ttfamily\scriptsize,text=MQText,fill=MQWhite,inner sep=1.4pt},
-  mqtt route label/.style={font=\ttfamily\scriptsize,text=MQText,fill=MQWhite,inner sep=1.4pt},
+  mqtt branch label/.style={mqtt no hyphenation,font=\MQAnnotationFont\bfseries,text=MQTextMuted,fill=MQWhite,inner sep=1.4pt},
+  mqtt edge label/.style={mqtt no hyphenation,font=\MQAnnotationFont,text=MQTextMuted,fill=MQWhite,inner sep=1.4pt},
+  mqtt topic label/.style={mqtt no hyphenation,font=\MQCodeSmallFont,text=MQText,fill=MQWhite,inner sep=1.4pt},
+  mqtt route label/.style={mqtt no hyphenation,font=\MQCodeSmallFont,text=MQText,fill=MQWhite,inner sep=1.4pt},
   mqtt evidence runtime/.style={
-    font=\sffamily\scriptsize\bfseries,text=MQSuccessLine,draw=MQEvidenceRuntimeLine,
+    mqtt no hyphenation,font=\MQAnnotationFont\bfseries,text=MQSuccessLine,draw=MQEvidenceRuntimeLine,
     fill=MQEvidenceRuntimeFill,rounded corners=\MQRadiusXS,line width=.6pt,
     inner xsep=4pt,inner ysep=2pt
   },
   mqtt evidence source/.style={
-    font=\sffamily\scriptsize\bfseries,text=MQControlLine,draw=MQEvidenceSourceLine,
+    mqtt no hyphenation,font=\MQAnnotationFont\bfseries,text=MQControlLine,draw=MQEvidenceSourceLine,
     fill=MQEvidenceSourceFill,rounded corners=\MQRadiusXS,line width=.6pt,
     inner xsep=4pt,inner ysep=2pt
   }
@@ -286,9 +340,15 @@
 % 10. Horizontal sequences use the canonical horizontal rhythm; avoid arbitrary x-spacing.
 % 11. Rounded corners follow the semantic radius scale; avoid one-off radii.
 % 12. Flat rendering is the default; elevation/shadows are explicit and justified.
-% 13. Prefer explicit anchors/ports and orthogonal routing where clarity improves.
+% 13. Prefer explicit anchors/ports and orthogonal routing wherever boxes are connected.
 % 14. Preserve readable text size at actual GitHub desktop/mobile rendering widths.
 % 15. Every directional connector is a single path with its arrowhead attached to that path; detached or separately placed arrowheads are forbidden.
 % 16. Connectors leave and enter box borders orthogonally at 90 degrees. Use the middle of the relevant border by default.
 % 17. If several connectors share one border, distribute their attachment ports evenly across that border on both source and destination sides.
 % 18. Do not use unmotivated diagonal connectors. Use orthogonal Manhattan routing between ports unless a diagonal has a specific semantic or geometric justification.
+% 19. Use mqtt figure frame for the neutral whole-figure surface; draw it before semantic lanes/groups/planes. Never let an enclosing fill overpaint inner semantics.
+% 20. Desktop and mobile typography are selected by their presets; do not override shared font sizes ad hoc to compensate for an oversized composition.
+% 21. Treat \MQDesktopMaxWidth and \MQMobileMaxWidth as hard review budgets. Recompose a figure that exceeds them instead of scaling it down.
+% 22. Automatic word hyphenation is forbidden in diagram labels, notes, routes, and code tokens.
+% 23. mqtt success is reserved for a real successful outcome. Do not use green merely for a destination, final stage, action, or emphasis.
+% 24. Ownership/containment uses mqtt contains or mqtt association, never a flow arrow unless real directional flow also exists.
