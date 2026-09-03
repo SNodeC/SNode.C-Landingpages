@@ -5,35 +5,46 @@
 \begin{document}
 \begin{tikzpicture}[mqtt desktop]
 \tikzset{
-  stage/.style={mqtt process,minimum width=43mm,text width=39mm},
-  row/.style={mqtt database,minimum width=47mm,text width=43mm}
+  stage/.style={mqtt process,minimum width=45mm,text width=40mm},
+  row/.style={mqtt database,minimum width=49mm,text width=44mm}
 }
 
-\node[mqtt external,stage] (publish) {received MQTT PUBLISH\\topic + payload + QoS + flags};
-\node[mqtt control,stage,right=\MQHorizontalGapLoose of publish] (store) {MQTTStore\\receive path};
-\node[row,right=\MQHorizontalGapLoose of store] (raw)
-  {raw MQTT row\\always written\\\scriptsize topic, payload, QoS\\\scriptsize retain / DUP, packet id};
+\node[mqtt external,stage] (publish)
+  {received MQTT PUBLISH\\topic + payload + QoS + flags};
+\node[mqtt control,stage,right=\MQHorizontalGapLoose of publish] (store)
+  {MQTTStore\\receive / store path};
 \draw[mqtt data flow] (publish.east) -- (store.west);
-\draw[mqtt data flow] (store.east) -- node[mqtt edge label,above]{primary persistence} (raw.west);
 
-\node[mqtt decision,below=\MQGapL of raw] (eligible) {valid JSON\\+ projection match?};
-\node[mqtt process,left=\MQHorizontalGap of eligible,minimum width=48mm,text width=44mm] (projection)
+\node[row,right=38mm of store,yshift=17mm] (raw)
+  {raw-table INSERT attempt\\for every PUBLISH\\topic, payload, QoS, retain / DUP, packet id};
+\node[mqtt decision,right=38mm of store,yshift=-17mm] (eligible)
+  {valid JSON\\+ projection match?};
+
+\draw[mqtt data flow] \MQPortEast{store}{.70} -- ++(8mm,0) |- node[mqtt edge label,near end,above]{1 · issue raw insert} (raw.west);
+\draw[mqtt control flow] \MQPortEast{store}{.30} -- ++(8mm,0) |- node[mqtt edge label,near end,below]{2 · evaluate projections} (eligible.west);
+
+\node[mqtt process,right=\MQHorizontalGapLoose of eligible,minimum width=50mm,text width=45mm] (projection)
   {optional projection extraction\\topic / JSON / literal values};
-\node[row,left=\MQHorizontalGap of projection] (typed) {typed application row\\one or more inserts};
-\draw[mqtt control flow] (raw.south) -- node[mqtt edge label,right]{optional projection evaluation} (eligible.north);
-\draw[mqtt control flow] (eligible.west) -- node[mqtt branch label,above]{YES} (projection.east);
-\draw[mqtt data flow] (projection.west) -- (typed.east);
+\node[row,right=\MQHorizontalGap of projection] (typed)
+  {typed-row INSERT attempt\\zero / one / many writes};
+\draw[mqtt control flow] (eligible.east) -- node[mqtt branch label,above]{YES} (projection.west);
+\draw[mqtt data flow] (projection.east) -- node[mqtt edge label,above]{independent insert attempt(s)} (typed.west);
 
-\node[mqtt note,right=\MQHorizontalGap of eligible,minimum width=44mm,text width=40mm] (skip)
-  {NO: projection path is skipped\\raw row remains complete};
-\draw[mqtt association] (eligible.east) -- node[mqtt branch label,above]{NO} (skip.west);
+\node[mqtt note,below=\MQGapM of eligible,minimum width=49mm,text width=44mm] (skip)
+  {NO: projection path is skipped};
+\draw[mqtt association] (eligible.south) -- node[mqtt branch label,right]{NO} (skip.north);
+
+\node[mqtt note,below=\MQGapM of raw,minimum width=49mm,text width=44mm] (independent)
+  {raw insert success/failure does not gate projection processing};
+\draw[mqtt association] (raw.south) -- (independent.north);
 
 \begin{pgfonlayer}{background}
-  \node[mqtt lane,fit=(publish)(store)(raw)(eligible)(projection)(typed)(skip)] (frame) {};
+  \node[mqtt figure frame,fit=(publish)(store)(raw)(eligible)(projection)(typed)(skip)(independent)] (frame) {};
 \end{pgfonlayer}
-\node[mqtt section title] at ($(frame.north west)+(\MQTitleGap,-\MQTitleGap)$) {Raw envelope first, optional typed projections};
+\node[mqtt section title] at ($(frame.north west)+(\MQTitleGap,-\MQTitleGap)$)
+  {Raw envelope first, optional typed projections};
 \node[mqtt annotation,anchor=east] at ($(frame.north east)+(-\MQTitleGap,-\MQTitleGap)$)
-  {raw insert is issued before optional projection inserts};
+  {raw INSERT is issued before optional projection INSERTs; their outcomes are independent};
 
 \end{tikzpicture}
 \end{document}
