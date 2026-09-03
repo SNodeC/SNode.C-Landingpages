@@ -1,0 +1,30 @@
+\documentclass[tikz,border=8pt]{standalone}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\input{mqttsystem-figure-system.tex}
+\begin{document}
+\begin{tikzpicture}[mqtt mobile]
+\tikzset{wide/.style={minimum width=74mm,text width=67mm}}
+\node[mqtt state,wide] (active) {active mapping};
+\node[mqtt control,wide,below=\MQGapS of active] (edit) {PATCH / POST \texttt{/config}};
+\node[mqtt config,wide,below=\MQGapS of edit] (draft) {draft mapping};
+\node[mqtt note,wide,below=\MQGapS of draft] (validate) {optional validation preflight; deploy also validates/applies};
+\node[mqtt control,wide,below=\MQGapM of validate] (deploy) {POST \texttt{/config/deploy}};
+\node[mqtt success,wide,below=\MQGapS of deploy] (apply) {\texttt{setMapping()} + persist active mapping};
+\node[mqtt control,wide,below=\MQGapM of apply] (reload) {reload decision:\\connection changed $\rightarrow$ reconnect\\otherwise $\rightarrow$ subscription delta};
+\node[mqtt config,wide,below=\MQGapM of reload] (history) {deployed-version history\\local filesystem state};
+\node[mqtt control,wide,below=\MQGapS of history] (rollback) {rollback restores a retained version\\then uses the same apply/reload path};
+\draw[mqtt flow] (active.south) -- (edit.north);
+\draw[mqtt flow] (edit.south) -- (draft.north);
+\draw[mqtt association] (draft.south) -- (validate.north);
+\draw[mqtt flow] (validate.south) -- (deploy.north);
+\draw[mqtt flow] (deploy.south) -- (apply.north);
+\draw[mqtt flow] (apply.south) -- (reload.north);
+\draw[mqtt association] (reload.south) -- (history.north);
+\draw[mqtt flow] (history.south) -- (rollback.north);
+\begin{pgfonlayer}{background}
+  \node[mqtt lane,fit=(active)(edit)(draft)(validate)(deploy)(apply)(reload)(history)(rollback)] (frame) {};
+\end{pgfonlayer}
+\node[mqtt section title] at ($(frame.north west)+(\MQTitleGap,-\MQTitleGap)$) {Mapping administration lifecycle};
+\end{tikzpicture}
+\end{document}
