@@ -4,23 +4,53 @@
 \input{mqttsystem-figure-system.tex}
 \begin{document}
 \begin{tikzpicture}[mqtt desktop]
-\tikzset{mode/.style={mqtt control,minimum width=48mm,text width=43mm,minimum height=25mm}}
-\node[mqtt external,minimum width=43mm,text width=39mm] (input) {matched MQTT PUBLISH\\topic + payload\\+ metadata};
-\node[mode,right=\MQHorizontalGapLoose of input,yshift=28mm] (static) {\textbf{static}\\exact payload string lookup\\→ exact mapped message};
-\node[mode,right=\MQHorizontalGapLoose of input] (value) {\textbf{value}\\Inja context: whole payload\\as \texttt{message}};
-\node[mode,right=\MQHorizontalGapLoose of input,yshift=-28mm] (json) {\textbf{json}\\parse payload as JSON\\Inja context: JSON \texttt{message}};
-\draw[mqtt control flow] (input.east) -- (static.west);
-\draw[mqtt control flow] (input.east) -- (value.west);
-\draw[mqtt control flow] (input.east) -- (json.west);
-\node[mqtt process,minimum width=53mm,text width=48mm,right=\MQHorizontalGapLoose of value] (common) {common mapped-output model\\mapped topic + payload\\QoS + retain + delay\\suppression where applicable};
-\draw[mqtt control flow] (static.east) -- (common.west);
-\draw[mqtt control flow] (value.east) -- (common.west);
-\draw[mqtt control flow] (json.east) -- (common.west);
-\node[mqtt success,minimum width=45mm,text width=41mm,right=\MQHorizontalGapLoose of common] (fanout) {one mapping object\\or mapping array\\→ one-to-many outputs};
-\draw[mqtt data flow] (common.east) -- (fanout.west);
+\tikzset{
+  mode/.style={mqtt control,minimum width=50mm,text width=44mm,minimum height=23mm},
+  result/.style={mqtt process,minimum width=54mm,text width=48mm}
+}
+
+\node[mqtt external,minimum width=45mm,text width=40mm] (input)
+  {matched MQTT PUBLISH\\topic + payload + metadata};
+
+\node[mode,right=34mm of input,yshift=30mm] (static)
+  {\textbf{static}\\exact payload-string lookup\\to configured mapped message(s)};
+\node[mode,below=\MQBranchGapTight of static] (value)
+  {\textbf{value}\\whole payload exposed to templates\\as \texttt{message}};
+\node[mode,below=\MQBranchGapTight of value] (json)
+  {\textbf{json}\\parse payload as JSON\\expose JSON as template \texttt{message}};
+
+\coordinate (inbus-top) at ($(static.west)+(-8mm,0)$);
+\coordinate (inbus-mid) at ($(value.west)+(-8mm,0)$);
+\coordinate (inbus-bottom) at ($(json.west)+(-8mm,0)$);
+\draw[mqtt association] (inbus-top) -- (inbus-bottom);
+\draw[mqtt association] (input.east) -- (inbus-mid);
+\draw[mqtt control flow] (inbus-top) -- (static.west);
+\draw[mqtt control flow] (inbus-mid) -- (value.west);
+\draw[mqtt control flow] (inbus-bottom) -- (json.west);
+
+\node[result,right=34mm of value] (common)
+  {common mapped-output model\\mapped topic + payload\\QoS + retain + delay\\suppression where applicable};
+\coordinate (outbus-top) at ($(static.east)+(8mm,0)$);
+\coordinate (outbus-mid) at ($(value.east)+(8mm,0)$);
+\coordinate (outbus-bottom) at ($(json.east)+(8mm,0)$);
+\draw[mqtt association] (static.east) -- (outbus-top);
+\draw[mqtt association] (value.east) -- (outbus-mid);
+\draw[mqtt association] (json.east) -- (outbus-bottom);
+\draw[mqtt association] (outbus-top) -- (outbus-bottom);
+\draw[mqtt control flow] (outbus-mid) -- (common.west);
+
+\node[result,right=\MQHorizontalGapLoose of common] (cardinality)
+  {result cardinality\\\textbf{zero / one / many} mapped PUBLISH messages\\arrays provide fan-out};
+\draw[mqtt data flow] (common.east) -- (cardinality.west);
+
+\node[mqtt note,minimum width=88mm,text width=81mm,below=\MQGapL of json,xshift=30mm] (note)
+  {Each configured \texttt{static}, \texttt{value}, and/or \texttt{json} key is processed independently. They are not mutually exclusive stages. Invalid, suppressed, or unmatched mappings can produce zero outputs.};
+
 \begin{pgfonlayer}{background}
-  \node[mqtt lane,fit=(input)(static)(value)(json)(common)(fanout)] (frame) {};
+  \node[mqtt figure frame,fit=(input)(static)(value)(json)(common)(cardinality)(note)] (frame) {};
 \end{pgfonlayer}
-\node[mqtt section title] at ($(frame.north west)+(\MQTitleGap,-\MQTitleGap)$) {Static, scalar/value, JSON, and fan-out mapping};
+\node[mqtt section title] at ($(frame.north west)+(\MQTitleGap,-\MQTitleGap)$)
+  {Static, scalar/value, JSON, and fan-out mapping};
+
 \end{tikzpicture}
 \end{document}
