@@ -1,0 +1,45 @@
+\documentclass[tikz,border=8pt]{standalone}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\input{mqttsystem-figure-system.tex}
+\begin{document}
+\begin{tikzpicture}[mqtt desktop]
+\tikzset{box/.style={mqtt process,minimum width=42mm,text width=38mm}}
+
+\node[mqtt state,box] (active) {active mapping};
+\node[mqtt control,box,right=\MQHorizontalGap of active] (draft)
+  {PATCH / POST \texttt{/config}\\create / replace draft};
+\node[mqtt control,box,right=\MQHorizontalGap of draft] (deploy)
+  {POST \texttt{/config/deploy}};
+\node[mqtt success,box,right=\MQHorizontalGap of deploy] (apply)
+  {\texttt{setMapping()}\\persist active mapping};
+\draw[mqtt flow] (active.east) -- (draft.west);
+\draw[mqtt flow] (draft.east) -- (deploy.west);
+\draw[mqtt flow] (deploy.east) -- (apply.west);
+\node[mqtt note,minimum width=50mm,text width=45mm,below=\MQGapS of draft] (validate)
+  {Optional preflight validation; deploy also validates/applies the mapping.};
+\draw[mqtt association] (draft.south) -- (validate.north);
+
+\node[mqtt decision,minimum width=35mm,below=30mm of apply] (change) {connection\\object changed?};
+\node[mqtt success,minimum width=42mm,text width=37mm,left=\MQHorizontalGap of change,yshift=14mm] (hot)
+  {NO: hot reload\\subscription delta};
+\node[mqtt control,minimum width=42mm,text width=37mm,left=\MQHorizontalGap of change,yshift=-14mm] (reconnect)
+  {YES: reconnect\\send DISCONNECT};
+\draw[mqtt flow] (apply.south) -- (change.north);
+\draw[mqtt flow] (change.west) |- (hot.east);
+\draw[mqtt flow] (change.west) |- (reconnect.east);
+
+\node[mqtt config,minimum width=48mm,text width=43mm,below=68mm of apply] (history)
+  {deployed-version history\\prior versions retained locally};
+\node[mqtt control,minimum width=48mm,text width=43mm,left=\MQHorizontalGap of history] (rollback)
+  {POST \texttt{/config/rollback}\\restore + apply selected version};
+\draw[mqtt association] (apply.east) -- ++(5mm,0) |- (history.east);
+\draw[mqtt flow] (history.west) -- (rollback.east);
+\draw[mqtt dependency] (rollback.north) -- node[mqtt edge label,right]{same reload decision} (change.south);
+
+\begin{pgfonlayer}{background}
+  \node[mqtt lane,fit=(active)(draft)(deploy)(apply)(validate)(change)(hot)(reconnect)(history)(rollback)] (frame) {};
+\end{pgfonlayer}
+\node[mqtt section title] at ($(frame.north west)+(\MQTitleGap,-\MQTitleGap)$) {Mapping administration lifecycle};
+\end{tikzpicture}
+\end{document}
