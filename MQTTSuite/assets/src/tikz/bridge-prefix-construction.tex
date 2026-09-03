@@ -12,9 +12,11 @@
 \draw[mqtt flow] (bridge.east) -- node[mqtt edge label,above]{+} (source.west);
 \draw[mqtt flow] (source.east) -- node[mqtt edge label,above]{+} (dest.west);
 \draw[mqtt flow] (dest.east) -- node[mqtt edge label,above]{+} (topic.west);
-\node[mqtt success,minimum width=82mm,text width=76mm,below=\MQGapL of $(source.south)!0.5!(dest.south)$] (result)
+\coordinate (chainCenter) at ($(bridge.south)!0.5!(topic.south)$);
+\node[mqtt annotation,below=4mm of chainCenter] (combine) {concatenate left $\rightarrow$ right};
+\node[mqtt success,minimum width=82mm,text width=76mm,below=\MQGapS of combine] (result)
   {forwarded topic\\\texttt{bridge/from-a/to-b/a/temperature}};
-\draw[mqtt data flow] ($(bridge.south)!0.5!(topic.south)$) -- (result.north);
+\draw[mqtt data flow] (combine.south) -- (result.north);
 \node[mqtt note,minimum width=82mm,text width=76mm,below=\MQGapS of result] (meta)
   {Payload, received QoS, and retain are preserved. Prefixes are literal concatenation; include separators such as \texttt{/} deliberately.};
 \draw[mqtt association] (result.south) -- (meta.north);
