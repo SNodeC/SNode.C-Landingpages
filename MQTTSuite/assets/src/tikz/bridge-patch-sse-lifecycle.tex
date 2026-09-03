@@ -1,0 +1,166 @@
+\documentclass[tikz,border=8pt]{standalone}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\input{mqttsystem-figure-system.tex}
+
+\begin{document}
+\begin{tikzpicture}[mqtt desktop]
+
+\tikzset{
+  lifecycle node/.style={minimum width=30mm,text width=27mm},
+  lifecycle decision/.style={minimum width=30mm,text width=25mm}
+}
+
+% ===========================================================================
+% HTTP administration
+% ===========================================================================
+
+\node[mqtt process,lifecycle node] (h0) {Operator};
+
+\node[mqtt process,lifecycle node,
+      right=\MQHorizontalGap of h0] (h1)
+  {PATCH\\\texttt{/api/bridge/config}};
+
+\node[mqtt decision,lifecycle decision,
+      right=\MQHorizontalGap of h1] (h2)
+  {Restart\\in progress?};
+
+\node[mqtt control,lifecycle node,
+      right=\MQHorizontalGap of h2] (h3)
+  {Apply JSON Patch\\validate + defaults\\stage config};
+
+\node[mqtt success,lifecycle node,
+      right=\MQHorizontalGap of h3] (h4)
+  {HTTP 200\\patch accepted};
+
+\node[mqtt error,lifecycle node,
+      below=\MQBranchGapTight of h2] (h2e)
+  {HTTP 409\\patch not applied};
+
+\node[mqtt error,lifecycle node,
+      below=\MQBranchGapTight of h3] (h3e)
+  {HTTP 404\\patch / validation failed};
+
+\draw[mqtt flow] (h0.east) -- (h1.west);
+\draw[mqtt flow] (h1.east) -- (h2.west);
+\draw[mqtt flow] (h2.east) -- node[mqtt branch label,above]{NO} (h3.west);
+\draw[mqtt flow] (h3.east) -- (h4.west);
+\draw[mqtt flow] (h2.south) -- node[mqtt branch label,right]{YES} (h2e.north);
+\draw[mqtt flow] (h3.south) -- (h3e.north);
+
+% ===========================================================================
+% Runtime restart lifecycle
+% Anchor rightmost node below HTTP result, then build leftward.
+% ===========================================================================
+
+\node[mqtt process,lifecycle node,
+      below=44mm of h4] (r0)
+  {\texttt{closeBridges()}};
+
+\node[mqtt process,lifecycle node,
+      left=\MQHorizontalGap of r0] (r1)
+  {Complete teardown\\disconnect / terminate\\active flows\\
+   {\scriptsize immediate when none remain}};
+
+\node[mqtt control,lifecycle node,
+      left=\MQHorizontalGap of r1] (r2)
+  {\texttt{activateStaged()}\\+\ \texttt{startBridges()}\\persist + rebuild};
+
+\node[mqtt process,lifecycle node,
+      left=\MQHorizontalGap of r2] (r3)
+  {Broker clients\\connecting};
+
+\node[mqtt success,lifecycle node,
+      left=\MQHorizontalGap of r3] (r4)
+  {Configured bridges\\connected / disabled};
+
+\draw[mqtt flow] (r0.west) -- (r1.east);
+\draw[mqtt flow] (r1.west) -- (r2.east);
+\draw[mqtt flow] (r2.west) -- (r3.east);
+\draw[mqtt flow] (r3.west) -- (r4.east);
+
+% ===========================================================================
+% SSE observation
+% Anchor rightmost node below closeBridges(), then use identical widths/gaps.
+% ===========================================================================
+
+\node[mqtt external,lifecycle node,
+      below=24mm of r0] (s0)
+  {SSE observer};
+
+\node[mqtt process,lifecycle node,
+      left=\MQHorizontalGap of s0] (s1)
+  {Stopping / disconnect events};
+
+\node[mqtt process,lifecycle node,
+      left=\MQHorizontalGap of s1] (s2)
+  {\texttt{bridges\_starting}\\replay reset};
+
+\node[mqtt process,lifecycle node,
+      left=\MQHorizontalGap of s2] (s3)
+  {Startup / connect events};
+
+\node[mqtt success,lifecycle node,
+      left=\MQHorizontalGap of s3] (s4)
+  {\texttt{bridges\_started}};
+
+\draw[mqtt flow] (s0.west) -- (s1.east);
+\draw[mqtt flow] (s1.west) -- (s2.east);
+\draw[mqtt flow] (s2.west) -- (s3.east);
+\draw[mqtt flow] (s3.west) -- (s4.east);
+
+\node[mqtt annotation,anchor=west,text width=75mm,
+      below=5mm of s4.south west] (s-note)
+  {Replay covers the current restart cycle only; \texttt{Last-Event-ID} is ignored; keep-alive every 39 s.};
+
+% ===========================================================================
+% Cross-lane semantics — exact vertical alignment
+% ===========================================================================
+
+\draw[mqtt handoff]
+  (h4.south)
+  -- node[mqtt edge label,right,text=MQCrossLane]
+     {restart continues asynchronously}
+  (r0.north);
+
+\draw[mqtt observation] (r1.south) -- (s1.north);
+\draw[mqtt observation] (r2.south) -- (s2.north);
+\draw[mqtt observation] (r3.south) -- (s3.north);
+\draw[mqtt observation] (r4.south) -- (s4.north);
+
+% ===========================================================================
+% Semantic lane containers + self-contained light background
+% ===========================================================================
+
+\begin{pgfonlayer}{background}
+  \node[mqtt lane,fit=(h0)(h4)(h2e)(h3e)] (lane-http) {};
+  \node[mqtt lane,fit=(r4)(r0)] (lane-runtime) {};
+  \node[mqtt lane,fit=(s4)(s0)(s-note)] (lane-sse) {};
+
+  \node[
+    fill=MQWhite,
+    draw=none,
+    rounded corners=\MQRadiusL,
+    fit=(lane-http)(lane-runtime)(lane-sse),
+    inner sep=\MQFigureSafeX
+  ] (figure-bg) {};
+\end{pgfonlayer}
+
+\node[mqtt section title]
+  at ($(lane-http.north west)+(\MQTitleGap,-\MQTitleGap)$)
+  {HTTP administration};
+
+\node[mqtt section title]
+  at ($(lane-runtime.north west)+(\MQTitleGap,-\MQTitleGap)$)
+  {Runtime restart lifecycle};
+
+\node[mqtt section title]
+  at ($(lane-sse.north west)+(\MQTitleGap,-\MQTitleGap)$)
+  {SSE observation};
+
+\node[mqtt annotation,anchor=east]
+  at ($(lane-sse.north east)+(-\MQTitleGap,-\MQTitleGap)$)
+  {dashed vertical arrows = runtime lifecycle events observed via SSE};
+
+\end{tikzpicture}
+\end{document}
