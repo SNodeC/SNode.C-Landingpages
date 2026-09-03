@@ -1,0 +1,35 @@
+\documentclass[tikz,border=8pt]{standalone}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\input{mqttsystem-figure-system.tex}
+\begin{document}
+\begin{tikzpicture}[mqtt mobile]
+\tikzset{wide/.style={minimum width=72mm,text width=65mm}}
+\node[mqtt external,wide] (input) {matched MQTT PUBLISH};
+\node[mqtt note,wide,below=\MQGapS of input] (hint) {Each configured mode key is processed; modes are not a sequential pipeline.};
+\node[mqtt control,wide,below=\MQGapM of hint] (static) {\textbf{static}: exact payload string → exact mapped message};
+\node[mqtt control,wide,below=\MQGapS of static] (value) {\textbf{value}: whole payload\\becomes template \texttt{message}};
+\node[mqtt control,wide,below=\MQGapS of value] (json) {\textbf{json}: parse payload as JSON;\\expose JSON as template \texttt{message}};
+\node[mqtt process,wide,below=\MQGapM of json] (common) {common mapped output\\topic + payload + QoS + retain + delay};
+\node[mqtt success,wide,below=\MQGapS of common] (fanout) {one mapping object or mapping array → one-to-many outputs};
+\coordinate (inbus-top) at ($(static.west)+(-4mm,0)$);
+\coordinate (inbus-bottom) at ($(json.west)+(-4mm,0)$);
+\draw[mqtt control flow] (input.south) -- (hint.north);
+\draw[mqtt association] (hint.west) -| (inbus-top) -- (inbus-bottom);
+\draw[mqtt control flow] (inbus-top) -- (static.west);
+\draw[mqtt control flow] ($(value.west)+(-4mm,0)$) -- (value.west);
+\draw[mqtt control flow] (inbus-bottom) -- (json.west);
+\coordinate (outbus-top) at ($(static.east)+(4mm,0)$);
+\coordinate (outbus-bottom) at ($(json.east)+(4mm,0)$);
+\draw[mqtt association] (outbus-top) -- (outbus-bottom);
+\draw[mqtt control flow] (static.east) -- (outbus-top);
+\draw[mqtt control flow] (value.east) -- ($(value.east)+(4mm,0)$);
+\draw[mqtt control flow] (json.east) -- (outbus-bottom);
+\draw[mqtt control flow] (outbus-bottom) |- (common.east);
+\draw[mqtt data flow] (common.south) -- (fanout.north);
+\begin{pgfonlayer}{background}
+  \node[mqtt lane,fit=(input)(hint)(static)(value)(json)(common)(fanout)] (frame) {};
+\end{pgfonlayer}
+\node[mqtt section title] at ($(frame.north west)+(\MQTitleGap,-\MQTitleGap)$) {Mapping modes};
+\end{tikzpicture}
+\end{document}
