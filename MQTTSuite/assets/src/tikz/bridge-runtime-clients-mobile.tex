@@ -1,0 +1,24 @@
+\documentclass[tikz,border=8pt]{standalone}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\input{mqttsystem-figure-system.tex}
+\begin{document}
+\begin{tikzpicture}[mqtt mobile]
+\tikzset{wide/.style={minimum width=74mm,text width=67mm}}
+\node[mqtt external,wide] (json) {bridge-definition JSON — \texttt{bridges[]}};
+\node[mqtt control,wide,below=\MQGapS of json] (store) {\texttt{BridgeStore}: validate + defaults + materialize};
+\node[mqtt application,wide,below=\MQGapS of store] (bridge) {logical Bridge};
+\node[mqtt process,wide,below=\MQGapM of bridge] (members) {one or more broker members\\network + MQTT session + subscriptions + prefix};
+\node[mqtt data,wide,below=\MQGapS of members] (clients) {each enabled member creates\\one \mbox{outbound} SNode.C MQTT\\client/context};
+\node[mqtt note,wide,below=\MQGapS of clients] (connack) {CONNACK → member joins Bridge → SUBSCRIBE configured filters};
+\draw[mqtt control flow] (json.south) -- (store.north);
+\draw[mqtt control flow] (store.south) -- (bridge.north);
+\draw[mqtt flow] (bridge.south) -- (members.north);
+\draw[mqtt data flow] (members.south) -- (clients.north);
+\draw[mqtt data flow] (clients.south) -- (connack.north);
+\begin{pgfonlayer}{background}
+  \node[mqtt lane,fit=(json)(store)(bridge)(members)(clients)(connack)] (frame) {};
+\end{pgfonlayer}
+\node[mqtt section title] at ($(frame.north west)+(\MQTitleGap,-\MQTitleGap)$) {Definition → runtime clients};
+\end{tikzpicture}
+\end{document}
