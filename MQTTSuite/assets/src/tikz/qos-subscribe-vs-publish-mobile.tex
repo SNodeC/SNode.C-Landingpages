@@ -1,0 +1,22 @@
+\documentclass[tikz,border=8pt]{standalone}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\input{mqttsystem-figure-system.tex}
+\begin{document}
+\begin{tikzpicture}[mqtt mobile]
+\tikzset{wide/.style={minimum width=74mm,text width=67mm}}
+\node[mqtt control,wide] (sub) {SUBSCRIBE QoS\\requested delivery ceiling for a topic filter};
+\node[mqtt note,wide,below=\MQGapS of sub] (subex) {Integrator: \texttt{subscription.qos}\\CLI/Store: default or \texttt{\#\#<qos>} override};
+\node[mqtt success,wide,below=\MQGapM of subex] (pub) {PUBLISH QoS\\QoS carried by an outgoing message};
+\node[mqtt note,wide,below=\MQGapS of pub] (pubex) {Integrator: mapped-output \texttt{qos}\\MQTTCli publish topic may use \texttt{\#\#<qos>}};
+\node[mqtt warning,wide,below=\MQGapM of pubex] (distinct) {Independent decisions\\even when both values happen to be equal};
+\draw[mqtt association] (sub.south) -- (subex.north);
+\draw[mqtt association] (subex.south) -- (pub.north);
+\draw[mqtt association] (pub.south) -- (pubex.north);
+\draw[mqtt association] (pubex.south) -- (distinct.north);
+\begin{pgfonlayer}{background}
+  \node[mqtt lane,fit=(sub)(subex)(pub)(pubex)(distinct)] (frame) {};
+\end{pgfonlayer}
+\node[mqtt section title] at ($(frame.north west)+(\MQTitleGap,-\MQTitleGap)$) {Subscribe QoS $\neq$ publish QoS};
+\end{tikzpicture}
+\end{document}
