@@ -4,19 +4,31 @@
 \input{mqttsystem-figure-system.tex}
 \begin{document}
 \begin{tikzpicture}[mqtt mobile]
-\tikzset{wide/.style={minimum width=74mm,text width=67mm}}
-\node[mqtt control,wide] (sub) {SUBSCRIBE QoS\\requested delivery ceiling for a topic filter};
-\node[mqtt note,wide,below=\MQGapS of sub] (subex) {Integrator: \texttt{subscription.qos}\\CLI/Store: default or \texttt{\#\#<qos>} override};
-\node[mqtt success,wide,below=\MQGapM of subex] (pub) {PUBLISH QoS\\QoS carried by an outgoing message};
-\node[mqtt note,wide,below=\MQGapS of pub] (pubex) {Integrator: mapped-output \texttt{qos}\\MQTTCli publish topic may use \texttt{\#\#<qos>}};
-\node[mqtt warning,wide,below=\MQGapM of pubex] (distinct) {Independent decisions\\even when both values happen to be equal};
+\tikzset{
+  half/.style={minimum width=32mm,text width=27mm},
+  wide/.style={minimum width=72mm,text width=64mm}
+}
+
+\node[mqtt control,half] (sub)
+  {SUBSCRIBE QoS\\requested delivery ceiling\\for a topic filter};
+\node[mqtt process,half,right=8mm of sub] (pub)
+  {PUBLISH QoS\\QoS carried by an\\outgoing message};
+
+\node[mqtt note,half,below=\MQGapS of sub] (subex)
+  {Integrator: \texttt{subscription.qos}\\CLI / Store: default or \texttt{\#\#<qos>} override};
+\node[mqtt note,half,below=\MQGapS of pub] (pubex)
+  {Integrator: output \texttt{qos}\\MQTTCli publish topic may use \texttt{\#\#<qos>}};
 \draw[mqtt association] (sub.south) -- (subex.north);
-\draw[mqtt association] (subex.south) -- (pub.north);
 \draw[mqtt association] (pub.south) -- (pubex.north);
-\draw[mqtt association] (pubex.south) -- (distinct.north);
+
+\node[mqtt note,wide,below=\MQGapM of $(subex.south)!0.5!(pubex.south)$] (distinct)
+  {Independent decisions even when the numeric values happen to be equal.};
+
 \begin{pgfonlayer}{background}
-  \node[mqtt lane,fit=(sub)(subex)(pub)(pubex)(distinct)] (frame) {};
+  \node[mqtt figure frame,fit=(sub)(pub)(subex)(pubex)(distinct)] (frame) {};
 \end{pgfonlayer}
-\node[mqtt section title] at ($(frame.north west)+(\MQTitleGap,-\MQTitleGap)$) {Subscribe QoS $\neq$ publish QoS};
+\node[mqtt section title] at ($(frame.north west)+(\MQTitleGap,-\MQTitleGap)$)
+  {Subscribe QoS $\neq$ publish QoS};
+
 \end{tikzpicture}
 \end{document}
