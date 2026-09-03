@@ -1,0 +1,22 @@
+\documentclass[tikz,border=8pt]{standalone}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\input{mqttsystem-figure-system.tex}
+\begin{document}
+\begin{tikzpicture}[mqtt mobile]
+\tikzset{wide/.style={minimum width=74mm,text width=67mm}}
+\node[mqtt data,wide] (publish) {MQTT PUBLISH};
+\node[mqtt database,minimum width=66mm,below=\MQGapS of publish] (raw) {raw MQTT row\\independent persistence};
+\node[mqtt control,wide,below=\MQGapM of raw] (projection) {if payload is valid JSON\\and topic matches a projection};
+\node[mqtt config,wide,below=\MQGapS of projection] (sources) {column sources:\\\texttt{topic\_level} / \texttt{json\_pointer} / \texttt{literal}};
+\node[mqtt database,minimum width=66mm,below=\MQGapS of sources] (typed) {typed SQL row};
+\draw[mqtt data flow] (publish.south) -- (raw.north);
+\draw[mqtt association] (raw.south) -- (projection.north);
+\draw[mqtt flow] (projection.south) -- (sources.north);
+\draw[mqtt data flow] (sources.south) -- (typed.north);
+\begin{pgfonlayer}{background}
+  \node[mqtt lane,fit=(publish)(raw)(projection)(sources)(typed)] (frame) {};
+\end{pgfonlayer}
+\node[mqtt section title] at ($(frame.north west)+(\MQTitleGap,-\MQTitleGap)$) {Projection extraction};
+\end{tikzpicture}
+\end{document}
