@@ -1,0 +1,29 @@
+\documentclass[tikz,border=8pt]{standalone}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\input{mqttsystem-figure-system.tex}
+\begin{document}
+\begin{tikzpicture}[mqtt mobile]
+\tikzset{wide/.style={minimum width=72mm,text width=65mm}}
+
+\node[mqtt external,wide] (incoming) {incoming MQTT PUBLISH};
+\node[mqtt application,wide,below=\MQGapS of incoming] (broker) {shared Broker routing};
+\node[mqtt success,wide,below=\MQGapS of broker] (normal) {ordinary publish routed to subscribers};
+\draw[mqtt data flow] (incoming.south) -- (broker.north);
+\draw[mqtt data flow] (broker.south) -- (normal.north);
+
+\node[mqtt control,wide,below=\MQGapL of normal] (mapper) {optional shared \texttt{MqttMapper} inside MQTTBroker};
+\node[mqtt process,wide,below=\MQGapS of mapper] (mapped) {zero / one / many immediate or delayed\\mapped PUBLISH messages};
+\draw[mqtt control flow] (incoming.west) -| ([xshift=-4mm]mapper.west) -- (mapper.west);
+\draw[mqtt control flow] (mapper.south) -- (mapped.north);
+\draw[mqtt data flow] (mapped.west) -| (broker.west);
+
+\node[mqtt note,wide,below=\MQGapS of mapped] (note) {Mapped outputs re-enter the same Broker.\\No child \texttt{mqttintegrator} process.};
+\draw[mqtt association] (mapped.south) -- (note.north);
+
+\begin{pgfonlayer}{background}
+  \node[mqtt lane,fit=(incoming)(broker)(normal)(mapper)(mapped)(note)] (frame) {};
+\end{pgfonlayer}
+\node[mqtt section title] at ($(frame.north west)+(\MQTitleGap,-\MQTitleGap)$) {Embedded mapper};
+\end{tikzpicture}
+\end{document}
