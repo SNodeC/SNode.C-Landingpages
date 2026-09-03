@@ -52,11 +52,22 @@ def crop_scale(src, crop, width):
 
 
 def arrow(draw, x1, y, x2, color=MUTED, width=3):
-    # One continuous shaft with attached triangular head, matching the canonical
-    # directionality rule even though this composition is raster evidence.
+    """Draw one filled arrow shape; shaft and arrowhead are one geometry."""
     head = 12
-    draw.line((x1, y, x2 - head, y), fill=color, width=width)
-    draw.polygon([(x2, y), (x2 - head, y - 7), (x2 - head, y + 7)], fill=color)
+    shaft_end = x2 - head
+    half = width / 2
+    draw.polygon(
+        [
+            (x1, y - half),
+            (shaft_end, y - half),
+            (shaft_end, y - 7),
+            (x2, y),
+            (shaft_end, y + 7),
+            (shaft_end, y + half),
+            (x1, y + half),
+        ],
+        fill=color,
+    )
 
 
 def role_chip(draw, x, y, w, h, text, kind='client'):
