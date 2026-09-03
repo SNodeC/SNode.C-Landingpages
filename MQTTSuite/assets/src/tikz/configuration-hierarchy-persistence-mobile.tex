@@ -24,7 +24,7 @@
 \draw[mqtt control flow] (inputs.south) -- (effective.north);
 
 \node[mqtt process,half,below=\MQBranchGap of effective,xshift=-20mm] (inspect)
-  {inspect\\\texttt{--show-config}\\\texttt{--command-line=}\\\texttt{active}};
+  {inspect\\\texttt{--show-config}\\\texttt{--command-line}\\\texttt{=active}};
 \node[mqtt process,half,below=\MQBranchGap of effective,xshift=20mm] (write)
   {serialize\\\texttt{--write-config}};
 \draw[mqtt observation] \MQPortSouth{effective}{.32} -- ++(0,-6mm) -| (inspect.north);
