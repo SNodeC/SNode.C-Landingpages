@@ -4,24 +4,48 @@
 \input{mqttsystem-figure-system.tex}
 \begin{document}
 \begin{tikzpicture}[mqtt desktop]
-\tikzset{box/.style={mqtt config,minimum width=34mm,text width=30mm}}
+\tikzset{
+  box/.style={mqtt config,minimum width=39mm,text width=34mm},
+  section/.style={mqtt config,minimum width=45mm,text width=40mm}
+}
+
 \node[mqtt application,box] (app) {application root\\e.g. \texttt{mqttcli}};
-\node[mqtt config,box,below=\MQGapS of app] (instance) {named instance\\e.g. \texttt{in-mqtt}};
-\draw[mqtt flow] (app.south) -- (instance.north);
-\node[mqtt config,minimum width=39mm,text width=35mm,right=\MQHorizontalGap of instance,yshift=11mm] (address) {address / transport\\remote or local};
-\node[mqtt config,minimum width=39mm,text width=35mm,right=\MQHorizontalGap of instance,yshift=-11mm] (tlshttp) {TLS / HTTP layer\\when selected};
-\draw[mqtt association] (instance.east) -- (address.west);
-\draw[mqtt association] (instance.east) -- (tlshttp.west);
-\node[mqtt config,box,right=\MQHorizontalGap of address,xshift=6mm,yshift=-11mm] (session) {MQTT session\\CONNECT settings};
-\node[mqtt success,box,right=\MQHorizontalGap of session] (action) {application action\\sub / pub / store / map};
-\draw[mqtt flow] (address.east) -- (session.west);
-\draw[mqtt flow] (tlshttp.east) -- (session.west);
-\draw[mqtt flow] (session.east) -- (action.west);
-\node[mqtt note,minimum width=52mm,text width=47mm,below=17mm of instance,xshift=18mm] (surfaces) {Same tree through CLI, config files,\\\texttt{--show-config}, and command-line inspection.};
-\node[mqtt note,minimum width=52mm,text width=47mm,below=17mm of session] (precedence) {Value precedence:\\API/default < config file < command line};
+\node[mqtt control,box,right=\MQHorizontalGapLoose of app] (instance)
+  {named connection / listener instance\\e.g. \texttt{in-mqtt}};
+\draw[mqtt contains] (app.east) -- (instance.west);
+
+\node[section,right=37mm of instance,yshift=32mm] (network)
+  {network / endpoint sections\\remote or local address\\transport options};
+\node[section,below=\MQBranchGapTight of network] (http)
+  {optional HTTP / WebSocket\\or TLS-related sections\\when that instance type uses them};
+\node[section,below=\MQBranchGapTight of http] (session)
+  {MQTT session section\\CONNECT settings\\where the application uses MQTT};
+\node[section,below=\MQBranchGapTight of session] (appsection)
+  {application-specific section(s)\\e.g. \texttt{sub}, \texttt{pub}, storage, mapper options};
+
+\coordinate (bus-network) at ($(network.west)+(-8mm,0)$);
+\coordinate (bus-http) at ($(http.west)+(-8mm,0)$);
+\coordinate (bus-session) at ($(session.west)+(-8mm,0)$);
+\coordinate (bus-app) at ($(appsection.west)+(-8mm,0)$);
+\draw[mqtt contains] (bus-network) -- (bus-app);
+\draw[mqtt contains] (instance.east) -- ++(8mm,0) |- (bus-session);
+\draw[mqtt contains] (bus-network) -- (network.west);
+\draw[mqtt contains] (bus-http) -- (http.west);
+\draw[mqtt contains] (bus-session) -- (session.west);
+\draw[mqtt contains] (bus-app) -- (appsection.west);
+
+\node[mqtt note,minimum width=62mm,text width=56mm,below=\MQGapM of instance,xshift=-4mm] (ownership)
+  {These are instance-owned peer sections. Their runtime protocol layering or execution order is a separate concept. Exact section sets differ by application and instance family.};
+\node[mqtt note,minimum width=62mm,text width=56mm,below=\MQGapS of ownership] (surfaces)
+  {The same parsed hierarchy is populated from API/default values, configuration files, and command-line input and can be inspected through the supported configuration surfaces.};
+
 \begin{pgfonlayer}{background}
-  \node[mqtt lane,fit=(app)(instance)(address)(tlshttp)(session)(action)(surfaces)(precedence)] (frame) {};
+  \node[mqtt figure frame,fit=(app)(instance)(network)(http)(session)(appsection)(ownership)(surfaces)] (frame) {};
 \end{pgfonlayer}
-\node[mqtt section title] at ($(frame.north west)+(\MQTitleGap,-\MQTitleGap)$) {MQTTSuite configuration hierarchy};
+\node[mqtt section title] at ($(frame.north west)+(\MQTitleGap,-\MQTitleGap)$)
+  {MQTTSuite configuration ownership hierarchy};
+\node[mqtt annotation,anchor=east] at ($(frame.north east)+(-\MQTitleGap,-\MQTitleGap)$)
+  {value precedence: API/default $<$ config file $<$ command line};
+
 \end{tikzpicture}
 \end{document}
