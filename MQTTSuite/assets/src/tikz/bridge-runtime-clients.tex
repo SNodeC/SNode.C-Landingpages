@@ -1,0 +1,44 @@
+\documentclass[tikz,border=8pt]{standalone}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\input{mqttsystem-figure-system.tex}
+\begin{document}
+\begin{tikzpicture}[mqtt desktop]
+\tikzset{box/.style={mqtt process,minimum width=43mm,text width=39mm}}
+
+\node[mqtt external,box] (json) {bridge-definition JSON\\\texttt{bridges[]}};
+\node[mqtt control,box,right=\MQHorizontalGap of json] (store) {\texttt{BridgeStore}\\parse + validate\\apply defaults};
+\node[mqtt application,box,right=\MQHorizontalGap of store] (bridge) {logical Bridge\\name + prefix + disabled};
+\draw[mqtt control flow] (json.east) -- (store.west);
+\draw[mqtt control flow] (store.east) -- (bridge.west);
+
+\node[mqtt process,minimum width=39mm,text width=35mm,below=\MQGapXL of json] (m1) {broker member A\\network + MQTT + topics};
+\node[mqtt process,minimum width=39mm,text width=35mm,right=\MQHorizontalGap of m1] (m2) {broker member B\\network + MQTT + topics};
+\node[mqtt process,minimum width=39mm,text width=35mm,right=\MQHorizontalGap of m2] (m3) {broker member …\\same member model};
+\coordinate (memberhub) at ($(bridge.south)+(0,-9mm)$);
+\coordinate (memberbusL) at (m1.north |- memberhub);
+\coordinate (memberbusM) at (m2.north |- memberhub);
+\coordinate (memberbusR) at (m3.north |- memberhub);
+\draw[mqtt flow] (bridge.south) -- (memberhub);
+\draw[mqtt association] (memberbusL) -- (memberbusR);
+\draw[mqtt flow] (memberbusL) -- (m1.north);
+\draw[mqtt flow] (memberbusM) -- (m2.north);
+\draw[mqtt flow] (memberbusR) -- (m3.north);
+
+\node[mqtt data,minimum width=39mm,text width=35mm,below=\MQGapS of m1] (c1) {outbound SNode.C\\MQTT client + context};
+\node[mqtt data,minimum width=39mm,text width=35mm,below=\MQGapS of m2] (c2) {outbound SNode.C\\MQTT client + context};
+\node[mqtt data,minimum width=39mm,text width=35mm,below=\MQGapS of m3] (c3) {outbound SNode.C\\MQTT client + context};
+\draw[mqtt data flow] (m1.south) -- (c1.north);
+\draw[mqtt data flow] (m2.south) -- (c2.north);
+\draw[mqtt data flow] (m3.south) -- (c3.north);
+
+\node[mqtt note,minimum width=90mm,text width=84mm,below=\MQGapM of c2] (connack)
+  {On CONNACK, each enabled member joins its logical Bridge and SUBSCRIBEs to that member's configured topic filters.};
+
+\begin{pgfonlayer}{background}
+  \node[mqtt group,fit=(m1)(m2)(m3)(c1)(c2)(c3)] (members) {};
+  \node[mqtt lane,fit=(json)(store)(bridge)(members)(connack)] (frame) {};
+\end{pgfonlayer}
+\node[mqtt section title] at ($(frame.north west)+(\MQTitleGap,-\MQTitleGap)$) {Bridge definition to runtime MQTT clients};
+\end{tikzpicture}
+\end{document}
