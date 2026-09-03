@@ -4,21 +4,30 @@
 \input{mqttsystem-figure-system.tex}
 \begin{document}
 \begin{tikzpicture}[mqtt mobile]
-\tikzset{wide/.style={minimum width=74mm,text width=67mm}}
-\node[mqtt control,wide] (pass) {1. Immediate source exclusion\\one forwarding pass sends to destinations $\neq$ origin};
-\node[mqtt note,wide,below=\MQGapS of pass] (example) {A → Bridge → B / C; A is not a destination in that forwarding pass};
-\node[mqtt warning,wide,below=\MQGapM of example] (cycle) {2. Later cycles can still happen\\A → B → A when input filters\\or topology overlap};
-\node[mqtt note,wide,below=\MQGapS of cycle] (operator) {Control with non-overlapping filters,\\prefix design, and topology};
-\node[mqtt control,wide,below=\MQGapM of operator] (private) {3. \texttt{loop\_prevention=true}\\private SNode.C CONNECT reflection-suppression request};
-\node[mqtt warning,wide,below=\MQGapS of private] (limit) {Non-standard; not a general MQTT loop-proofing guarantee};
-\draw[mqtt association] (pass.south) -- (example.north);
-\draw[mqtt association] (example.south) -- (cycle.north);
-\draw[mqtt association] (cycle.south) -- (operator.north);
-\draw[mqtt association] (operator.south) -- (private.north);
-\draw[mqtt association] (private.south) -- (limit.north);
+\tikzset{wide/.style={minimum width=72mm,text width=64mm}}
+
+\node[mqtt control,wide] (pass)
+  {\textbf{1. Immediate source exclusion}\\\texttt{Bridge::publish()} forwards to destinations other than the origin member.};
+\node[mqtt note,wide,below=\MQGapS of pass] (example)
+  {A → Bridge → B / C; A is excluded only from this forwarding pass.};
+
+\node[mqtt warning,wide,below=\MQMobileLaneGap of example] (cycle)
+  {\textbf{2. Topology / subscription design}\\A later A → B → A cycle is still possible when forwarded topics match another member's input subscriptions.};
+\node[mqtt note,wide,below=\MQGapS of cycle] (operator)
+  {Operator controls: subscription partitioning, prefix design, and topology.};
+
+\node[mqtt control,wide,below=\MQMobileLaneGap of operator] (private)
+  {\textbf{3. Private reflection suppression}\\\texttt{loop\_prevention=true} requests the SNode.C private CONNECT protocol-level MSB.};
+\node[mqtt note,wide,below=\MQGapS of private] (limit)
+  {Non-standard MQTT extension; not a general loop-proofing guarantee for arbitrary or third-party topologies.};
+
 \begin{pgfonlayer}{background}
-  \node[mqtt lane,fit=(pass)(example)(cycle)(operator)(private)(limit)] (frame) {};
+  \node[mqtt figure frame,fit=(pass)(example)(cycle)(operator)(private)(limit)] (frame) {};
 \end{pgfonlayer}
-\node[mqtt section title] at ($(frame.north west)+(\MQTitleGap,-\MQTitleGap)$) {Loop boundaries};
+\node[mqtt section title] at ($(frame.north west)+(\MQTitleGap,-\MQTitleGap)$)
+  {Loop boundaries};
+\node[mqtt annotation,anchor=east] at ($(frame.north east)+(-\MQTitleGap,-\MQTitleGap)$)
+  {independent safeguards and limits};
+
 \end{tikzpicture}
 \end{document}
