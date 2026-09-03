@@ -1,0 +1,57 @@
+\documentclass[tikz,border=8pt]{standalone}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\input{mqttsystem-figure-system.tex}
+\begin{document}
+\begin{tikzpicture}[mqtt desktop]
+
+\tikzset{
+  role/.style={mqtt application,minimum width=42mm,text width=38mm},
+  ext/.style={mqtt external,minimum width=34mm,text width=30mm}
+}
+
+\node[ext] (publisher) {MQTT clients\\publish / subscribe};
+\node[role,right=\MQHorizontalGap of publisher] (broker)
+  {\textbf{MQTTBroker}\\brokerage + shared session state};
+\node[mqtt state,right=\MQHorizontalGap of broker,minimum width=36mm,text width=32mm] (topics)
+  {MQTT 3.1.1\\topic space};
+
+\node[role,above=\MQGapL of topics] (integrator)
+  {\textbf{MQTTIntegrator}\\transform + republish};
+\node[role,below=\MQGapL of topics] (cli)
+  {\textbf{MQTTCli}\\publish / subscribe / inspect};
+
+\node[role,right=\MQHorizontalGapLoose of topics] (bridge)
+  {\textbf{MQTTBridge}\\forward between broker domains};
+\node[ext,right=\MQHorizontalGap of bridge] (remote)
+  {other MQTT\\broker domain};
+
+\node[role,below=\MQGapL of bridge] (store)
+  {\textbf{MQTTStore}\\persist raw + project};
+\node[mqtt database,right=\MQHorizontalGap of store] (db) {MariaDB};
+
+\draw[mqtt data flow] (publisher.east) -- node[mqtt topic label,above]{PUBLISH} (broker.west);
+\draw[mqtt data flow] (broker.east) -- (topics.west);
+
+\draw[mqtt data flow] (topics.north) -- node[mqtt edge label,left]{delivery} (integrator.south);
+\draw[mqtt data flow] (integrator.south east) -- node[mqtt edge label,right]{mapped PUBLISH} (topics.north east);
+
+\draw[mqtt observation] (topics.south) -- node[mqtt edge label,left]{inspect} (cli.north);
+\draw[mqtt data flow] (cli.north east) -- node[mqtt edge label,right]{publish} (topics.south east);
+
+\draw[mqtt data flow] (topics.east) -- (bridge.west);
+\draw[mqtt data flow] (bridge.east) -- node[mqtt edge label,above]{forwarded PUBLISH} (remote.west);
+
+\draw[mqtt data flow] (topics.south east) |- (store.west);
+\draw[mqtt data flow] (store.east) -- (db.west);
+
+\begin{pgfonlayer}{background}
+  \node[mqtt lane,fit=(publisher)(broker)(topics)(integrator)(cli)(bridge)(remote)(store)(db)] (frame) {};
+\end{pgfonlayer}
+\node[mqtt section title] at ($(frame.north west)+(\MQTitleGap,-\MQTitleGap)$)
+  {Five applications, five responsibilities};
+\node[mqtt annotation,anchor=east] at ($(frame.north east)+(-\MQTitleGap,-\MQTitleGap)$)
+  {separate processes; compose only the roles a deployment needs};
+
+\end{tikzpicture}
+\end{document}
