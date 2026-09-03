@@ -1,0 +1,35 @@
+\documentclass[tikz,border=8pt]{standalone}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\input{mqttsystem-figure-system.tex}
+\begin{document}
+\begin{tikzpicture}[mqtt mobile]
+\tikzset{wide/.style={minimum width=70mm,text width=64mm}}
+
+\node[mqtt external,wide] (publish) {received MQTT PUBLISH};
+\node[mqtt control,wide,below=\MQGapS of publish] (store) {MQTTStore receive path};
+\node[mqtt database,wide,below=\MQGapM of store] (raw)
+  {raw MQTT row — always written\\\scriptsize topic, payload, QoS, retain / DUP, packet id};
+\draw[mqtt data flow] (publish.south) -- (store.north);
+\draw[mqtt data flow] (store.south) -- node[mqtt edge label,right]{primary persistence} (raw.north);
+
+\node[mqtt decision,below=\MQGapL of raw] (eligible) {valid JSON\\+ matching projection?};
+\draw[mqtt control flow] (raw.south) -- node[mqtt edge label,right]{optional projection evaluation} (eligible.north);
+
+\node[mqtt process,wide,below=\MQGapM of eligible] (projection)
+  {extract topic-level / JSON-pointer / literal values};
+\node[mqtt database,wide,below=\MQGapS of projection] (typed) {optional typed SQL row(s)};
+\draw[mqtt control flow] (eligible.south) -- node[mqtt branch label,right]{YES} (projection.north);
+\draw[mqtt data flow] (projection.south) -- (typed.north);
+
+\node[mqtt note,wide,right=\MQMobileHorizontalGap of eligible] (no)
+  {NO: projection skipped\\raw row is unaffected};
+\draw[mqtt association] (eligible.east) -- node[mqtt branch label,above]{NO} (no.west);
+
+\begin{pgfonlayer}{background}
+  \node[mqtt lane,fit=(publish)(store)(raw)(eligible)(projection)(typed)(no)] (frame) {};
+\end{pgfonlayer}
+\node[mqtt section title] at ($(frame.north west)+(\MQTitleGap,-\MQTitleGap)$) {Raw envelope first};
+
+\end{tikzpicture}
+\end{document}
