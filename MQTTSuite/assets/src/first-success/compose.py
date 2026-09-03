@@ -172,11 +172,6 @@ def make_desktop():
     d.text((margin+20, y+26), note, font=font(18), fill=INK)
     return im
 
-def mobile_semantic_line(d, y, label, roles, W):
-    d.text((28, y), label, font=font(19, True), fill=INK)
-    value = '  →  '.join(roles)
-    d.text((28, y+27), value, font=font(17), fill=MUTED)
-
 
 def make_mobile():
     W = 887
@@ -208,8 +203,8 @@ def make_mobile():
     d.text((margin, 112), 'Real runtime evidence', font=font(20), fill=MUTED)
 
     rounded(d, (margin, 150, W-margin, 276), GRAY_SOFT, RULE, 2, 10)
-    mobile_semantic_line(d, 164, 'Startup order', ['Broker', 'Subscriber', 'Publisher'], W)
-    mobile_semantic_line(d, 218, 'MQTT delivery', ['Publisher', 'Broker', 'Subscriber'], W)
+    semantic_row(d, 160, 'Startup order', ['Broker', 'Subscriber', 'Publisher'], W, margin+4)
+    semantic_row(d, 210, 'MQTT delivery', ['Publisher', 'Broker', 'Subscriber'], W, margin+4)
 
     y = top
     evidence_card(im, (margin, y), (card_w, broker_h),
