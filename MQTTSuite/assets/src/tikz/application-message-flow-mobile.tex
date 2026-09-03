@@ -25,8 +25,12 @@
 \node[mqtt note,below=\MQBranchGap of store,minimum width=72mm,text width=66mm] (note)
   {Five separate executables; compose only the roles a deployment needs.};
 
+% Reserve a canonical major-gap title band above the first content node.  The
+% figure-frame title is placed inside this band and can no longer collide with
+% the Broker card at mobile width.
+\coordinate (titleguard) at ($(broker.north)+(0,\MQGapLarge)$);
 \begin{pgfonlayer}{background}
-  \node[mqtt figure frame,fit=(broker)(integrator)(bridge)(cli)(store)(note)] (frame) {};
+  \node[mqtt figure frame,fit=(titleguard)(broker)(integrator)(bridge)(cli)(store)(note)] (frame) {};
 \end{pgfonlayer}
 \node[mqtt section title] at ($(frame.north west)+(\MQTitleGap,-\MQTitleGap)$)
   {Five applications, five responsibilities};
