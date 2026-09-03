@@ -116,7 +116,12 @@ foreach(TIKZ_SOURCE_REL IN LISTS TIKZ_TEX_SOURCES)
             -file-line-error
             -output-directory=${TIKZ_WORK_DIR}
             "${TIKZ_SOURCE_ABS}"
+        # Inkscape has a known Gio::DBus::Error race when independent CLI
+        # processes run concurrently. The figure build is intentionally
+        # parallel, so isolate CLI exports from the desktop session bus.
         COMMAND
+            "${CMAKE_COMMAND}" -E env
+            "DBUS_SESSION_BUS_ADDRESS="
             "${INKSCAPE_EXECUTABLE}"
             --pdf-font-strategy=keep
             "${TIKZ_PDF}"
