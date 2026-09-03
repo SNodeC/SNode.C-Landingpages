@@ -4,21 +4,33 @@
 \input{mqttsystem-figure-system.tex}
 \begin{document}
 \begin{tikzpicture}[mqtt mobile]
-\tikzset{wide/.style={minimum width=74mm,text width=67mm}}
+\tikzset{wide/.style={minimum width=72mm,text width=64mm}}
+
 \node[mqtt external,wide] (json) {bridge-definition JSON — \texttt{bridges[]}};
-\node[mqtt control,wide,below=\MQGapS of json] (store) {\texttt{BridgeStore}: validate + defaults + materialize};
+\node[mqtt control,wide,below=\MQGapS of json] (store)
+  {\texttt{BridgeStore}: validate + defaults + materialize};
 \node[mqtt application,wide,below=\MQGapS of store] (bridge) {logical Bridge};
-\node[mqtt process,wide,below=\MQGapM of bridge] (members) {one or more broker members\\network + MQTT session + subscriptions + prefix};
-\node[mqtt data,wide,below=\MQGapS of members] (clients) {each enabled member creates\\one \mbox{outbound} SNode.C MQTT\\client/context};
-\node[mqtt note,wide,below=\MQGapS of clients] (connack) {CONNACK → member joins Bridge → SUBSCRIBE configured filters};
+\node[mqtt process,wide,below=\MQGapM of bridge] (members)
+  {broker members\\network + MQTT session + subscriptions + prefix};
+\node[mqtt data,wide,below=\MQGapS of members] (clients)
+  {one outbound SNode.C MQTT client/context per enabled, runtime-supported, compiled member};
+\node[mqtt note,wide,below=\MQGapS of clients] (support)
+  {Schema-valid choices are not automatically runtime-supported by every build.};
+\node[mqtt note,wide,below=\MQGapS of support] (connack)
+  {Successful CONNACK → client joins Bridge → SUBSCRIBE configured filters};
+
 \draw[mqtt control flow] (json.south) -- (store.north);
 \draw[mqtt control flow] (store.south) -- (bridge.north);
-\draw[mqtt flow] (bridge.south) -- (members.north);
-\draw[mqtt data flow] (members.south) -- (clients.north);
-\draw[mqtt data flow] (clients.south) -- (connack.north);
+\draw[mqtt contains] (bridge.south) -- (members.north);
+\draw[mqtt control flow] (members.south) -- (clients.north);
+\draw[mqtt association] (clients.south) -- (support.north);
+\draw[mqtt data flow] (support.south) -- (connack.north);
+
 \begin{pgfonlayer}{background}
-  \node[mqtt lane,fit=(json)(store)(bridge)(members)(clients)(connack)] (frame) {};
+  \node[mqtt figure frame,fit=(json)(store)(bridge)(members)(clients)(support)(connack)] (frame) {};
 \end{pgfonlayer}
-\node[mqtt section title] at ($(frame.north west)+(\MQTitleGap,-\MQTitleGap)$) {Definition → runtime clients};
+\node[mqtt section title] at ($(frame.north west)+(\MQTitleGap,-\MQTitleGap)$)
+  {Definition → runtime clients};
+
 \end{tikzpicture}
 \end{document}
