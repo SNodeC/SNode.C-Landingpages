@@ -1,0 +1,43 @@
+\documentclass[tikz,border=8pt]{standalone}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\input{mqttsystem-figure-system.tex}
+\begin{document}
+\begin{tikzpicture}[mqtt desktop]
+\tikzset{surf/.style={mqtt process,minimum width=43mm,text width=38mm}}
+
+\node[mqtt external,minimum width=48mm,text width=43mm] (listener)
+  {Broker HTTP / HTTPS listener family};
+\node[mqtt control,minimum width=42mm,text width=38mm,right=\MQHorizontalGapLoose of listener] (router)
+  {Express router};
+
+\node[surf,right=\MQHorizontalGapLoose of router,yshift=24mm] (dash)
+  {Dashboard\\\texttt{/clients/*}};
+\node[surf,right=\MQHorizontalGapLoose of router,yshift=8mm] (sse)
+  {Live state via SSE\\\texttt{/api/mqtt/events}\\\texttt{/sse}};
+\node[surf,right=\MQHorizontalGapLoose of router,yshift=-8mm] (admin)
+  {Mutating JSON API\\disconnect / subscribe\\unsubscribe / release};
+\node[mqtt data,minimum width=43mm,text width=38mm,right=\MQHorizontalGapLoose of router,yshift=-24mm] (ws)
+  {MQTT WebSocket upgrade\\\texttt{/}, \texttt{/ws}, \texttt{/mqtt}\\subprotocol \texttt{mqtt}};
+
+\node[mqtt application,minimum width=45mm,text width=40mm,right=\MQHorizontalGapLoose of sse,yshift=-8mm] (broker)
+  {shared Broker core\\+ \texttt{MqttModel}};
+
+\draw[mqtt control flow] (listener.east) -- (router.west);
+\draw[mqtt flow] (router.east) -- (dash.west);
+\draw[mqtt flow] (router.east) -- (sse.west);
+\draw[mqtt flow] (router.east) -- (admin.west);
+\draw[mqtt data flow] (router.east) -- (ws.west);
+\draw[mqtt observation] (broker.west) -- (sse.east);
+\draw[mqtt control flow] (admin.east) -- (broker.west);
+\draw[mqtt data flow] (ws.east) -- (broker.south west);
+\draw[mqtt observation] (sse.north) -- (dash.south);
+
+\begin{pgfonlayer}{background}
+  \node[mqtt admin plane,fit=(listener)(router)(dash)(sse)(admin)] (adminplane) {};
+  \node[mqtt data plane,fit=(ws)(broker)] (dataplane) {};
+  \node[mqtt lane,fit=(adminplane)(dataplane)] (frame) {};
+\end{pgfonlayer}
+\node[mqtt section title] at ($(frame.north west)+(\MQTitleGap,-\MQTitleGap)$) {Four surfaces on the Broker HTTP router};
+\end{tikzpicture}
+\end{document}
