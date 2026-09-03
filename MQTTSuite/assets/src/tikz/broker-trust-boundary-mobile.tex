@@ -4,20 +4,41 @@
 \input{mqttsystem-figure-system.tex}
 \begin{document}
 \begin{tikzpicture}[mqtt mobile]
-\tikzset{wide/.style={minimum width=74mm,text width=67mm}}
-\node[mqtt data,wide] (data) {MQTT data plane\\direct MQTT + MQTT/WebSocket\\shared Broker/session state};
-\node[mqtt external,wide,below=\MQGapL of data] (operator) {browser / operator};
-\node[mqtt control,wide,below=\MQGapS of operator] (admin) {dashboard + JSON admin API + SSE};
-\node[mqtt warning,wide,below=\MQGapS of admin] (risk) {no application authentication\\wildcard API/event CORS\\client events can include MQTT password data};
-\node[mqtt note,wide,below=\MQGapS of risk] (note) {HTTPS is transport protection, not authorization};
-\draw[mqtt control flow] (operator.south) -- (admin.north);
+\tikzset{wide/.style={minimum width=72mm,text width=64mm}}
+
+\node[mqtt data,wide] (direct)
+  {Direct MQTT listeners → shared Broker/session state};
+
+\node[mqtt external,wide,below=\MQMobileLaneGap of direct] (clients)
+  {browser / HTTP or MQTT-WebSocket client};
+\node[mqtt control,wide,below=\MQGapS of clients] (router)
+  {shared HTTP / HTTPS listener + Express router};
+\node[mqtt data,wide,below=\MQGapS of router] (ws)
+  {MQTT WebSocket routes — \texttt{/}, \texttt{/ws}, \texttt{/mqtt}};
+\node[mqtt control,wide,below=\MQGapS of ws] (admin)
+  {dashboard + JSON admin API + SSE};
+
+\node[mqtt warning,wide,below=\MQGapS of admin] (risk)
+  {No Broker application authentication on operator routes; wildcard API/event CORS; client events can include supplied MQTT password data.};
+\node[mqtt note,wide,below=\MQGapS of risk] (note)
+  {HTTPS is transport protection, not authorization. Protect the shared HTTP exposure with trusted network policy or path-aware external access control.};
+
+\draw[mqtt control flow] (clients.south) -- (router.north);
+\draw[mqtt data flow] (router.south) -- \MQPortNorth{ws}{.50};
+\draw[mqtt control flow] (ws.south) -- (admin.north);
 \draw[mqtt association] (admin.south) -- (risk.north);
 \draw[mqtt association] (risk.south) -- (note.north);
+
 \begin{pgfonlayer}{background}
-  \node[mqtt lane,fit=(data)(operator)(admin)(risk)(note)] (frame) {};
-  \node[mqtt trust boundary,fit=(operator)(admin)(risk)(note)] (trust) {};
+  \node[mqtt figure frame,fit=(direct)(clients)(router)(ws)(admin)(risk)(note)] (frame) {};
+  \node[mqtt trust boundary,fit=(router)(ws)(admin)(risk)(note)] (trust) {};
 \end{pgfonlayer}
-\node[mqtt section title] at ($(frame.north west)+(\MQTitleGap,-\MQTitleGap)$) {MQTTBroker trust boundary};
-\node[mqtt annotation,anchor=west,fill=MQSurface] at ($(trust.north west)+(\MQTitleGap,0)$) {trusted management boundary};
+\node[mqtt section title] at ($(frame.north west)+(\MQTitleGap,-\MQTitleGap)$)
+  {MQTTBroker exposure boundary};
+\node[mqtt annotation,anchor=west,fill=MQSurface] at ($(trust.north west)+(\MQTitleGap,0)$)
+  {required external / trusted deployment boundary};
+\node[mqtt annotation,anchor=east] at ($(trust.north east)+(-\MQTitleGap,0)$)
+  {not enforced by MQTTBroker};
+
 \end{tikzpicture}
 \end{document}
