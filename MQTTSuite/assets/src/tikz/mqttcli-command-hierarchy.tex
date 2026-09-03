@@ -1,0 +1,28 @@
+\documentclass[tikz,border=8pt]{standalone}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\input{mqttsystem-figure-system.tex}
+\begin{document}
+\begin{tikzpicture}[mqtt desktop]
+\tikzset{box/.style={mqtt process,minimum width=38mm,text width=34mm}}
+\node[mqtt application,box] (root) {\texttt{mqttcli}\\application root};
+\node[mqtt control,box,right=\MQHorizontalGap of root] (instance) {enabled connection\\instance\\direct MQTT or WebSocket};
+\node[mqtt config,box,right=\MQHorizontalGap of instance,yshift=18mm] (remote) {\texttt{remote}\\host / port or Unix path};
+\node[mqtt config,box,right=\MQHorizontalGap of instance] (http) {\texttt{http}\\WebSocket target only};
+\node[mqtt config,box,right=\MQHorizontalGap of instance,yshift=-18mm] (session) {\texttt{session}\\CONNECT + default QoS};
+\node[mqtt success,box,right=\MQHorizontalGap of session,yshift=11mm] (sub) {\texttt{sub}\\one or more topic filters};
+\node[mqtt success,box,right=\MQHorizontalGap of session,yshift=-11mm] (pub) {\texttt{pub}\\topic + message\\+ retain};
+\draw[mqtt flow] (root.east) -- (instance.west);
+\draw[mqtt association] (instance.east) -- (remote.west);
+\draw[mqtt association] (instance.east) -- (http.west);
+\draw[mqtt flow] (instance.east) -- (session.west);
+\draw[mqtt flow] (session.east) -- (sub.west);
+\draw[mqtt flow] (session.east) -- (pub.west);
+\node[mqtt note,minimum width=78mm,text width=72mm,below=8mm of pub,xshift=-25mm] (note)
+ {Subscribe and publish may share one connection.\\WebSocket instances add an \texttt{http} target section.};
+\begin{pgfonlayer}{background}
+  \node[mqtt lane,fit=(root)(instance)(remote)(http)(session)(sub)(pub)(note)] (frame) {};
+\end{pgfonlayer}
+\node[mqtt section title] at ($(frame.north west)+(\MQTitleGap,-\MQTitleGap)$) {MQTTCli command hierarchy};
+\end{tikzpicture}
+\end{document}
