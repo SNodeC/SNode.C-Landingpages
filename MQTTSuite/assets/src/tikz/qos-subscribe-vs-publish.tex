@@ -1,0 +1,23 @@
+\documentclass[tikz,border=8pt]{standalone}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\input{mqttsystem-figure-system.tex}
+\begin{document}
+\begin{tikzpicture}[mqtt desktop]
+\tikzset{box/.style={mqtt process,minimum width=44mm,text width=39mm}}
+\node[mqtt external,box] (broker) {MQTT broker};
+\node[mqtt control,box,left=\MQHorizontalGapLoose of broker,yshift=18mm] (sub) {SUBSCRIBE\\topic filter + requested QoS};
+\node[mqtt success,box,left=\MQHorizontalGapLoose of broker,yshift=-18mm] (pub) {PUBLISH\\topic + outgoing QoS};
+\draw[mqtt data flow] (sub.east) -- node[mqtt edge label,above]{delivery request} (broker.west);
+\draw[mqtt data flow] (pub.east) -- node[mqtt edge label,below]{message send} (broker.west);
+\node[mqtt config,minimum width=55mm,text width=49mm,left=\MQHorizontalGap of sub] (integrator) {Integrator mapping:\\\texttt{subscription.qos}\\is separate from output \texttt{qos}};
+\node[mqtt config,minimum width=55mm,text width=49mm,left=\MQHorizontalGap of pub] (cli) {MQTTCli:\\session default QoS\\or topic \texttt{\#\#<qos>} override};
+\draw[mqtt association] (integrator.east) -- (sub.west);
+\draw[mqtt association] (cli.east) -- (pub.west);
+\node[mqtt note,minimum width=94mm,text width=88mm,below=12mm of pub,xshift=30mm] (note) {Subscription QoS asks for a maximum delivery QoS for a filter.\\Outgoing PUBLISH carries publish QoS.\\Equal numbers do not make them the same setting.};
+\begin{pgfonlayer}{background}
+  \node[mqtt lane,fit=(integrator)(cli)(sub)(pub)(broker)(note)] (frame) {};
+\end{pgfonlayer}
+\node[mqtt section title] at ($(frame.north west)+(\MQTitleGap,-\MQTitleGap)$) {Subscription QoS versus publish QoS};
+\end{tikzpicture}
+\end{document}
