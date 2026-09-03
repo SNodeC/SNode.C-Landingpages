@@ -1,0 +1,33 @@
+\documentclass[tikz,border=8pt]{standalone}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\input{mqttsystem-figure-system.tex}
+\begin{document}
+\begin{tikzpicture}[mqtt desktop]
+\tikzset{stage/.style={mqtt process,minimum width=39mm,text width=35mm}}
+\node[mqtt external,stage] (brokerin) {Broker delivers\\matching PUBLISH};
+\node[mqtt application,stage,right=\MQHorizontalGap of brokerin] (client) {MQTTIntegrator\\MQTT client connection};
+\node[mqtt control,stage,right=\MQHorizontalGap of client] (tree) {topic-tree match\\literal / \texttt{+} / terminal \texttt{\#}};
+\draw[mqtt data flow] (brokerin.east) -- (client.west);
+\draw[mqtt data flow] (client.east) -- (tree.west);
+\node[mqtt control,stage,below=\MQGapL of tree] (rules) {mapping rules\\static / value / JSON};
+\node[mqtt process,stage,left=\MQHorizontalGap of rules] (outputs) {zero / one / many outputs\\immediate or scheduled\\own QoS + retain};
+\node[mqtt success,stage,left=\MQHorizontalGap of outputs] (brokerout) {mapped PUBLISH\\returns to broker\\same client connection};
+\draw[mqtt control flow] (tree.south) -- (rules.north);
+\draw[mqtt control flow] (rules.west) -- (outputs.east);
+\draw[mqtt data flow] (outputs.west) -- (brokerout.east);
+\draw[mqtt data flow] (brokerout.north) -| (client.south west);
+\node[mqtt note,minimum width=53mm,text width=48mm,above=\MQGapM of client,xshift=25mm] (subqos)
+  {Mapping-derived subscriptions use\\\texttt{subscription.qos} for requested delivery QoS.};
+\draw[mqtt association] (tree.north) |- (subqos.east);
+\node[mqtt note,minimum width=49mm,text width=44mm,below=\MQGapM of outputs] (pubqos)
+  {Mapped-output \texttt{qos} controls\\outgoing PUBLISH QoS independently.};
+\draw[mqtt association] (outputs.south) -- (pubqos.north);
+\begin{pgfonlayer}{background}
+  \node[mqtt data plane,fit=(brokerin)(client)(tree)(rules)(outputs)(brokerout)] (flow) {};
+  \node[mqtt lane,fit=(flow)(subqos)(pubqos)] (frame) {};
+\end{pgfonlayer}
+\node[mqtt section title] at ($(frame.north west)+(\MQTitleGap,-\MQTitleGap)$) {MQTTIntegrator mapping pipeline};
+\node[mqtt annotation,anchor=east] at ($(frame.north east)+(-\MQTitleGap,-\MQTitleGap)$) {subscribe QoS and publish QoS are separate decisions};
+\end{tikzpicture}
+\end{document}
