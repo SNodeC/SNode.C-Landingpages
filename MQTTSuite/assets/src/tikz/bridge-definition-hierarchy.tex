@@ -7,28 +7,38 @@
 \tikzset{nodebox/.style={mqtt process,minimum width=43mm,text width=39mm}}
 
 \node[mqtt config,nodebox] (root) {definition root\\\texttt{bridges[]}};
-\node[mqtt config,nodebox,right=\MQHorizontalGapLoose of root] (bridge) {logical bridge\\\texttt{name} required\\\texttt{disabled}, \texttt{prefix}\\\texttt{brokers[]}};
-\draw[mqtt flow] (root.east) -- (bridge.west);
+\node[mqtt config,nodebox,right=\MQHorizontalGapLoose of root] (bridge)
+  {logical bridge\\\texttt{name} required\\\texttt{disabled}, \texttt{prefix}\\\texttt{brokers[]}};
+\node[mqtt config,nodebox,right=\MQHorizontalGapLoose of bridge] (member)
+  {broker member\\\texttt{network} required\\\texttt{disabled}, \texttt{prefix}\\\texttt{session\_store}, \texttt{topics[]}};
+\draw[mqtt contains] (root.east) -- (bridge.west);
+\draw[mqtt contains] (bridge.east) -- (member.west);
 
-\node[mqtt config,nodebox,right=\MQHorizontalGapLoose of bridge] (member) {broker member\\\texttt{network} required\\\texttt{disabled}, \texttt{prefix}\\\texttt{session\_store}, \texttt{topics[]}};
-\draw[mqtt flow] (bridge.east) -- (member.west);
-
-\node[mqtt process,minimum width=43mm,text width=39mm,right=\MQHorizontalGapLoose of member,yshift=30mm] (network)
+\node[mqtt process,minimum width=44mm,text width=39mm,right=34mm of member,yshift=30mm] (network)
   {\texttt{network}\\instance name\\protocol + address\\transport + encryption};
-\node[mqtt process,minimum width=43mm,text width=39mm,right=\MQHorizontalGapLoose of member] (mqtt)
+\node[mqtt process,minimum width=44mm,text width=39mm,right=34mm of member] (mqtt)
   {\texttt{mqtt} session\\client id / keep alive\\clean session / will\\username / password\\loop prevention};
-\node[mqtt process,minimum width=43mm,text width=39mm,right=\MQHorizontalGapLoose of member,yshift=-30mm] (topics)
-  {\texttt{topics[]}\\topic filter +\\subscription QoS};
-\draw[mqtt flow] (member.east) -- (network.west);
-\draw[mqtt flow] (member.east) -- (mqtt.west);
-\draw[mqtt flow] (member.east) -- (topics.west);
+\node[mqtt process,minimum width=44mm,text width=39mm,right=34mm of member,yshift=-30mm] (topics)
+  {\texttt{topics[]}\\topic filter + subscription QoS};
 
-\node[mqtt note,minimum width=63mm,text width=58mm,below=\MQGapM of bridge,xshift=45mm] (note)
-  {Member prefixes and session-store paths sit beside network/MQTT/topic sections. Prefix separators are literal configuration, not inserted automatically.};
+\coordinate (bus-top) at ($(network.west)+(-8mm,0)$);
+\coordinate (bus-mid) at ($(mqtt.west)+(-8mm,0)$);
+\coordinate (bus-bottom) at ($(topics.west)+(-8mm,0)$);
+\draw[mqtt contains] (bus-top) -- (bus-bottom);
+\draw[mqtt contains] (member.east) -- (bus-mid);
+\draw[mqtt contains] (bus-top) -- (network.west);
+\draw[mqtt contains] (bus-mid) -- (mqtt.west);
+\draw[mqtt contains] (bus-bottom) -- (topics.west);
+
+\node[mqtt note,minimum width=70mm,text width=64mm,below=\MQGapL of member,xshift=30mm] (note)
+  {Member prefix and session-store path are peer member fields beside the network, MQTT, and topics objects. Prefix separators are literal configuration; they are not inserted automatically.};
+\draw[mqtt association] (member.south) -- ++(0,-6mm) -| \MQPortNorth{note}{.30};
 
 \begin{pgfonlayer}{background}
-  \node[mqtt lane,fit=(root)(bridge)(member)(network)(mqtt)(topics)(note)] (frame) {};
+  \node[mqtt figure frame,fit=(root)(bridge)(member)(network)(mqtt)(topics)(note)] (frame) {};
 \end{pgfonlayer}
-\node[mqtt section title] at ($(frame.north west)+(\MQTitleGap,-\MQTitleGap)$) {Bridge-definition hierarchy};
+\node[mqtt section title] at ($(frame.north west)+(\MQTitleGap,-\MQTitleGap)$)
+  {Bridge-definition hierarchy};
+
 \end{tikzpicture}
 \end{document}
