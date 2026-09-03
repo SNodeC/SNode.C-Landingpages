@@ -1,6 +1,22 @@
 # MQTTSuite visual asset implementation notes
 
-Implementation date: 30 August 2026
+Implementation date: 30 August 2026  
+Current technical-figure source transition recorded: 3 September 2026
+
+## Current canonical source model
+
+The V1/V2/V3 material below is retained as **historical capture and production provenance** for the 30 August 2026 visual set. It does not override the current post-review technical-figure production plan.
+
+For the current MQTTSuite publication work:
+
+- technical diagrams are authored canonically in `assets/src/tikz/*.tex` together with `assets/src/tikz/mqttsystem-figure-system.tex`;
+- the root CMake `figures` target generates publication SVGs under `assets/` from those TikZ sources;
+- generated technical SVGs are outputs and are never hand-edited;
+- every published desktop/mobile technical variant must have a canonical TikZ source;
+- genuine terminal and Web-UI evidence remains raster capture with the provenance below; Figma or another composition tool may crop/frame/annotate those real pixels but may not reconstruct application output;
+- the older dark Figma technical SVGs remain historical provenance until the accepted TikZ family is regenerated and published; they are not the current technical-diagram source of truth.
+
+The authoritative current figure inventory and semantic rules are in `../../workflow/10-VISUAL-PRODUCTION-PLAN.md`.
 
 ## Source qualification
 
@@ -9,7 +25,7 @@ Implementation date: 30 August 2026
 - Landingpages raw-capture handoff: `2e605a881f4075ebd3c0b0c4fdbf1040f48ba524`
 - Four final V2/V3 publication PNGs added on Landingpages `main`: `79a174a562b3421e25451b8c0a4bf9ea81f4ea7d`
 
-## Publication asset set
+## Publication asset set from the historical 30 August pass
 
 - `../application-message-flow.svg`
 - `../application-message-flow-mobile.svg`
@@ -18,9 +34,9 @@ Implementation date: 30 August 2026
 - `../broker-web-ui.png`
 - `../broker-web-ui-mobile.png`
 
-## V1 — application message flow
+## V1 — application message flow (historical production)
 
-Canonical editable source is the Figma file `MQTTSuite Publication Visuals`:
+The canonical editable source **for this historical V1 production** was the Figma file `MQTTSuite Publication Visuals`:
 
 - file: `https://www.figma.com/design/HuY71IdB8iuRB46oUA5RRi`
 - desktop frame: `1:2` — 1200 × 800
@@ -28,7 +44,7 @@ Canonical editable source is the Figma file `MQTTSuite Publication Visuals`:
 
 The desktop and mobile publication SVGs were exported directly from those Figma frames with the Figma Plugin API using `SVG_STRING`, `svgOutlineText: false`, `svgIdAttribute: false`, and `svgSimplifyStroke: true`. No geometry was redrawn or edited after export. The generated `font-family="Inter"` declarations were broadened only to the fallback stack `Inter, Arial, sans-serif` so the repository asset does not depend on an external font resource.
 
-The publication and source/export counterparts are byte-identical:
+The publication and source/export counterparts were byte-identical in that historical production:
 
 - `../application-message-flow.svg` = `application-message-flow.svg`
 - `../application-message-flow-mobile.svg` = `application-message-flow-mobile.svg`
@@ -44,15 +60,15 @@ Safety checks on both repository-ready SVG strings passed:
 - no `/home/...` path;
 - no `/Users/...` path.
 
-Both retain the required evidence boundary:
+Both retained the required evidence boundary:
 
 `Source-verified application role model · not an all-app runtime run`
 
-The desktop and mobile compositions remain separately art-directed; mobile is not a scaled desktop figure.
+The desktop and mobile compositions were separately art-directed; mobile was not a scaled desktop figure.
 
 ## V2 — first-success terminal proof
 
-Final publication candidates:
+Final publication candidates from the historical capture pass:
 
 - `../first-success-terminal.png`
 - `../first-success-terminal-mobile.png`
@@ -70,7 +86,7 @@ No trustworthy V2 Figma node IDs were retained; none are invented here.
 
 ## V3 — MQTTBroker live dashboard
 
-Final publication candidates:
+Final publication candidates from the historical capture pass:
 
 - `../broker-web-ui.png`
 - `../broker-web-ui-mobile.png`
@@ -85,19 +101,19 @@ The mobile raw capture was genuinely rendered at a 620 CSS-pixel viewport and is
 
 No trustworthy V3 Figma node IDs were retained; none are invented here.
 
-## Responsive and evidence validation
+## Responsive and evidence validation of the historical V1/V2/V3 pass
 
 - V1 desktop/mobile: separate Figma compositions.
 - V2 desktop/mobile: separate publication compositions from the same qualified runtime scene.
 - V3 mobile: based on a genuine 620 CSS-pixel product viewport.
-- V1 semantics are carried by labels, roles, and directions rather than color alone.
-- V1 owns a self-contained dark surface suitable for GitHub light/dark surroundings.
+- V1 semantics were carried by labels, roles, and directions rather than color alone.
+- V1 owned a self-contained dark surface suitable for GitHub light/dark surroundings.
 - V2/V3 raw provenance uses synthetic identities/data and loopback state.
-- Step 5A technical semantics and evidence classes are unchanged.
-- `MQTTSuite/README.md` is not part of this Step 5B repository closure.
+- Step 5A technical semantics and evidence classes were unchanged at that time.
+- `MQTTSuite/README.md` was not part of that Step 5B repository closure.
 
-## Human gate
+## Historical human gate
 
 **Human approval: APPROVED**
 
-The complete six-asset Step 5B visual set was explicitly approved by the human reviewer on 30 August 2026. Step 6 may proceed from this repository state.
+The complete six-asset Step 5B visual set was explicitly approved by the human reviewer on 30 August 2026. That approval records the historical V1/V2/V3 production and does not waive the current TikZ repair, regeneration, source-alignment, or publication gates.
