@@ -4,25 +4,41 @@
 \input{mqttsystem-figure-system.tex}
 \begin{document}
 \begin{tikzpicture}[mqtt mobile]
-\tikzset{wide/.style={minimum width=74mm,text width=67mm}}
+\tikzset{wide/.style={minimum width=72mm,text width=64mm}}
+
 \node[mqtt config,wide] (root) {definition root — \texttt{bridges[]}};
-\node[mqtt config,wide,below=\MQGapS of root] (bridge) {logical bridge: \texttt{name}, \texttt{disabled}, \texttt{prefix}, \texttt{brokers[]}};
-\node[mqtt config,wide,below=\MQGapS of bridge] (member) {broker member: \texttt{network}, \texttt{disabled}, \texttt{prefix}, \texttt{session\_store}, \texttt{topics[]}};
-\node[mqtt annotation,below=\MQGapM of member] (contains) {broker member contains:};
-\node[mqtt process,wide,below=\MQGapS of contains] (network) {network: instance + protocol / address\\+ transport + encryption};
-\node[mqtt process,wide,below=\MQGapS of network] (mqtt) {MQTT session: client id / keep alive / clean session\\+ will + credentials + loop prevention};
-\node[mqtt process,wide,below=\MQGapS of mqtt] (topics) {topics: MQTT filter + subscription QoS};
-\draw[mqtt flow] (root.south) -- (bridge.north);
-\draw[mqtt flow] (bridge.south) -- (member.north);
-\coordinate (bus-top) at ($(network.west)+(-4mm,0)$);
-\coordinate (bus-bottom) at ($(topics.west)+(-4mm,0)$);
-\draw[mqtt association] (member.west) -| (bus-top) -- (bus-bottom);
-\draw[mqtt association] (bus-top) -- (network.west);
-\draw[mqtt association] ($(mqtt.west)+(-4mm,0)$) -- (mqtt.west);
-\draw[mqtt association] (bus-bottom) -- (topics.west);
+\node[mqtt config,wide,below=\MQGapS of root] (bridge)
+  {logical bridge: \texttt{name}, \texttt{disabled}, \texttt{prefix}, \texttt{brokers[]}};
+\node[mqtt config,wide,below=\MQGapS of bridge] (member)
+  {broker member: \texttt{network}, \texttt{disabled}, \texttt{prefix}, \texttt{session\_store}, \texttt{topics[]}};
+\draw[mqtt contains] (root.south) -- (bridge.north);
+\draw[mqtt contains] (bridge.south) -- (member.north);
+
+\node[mqtt annotation,below=\MQGapM of member] (contains) {member-owned objects:};
+\node[mqtt process,wide,below=\MQGapS of contains] (network)
+  {network: instance + protocol / address + transport + encryption};
+\node[mqtt process,wide,below=\MQGapS of network] (mqtt)
+  {MQTT session: client id / keep alive / clean session + will + credentials + loop prevention};
+\node[mqtt process,wide,below=\MQGapS of mqtt] (topics)
+  {topics: MQTT filter + subscription QoS};
+
+\coordinate (bus-top) at ($(network.west)+(-7mm,0)$);
+\coordinate (bus-mid) at ($(mqtt.west)+(-7mm,0)$);
+\coordinate (bus-bottom) at ($(topics.west)+(-7mm,0)$);
+\draw[mqtt contains] (bus-top) -- (bus-bottom);
+\draw[mqtt contains] (member.west) -- ++(-7mm,0) |- (bus-mid);
+\draw[mqtt contains] (bus-top) -- (network.west);
+\draw[mqtt contains] (bus-mid) -- (mqtt.west);
+\draw[mqtt contains] (bus-bottom) -- (topics.west);
+
+\node[mqtt note,wide,below=\MQGapM of topics] (note)
+  {Prefix and session-store path are peer member fields. Prefix separators are literal configuration, not inserted automatically.};
+
 \begin{pgfonlayer}{background}
-  \node[mqtt lane,fit=(root)(bridge)(member)(contains)(network)(mqtt)(topics)] (frame) {};
+  \node[mqtt figure frame,fit=(root)(bridge)(member)(contains)(network)(mqtt)(topics)(note)] (frame) {};
 \end{pgfonlayer}
-\node[mqtt section title] at ($(frame.north west)+(\MQTitleGap,-\MQTitleGap)$) {Bridge-definition hierarchy};
+\node[mqtt section title] at ($(frame.north west)+(\MQTitleGap,-\MQTitleGap)$)
+  {Bridge-definition hierarchy};
+
 \end{tikzpicture}
 \end{document}
