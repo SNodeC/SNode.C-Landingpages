@@ -1,0 +1,27 @@
+\documentclass[tikz,border=8pt]{standalone}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\input{mqttsystem-figure-system.tex}
+\begin{document}
+\begin{tikzpicture}[mqtt mobile]
+\tikzset{wide/.style={minimum width=74mm,text width=67mm}}
+\node[mqtt external,wide] (brokerin) {Broker delivers matching PUBLISH};
+\node[mqtt application,wide,below=\MQGapS of brokerin] (client) {MQTTIntegrator MQTT client connection};
+\node[mqtt control,wide,below=\MQGapS of client] (tree) {topic-tree match — literal / \texttt{+} / terminal \texttt{\#}};
+\node[mqtt note,wide,below=\MQGapS of tree] (subqos) {mapping-derived SUBSCRIBE uses \texttt{subscription.qos}};
+\node[mqtt control,wide,below=\MQGapM of subqos] (rules) {static / value / JSON mapping rules};
+\node[mqtt process,wide,below=\MQGapS of rules] (outputs) {zero / one / many immediate or scheduled\\outputs with their own QoS + retain};
+\node[mqtt success,wide,below=\MQGapS of outputs] (brokerout) {mapped PUBLISH returns through the same MQTT client connection};
+\draw[mqtt data flow] (brokerin.south) -- (client.north);
+\draw[mqtt data flow] (client.south) -- (tree.north);
+\draw[mqtt association] (tree.south) -- (subqos.north);
+\draw[mqtt control flow] (subqos.south) -- (rules.north);
+\draw[mqtt control flow] (rules.south) -- (outputs.north);
+\draw[mqtt data flow] (outputs.south) -- (brokerout.north);
+\draw[mqtt data flow] (brokerout.east) -| ([xshift=4mm]client.east) -- (client.east);
+\begin{pgfonlayer}{background}
+  \node[mqtt lane,fit=(brokerin)(client)(tree)(subqos)(rules)(outputs)(brokerout)] (frame) {};
+\end{pgfonlayer}
+\node[mqtt section title] at ($(frame.north west)+(\MQTitleGap,-\MQTitleGap)$) {Integrator pipeline};
+\end{tikzpicture}
+\end{document}
