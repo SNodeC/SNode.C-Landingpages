@@ -101,6 +101,42 @@ acde6dc51a2020417daa67cc7381ff0b67e9dfde230c89bcfb29b8fa9e613dff  subscriber-raw
 d33a42fd2f9c07743894a96bfa06d28534093cea5c0d5bdf757d8e214d8114cb  publisher-raw.png
 ```
 
+## Publication composition
+
+The publication composition is reproducible from the three raw captures above.
+It does not redraw, retype, filter, or reconstruct application output.
+
+Canonical composition sources:
+
+- raw product pixels: `broker-raw.png`, `subscriber-raw.png`, and
+  `publisher-raw.png`;
+- reproducible compositor: `compose.py`;
+- Figma layout specification in `MQTTSuite Publication Visuals`:
+  - desktop frame `183:2`;
+  - mobile frame `183:36`.
+
+The compositor may crop and scale the real captured terminal pixels and may add
+only external framing, headings, evidence notes, and explanatory connectors.
+It intentionally separates two relationships that must not be conflated:
+
+1. setup order: **Broker -> Subscriber -> Publisher**;
+2. MQTT delivery: **Publisher -> Broker -> Subscriber**.
+
+Regenerate the publication PNGs from the repository root with:
+
+```sh
+python3 MQTTSuite/assets/src/first-success/compose.py
+```
+
+Outputs:
+
+- `MQTTSuite/assets/first-success-terminal.png`;
+- `MQTTSuite/assets/first-success-terminal-mobile.png`.
+
+The repository figure-validation workflow runs this compositor before packaging
+review artifacts, so the reviewed runtime-evidence PNGs are generated from the
+same canonical source captures and composition code that publication uses.
+
 ## Teardown and privacy review
 
 Teardown order was publisher, subscriber, then broker. All received the normal
