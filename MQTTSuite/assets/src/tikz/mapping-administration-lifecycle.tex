@@ -4,42 +4,59 @@
 \input{mqttsystem-figure-system.tex}
 \begin{document}
 \begin{tikzpicture}[mqtt desktop]
-\tikzset{box/.style={mqtt process,minimum width=42mm,text width=38mm}}
+\tikzset{
+  box/.style={mqtt process,minimum width=42mm,text width=37mm},
+  smallbox/.style={mqtt process,minimum width=39mm,text width=34mm}
+}
 
 \node[mqtt state,box] (active) {active mapping};
-\node[mqtt control,box,right=\MQHorizontalGap of active] (draft)
+\node[mqtt control,box,right=\MQHorizontalGap of active] (edit)
   {PATCH / POST \texttt{/config}\\create / replace draft};
+\node[mqtt config,box,right=\MQHorizontalGap of edit] (draft) {draft mapping};
 \node[mqtt control,box,right=\MQHorizontalGap of draft] (deploy)
-  {POST \texttt{/config/deploy}};
-\node[mqtt success,box,right=\MQHorizontalGap of deploy] (apply)
-  {\texttt{setMapping()}\\persist active mapping};
-\draw[mqtt flow] (active.east) -- (draft.west);
-\draw[mqtt flow] (draft.east) -- (deploy.west);
-\draw[mqtt flow] (deploy.east) -- (apply.west);
+  {POST \texttt{/config/deploy}\\deploy draft};
+\draw[mqtt control flow] (active.east) -- (edit.west);
+\draw[mqtt control flow] (edit.east) -- (draft.west);
+\draw[mqtt control flow] (draft.east) -- (deploy.west);
+
 \node[mqtt note,minimum width=50mm,text width=45mm,below=\MQGapS of draft] (validate)
-  {Optional preflight validation; deploy also validates/applies the mapping.};
+  {Optional validation preflight; deployment validates through \texttt{setMapping()} before runtime reload.};
 \draw[mqtt association] (draft.south) -- (validate.north);
 
-\node[mqtt decision,minimum width=35mm,below=30mm of apply] (change) {connection\\object changed?};
-\node[mqtt success,minimum width=42mm,text width=37mm,left=\MQHorizontalGap of change,yshift=14mm] (hot)
-  {NO: hot reload\\subscription delta};
-\node[mqtt control,minimum width=42mm,text width=37mm,left=\MQHorizontalGap of change,yshift=-14mm] (reconnect)
-  {YES: reconnect\\send DISCONNECT};
-\draw[mqtt flow] (apply.south) -- (change.north);
-\draw[mqtt flow] (change.west) |- (hot.east);
-\draw[mqtt flow] (change.west) |- (reconnect.east);
+\node[mqtt config,smallbox,below=\MQGapL of deploy] (backup)
+  {backup prior active file\\into local version history};
+\node[mqtt process,box,left=\MQHorizontalGap of backup] (apply)
+  {\texttt{setMapping()}\\attempt active-file persistence};
+\node[mqtt decision,minimum width=35mm,left=\MQHorizontalGap of apply] (change)
+  {connection\\object changed?};
+\draw[mqtt control flow] (deploy.south) -- (backup.north);
+\draw[mqtt control flow] (backup.west) -- (apply.east);
+\draw[mqtt control flow] (apply.west) -- (change.east);
 
-\node[mqtt config,minimum width=48mm,text width=43mm,below=68mm of apply] (history)
-  {deployed-version history\\prior versions retained locally};
-\node[mqtt control,minimum width=48mm,text width=43mm,left=\MQHorizontalGap of history] (rollback)
-  {POST \texttt{/config/rollback}\\restore + apply selected version};
-\draw[mqtt association] (apply.east) -- ++(5mm,0) |- (history.east);
-\draw[mqtt flow] (history.west) -- (rollback.east);
-\draw[mqtt dependency] (rollback.north) -- node[mqtt edge label,right]{same reload decision} (change.south);
+\node[mqtt process,smallbox,left=\MQHorizontalGap of change,yshift=14mm] (hot)
+  {NO: update subscription delta};
+\node[mqtt control,smallbox,left=\MQHorizontalGap of change,yshift=-14mm] (reconnect)
+  {YES: reconnect\\send DISCONNECT};
+\draw[mqtt control flow] \MQPortWest{change}{.68} -- ++(-8mm,0) |- node[mqtt branch label,near end,above]{NO} (hot.east);
+\draw[mqtt control flow] \MQPortWest{change}{.32} -- ++(-8mm,0) |- node[mqtt branch label,near end,below]{YES} (reconnect.east);
+
+\node[mqtt warning,minimum width=58mm,text width=52mm,below=\MQGapM of apply] (persist)
+  {Persistence is attempted, but the current deploy/rollback handlers do not use its return value as the HTTP-success gate.};
+\draw[mqtt association] (apply.south) -- (persist.north);
+
+\node[mqtt config,minimum width=49mm,text width=44mm,below=\MQGapM of backup] (history)
+  {local deployed-version history\\prior active files};
+\draw[mqtt association] (backup.south) -- (history.north);
+\node[mqtt control,minimum width=49mm,text width=44mm,left=\MQHorizontalGap of history] (rollback)
+  {Later optional POST \texttt{/config/rollback}\\restore selected retained version};
+\draw[mqtt control flow] (history.west) -- (rollback.east);
+\draw[mqtt dependency] (rollback.north) -- ++(0,8mm) -| node[mqtt edge label,near end,above]{same setMapping / persist / reload path} \MQPortSouth{apply}{.25};
 
 \begin{pgfonlayer}{background}
-  \node[mqtt lane,fit=(active)(draft)(deploy)(apply)(validate)(change)(hot)(reconnect)(history)(rollback)] (frame) {};
+  \node[mqtt figure frame,fit=(active)(edit)(draft)(deploy)(validate)(backup)(apply)(change)(hot)(reconnect)(persist)(history)(rollback)] (frame) {};
 \end{pgfonlayer}
-\node[mqtt section title] at ($(frame.north west)+(\MQTitleGap,-\MQTitleGap)$) {Mapping administration lifecycle};
+\node[mqtt section title] at ($(frame.north west)+(\MQTitleGap,-\MQTitleGap)$)
+  {Mapping administration lifecycle};
+
 \end{tikzpicture}
 \end{document}
