@@ -4,31 +4,59 @@
 \input{mqttsystem-figure-system.tex}
 \begin{document}
 \begin{tikzpicture}[mqtt desktop]
-\tikzset{box/.style={mqtt process,minimum width=40mm,text width=36mm}}
-\node[mqtt data,box] (publish) {MQTT PUBLISH\\topic + payload\\+ metadata};
-\node[mqtt database,minimum width=42mm,right=\MQHorizontalGap of publish] (raw) {raw MQTT row\\always attempted};
-\draw[mqtt data flow] (publish.east) -- (raw.west);
+\tikzset{box/.style={mqtt process,minimum width=42mm,text width=37mm}}
 
-\node[mqtt decision,minimum width=34mm,right=\MQHorizontalGapLoose of raw] (json) {valid JSON\\+ topic match?};
-\draw[mqtt flow] (raw.east) -- (json.west);
+\node[mqtt data,box] (publish) {MQTT PUBLISH\\topic + payload + metadata};
+\node[mqtt control,box,right=\MQHorizontalGap of publish] (store)
+  {MQTTStore\\receive / store step};
+\draw[mqtt data flow] (publish.east) -- (store.west);
 
-\node[mqtt config,box,right=\MQHorizontalGap of json,yshift=22mm] (topic) {\texttt{topic\_level}\\one topic segment};
-\node[mqtt config,box,right=\MQHorizontalGap of json] (pointer) {\texttt{json\_pointer}\\value from parsed JSON};
-\node[mqtt config,box,right=\MQHorizontalGap of json,yshift=-22mm] (literal) {\texttt{literal}\\configured constant};
+\node[mqtt database,minimum width=44mm,right=32mm of store,yshift=20mm] (raw)
+  {raw-table INSERT attempt\\independent outcome};
+\node[mqtt decision,minimum width=34mm,right=32mm of store,yshift=-20mm] (eligible)
+  {valid JSON\\+ topic match?};
+\draw[mqtt data flow] \MQPortEast{store}{.70} -- ++(8mm,0) |- (raw.west);
+\draw[mqtt control flow] \MQPortEast{store}{.30} -- ++(8mm,0) |- (eligible.west);
 
-\node[mqtt database,minimum width=45mm,right=\MQHorizontalGap of pointer] (typed) {typed projection row\\matching projection only};
-\draw[mqtt flow] (json.east) -- node[mqtt branch label,above]{YES} (pointer.west);
-\draw[mqtt association] (json.east) |- (topic.west);
-\draw[mqtt association] (json.east) |- (literal.west);
-\draw[mqtt data flow] (topic.east) -- (typed.west);
-\draw[mqtt data flow] (pointer.east) -- (typed.west);
-\draw[mqtt data flow] (literal.east) -- (typed.west);
+\node[mqtt config,box,right=34mm of eligible,yshift=24mm] (topic)
+  {\texttt{topic\_level}\\one topic segment};
+\node[mqtt config,box,right=34mm of eligible] (pointer)
+  {\texttt{json\_pointer}\\value from parsed JSON};
+\node[mqtt config,box,right=34mm of eligible,yshift=-24mm] (literal)
+  {\texttt{literal}\\configured constant};
 
-\node[mqtt note,minimum width=72mm,text width=66mm,below=22mm of raw,xshift=18mm] (note)
- {Raw storage and projection writes are independent.\\Invalid JSON or a nonmatching topic produces no typed projection insert.};
+\coordinate (source-top) at ($(topic.west)+(-8mm,0)$);
+\coordinate (source-mid) at ($(pointer.west)+(-8mm,0)$);
+\coordinate (source-bottom) at ($(literal.west)+(-8mm,0)$);
+\draw[mqtt association] (source-top) -- (source-bottom);
+\draw[mqtt control flow] (eligible.east) -- node[mqtt branch label,above]{YES} (source-mid);
+\draw[mqtt association] (source-top) -- (topic.west);
+\draw[mqtt association] (source-mid) -- (pointer.west);
+\draw[mqtt association] (source-bottom) -- (literal.west);
+
+\node[mqtt database,minimum width=48mm,right=34mm of pointer] (typed)
+  {typed projection INSERT attempt(s)\\for the matching projection};
+\coordinate (out-top) at ($(topic.east)+(8mm,0)$);
+\coordinate (out-mid) at ($(pointer.east)+(8mm,0)$);
+\coordinate (out-bottom) at ($(literal.east)+(8mm,0)$);
+\draw[mqtt association] (topic.east) -- (out-top);
+\draw[mqtt association] (pointer.east) -- (out-mid);
+\draw[mqtt association] (literal.east) -- (out-bottom);
+\draw[mqtt association] (out-top) -- (out-bottom);
+\draw[mqtt data flow] (out-mid) -- (typed.west);
+
+\node[mqtt note,minimum width=46mm,text width=41mm,below=\MQGapM of eligible] (no)
+  {NO: no typed projection insert};
+\draw[mqtt association] (eligible.south) -- node[mqtt branch label,right]{NO} (no.north);
+
+\node[mqtt note,minimum width=72mm,text width=66mm,below=\MQGapM of raw,xshift=50mm] (note)
+  {Raw persistence and projection processing are independent. Invalid JSON or a nonmatching topic produces no typed projection insert.};
+
 \begin{pgfonlayer}{background}
-  \node[mqtt lane,fit=(publish)(raw)(json)(topic)(pointer)(literal)(typed)(note)] (frame) {};
+  \node[mqtt figure frame,fit=(publish)(store)(raw)(eligible)(topic)(pointer)(literal)(typed)(no)(note)] (frame) {};
 \end{pgfonlayer}
-\node[mqtt section title] at ($(frame.north west)+(\MQTitleGap,-\MQTitleGap)$) {JSON/topic projection extraction};
+\node[mqtt section title] at ($(frame.north west)+(\MQTitleGap,-\MQTitleGap)$)
+  {JSON/topic projection extraction};
+
 \end{tikzpicture}
 \end{document}
