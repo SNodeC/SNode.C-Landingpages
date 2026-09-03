@@ -5,6 +5,7 @@
 \begin{document}
 \begin{tikzpicture}[mqtt desktop]
 \tikzset{token/.style={mqtt config,minimum width=38mm,text width=34mm}}
+
 \node[token] (bridge) {bridge prefix\\\texttt{bridge/}};
 \node[token,right=\MQHorizontalGap of bridge] (source) {source-member prefix\\\texttt{from-a/}};
 \node[token,right=\MQHorizontalGap of source] (dest) {destination prefix\\\texttt{to-b/}};
@@ -12,17 +13,22 @@
 \draw[mqtt flow] (bridge.east) -- node[mqtt edge label,above]{+} (source.west);
 \draw[mqtt flow] (source.east) -- node[mqtt edge label,above]{+} (dest.west);
 \draw[mqtt flow] (dest.east) -- node[mqtt edge label,above]{+} (topic.west);
+
 \coordinate (chainCenter) at ($(bridge.south)!0.5!(topic.south)$);
 \node[mqtt annotation,below=4mm of chainCenter] (combine) {concatenate left $\rightarrow$ right};
-\node[mqtt success,minimum width=82mm,text width=76mm,below=\MQGapS of combine] (result)
+\node[mqtt process,minimum width=82mm,text width=76mm,below=\MQGapS of combine] (result)
   {forwarded topic\\\texttt{bridge/from-a/to-b/a/temperature}};
 \draw[mqtt data flow] (combine.south) -- (result.north);
+
 \node[mqtt note,minimum width=82mm,text width=76mm,below=\MQGapS of result] (meta)
   {Payload, received QoS, and retain are preserved. Prefixes are literal concatenation; include separators such as \texttt{/} deliberately.};
 \draw[mqtt association] (result.south) -- (meta.north);
+
 \begin{pgfonlayer}{background}
-  \node[mqtt lane,fit=(bridge)(source)(dest)(topic)(result)(meta)] (frame) {};
+  \node[mqtt figure frame,fit=(bridge)(source)(dest)(topic)(result)(meta)] (frame) {};
 \end{pgfonlayer}
-\node[mqtt section title] at ($(frame.north west)+(\MQTitleGap,-\MQTitleGap)$) {Exact forwarding-topic construction};
+\node[mqtt section title] at ($(frame.north west)+(\MQTitleGap,-\MQTitleGap)$)
+  {Exact forwarding-topic construction};
+
 \end{tikzpicture}
 \end{document}
