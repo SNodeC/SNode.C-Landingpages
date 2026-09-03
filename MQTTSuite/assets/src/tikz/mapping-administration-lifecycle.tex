@@ -23,7 +23,7 @@
   {Optional validation preflight; deployment validates through \texttt{setMapping()} before runtime reload.};
 \draw[mqtt association] (draft.south) -- (validate.north);
 
-\node[mqtt config,smallbox,below=\MQGapL of deploy] (backup)
+\node[mqtt config,smallbox,below=\MQLaneGap of deploy] (backup)
   {backup prior active file\\into local version history};
 \node[mqtt process,box,left=\MQHorizontalGap of backup] (apply)
   {\texttt{setMapping()}\\attempt active-file persistence};
@@ -47,10 +47,9 @@
 \node[mqtt config,minimum width=49mm,text width=44mm,below=\MQGapM of backup] (history)
   {local deployed-version history\\prior active files};
 \draw[mqtt association] (backup.south) -- (history.north);
-\node[mqtt control,minimum width=49mm,text width=44mm,left=\MQHorizontalGap of history] (rollback)
-  {Later optional POST \texttt{/config/rollback}\\restore selected retained version};
-\draw[mqtt control flow] (history.west) -- (rollback.east);
-\draw[mqtt dependency] (rollback.north) -- ++(0,8mm) -| node[mqtt edge label,near end,above]{same setMapping / persist / reload path} \MQPortSouth{apply}{.25};
+\node[mqtt control,minimum width=49mm,text width=44mm,below=\MQGapS of history] (rollback)
+  {Later optional POST \texttt{/config/rollback}\\restore selected retained version\\then use the same setMapping / persistence-attempt / reload path};
+\draw[mqtt control flow] (history.south) -- (rollback.north);
 
 \begin{pgfonlayer}{background}
   \node[mqtt figure frame,fit=(active)(edit)(draft)(deploy)(validate)(backup)(apply)(change)(hot)(reconnect)(persist)(history)(rollback)] (frame) {};
