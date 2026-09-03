@@ -115,6 +115,7 @@ foreach(TIKZ_SOURCE_REL IN LISTS TIKZ_TEX_SOURCES)
             "${TIKZ_SOURCE_ABS}"
         COMMAND
             "${INKSCAPE_EXECUTABLE}"
+            --pdf-font-strategy=keep
             "${TIKZ_PDF}"
             --export-type=svg
             --export-filename=${TIKZ_OUTPUT}
