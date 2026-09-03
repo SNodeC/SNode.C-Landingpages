@@ -34,6 +34,7 @@ project(SNodeCLandingpagesFigures NONE)
 
 find_program(PDFLATEX_EXECUTABLE NAMES pdflatex REQUIRED)
 find_program(INKSCAPE_EXECUTABLE NAMES inkscape REQUIRED)
+find_program(SCOUR_EXECUTABLE NAMES scour REQUIRED)
 
 file(
     GLOB_RECURSE TIKZ_TEX_SOURCES
@@ -93,6 +94,8 @@ foreach(TIKZ_SOURCE_REL IN LISTS TIKZ_TEX_SOURCES)
         "${CMAKE_BINARY_DIR}/tikz/${TIKZ_WORK_ID}")
     set(TIKZ_PDF
         "${TIKZ_WORK_DIR}/${TIKZ_STEM}.pdf")
+    set(TIKZ_RAW_SVG
+        "${TIKZ_WORK_DIR}/${TIKZ_STEM}-raw.svg")
 
     # Any .tex file next to the figure can be a shared input (notably the
     # canonical *-figure-system.tex). Depending on all sibling .tex files keeps
@@ -118,7 +121,20 @@ foreach(TIKZ_SOURCE_REL IN LISTS TIKZ_TEX_SOURCES)
             --pdf-font-strategy=keep
             "${TIKZ_PDF}"
             --export-type=svg
-            --export-filename=${TIKZ_OUTPUT}
+            --export-filename=${TIKZ_RAW_SVG}
+        COMMAND
+            "${SCOUR_EXECUTABLE}"
+            -i "${TIKZ_RAW_SVG}"
+            -o "${TIKZ_OUTPUT}"
+            --enable-viewboxing
+            --enable-id-stripping
+            --enable-comment-stripping
+            --shorten-ids
+            --strip-xml-prolog
+            --remove-descriptive-elements
+            --indent=none
+            --set-precision=3
+            --set-c-precision=3
         DEPENDS
             "${TIKZ_SOURCE_ABS}"
             ${TIKZ_LOCAL_TEX_DEPENDENCIES}
