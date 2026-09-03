@@ -1,0 +1,108 @@
+\documentclass[tikz,border=8pt]{standalone}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\input{mqttsystem-figure-system.tex}
+
+\begin{document}
+\begin{tikzpicture}[mqtt mobile]
+\tikzset{
+  wide/.style={minimum width=72mm,text width=64mm},
+  half/.style={minimum width=32mm,text width=27mm}
+}
+
+% ---------------------------------------------------------------------------
+% HTTP administration
+% ---------------------------------------------------------------------------
+
+\node[mqtt process,wide] (h0) {Operator};
+\node[mqtt process,wide,below=\MQGapS of h0] (h1)
+  {PATCH \texttt{/api/bridge/config}};
+\node[mqtt decision,below=\MQGapM of h1] (h2)
+  {restart\\already active?};
+\node[mqtt error,half,below=\MQBranchGap of h2,xshift=-20mm] (h409)
+  {YES\\HTTP 409\\patch not applied};
+\node[mqtt control,half,below=\MQBranchGap of h2,xshift=20mm] (h3)
+  {NO\\patch + validate\\stage definition};
+\draw[mqtt flow] (h0.south) -- (h1.north);
+\draw[mqtt flow] (h1.south) -- (h2.north);
+\draw[mqtt flow] \MQPortSouth{h2}{.30} -- ++(0,-6mm) -| (h409.north);
+\draw[mqtt flow] \MQPortSouth{h2}{.70} -- ++(0,-6mm) -| (h3.north);
+
+\node[mqtt error,half,below=\MQGapS of h409] (hbad)
+  {failure\\HTTP 400 / 404};
+\node[mqtt success,half,below=\MQGapS of h3] (h200)
+  {success\\HTTP 200\\patch accepted};
+\draw[mqtt flow] \MQPortSouth{h3}{.30} -- ++(0,-6mm) -| (hbad.north);
+\draw[mqtt flow] \MQPortSouth{h3}{.70} -- ++(0,-6mm) -| (h200.north);
+\node[mqtt note,wide,below=\MQGapM of $(hbad.south)!0.5!(h200.south)$] (hack)
+  {400: request attribute missing; 404: patch / validation failed. The successful response is sent before close/restart processing.};
+
+% ---------------------------------------------------------------------------
+% Runtime restart lifecycle
+% ---------------------------------------------------------------------------
+
+\node[mqtt control,wide,below=\MQMobileLaneGap of hack] (r0)
+  {\texttt{closeBridges()}\\mark restart; when flows exist emit stopping events, send DISCONNECT, terminate flows};
+\node[mqtt decision,below=\MQGapM of r0] (r1)
+  {active flows\\remain?};
+\node[mqtt note,half,below=\MQBranchGap of r1,xshift=-20mm] (wait)
+  {YES\\wait for final flow-completion callback};
+\node[mqtt process,half,below=\MQBranchGap of r1,xshift=20mm] (immediate)
+  {NO\\continue immediately};
+\node[mqtt control,wide,below=\MQGapM of $(wait.south)!0.5!(immediate.south)$] (r2)
+  {\texttt{restartBridges()} resumes restart};
+\draw[mqtt control flow] (r0.south) -- (r1.north);
+\draw[mqtt control flow] \MQPortSouth{r1}{.30} -- ++(0,-6mm) -| (wait.north);
+\draw[mqtt control flow] \MQPortSouth{r1}{.70} -- ++(0,-6mm) -| (immediate.north);
+\draw[mqtt control flow] (wait.south) -- ++(0,-6mm) -| \MQPortNorth{r2}{.30};
+\draw[mqtt control flow] (immediate.south) -- ++(0,-6mm) -| \MQPortNorth{r2}{.70};
+
+\node[mqtt control,wide,below=\MQGapS of r2] (r3)
+  {\texttt{activateStaged()}\\attempt active-definition write + rebuild logical bridges};
+\node[mqtt control,wide,below=\MQGapS of r3] (r4)
+  {\texttt{startBridges()}\\\texttt{bridges\_starting}; create/connect enabled clients};
+\draw[mqtt control flow] (r2.south) -- (r3.north);
+\draw[mqtt control flow] (r3.south) -- (r4.north);
+\draw[mqtt handoff] (h200.south) -- ++(0,8mm) -| ($(hack.east)+(8mm,0)$) |- node[mqtt edge label,near end,right,text=MQCrossLane]{restart processing after response} \MQPortEast{r0}{.70};
+
+% ---------------------------------------------------------------------------
+% SSE observation
+% ---------------------------------------------------------------------------
+
+\node[mqtt process,wide,below=\MQMobileLaneGap of r4] (s0)
+  {when active flows exist:\\\texttt{bridges\_stopping}, \texttt{bridge\_stopping}, \texttt{broker\_disconnecting}};
+\node[mqtt process,wide,below=\MQGapS of s0] (s1)
+  {at \texttt{startBridges()}: \texttt{bridges\_starting} clears the replay buffer};
+\node[mqtt process,wide,below=\MQGapS of s1] (s2)
+  {startup / settlement events: bridge start, broker connect/disabled, connected/started};
+\node[mqtt external,wide,below=\MQGapS of s2] (observer) {SSE observer};
+\draw[mqtt observation] (s0.south) -- (s1.north);
+\draw[mqtt observation] (s1.south) -- (s2.north);
+\draw[mqtt observation] (s2.south) -- (observer.north);
+
+\draw[mqtt observation] (r0.east) -- ++(8mm,0) |- \MQPortEast{s0}{.70};
+\draw[mqtt observation] (r4.east) -- ++(12mm,0) |- \MQPortEast{s1}{.70};
+
+\node[mqtt note,wide,below=\MQGapM of observer] (replay)
+  {Replay retains events since the current \texttt{bridges\_starting} boundary; preceding stopping events are cleared there. \texttt{Last-Event-ID} is ignored. SSE keep-alive: 39 s.};
+
+% ---------------------------------------------------------------------------
+% Frame + transparent semantic lanes
+% ---------------------------------------------------------------------------
+
+\begin{pgfonlayer}{background}
+  \node[mqtt figure frame,fit=(h0)(h1)(h2)(h409)(h3)(hbad)(h200)(hack)(r0)(r1)(wait)(immediate)(r2)(r3)(r4)(s0)(s1)(s2)(observer)(replay)] (frame) {};
+  \node[mqtt lane,fit=(h0)(h1)(h2)(h409)(h3)(hbad)(h200)(hack)] (lane-http) {};
+  \node[mqtt lane,fit=(r0)(r1)(wait)(immediate)(r2)(r3)(r4)] (lane-runtime) {};
+  \node[mqtt lane,fit=(s0)(s1)(s2)(observer)(replay)] (lane-sse) {};
+\end{pgfonlayer}
+
+\node[mqtt section title] at ($(lane-http.north west)+(\MQTitleGap,-\MQTitleGap)$)
+  {HTTP administration};
+\node[mqtt section title] at ($(lane-runtime.north west)+(\MQTitleGap,-\MQTitleGap)$)
+  {Runtime restart};
+\node[mqtt section title] at ($(lane-sse.north west)+(\MQTitleGap,-\MQTitleGap)$)
+  {SSE observation};
+
+\end{tikzpicture}
+\end{document}
