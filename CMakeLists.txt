@@ -86,29 +86,34 @@ foreach(TIKZ_SOURCE_REL IN LISTS TIKZ_TEX_SOURCES)
         )
     endif()
 
-    # Give each source its own temporary TeX build directory so auxiliary and
-    # PDF files never collide, even when figures build in parallel.
+    # Give each source its own temporary TeX/Inkscape directory so auxiliary
+    # files and Inkscape preferences never collide when figures build in
+    # parallel.
     string(MAKE_C_IDENTIFIER
         "${TIKZ_PROJECT}_${TIKZ_FIGURE_SUBPATH}" TIKZ_WORK_ID)
     set(TIKZ_WORK_DIR
         "${CMAKE_BINARY_DIR}/tikz/${TIKZ_WORK_ID}")
+    set(TIKZ_INKSCAPE_PROFILE_DIR
+        "${TIKZ_WORK_DIR}/inkscape-profile")
     set(TIKZ_PDF
         "${TIKZ_WORK_DIR}/${TIKZ_STEM}.pdf")
     set(TIKZ_RAW_SVG
         "${TIKZ_WORK_DIR}/${TIKZ_STEM}-raw.svg")
 
-    # Any .tex file next to the figure can be a shared input (notably the
-    # canonical *-figure-system.tex). Depending on all sibling .tex files keeps
-    # style changes reproducible without hard-coding a particular system name.
+    # A concrete figure depends on itself and on shared visual-system files in
+    # the same source directory. Do not depend on unrelated sibling figures:
+    # editing one figure must not rebuild the complete family.
     file(
-        GLOB TIKZ_LOCAL_TEX_DEPENDENCIES
+        GLOB TIKZ_LOCAL_SYSTEM_DEPENDENCIES
         CONFIGURE_DEPENDS
-        "${TIKZ_SOURCE_DIR}/*.tex"
+        "${TIKZ_SOURCE_DIR}/*-figure-system.tex"
     )
 
     add_custom_command(
         OUTPUT "${TIKZ_OUTPUT}"
+        BYPRODUCTS "${TIKZ_PDF}" "${TIKZ_RAW_SVG}"
         COMMAND "${CMAKE_COMMAND}" -E make_directory "${TIKZ_WORK_DIR}"
+        COMMAND "${CMAKE_COMMAND}" -E make_directory "${TIKZ_INKSCAPE_PROFILE_DIR}"
         COMMAND
             "${PDFLATEX_EXECUTABLE}"
             -interaction=nonstopmode
@@ -116,14 +121,20 @@ foreach(TIKZ_SOURCE_REL IN LISTS TIKZ_TEX_SOURCES)
             -file-line-error
             -output-directory=${TIKZ_WORK_DIR}
             "${TIKZ_SOURCE_ABS}"
-        # Inkscape has a known Gio::DBus::Error race when independent CLI
-        # processes run concurrently. The figure build is intentionally
-        # parallel, so isolate CLI exports from the desktop session bus.
+        # Convert all text to paths during PDF -> SVG export. This is supported
+        # by older Inkscape releases (including Ubuntu 24.04's 1.2.2), keeps
+        # publication geometry independent of client-side font availability,
+        # and avoids the newer-version-only --pdf-font-strategy option.
+        #
+        # Inkscape has also shown a Gio::DBus::Error race when independent CLI
+        # processes run concurrently. Keep each invocation isolated from the
+        # desktop session bus and give it a private profile directory.
         COMMAND
             "${CMAKE_COMMAND}" -E env
-            "DBUS_SESSION_BUS_ADDRESS="
+            --unset=DBUS_SESSION_BUS_ADDRESS
+            "INKSCAPE_PROFILE_DIR=${TIKZ_INKSCAPE_PROFILE_DIR}"
             "${INKSCAPE_EXECUTABLE}"
-            --pdf-font-strategy=keep
+            --export-text-to-path
             "${TIKZ_PDF}"
             --export-type=svg
             --export-filename=${TIKZ_RAW_SVG}
@@ -136,13 +147,12 @@ foreach(TIKZ_SOURCE_REL IN LISTS TIKZ_TEX_SOURCES)
             --enable-comment-stripping
             --shorten-ids
             --strip-xml-prolog
-            --remove-descriptive-elements
             --indent=none
             --set-precision=3
             --set-c-precision=3
         DEPENDS
             "${TIKZ_SOURCE_ABS}"
-            ${TIKZ_LOCAL_TEX_DEPENDENCIES}
+            ${TIKZ_LOCAL_SYSTEM_DEPENDENCIES}
         WORKING_DIRECTORY "${TIKZ_SOURCE_DIR}"
         COMMENT "TikZ -> SVG: ${TIKZ_SOURCE_REL}"
         VERBATIM
