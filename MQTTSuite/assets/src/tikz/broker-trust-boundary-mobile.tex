@@ -14,7 +14,7 @@
 
 \node[mqtt external,wide,below=\MQMobileLaneGap of direct] (clients)
   {browser / HTTP or MQTT-WebSocket client};
-\node[mqtt control,wide,below=12mm of clients] (router)
+\node[mqtt control,wide,below=\MQMobileLaneGap of clients] (router)
   {shared HTTP / HTTPS listener + Express router};
 
 \node[mqtt data,half,below=\MQGapM of router,xshift=-19mm] (ws)
@@ -38,9 +38,9 @@
 \end{pgfonlayer}
 \node[mqtt section title] at ($(frame.north west)+(\MQTitleGap,-\MQTitleGap)$)
   {MQTTBroker exposure boundary};
-\node[mqtt annotation,anchor=south,text width=64mm,align=center,fill=MQSurface]
-  at ($(trust.north)+(0,1mm)$)
-  {required external / trusted deployment boundary\\not enforced by MQTTBroker};
+\node[mqtt annotation,anchor=south,text width=62mm,align=center,fill=MQSurface]
+  at ($(trust.north)+(0,4mm)$)
+  {required external / trusted deployment boundary — not enforced by MQTTBroker};
 
 \end{tikzpicture}
 \end{document}
