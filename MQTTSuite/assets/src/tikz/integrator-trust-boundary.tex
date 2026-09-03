@@ -4,31 +4,42 @@
 \input{mqttsystem-figure-system.tex}
 \begin{document}
 \begin{tikzpicture}[mqtt desktop]
-\tikzset{box/.style={mqtt process,minimum width=38mm,text width=34mm}}
+\tikzset{box/.style={mqtt process,minimum width=40mm,text width=35mm}}
 
 \node[mqtt external,box] (broker) {remote MQTT broker};
-\node[mqtt data,box,right=\MQHorizontalGap of broker] (client) {outbound MQTT client\\subscribe + republish};
-\node[mqtt application,box,right=\MQHorizontalGap of client] (core) {MQTTIntegrator\\MqttMapper};
-\draw[mqtt data flow] (broker.east) -- (client.west);
-\draw[mqtt data flow] (client.east) -- (core.west);
+\node[mqtt data,box,right=\MQHorizontalGapLoose of broker] (client)
+  {one outbound MQTT client connection};
+\node[mqtt application,box,right=\MQHorizontalGapLoose of client] (core)
+  {MQTTIntegrator\\\texttt{MqttMapper}};
 
-\node[mqtt external,minimum width=38mm,text width=34mm,right=18mm of core,yshift=18mm] (operator) {admin client};
-\node[mqtt control,minimum width=48mm,text width=43mm,below=\MQGapS of operator] (admin)
+\draw[mqtt data flow] \MQPortEast{broker}{.70} -- node[mqtt edge label,above]{subscribed PUBLISH} \MQPortWest{client}{.70};
+\draw[mqtt data flow] \MQPortEast{client}{.70} -- \MQPortWest{core}{.70};
+\draw[mqtt data flow] \MQPortWest{core}{.30} -- \MQPortEast{client}{.30};
+\draw[mqtt data flow] \MQPortWest{client}{.30} -- node[mqtt edge label,below]{mapped PUBLISH} \MQPortEast{broker}{.30};
+
+\node[mqtt external,minimum width=40mm,text width=35mm,right=20mm of core,yshift=20mm] (operator)
+  {admin client};
+\node[mqtt control,minimum width=52mm,text width=47mm,below=\MQGapS of operator] (admin)
   {HTTP / HTTPS admin\\schema + active/draft/history\\deploy + rollback};
-\node[mqtt warning,minimum width=60mm,text width=54mm,below=\MQGapS of admin] (auth)
-  {Basic Auth exists, but built-in defaults are\\fixed source-known \texttt{admin/admin}.};
-\node[mqtt note,minimum width=60mm,text width=54mm,below=\MQGapS of auth] (secret)
-  {Active mapping, draft, and history\\can contain MQTT credentials.\\HTTPS does not fix the credential policy.};
+\node[mqtt warning,minimum width=64mm,text width=58mm,below=\MQGapS of admin] (auth)
+  {Basic Auth exists, but built-in defaults are fixed source-known \texttt{admin/admin}.};
+\node[mqtt note,minimum width=64mm,text width=58mm,below=\MQGapS of auth] (secret)
+  {Active mapping, draft, and history can contain MQTT credentials. HTTPS protects transport but does not replace the fixed credential policy.};
 \draw[mqtt control flow] (operator.south) -- (admin.north);
-\draw[mqtt association] (core.east) -- (admin.west);
+\draw[mqtt association] (core.east) -- ++(8mm,0) |- (admin.west);
 \draw[mqtt association] (admin.south) -- (auth.north);
 \draw[mqtt association] (auth.south) -- (secret.north);
 
 \begin{pgfonlayer}{background}
-  \node[mqtt lane,fit=(broker)(client)(core)(operator)(admin)(auth)(secret)] (frame) {};
+  \node[mqtt figure frame,fit=(broker)(client)(core)(operator)(admin)(auth)(secret)] (frame) {};
   \node[mqtt trust boundary,fit=(operator)(admin)(auth)(secret)] (trust) {};
 \end{pgfonlayer}
-\node[mqtt section title] at ($(frame.north west)+(\MQTitleGap,-\MQTitleGap)$) {MQTTIntegrator administration trust boundary};
-\node[mqtt annotation,anchor=west,fill=MQSurface] at ($(trust.north west)+(\MQTitleGap,0)$) {trusted management boundary};
+\node[mqtt section title] at ($(frame.north west)+(\MQTitleGap,-\MQTitleGap)$)
+  {MQTTIntegrator administration exposure};
+\node[mqtt annotation,anchor=west,fill=MQSurface] at ($(trust.north west)+(\MQTitleGap,0)$)
+  {required external / trusted deployment boundary};
+\node[mqtt annotation,anchor=east,fill=MQSurface] at ($(trust.north east)+(-\MQTitleGap,0)$)
+  {Basic Auth is application-enforced; deployment trust is external};
+
 \end{tikzpicture}
 \end{document}
