@@ -5,30 +5,49 @@
 \begin{document}
 \begin{tikzpicture}[mqtt desktop]
 \tikzset{
-  branch/.style={mqtt process,minimum width=39mm,text width=35mm},
-  example/.style={mqtt note,minimum width=48mm,text width=44mm,align=left}
+  branch/.style={mqtt process,minimum width=40mm,text width=35mm},
+  example/.style={mqtt note,minimum width=55mm,text width=50mm,align=left}
 }
-\node[mqtt control,minimum width=38mm] (root) {topic level\\\texttt{devices}};
-\node[branch,right=\MQHorizontalGapLoose of root,yshift=25mm] (literal) {1. literal\\\texttt{room-01}};
-\node[branch,right=\MQHorizontalGapLoose of root,yshift=0mm] (plus) {2. single level\\\texttt{+}};
-\node[branch,right=\MQHorizontalGapLoose of root,yshift=-25mm] (hash) {3. terminal multi-level\\\texttt{\#}};
-\draw[mqtt flow] (root.east) -- (literal.west);
-\draw[mqtt flow] (root.east) -- (plus.west);
-\draw[mqtt flow] (root.east) -- (hash.west);
-\node[example,right=\MQHorizontalGapLoose of literal] (elit) {\texttt{devices/room-01}\\literal branch matches exact level};
-\node[example,right=\MQHorizontalGapLoose of plus] (eplus) {\texttt{devices/lab}\\\texttt{+} consumes exactly one level};
-\node[example,right=\MQHorizontalGapLoose of hash,yshift=10mm] (ehash) {\texttt{devices/lab/x}\\terminal \texttt{\#} consumes remaining levels};
-\node[example,right=\MQHorizontalGapLoose of hash,yshift=-15mm] (ezero) {\texttt{devices}\\child terminal \texttt{\#} can match\\zero remaining levels};
+
+\node[mqtt control,minimum width=39mm,text width=34mm] (root)
+  {one parent topic level\\\texttt{devices}};
+\node[branch,right=32mm of root,yshift=25mm] (literal)
+  {literal sibling\\\texttt{room-01}};
+\node[branch,right=32mm of root] (plus)
+  {single-level sibling\\\texttt{+}};
+\node[branch,right=32mm of root,yshift=-25mm] (hash)
+  {terminal multi-level sibling\\\texttt{\#}};
+
+\coordinate (literalbus) at ($(literal.west)+(-8mm,0)$);
+\coordinate (plusbus) at ($(plus.west)+(-8mm,0)$);
+\coordinate (hashbus) at ($(hash.west)+(-8mm,0)$);
+\draw[mqtt association] (literalbus) -- (hashbus);
+\draw[mqtt association] (root.east) -- (plusbus);
+\draw[mqtt flow] (literalbus) -- (literal.west);
+\draw[mqtt flow] (plusbus) -- (plus.west);
+\draw[mqtt flow] (hashbus) -- (hash.west);
+
+\node[example,right=\MQHorizontalGapLoose of literal] (elit)
+  {\texttt{devices/room-01}\\literal matches the exact level};
+\node[example,right=\MQHorizontalGapLoose of plus] (eplus)
+  {\texttt{devices/lab}\\\texttt{+} consumes exactly one level};
+\node[example,right=\MQHorizontalGapLoose of hash] (ehash)
+  {\texttt{devices/lab/x}: terminal \texttt{\#} consumes the remainder.\\
+   \texttt{devices}: a child terminal \texttt{\#} may match zero remaining levels when the matched parent has no subscription.};
 \draw[mqtt association] (literal.east) -- (elit.west);
 \draw[mqtt association] (plus.east) -- (eplus.west);
 \draw[mqtt association] (hash.east) -- (ehash.west);
-\draw[mqtt association] (hash.east) -- (ezero.west);
-\node[mqtt warning,minimum width=78mm,text width=72mm,below=15mm of ezero,xshift=-52mm] (order)
-  {Sibling arrays are evaluated in document order.\\The first sibling branch that returns a match wins; order specific branches before broader ones when they overlap.};
+
+\node[mqtt warning,minimum width=82mm,text width=76mm,below=\MQGapL of hash,xshift=24mm] (order)
+  {These are sibling alternatives, not a built-in precedence ladder. Sibling arrays are evaluated in document order; the first branch that returns a match wins.};
+
 \begin{pgfonlayer}{background}
-  \node[mqtt lane,fit=(root)(literal)(plus)(hash)(elit)(eplus)(ehash)(ezero)(order)] (frame) {};
+  \node[mqtt figure frame,fit=(root)(literal)(plus)(hash)(elit)(eplus)(ehash)(order)] (frame) {};
 \end{pgfonlayer}
-\node[mqtt section title] at ($(frame.north west)+(\MQTitleGap,-\MQTitleGap)$) {Topic-tree matching};
-\node[mqtt annotation,anchor=east] at ($(frame.north east)+(-\MQTitleGap,-\MQTitleGap)$) {subscription QoS attaches to the selected topic branch};
+\node[mqtt section title] at ($(frame.north west)+(\MQTitleGap,-\MQTitleGap)$)
+  {Topic-tree matching};
+\node[mqtt annotation,anchor=east] at ($(frame.north east)+(-\MQTitleGap,-\MQTitleGap)$)
+  {subscription QoS attaches to the selected topic branch};
+
 \end{tikzpicture}
 \end{document}
