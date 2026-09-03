@@ -1,4 +1,4 @@
-\documentclass[tikz,border=8pt]{standalone}
+\documentclass[tikz,border=0pt]{standalone}
 \usepackage[T1]{fontenc}
 \usepackage{lmodern}
 \input{mqttsystem-figure-system.tex}
@@ -6,17 +6,17 @@
 \begin{document}
 \begin{tikzpicture}[mqtt desktop]
 \tikzset{
-  broker/.style={mqtt external,minimum width=31mm,text width=26mm},
-  member/.style={mqtt application,minimum width=38mm,text width=32mm},
-  core/.style={mqtt control,minimum width=42mm,text width=36mm},
+  broker/.style={mqtt external,minimum width=30mm,text width=25mm},
+  member/.style={mqtt application,minimum width=37mm,text width=31mm},
+  core/.style={mqtt control,minimum width=41mm,text width=35mm},
   peer/.style={mqtt application,minimum width=32mm,text width=27mm},
   peerbroker/.style={mqtt external,minimum width=32mm,text width=27mm}
 }
 
 \node[broker] (a) {Broker A\\source domain};
-\node[member,right=\MQHorizontalGap of a] (ma)
+\node[member,right=\MQGapS of a] (ma)
   {member A\\configured subscriptions\\select the input};
-\node[core,right=\MQHorizontalGap of ma] (bridge)
+\node[core,right=\MQGapS of ma] (bridge)
   {logical bridge\\fan-out forwarding};
 
 \draw[mqtt data flow] (a.east) -- node[mqtt topic label,above]{selected PUBLISH} (ma.west);
@@ -37,7 +37,7 @@
 \draw[mqtt data flow] (mc.south) -- (c.north);
 
 \node[mqtt note,below=\MQGapM of b,xshift=21mm,minimum width=94mm,text width=88mm] (preserve)
-  {payload / message bytes, received QoS, and retain are preserved;\\the forwarded topic is rebuilt from bridge/member prefixes — see Figure 14};
+  {payload / message bytes, received QoS, and retain are preserved;\\the forwarded topic is rebuilt from bridge/member prefixes and documented separately};
 
 \coordinate (titleguard) at ($(a.north)+(0,\MQGapL)$);
 \begin{pgfonlayer}{background}
@@ -45,6 +45,16 @@
 \end{pgfonlayer}
 \node[mqtt section title] at ($(frame.north west)+(\MQTitleGap,-\MQTitleGap)$)
   {Logical bridge forwarding};
+
+% Canonical SNode.C fixed-width desktop canvas: native drawing, centered on
+% exactly 160 mm with 7 pt vertical breathing room.
+\coordinate (snodecCanvasCenter) at (current bounding box.center);
+\coordinate (snodecCanvasSW)
+  at ($(snodecCanvasCenter)+(-80mm,0)$ |- current bounding box.south);
+\coordinate (snodecCanvasNE)
+  at ($(snodecCanvasCenter)+(80mm,0)$ |- current bounding box.north);
+\path[use as bounding box]
+  ([yshift=-7pt]snodecCanvasSW) rectangle ([yshift=7pt]snodecCanvasNE);
 
 \end{tikzpicture}
 \end{document}
