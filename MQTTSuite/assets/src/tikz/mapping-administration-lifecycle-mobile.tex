@@ -4,27 +4,51 @@
 \input{mqttsystem-figure-system.tex}
 \begin{document}
 \begin{tikzpicture}[mqtt mobile]
-\tikzset{wide/.style={minimum width=74mm,text width=67mm}}
+\tikzset{wide/.style={minimum width=72mm,text width=64mm}}
+
 \node[mqtt state,wide] (active) {active mapping};
-\node[mqtt control,wide,below=\MQGapS of active] (edit) {PATCH / POST \texttt{/config}};
+\node[mqtt control,wide,below=\MQGapS of active] (edit)
+  {PATCH / POST \texttt{/config}};
 \node[mqtt config,wide,below=\MQGapS of edit] (draft) {draft mapping};
-\node[mqtt note,wide,below=\MQGapS of draft] (validate) {optional validation preflight; deploy also validates/applies};
-\node[mqtt control,wide,below=\MQGapM of validate] (deploy) {POST \texttt{/config/deploy}};
-\node[mqtt success,wide,below=\MQGapS of deploy] (apply) {\texttt{setMapping()} + persist active mapping};
-\node[mqtt control,wide,below=\MQGapM of apply] (reload) {reload decision:\\connection changed $\rightarrow$ reconnect\\otherwise $\rightarrow$ subscription delta};
-\node[mqtt config,wide,below=\MQGapM of reload] (history) {deployed-version history\\local filesystem state};
-\node[mqtt control,wide,below=\MQGapS of history] (rollback) {rollback restores a retained version\\then uses the same apply/reload path};
-\draw[mqtt flow] (active.south) -- (edit.north);
-\draw[mqtt flow] (edit.south) -- (draft.north);
+\node[mqtt note,wide,below=\MQGapS of draft] (validate)
+  {optional validation preflight};
+\node[mqtt control,wide,below=\MQGapM of validate] (deploy)
+  {POST \texttt{/config/deploy}};
+\node[mqtt config,wide,below=\MQGapS of deploy] (backup)
+  {backup prior active file into local version history};
+\node[mqtt process,wide,below=\MQGapS of backup] (apply)
+  {\texttt{setMapping()} + attempt active-file persistence};
+\node[mqtt control,wide,below=\MQGapM of apply] (reload)
+  {connection changed?\\YES → reconnect / DISCONNECT\\NO → subscription delta};
+
+\draw[mqtt control flow] (active.south) -- (edit.north);
+\draw[mqtt control flow] (edit.south) -- (draft.north);
 \draw[mqtt association] (draft.south) -- (validate.north);
-\draw[mqtt flow] (validate.south) -- (deploy.north);
-\draw[mqtt flow] (deploy.south) -- (apply.north);
-\draw[mqtt flow] (apply.south) -- (reload.north);
-\draw[mqtt association] (reload.south) -- (history.north);
-\draw[mqtt flow] (history.south) -- (rollback.north);
+\draw[mqtt control flow] (validate.south) -- (deploy.north);
+\draw[mqtt control flow] (deploy.south) -- (backup.north);
+\draw[mqtt control flow] (backup.south) -- (apply.north);
+\draw[mqtt control flow] (apply.south) -- (reload.north);
+
+\node[mqtt warning,wide,below=\MQGapM of reload] (persist)
+  {Persistence is attempted, but its return value is not used as the current deploy/rollback HTTP-success gate.};
+
+\node[mqtt config,wide,below=\MQMobileLaneGap of persist] (history)
+  {version history contains prior active files};
+\node[mqtt control,wide,below=\MQGapS of history] (rollback)
+  {later optional POST \texttt{/config/rollback} restores a selected version};
+\node[mqtt note,wide,below=\MQGapS of rollback] (reenter)
+  {rollback then uses the same \texttt{setMapping()} / persistence-attempt / reload decision path};
+\draw[mqtt control flow] (history.south) -- (rollback.north);
+\draw[mqtt dependency] (rollback.south) -- (reenter.north);
+\draw[mqtt association] (backup.east) -- ++(8mm,0) |- ($(history.east)+(8mm,0)$) -- (history.east);
+
 \begin{pgfonlayer}{background}
-  \node[mqtt lane,fit=(active)(edit)(draft)(validate)(deploy)(apply)(reload)(history)(rollback)] (frame) {};
+  \node[mqtt figure frame,fit=(active)(edit)(draft)(validate)(deploy)(backup)(apply)(reload)(persist)(history)(rollback)(reenter)] (frame) {};
 \end{pgfonlayer}
-\node[mqtt section title] at ($(frame.north west)+(\MQTitleGap,-\MQTitleGap)$) {Mapping administration lifecycle};
+\node[mqtt section title] at ($(frame.north west)+(\MQTitleGap,-\MQTitleGap)$)
+  {Mapping administration lifecycle};
+\node[mqtt annotation,anchor=east] at ($(frame.north east)+(-\MQTitleGap,-\MQTitleGap)$)
+  {history / rollback is optional operator activity, not a mandatory post-deploy stage};
+
 \end{tikzpicture}
 \end{document}
