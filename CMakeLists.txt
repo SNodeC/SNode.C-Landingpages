@@ -33,7 +33,7 @@ project(SNodeCLandingpagesFigures NONE)
 # target.
 
 find_program(PDFLATEX_EXECUTABLE NAMES pdflatex REQUIRED)
-find_program(INKSCAPE_EXECUTABLE NAMES inkscape REQUIRED)
+find_program(PDFTOCAIRO_EXECUTABLE NAMES pdftocairo REQUIRED)
 find_program(SCOUR_EXECUTABLE NAMES scour REQUIRED)
 
 file(
@@ -86,15 +86,12 @@ foreach(TIKZ_SOURCE_REL IN LISTS TIKZ_TEX_SOURCES)
         )
     endif()
 
-    # Give each source its own temporary TeX/Inkscape directory so auxiliary
-    # files and Inkscape preferences never collide when figures build in
-    # parallel.
+    # Give each source its own temporary directory so TeX auxiliary files never
+    # collide when figures build in parallel.
     string(MAKE_C_IDENTIFIER
         "${TIKZ_PROJECT}_${TIKZ_FIGURE_SUBPATH}" TIKZ_WORK_ID)
     set(TIKZ_WORK_DIR
         "${CMAKE_BINARY_DIR}/tikz/${TIKZ_WORK_ID}")
-    set(TIKZ_INKSCAPE_PROFILE_DIR
-        "${TIKZ_WORK_DIR}/inkscape-profile")
     set(TIKZ_PDF
         "${TIKZ_WORK_DIR}/${TIKZ_STEM}.pdf")
     set(TIKZ_RAW_SVG
@@ -113,7 +110,6 @@ foreach(TIKZ_SOURCE_REL IN LISTS TIKZ_TEX_SOURCES)
         OUTPUT "${TIKZ_OUTPUT}"
         BYPRODUCTS "${TIKZ_PDF}" "${TIKZ_RAW_SVG}"
         COMMAND "${CMAKE_COMMAND}" -E make_directory "${TIKZ_WORK_DIR}"
-        COMMAND "${CMAKE_COMMAND}" -E make_directory "${TIKZ_INKSCAPE_PROFILE_DIR}"
         COMMAND
             "${PDFLATEX_EXECUTABLE}"
             -interaction=nonstopmode
@@ -121,23 +117,15 @@ foreach(TIKZ_SOURCE_REL IN LISTS TIKZ_TEX_SOURCES)
             -file-line-error
             -output-directory=${TIKZ_WORK_DIR}
             "${TIKZ_SOURCE_ABS}"
-        # Convert all text to paths during PDF -> SVG export. This is supported
-        # by older Inkscape releases (including Ubuntu 24.04's 1.2.2), keeps
-        # publication geometry independent of client-side font availability,
-        # and avoids the newer-version-only --pdf-font-strategy option.
-        #
-        # Inkscape has also shown a Gio::DBus::Error race when independent CLI
-        # processes run concurrently. Keep each invocation isolated from the
-        # desktop session bus and give it a private profile directory.
+        # Poppler's Cairo SVG backend renders the PDF glyphs directly to vector
+        # paths. This keeps the exact TeX appearance without relying on fonts in
+        # the reader's browser and avoids Inkscape PDF-import CLI/version and
+        # ligature-loss problems observed with Ubuntu's Inkscape 1.2.2.
         COMMAND
-            "${CMAKE_COMMAND}" -E env
-            --unset=DBUS_SESSION_BUS_ADDRESS
-            "INKSCAPE_PROFILE_DIR=${TIKZ_INKSCAPE_PROFILE_DIR}"
-            "${INKSCAPE_EXECUTABLE}"
-            --export-text-to-path
+            "${PDFTOCAIRO_EXECUTABLE}"
+            -svg
             "${TIKZ_PDF}"
-            --export-type=svg
-            --export-filename=${TIKZ_RAW_SVG}
+            "${TIKZ_RAW_SVG}"
         COMMAND
             "${SCOUR_EXECUTABLE}"
             -i "${TIKZ_RAW_SVG}"
