@@ -1,0 +1,34 @@
+\documentclass[tikz,border=8pt]{standalone}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\input{mqttsystem-figure-system.tex}
+\begin{document}
+\begin{tikzpicture}[mqtt desktop]
+\tikzset{box/.style={mqtt process,minimum width=38mm,text width=34mm}}
+
+\node[mqtt external,box] (brokers) {remote broker members};
+\node[mqtt data,box,right=\MQHorizontalGap of brokers] (clients) {outbound MQTT clients\\subscriptions + forwarding};
+\node[mqtt application,box,right=\MQHorizontalGap of clients] (core) {MQTTBridge\\logical bridges};
+\draw[mqtt data flow] (brokers.east) -- (clients.west);
+\draw[mqtt data flow] (clients.east) -- (core.west);
+
+\node[mqtt external,minimum width=38mm,text width=34mm,right=18mm of core,yshift=18mm] (operator) {browser / operator};
+\node[mqtt control,minimum width=48mm,text width=43mm,below=\MQGapS of operator] (admin)
+  {HTTP / HTTPS operator surface\\GET config + PATCH config + SSE};
+\node[mqtt warning,minimum width=60mm,text width=54mm,below=\MQGapS of admin] (risk)
+  {No application authentication.\\GET can return broker credentials.\\PATCH mutates live config and restarts clients.};
+\node[mqtt note,minimum width=60mm,text width=54mm,below=\MQGapS of risk] (tls)
+  {HTTPS protects transport only.\\Configuration read-back, mutation, and SSE belong inside a trusted boundary.};
+\draw[mqtt control flow] (operator.south) -- (admin.north);
+\draw[mqtt association] (core.east) -- (admin.west);
+\draw[mqtt association] (admin.south) -- (risk.north);
+\draw[mqtt association] (risk.south) -- (tls.north);
+
+\begin{pgfonlayer}{background}
+  \node[mqtt lane,fit=(brokers)(clients)(core)(operator)(admin)(risk)(tls)] (frame) {};
+  \node[mqtt trust boundary,fit=(operator)(admin)(risk)(tls)] (trust) {};
+\end{pgfonlayer}
+\node[mqtt section title] at ($(frame.north west)+(\MQTitleGap,-\MQTitleGap)$) {MQTTBridge administration trust boundary};
+\node[mqtt annotation,anchor=west,fill=MQSurface] at ($(trust.north west)+(\MQTitleGap,0)$) {trusted management boundary};
+\end{tikzpicture}
+\end{document}
