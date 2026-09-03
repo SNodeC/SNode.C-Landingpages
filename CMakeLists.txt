@@ -49,13 +49,13 @@ foreach(TIKZ_SOURCE_REL IN LISTS TIKZ_TEX_SOURCES)
     get_filename_component(TIKZ_FILENAME "${TIKZ_SOURCE_REL}" NAME)
 
     # Shared style/system sources are included by figures but are not figures.
-    if(TIKZ_FILENAME MATCHES "-figure-system\\.tex$")
+    if(TIKZ_FILENAME MATCHES "-figure-system\.tex$")
         continue()
     endif()
 
     # Extract the owning project from
     # <project>/assets/src/tikz/<possibly/nested/path>/<name>.tex.
-    if(NOT TIKZ_SOURCE_REL MATCHES "^([^/]+)/assets/src/tikz/(.+)\\.tex$")
+    if(NOT TIKZ_SOURCE_REL MATCHES "^([^/]+)/assets/src/tikz/(.+)\.tex$")
         message(FATAL_ERROR
             "Unexpected TikZ figure path: ${TIKZ_SOURCE_REL}. "
             "Expected <project>/assets/src/tikz/<name>.tex"
@@ -111,13 +111,13 @@ foreach(TIKZ_SOURCE_REL IN LISTS TIKZ_TEX_SOURCES)
             -interaction=nonstopmode
             -halt-on-error
             -file-line-error
-            -output-directory="${TIKZ_WORK_DIR}"
+            -output-directory=${TIKZ_WORK_DIR}
             "${TIKZ_SOURCE_ABS}"
         COMMAND
             "${INKSCAPE_EXECUTABLE}"
             "${TIKZ_PDF}"
             --export-type=svg
-            --export-filename="${TIKZ_OUTPUT}"
+            --export-filename=${TIKZ_OUTPUT}
         DEPENDS
             "${TIKZ_SOURCE_ABS}"
             ${TIKZ_LOCAL_TEX_DEPENDENCIES}
