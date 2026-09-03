@@ -1,0 +1,48 @@
+\documentclass[tikz,border=8pt]{standalone}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\input{mqttsystem-figure-system.tex}
+\begin{document}
+\begin{tikzpicture}[mqtt desktop]
+\tikzset{
+  src/.style={mqtt config,minimum width=35mm,text width=31mm},
+  main/.style={mqtt control,minimum width=52mm,text width=46mm},
+  doc/.style={mqtt config,minimum width=39mm,text width=35mm}
+}
+
+\node[src] (defaults) {API / compiled defaults\\\scriptsize lowest precedence};
+\node[src,below=\MQGapS of defaults] (file) {SNode.C configuration file};
+\node[src,below=\MQGapS of file] (cli) {command line\\\scriptsize highest precedence};
+
+\node[main,right=\MQHorizontalGapLoose of file] (effective)
+  {effective SNode.C state\\application $\rightarrow$ named instance $\rightarrow$ sections / options};
+\node[mqtt process,right=\MQHorizontalGap of effective,minimum width=38mm,text width=34mm] (inspect)
+  {inspect\\\texttt{--show-config}\\\texttt{--command-line=active}};
+\node[mqtt success,below=\MQGapM of inspect,minimum width=38mm,text width=34mm] (persist)
+  {persist known-good state\\\texttt{--write-config}};
+\node[src,below=\MQGapS of persist] (saved) {saved application\\configuration file};
+
+\draw[mqtt control flow] (defaults.east) -| (effective.west);
+\draw[mqtt control flow] (file.east) -- (effective.west);
+\draw[mqtt control flow] (cli.east) -| (effective.west);
+\draw[mqtt observation] (effective.east) -- (inspect.west);
+\draw[mqtt control flow] (effective.south east) |- (persist.west);
+\draw[mqtt control flow] (persist.south) -- (saved.north);
+
+\node[doc] (mapping) at ($(defaults |- saved.south)+(0,-24mm)$) {mapping JSON\\Integrator / optional Broker mapper};
+\node[doc,right=\MQHorizontalGap of mapping] (bridge) {bridge-definition JSON\\MQTTBridge};
+\node[doc,right=\MQHorizontalGap of bridge] (projection) {projection JSON\\MQTTStore};
+\node[mqtt note,right=\MQHorizontalGap of projection,minimum width=43mm,text width=39mm] (separate)
+  {separate domain documents\\not merged by SNode.C precedence};
+
+\begin{pgfonlayer}{background}
+  \node[mqtt lane,fit=(defaults)(file)(cli)(effective)(inspect)(persist)(saved)] (appframe) {};
+  \node[mqtt group,fit=(mapping)(bridge)(projection)(separate)] (domainframe) {};
+\end{pgfonlayer}
+\node[mqtt section title] at ($(appframe.north west)+(\MQTitleGap,-\MQTitleGap)$) {SNode.C application configuration};
+\node[mqtt section title] at ($(domainframe.north west)+(\MQTitleGap,-\MQTitleGap)$) {Application-specific domain documents};
+\node[mqtt annotation,anchor=east] at ($(appframe.north east)+(-\MQTitleGap,-\MQTitleGap)$)
+  {precedence increases: defaults $\rightarrow$ configuration file $\rightarrow$ command line};
+
+\end{tikzpicture}
+\end{document}
