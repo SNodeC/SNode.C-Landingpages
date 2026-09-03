@@ -34,6 +34,7 @@ jobs:
             texlive-latex-extra \
             texlive-fonts-recommended \
             lmodern \
+            fonts-lmodern \
             poppler-utils \
             inkscape \
             scour \
@@ -105,6 +106,7 @@ jobs:
             texlive-latex-extra \
             texlive-fonts-recommended \
             lmodern \
+            fonts-lmodern \
             poppler-utils \
             scour \
             python3-pil
