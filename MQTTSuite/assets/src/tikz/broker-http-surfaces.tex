@@ -4,40 +4,53 @@
 \input{mqttsystem-figure-system.tex}
 \begin{document}
 \begin{tikzpicture}[mqtt desktop]
-\tikzset{surf/.style={mqtt process,minimum width=43mm,text width=38mm}}
+\tikzset{surf/.style={mqtt process,minimum width=48mm,text width=43mm}}
 
-\node[mqtt external,minimum width=48mm,text width=43mm] (listener)
+\node[mqtt external,minimum width=49mm,text width=44mm] (listener)
   {Broker HTTP / HTTPS listener family};
-\node[mqtt control,minimum width=42mm,text width=38mm,right=\MQHorizontalGapLoose of listener] (router)
-  {Express router};
+\node[mqtt control,minimum width=43mm,text width=38mm,right=\MQHorizontalGapLoose of listener] (router)
+  {shared Express router};
+\draw[mqtt control flow] (listener.east) -- (router.west);
 
-\node[surf,right=\MQHorizontalGapLoose of router,yshift=24mm] (dash)
-  {Dashboard\\\texttt{/clients/*}};
-\node[surf,right=\MQHorizontalGapLoose of router,yshift=8mm] (sse)
-  {Live state via SSE\\\texttt{/api/mqtt/events}\\\texttt{/sse}};
-\node[surf,right=\MQHorizontalGapLoose of router,yshift=-8mm] (admin)
-  {Mutating JSON API\\disconnect / subscribe\\unsubscribe / release};
-\node[mqtt data,minimum width=43mm,text width=38mm,right=\MQHorizontalGapLoose of router,yshift=-24mm] (ws)
+\node[surf,right=30mm of router,yshift=30mm] (dash)
+  {Dashboard\\\texttt{/clients/*}\\reads live state};
+\node[surf,below=\MQBranchGapTight of dash] (sse)
+  {SSE live state\\\texttt{/api/mqtt/events}, \texttt{/sse}\\observes Broker / \texttt{MqttModel}};
+\node[surf,below=\MQBranchGapTight of sse] (admin)
+  {Mutating JSON API\\disconnect / subscribe / unsubscribe / release};
+\node[mqtt data,minimum width=48mm,text width=43mm,below=\MQBranchGapTight of admin] (ws)
   {MQTT WebSocket upgrade\\\texttt{/}, \texttt{/ws}, \texttt{/mqtt}\\subprotocol \texttt{mqtt}};
 
-\node[mqtt application,minimum width=45mm,text width=40mm,right=\MQHorizontalGapLoose of sse,yshift=-8mm] (broker)
-  {shared Broker core\\+ \texttt{MqttModel}};
+\coordinate (dashbus) at ($(dash.west)+(-8mm,0)$);
+\coordinate (ssebus) at ($(sse.west)+(-8mm,0)$);
+\coordinate (adminbus) at ($(admin.west)+(-8mm,0)$);
+\coordinate (wsbus) at ($(ws.west)+(-8mm,0)$);
+\coordinate (busmid) at (dashbus |- router.east);
+\draw[mqtt association] (dashbus) -- (wsbus);
+\draw[mqtt association] (router.east) -- (busmid);
+\draw[mqtt flow] (dashbus) -- (dash.west);
+\draw[mqtt flow] (ssebus) -- (sse.west);
+\draw[mqtt flow] (adminbus) -- (admin.west);
+\draw[mqtt data flow] (wsbus) -- (ws.west);
 
-\draw[mqtt control flow] (listener.east) -- (router.west);
-\draw[mqtt flow] (router.east) -- (dash.west);
-\draw[mqtt flow] (router.east) -- (sse.west);
-\draw[mqtt flow] (router.east) -- (admin.west);
-\draw[mqtt data flow] (router.east) -- (ws.west);
-\draw[mqtt observation] (broker.west) -- (sse.east);
-\draw[mqtt control flow] (admin.east) -- (broker.west);
-\draw[mqtt data flow] (ws.east) -- (broker.south west);
+\node[mqtt application,minimum width=48mm,text width=43mm,right=\MQHorizontalGapLoose of ws] (broker)
+  {shared Broker core\\+ \texttt{MqttModel}};
+\draw[mqtt data flow] (ws.east) -- (broker.west);
+\draw[mqtt control flow] (admin.east) -- ++(8mm,0) -| \MQPortNorth{broker}{.70};
+\draw[mqtt observation] \MQPortNorth{broker}{.30} -- ++(0,8mm) |- (sse.east);
 \draw[mqtt observation] (sse.north) -- (dash.south);
 
 \begin{pgfonlayer}{background}
-  \node[mqtt admin plane,fit=(listener)(router)(dash)(sse)(admin)] (adminplane) {};
+  \node[mqtt figure frame,fit=(listener)(router)(dash)(sse)(admin)(ws)(broker)] (frame) {};
+  \node[mqtt admin plane,fit=(dash)(sse)(admin)] (adminplane) {};
   \node[mqtt data plane,fit=(ws)(broker)] (dataplane) {};
-  \node[mqtt lane,fit=(adminplane)(dataplane)] (frame) {};
 \end{pgfonlayer}
-\node[mqtt section title] at ($(frame.north west)+(\MQTitleGap,-\MQTitleGap)$) {Four surfaces on the Broker HTTP router};
+\node[mqtt annotation,anchor=west] at ($(adminplane.north west)+(\MQTitleGap,-\MQTitleGap)$)
+  {operator / state surfaces};
+\node[mqtt annotation,anchor=west] at ($(dataplane.north west)+(\MQTitleGap,-\MQTitleGap)$)
+  {MQTT data route};
+\node[mqtt section title] at ($(frame.north west)+(\MQTitleGap,-\MQTitleGap)$)
+  {Four surfaces on one shared Broker HTTP router};
+
 \end{tikzpicture}
 \end{document}
