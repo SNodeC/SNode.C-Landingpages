@@ -43,7 +43,9 @@
 \node[mqtt section title] at ($(appframe.north west)+(\MQTitleGap,-\MQTitleGap)$)
   {SNode.C application configuration};
 
-\node[doc] (bridge) at ($(effective |- saved.south)+(0,-22mm)$)
+% The domain-document panel owns its own title band. Keep enough external gap
+% that the band's fit/padding cannot intrude into the application frame.
+\node[doc,below=22mm of appframe] (bridge)
   {bridge-definition JSON\\MQTTBridge};
 \node[doc,left=\MQHorizontalGap of bridge] (mapping)
   {mapping JSON\\Integrator / optional Broker mapper};

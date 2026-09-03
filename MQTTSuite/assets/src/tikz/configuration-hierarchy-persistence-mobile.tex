@@ -42,7 +42,9 @@
 \node[mqtt section title] at ($(appframe.north west)+(\MQTitleGap,-\MQTitleGap)$)
   {Configuration hierarchy and persistence};
 
-\node[mqtt config,wide,below=\MQGapXL of appframe] (mapping)
+% Separate the second panel by enough space for its own 11 mm title band plus
+% fit padding; otherwise the two independently owned containers overlap.
+\node[mqtt config,wide,below=22mm of appframe] (mapping)
   {mapping JSON — Integrator / optional Broker mapper};
 \node[mqtt config,wide,below=\MQGapS of mapping] (bridge)
   {bridge-definition JSON — MQTTBridge};
