@@ -4,32 +4,35 @@
 \input{mqttsystem-figure-system.tex}
 \begin{document}
 \begin{tikzpicture}[mqtt desktop]
-\tikzset{stage/.style={mqtt process,minimum width=43mm,text width=39mm}}
+\tikzset{stage/.style={mqtt process,minimum width=47mm,text width=42mm}}
 
 \node[mqtt external,stage] (incoming) {incoming MQTT PUBLISH};
-\node[mqtt application,stage,right=\MQHorizontalGapLoose of incoming] (broker) {Broker routing\\normal subscribers};
-\node[mqtt success,stage,right=\MQHorizontalGapLoose of broker] (normal) {ordinary routed PUBLISH};
+\node[mqtt application,minimum width=51mm,text width=46mm,right=\MQHorizontalGapLoose of incoming] (broker)
+  {Broker publish-processing path};
+\node[stage,right=\MQHorizontalGapLoose of broker] (normal)
+  {ordinary publish routed to subscribers};
 \draw[mqtt data flow] (incoming.east) -- (broker.west);
 \draw[mqtt data flow] (broker.east) -- (normal.west);
 
-\node[mqtt control,minimum width=47mm,text width=42mm,below=\MQGapL of broker] (mapper)
+\node[mqtt control,minimum width=51mm,text width=46mm,below=\MQGapL of broker] (mapper)
   {optional shared \texttt{MqttMapper}\\inside MQTTBroker};
-\node[mqtt process,minimum width=50mm,text width=45mm,right=\MQHorizontalGapLoose of mapper] (mapped)
+\node[stage,right=\MQHorizontalGapLoose of mapper] (mapped)
   {zero / one / many mapped PUBLISH messages\\immediate or scheduled};
-
-\draw[mqtt control flow] (incoming.south) |- (mapper.west);
+\draw[mqtt control flow] (broker.south) -- (mapper.north);
 \draw[mqtt control flow] (mapper.east) -- (mapped.west);
-\draw[mqtt data flow] (mapped.north) |- (broker.south east);
+\draw[mqtt data flow] (mapped.north) -- ++(0,8mm) -| \MQPortSouth{broker}{.72};
 
-\node[mqtt note,minimum width=54mm,text width=49mm,below=\MQGapM of mapper] (note)
-  {Mapped outputs re-enter the same Broker.\\No child \texttt{mqttintegrator} process.};
+\node[mqtt note,minimum width=62mm,text width=56mm,below=\MQGapM of mapper] (note)
+  {Mapped outputs call the same Broker publish-processing path again; mapping may therefore cascade. No child \texttt{mqttintegrator} process is created.};
 \draw[mqtt association] (mapper.south) -- (note.north);
 
 \begin{pgfonlayer}{background}
+  \node[mqtt figure frame,fit=(incoming)(broker)(normal)(mapper)(mapped)(note)] (frame) {};
   \node[mqtt data plane,fit=(incoming)(broker)(normal)] (data) {};
   \node[mqtt group,fit=(mapper)(mapped)(note)] (mapping) {};
-  \node[mqtt lane,fit=(data)(mapping)] (frame) {};
 \end{pgfonlayer}
-\node[mqtt section title] at ($(frame.north west)+(\MQTitleGap,-\MQTitleGap)$) {Optional embedded mapping inside MQTTBroker};
+\node[mqtt section title] at ($(frame.north west)+(\MQTitleGap,-\MQTitleGap)$)
+  {Optional embedded mapping inside MQTTBroker};
+
 \end{tikzpicture}
 \end{document}
