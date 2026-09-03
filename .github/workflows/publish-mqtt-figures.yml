@@ -1,4 +1,5 @@
 name: MQTTSuite figure validation and publication
+# Review publication trigger: Figure 1
 
 on:
   push:
