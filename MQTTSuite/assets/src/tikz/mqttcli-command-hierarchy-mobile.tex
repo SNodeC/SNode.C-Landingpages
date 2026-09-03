@@ -1,0 +1,22 @@
+\documentclass[tikz,border=8pt]{standalone}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\input{mqttsystem-figure-system.tex}
+\begin{document}
+\begin{tikzpicture}[mqtt mobile]
+\tikzset{wide/.style={minimum width=74mm,text width=67mm}}
+\node[mqtt application,wide] (root) {\texttt{mqttcli}};
+\node[mqtt control,wide,below=\MQGapS of root] (instance) {enabled connection instance};
+\node[mqtt config,wide,below=\MQGapS of instance] (transport) {\texttt{remote}: address\\optional \texttt{http}: WebSocket target};
+\node[mqtt config,wide,below=\MQGapS of transport] (session) {\texttt{session}: client / CONNECT state\\+ default QoS};
+\node[mqtt success,wide,below=\MQGapM of session] (actions) {\texttt{sub}: topic filters\\and / or\\\texttt{pub}: topic + message + retain};
+\draw[mqtt flow] (root.south) -- (instance.north);
+\draw[mqtt flow] (instance.south) -- (transport.north);
+\draw[mqtt flow] (transport.south) -- (session.north);
+\draw[mqtt flow] (session.south) -- (actions.north);
+\begin{pgfonlayer}{background}
+  \node[mqtt lane,fit=(root)(instance)(transport)(session)(actions)] (frame) {};
+\end{pgfonlayer}
+\node[mqtt section title] at ($(frame.north west)+(\MQTitleGap,-\MQTitleGap)$) {MQTTCli command hierarchy};
+\end{tikzpicture}
+\end{document}
