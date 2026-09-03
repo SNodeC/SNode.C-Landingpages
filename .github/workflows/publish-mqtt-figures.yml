@@ -87,7 +87,10 @@ jobs:
 
   publish:
     needs: validate
-    if: github.event_name == 'workflow_dispatch' || github.event.head_commit.message == 'Run one-time MQTTSuite figure publication'
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      github.event.head_commit.message == 'Run one-time MQTTSuite figure publication' ||
+      startsWith(github.event.head_commit.message, 'Publish reviewed Figure ')
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
@@ -112,18 +115,62 @@ jobs:
           cmake --build cmake-build-figures --target figures --parallel 8
           python3 MQTTSuite/assets/src/first-success/compose.py
 
-      - name: Publish complete reviewed output family
+      - name: Publish reviewed outputs
         shell: bash
         run: |
           set -euo pipefail
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add MQTTSuite/assets/*.svg \
-                  MQTTSuite/assets/first-success-terminal.png \
-                  MQTTSuite/assets/first-success-terminal-mobile.png
+
+          add_svg_pair() {
+            local stem="$1"
+            git add "MQTTSuite/assets/${stem}.svg" "MQTTSuite/assets/${stem}-mobile.svg"
+          }
+
+          message="${{ github.event.head_commit.message }}"
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]] || \
+             [[ "$message" == "Run one-time MQTTSuite figure publication" ]]; then
+            git add MQTTSuite/assets/*.svg \
+                    MQTTSuite/assets/first-success-terminal.png \
+                    MQTTSuite/assets/first-success-terminal-mobile.png
+          else
+            case "$message" in
+              'Publish reviewed Figure 1')  add_svg_pair application-message-flow ;;
+              'Publish reviewed Figure 2')
+                git add MQTTSuite/assets/first-success-terminal.png \
+                        MQTTSuite/assets/first-success-terminal-mobile.png ;;
+              'Publish reviewed Figure 3')  add_svg_pair configuration-hierarchy-persistence ;;
+              'Publish reviewed Figure 4')  add_svg_pair logical-bridge-forwarding ;;
+              'Publish reviewed Figure 5')  add_svg_pair raw-envelope-projections ;;
+              'Publish reviewed Figure 6')  add_svg_pair broker-listener-families ;;
+              'Publish reviewed Figure 7')  add_svg_pair broker-http-surfaces ;;
+              'Publish reviewed Figure 8')  add_svg_pair broker-embedded-mapper ;;
+              'Publish reviewed Figure 9')  add_svg_pair integrator-mapping-pipeline ;;
+              'Publish reviewed Figure 10') add_svg_pair integrator-topic-tree-matching ;;
+              'Publish reviewed Figure 11') add_svg_pair integrator-mapping-modes ;;
+              'Publish reviewed Figure 12') add_svg_pair bridge-runtime-clients ;;
+              'Publish reviewed Figure 13') add_svg_pair bridge-definition-hierarchy ;;
+              'Publish reviewed Figure 14') add_svg_pair bridge-prefix-construction ;;
+              'Publish reviewed Figure 15') add_svg_pair loop-boundaries ;;
+              'Publish reviewed Figure 16') add_svg_pair mqttcli-command-hierarchy ;;
+              'Publish reviewed Figure 17') add_svg_pair json-topic-projection-extraction ;;
+              'Publish reviewed Figure 18') add_svg_pair mqttsuite-configuration-hierarchy ;;
+              'Publish reviewed Figure 19') add_svg_pair qos-subscribe-vs-publish ;;
+              'Publish reviewed Figure 20') add_svg_pair broker-trust-boundary ;;
+              'Publish reviewed Figure 21') add_svg_pair integrator-trust-boundary ;;
+              'Publish reviewed Figure 22') add_svg_pair mapping-administration-lifecycle ;;
+              'Publish reviewed Figure 23') add_svg_pair bridge-trust-boundary ;;
+              'Publish reviewed Figure 24') add_svg_pair bridge-patch-sse-lifecycle ;;
+              *)
+                echo "Unknown per-figure publication gate: $message" >&2
+                exit 1 ;;
+            esac
+          fi
+
           if git diff --cached --quiet; then
-            echo 'No generated output changes to publish.'
+            echo 'Reviewed figure output already matches canonical source.'
             exit 0
           fi
-          git commit -m 'Publish reviewed MQTTSuite figure family'
+
+          git commit -m 'Publish reviewed MQTTSuite figure output'
           git push origin HEAD:main
