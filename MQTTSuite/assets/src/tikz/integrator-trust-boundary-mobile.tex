@@ -1,0 +1,23 @@
+\documentclass[tikz,border=8pt]{standalone}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\input{mqttsystem-figure-system.tex}
+\begin{document}
+\begin{tikzpicture}[mqtt mobile]
+\tikzset{wide/.style={minimum width=74mm,text width=67mm}}
+\node[mqtt data,wide] (data) {MQTT data plane\\outbound client + MqttMapper\\subscribe / transform / republish};
+\node[mqtt external,wide,below=\MQGapL of data] (operator) {admin client};
+\node[mqtt control,wide,below=\MQGapS of operator] (admin) {HTTP / HTTPS mapping administration};
+\node[mqtt warning,wide,below=\MQGapS of admin] (risk) {Basic Auth is present\\source-known fixed defaults: \texttt{admin/admin}};
+\node[mqtt note,wide,below=\MQGapS of risk] (note) {mapping read-back, draft, and history\\can contain MQTT credentials};
+\draw[mqtt control flow] (operator.south) -- (admin.north);
+\draw[mqtt association] (admin.south) -- (risk.north);
+\draw[mqtt association] (risk.south) -- (note.north);
+\begin{pgfonlayer}{background}
+  \node[mqtt lane,fit=(data)(operator)(admin)(risk)(note)] (frame) {};
+  \node[mqtt trust boundary,fit=(operator)(admin)(risk)(note)] (trust) {};
+\end{pgfonlayer}
+\node[mqtt section title] at ($(frame.north west)+(\MQTitleGap,-\MQTitleGap)$) {Integrator trust boundary};
+\node[mqtt annotation,anchor=west,fill=MQSurface] at ($(trust.north west)+(\MQTitleGap,0)$) {trusted management boundary};
+\end{tikzpicture}
+\end{document}
