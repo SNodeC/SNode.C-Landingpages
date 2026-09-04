@@ -2,47 +2,49 @@
 \usepackage[T1]{fontenc}
 \usepackage{lmodern}
 \input{mqttsystem-figure-system.tex}
+\input{snodec-canonical-figure-system.tex}
 \begin{document}
 \begin{tikzpicture}[mqtt mobile]
 \tikzset{
-  main/.style={minimum width=58mm,text width=51mm},
-  side/.style={minimum width=28mm,text width=23mm}
+  wide/.style={minimum width=66mm,text width=58mm},
+  half/.style={minimum width=30mm,text width=25mm}
 }
 
-\node[mqtt external,main] (brokerin) {Broker delivers matching PUBLISH};
-\node[mqtt application,main,below=\MQGapS of brokerin] (client)
+\node[mqtt external,wide] (brokerin)
+  {Broker delivers a PUBLISH matching a mapping-derived subscription};
+\node[mqtt application,wide,below=\MQGapS of brokerin] (client)
   {MQTTIntegrator MQTT client connection};
-\node[mqtt control,main,below=\MQGapS of client] (tree)
+\node[mqtt control,wide,below=\MQGapM of client] (match)
   {topic-tree match — literal / \texttt{+} / terminal \texttt{\#}};
-\node[mqtt control,main,below=\MQGapM of tree] (rules)
-  {static / value / JSON mapping rules};
-\node[mqtt process,main,below=\MQGapS of rules] (outputs)
-  {zero / one / many immediate or scheduled outputs\\with their own QoS + retain};
-\node[mqtt process,main,below=\MQGapS of outputs] (brokerout)
-  {mapped PUBLISH returns through the same MQTT client connection};
+\node[mqtt control,wide,below=\MQGapS of match] (rules)
+  {apply static / value / JSON mapping modes};
+\node[mqtt process,wide,below=\MQGapM of rules] (outputs)
+  {produce $0..n$ mapped PUBLISH messages\\immediate and/or scheduled};
+\node[mqtt data,wide,below=\MQGapS of outputs] (send)
+  {send mapped PUBLISH through the same MQTT client connection};
 
 \draw[mqtt data flow] (brokerin.south) -- (client.north);
-\draw[mqtt data flow] (client.south) -- (tree.north);
-\draw[mqtt control flow] (tree.south) -- (rules.north);
+\draw[mqtt data flow] (client.south) -- (match.north);
+\draw[mqtt control flow] (match.south) -- (rules.north);
 \draw[mqtt control flow] (rules.south) -- (outputs.north);
-\draw[mqtt data flow] (outputs.south) -- (brokerout.north);
-\draw[mqtt data flow] (brokerout.west) -- ++(-8mm,0) |- ($(client.west)+(-8mm,0)$) -- (client.west);
+\draw[mqtt data flow] (outputs.south) -- (send.north);
 
-\node[mqtt note,side,right=8mm of tree] (subqos)
-  {SUBSCRIBE uses the mapping's subscription QoS};
-\draw[mqtt association] (tree.east) -- (subqos.west);
-\node[mqtt note,side,right=8mm of outputs] (pubqos)
-  {output QoS controls outgoing PUBLISH};
-\draw[mqtt association] (outputs.east) -- (pubqos.west);
+\node[mqtt note,half,below=\MQGapM of send,xshift=-17mm] (subqos)
+  {SUBSCRIBE QoS comes from \texttt{subscription.qos}};
+\node[mqtt note,half,below=\MQGapM of send,xshift=17mm] (pubqos)
+  {each output has its own QoS + retain};
+\draw[mqtt association] \MQPortSouth{send}{.28} -- ++(0,-6mm) -| (subqos.north);
+\draw[mqtt association] \MQPortSouth{send}{.72} -- ++(0,-6mm) -| (pubqos.north);
 
+\node[mqtt note,wide,below=\MQGapM of $(subqos.south)!0.5!(pubqos.south)$] (delayed)
+  {scheduled outputs use their mapped QoS/retain values when the timer fires};
+
+\coordinate (titleguard) at ($(brokerin.north)+(0,\MQGapL)$);
 \begin{pgfonlayer}{background}
-  \node[mqtt figure frame,fit=(brokerin)(client)(tree)(rules)(outputs)(brokerout)(subqos)(pubqos)] (frame) {};
-  \node[mqtt data plane,fit=(brokerin)(client)(tree)(rules)(outputs)(brokerout)] (flow) {};
+  \node[mqtt figure frame,fit=(titleguard)(brokerin)(client)(match)(rules)(outputs)(send)(subqos)(pubqos)(delayed)] (frame) {};
 \end{pgfonlayer}
 \node[mqtt section title] at ($(frame.north west)+(\MQTitleGap,-\MQTitleGap)$)
-  {Integrator pipeline};
-\node[mqtt annotation,anchor=east] at ($(frame.north east)+(-\MQTitleGap,-\MQTitleGap)$)
-  {subscribe QoS $\neq$ publish QoS};
+  {Integrator mapping pipeline};
 
 \end{tikzpicture}
 \end{document}
