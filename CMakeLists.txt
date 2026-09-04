@@ -18,19 +18,15 @@ project(SNodeCLandingpagesFigures NONE)
 # Configure/build from the repository root, for example:
 #
 #   cmake -S . -B cmake-build-figures
-#   cmake --build cmake-build-figures --target figures --parallel
+#   cmake --build cmake-build-figures --target figures --parallel 8
 #
-# Each source
-#
-#   <project>/assets/src/tikz/<name>.tex
-#
-# produces
-#
-#   <project>/assets/<name>.svg
-#
-# SVG is the canonical generated format for technical diagrams. Runtime/UI
-# evidence remains genuine raster capture and is intentionally outside this
-# target.
+# IMPORTANT: publication SVGs are committed files. A timestamp-driven OUTPUT
+# rule can therefore incorrectly decide that an already committed SVG is up to
+# date and skip recompiling its TikZ source. The `figures` target below depends
+# on one always-run custom target per discovered figure, so every invocation of
+# `cmake --build ... --target figures` regenerates every concrete TikZ figure.
+# This makes the figure-validation build a real source compilation pass rather
+# than an incremental timestamp check.
 
 find_program(PDFLATEX_EXECUTABLE NAMES pdflatex REQUIRED)
 find_program(PDFTOCAIRO_EXECUTABLE NAMES pdftocairo REQUIRED)
@@ -44,6 +40,7 @@ file(
 )
 
 set(TIKZ_FIGURE_OUTPUTS "")
+set(TIKZ_FIGURE_TARGETS "")
 set(TIKZ_FIGURE_NAMES "")
 
 foreach(TIKZ_SOURCE_REL IN LISTS TIKZ_TEX_SOURCES)
@@ -87,7 +84,7 @@ foreach(TIKZ_SOURCE_REL IN LISTS TIKZ_TEX_SOURCES)
     endif()
 
     # Give each source its own temporary directory so TeX auxiliary files never
-    # collide when figures build in parallel.
+    # collide when all figures build in parallel.
     string(MAKE_C_IDENTIFIER
         "${TIKZ_PROJECT}_${TIKZ_FIGURE_SUBPATH}" TIKZ_WORK_ID)
     set(TIKZ_WORK_DIR
@@ -96,19 +93,19 @@ foreach(TIKZ_SOURCE_REL IN LISTS TIKZ_TEX_SOURCES)
         "${TIKZ_WORK_DIR}/${TIKZ_STEM}.pdf")
     set(TIKZ_RAW_SVG
         "${TIKZ_WORK_DIR}/${TIKZ_STEM}-raw.svg")
+    set(TIKZ_TARGET "tikz_${TIKZ_WORK_ID}")
 
-    # A concrete figure depends on itself and on shared visual-system files in
-    # the same source directory. Do not depend on unrelated sibling figures:
-    # editing one figure must not rebuild the complete family.
     file(
         GLOB TIKZ_LOCAL_SYSTEM_DEPENDENCIES
         CONFIGURE_DEPENDS
         "${TIKZ_SOURCE_DIR}/*-figure-system.tex"
     )
 
-    add_custom_command(
-        OUTPUT "${TIKZ_OUTPUT}"
-        BYPRODUCTS "${TIKZ_PDF}" "${TIKZ_RAW_SVG}"
+    # A custom target is intentionally always out of date. Therefore every
+    # build of the aggregate `figures` target executes this full TikZ -> PDF ->
+    # SVG pipeline, even when a committed publication SVG already exists.
+    add_custom_target(
+        "${TIKZ_TARGET}"
         COMMAND "${CMAKE_COMMAND}" -E make_directory "${TIKZ_WORK_DIR}"
         COMMAND
             "${PDFLATEX_EXECUTABLE}"
@@ -138,6 +135,10 @@ foreach(TIKZ_SOURCE_REL IN LISTS TIKZ_TEX_SOURCES)
             --indent=none
             --set-precision=3
             --set-c-precision=3
+        BYPRODUCTS
+            "${TIKZ_PDF}"
+            "${TIKZ_RAW_SVG}"
+            "${TIKZ_OUTPUT}"
         DEPENDS
             "${TIKZ_SOURCE_ABS}"
             ${TIKZ_LOCAL_SYSTEM_DEPENDENCIES}
@@ -147,14 +148,16 @@ foreach(TIKZ_SOURCE_REL IN LISTS TIKZ_TEX_SOURCES)
     )
 
     list(APPEND TIKZ_FIGURE_OUTPUTS "${TIKZ_OUTPUT}")
+    list(APPEND TIKZ_FIGURE_TARGETS "${TIKZ_TARGET}")
     list(APPEND TIKZ_FIGURE_NAMES "${TIKZ_PROJECT}/${TIKZ_STEM}")
 endforeach()
 
-if(TIKZ_FIGURE_OUTPUTS)
-    add_custom_target(figures ALL DEPENDS ${TIKZ_FIGURE_OUTPUTS})
+if(TIKZ_FIGURE_TARGETS)
+    add_custom_target(figures ALL DEPENDS ${TIKZ_FIGURE_TARGETS})
 
-    list(LENGTH TIKZ_FIGURE_OUTPUTS TIKZ_FIGURE_COUNT)
+    list(LENGTH TIKZ_FIGURE_TARGETS TIKZ_FIGURE_COUNT)
     message(STATUS "Discovered ${TIKZ_FIGURE_COUNT} TikZ figure source(s)")
+    message(STATUS "The figures target recompiles every discovered source on every build")
     foreach(TIKZ_FIGURE_NAME IN LISTS TIKZ_FIGURE_NAMES)
         message(STATUS "  figure: ${TIKZ_FIGURE_NAME}")
     endforeach()
