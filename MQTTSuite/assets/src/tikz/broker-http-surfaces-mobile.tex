@@ -2,49 +2,53 @@
 \usepackage[T1]{fontenc}
 \usepackage{lmodern}
 \input{mqttsystem-figure-system.tex}
+\input{snodec-canonical-figure-system.tex}
 \begin{document}
 \begin{tikzpicture}[mqtt mobile]
-\tikzset{wide/.style={minimum width=72mm,text width=64mm}}
+\tikzset{
+  wide/.style={minimum width=74mm,text width=66mm},
+  half/.style={minimum width=35mm,text width=30mm}
+}
 
-\node[mqtt external,wide] (listener) {Broker HTTP / HTTPS listener};
-\node[mqtt control,wide,below=\MQGapS of listener] (router) {shared Express router};
+\node[mqtt external,wide] (listener) {Broker HTTP / HTTPS listener family};
+\node[mqtt control,wide,below=\MQGapS of listener] (router) {shared Express router — request dispatch};
 \draw[mqtt control flow] (listener.south) -- (router.north);
 
-\node[mqtt process,wide,below=\MQGapM of router] (dash)
-  {Dashboard — \texttt{/clients/*}\\reads live state};
+\node[mqtt process,wide,below=\MQGapL of router] (dash)
+  {Bundled dashboard — \texttt{/clients/*}\\non-upgrade \texttt{/} redirects to \texttt{/clients}};
 \node[mqtt process,wide,below=\MQGapS of dash] (sse)
-  {SSE — \texttt{/api/mqtt/events}, \texttt{/sse}\\observes Broker / \texttt{MqttModel}};
+  {SSE — \texttt{GET /api/mqtt/events}, legacy \texttt{GET /sse}\\current state + live events from \texttt{MqttModel}};
 \node[mqtt process,wide,below=\MQGapS of sse] (admin)
-  {Mutating JSON API\\changes Broker state};
+  {JSON administration — \texttt{POST /api/mqtt/}\\\texttt{disconnect}, \texttt{subscribe}, \texttt{unsubscribe}, \texttt{release}};
 \node[mqtt data,wide,below=\MQGapS of admin] (ws)
-  {MQTT WebSocket — \texttt{/}, \texttt{/ws}, \texttt{/mqtt}\\subprotocol \texttt{mqtt}};
-\node[mqtt application,wide,below=\MQGapM of ws] (broker)
-  {shared Broker core + \texttt{MqttModel}};
+  {MQTT WebSocket — \texttt{/}, \texttt{/ws}, \texttt{/mqtt}\\requested subprotocol \texttt{mqtt}};
 
-\coordinate (dashbus) at ($(dash.west)+(-7mm,0)$);
-\coordinate (ssebus) at ($(sse.west)+(-7mm,0)$);
-\coordinate (adminbus) at ($(admin.west)+(-7mm,0)$);
-\coordinate (wsbus) at ($(ws.west)+(-7mm,0)$);
-\coordinate (busmid) at (dashbus |- router.west);
-\draw[mqtt association] (dashbus) -- (wsbus);
-\draw[mqtt association] (router.west) -- ++(-7mm,0) |- (busmid);
-\draw[mqtt flow] (dashbus) -- (dash.west);
-\draw[mqtt flow] (ssebus) -- (sse.west);
-\draw[mqtt flow] (adminbus) -- (admin.west);
-\draw[mqtt data flow] (wsbus) -- (ws.west);
+\coordinate (bus) at ($(dash.west)+(-\MQGapS,0)$);
+\coordinate (busbottom) at ($(ws.west)+(-\MQGapS,0)$);
+\draw[mqtt association] (router.west) -- ++(-\MQGapS,0) |- (bus);
+\draw[mqtt association] (bus) -- (busbottom);
+\draw[mqtt flow] (bus) -- (dash.west);
+\draw[mqtt flow] (bus |- sse.west) -- (sse.west);
+\draw[mqtt flow] (bus |- admin.west) -- (admin.west);
+\draw[mqtt data flow] (busbottom) -- (ws.west);
 
-\draw[mqtt observation] (sse.north) -- (dash.south);
-\draw[mqtt data flow] (ws.south) -- (broker.north);
+\node[mqtt control,half,below=\MQGapL of ws,xshift=-19mm] (broker)
+  {Broker singleton\\+ MQTT handlers\\data/admin effects};
+\node[mqtt state,half,below=\MQGapL of ws,xshift=19mm] (model)
+  {\texttt{MqttModel}\\observable state\\+ SSE events};
 
+\draw[mqtt data flow] \MQPortSouth{ws}{.30} -- ++(0,-6mm) -| (broker.north);
+\draw[mqtt observation] \MQPortSouth{sse}{.72} -- ++(8mm,0) |- (model.east);
+\draw[mqtt control flow] \MQPortSouth{admin}{.28} -- ++(-8mm,0) |- (broker.west);
+\draw[mqtt observation] (broker.east) -- (model.west);
+
+\node[mqtt note,wide,below=\MQGapM of $(broker.south)!0.5!(model.south)$] (note)
+  {Dashboard JavaScript consumes the administration/SSE surfaces;\\MQTT-over-WebSocket is a separate MQTT data route.};
+
+\coordinate (titleguard) at ($(listener.north)+(0,\MQGapL)$);
 \begin{pgfonlayer}{background}
-  \node[mqtt figure frame,fit=(listener)(router)(dash)(sse)(admin)(ws)(broker)] (frame) {};
-  \node[mqtt admin plane,fit=(dash)(sse)(admin)] (adminplane) {};
-  \node[mqtt data plane,fit=(ws)(broker)] (dataplane) {};
+  \node[mqtt figure frame,fit=(titleguard)(listener)(router)(dash)(sse)(admin)(ws)(broker)(model)(note)] (frame) {};
 \end{pgfonlayer}
-\node[mqtt annotation,anchor=west] at ($(adminplane.north west)+(\MQTitleGap,-\MQTitleGap)$)
-  {operator / state surfaces};
-\node[mqtt annotation,anchor=west] at ($(dataplane.north west)+(\MQTitleGap,-\MQTitleGap)$)
-  {MQTT data route};
 \node[mqtt section title] at ($(frame.north west)+(\MQTitleGap,-\MQTitleGap)$)
   {Broker HTTP surfaces};
 
