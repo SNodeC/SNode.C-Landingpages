@@ -1,6 +1,6 @@
 name: MQTTSuite figure validation and publication
 # Review artifacts carry both raster review renders and exact generated SVG bytes.
-# Review publication trigger: Figure 6
+# Per-figure publication is triggered by the watched marker file after visual review.
 
 on:
   push:
@@ -9,6 +9,7 @@ on:
     paths:
       - CMakeLists.txt
       - .github/workflows/publish-mqtt-figures.yml
+      - .github/mqttsuite-figure-publish-marker
       - MQTTSuite/assets/src/tikz/**
       - MQTTSuite/assets/src/first-success/**
   workflow_dispatch:
