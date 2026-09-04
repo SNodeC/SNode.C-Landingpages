@@ -5,49 +5,48 @@
 \input{snodec-canonical-figure-system.tex}
 \begin{document}
 \begin{tikzpicture}[mqtt mobile]
-\tikzset{
-  wide/.style={minimum width=74mm,text width=66mm},
-  half/.style={minimum width=35mm,text width=30mm}
-}
+\tikzset{wide/.style={minimum width=74mm,text width=66mm}}
 
 \node[mqtt external,wide] (listener) {Broker HTTP / HTTPS listener family};
 \node[mqtt control,wide,below=\MQGapS of listener] (router) {shared Express router — request dispatch};
 \draw[mqtt control flow] (listener.south) -- (router.north);
 
-\node[mqtt process,wide,below=\MQGapL of router] (dash)
-  {Bundled dashboard — \texttt{/clients/*}\\non-upgrade \texttt{/} redirects to \texttt{/clients}};
+\node[mqtt process,wide,below=22mm of router] (dash)
+  {Dashboard / static assets — \texttt{/clients/*}\\non-upgrade \texttt{/} redirects to \texttt{/clients}};
 \node[mqtt process,wide,below=\MQGapS of dash] (sse)
   {SSE — \texttt{GET /api/mqtt/events}, legacy \texttt{GET /sse}\\current state + live events from \texttt{MqttModel}};
 \node[mqtt process,wide,below=\MQGapS of sse] (admin)
-  {JSON administration — \texttt{POST /api/mqtt/}\\\texttt{disconnect}, \texttt{subscribe}, \texttt{unsubscribe}, \texttt{release}};
+  {JSON administration → Broker\\\texttt{POST /api/mqtt/}: disconnect · subscribe · unsubscribe · release};
 \node[mqtt data,wide,below=\MQGapS of admin] (ws)
-  {MQTT WebSocket — \texttt{/}, \texttt{/ws}, \texttt{/mqtt}\\requested subprotocol \texttt{mqtt}};
+  {MQTT WebSocket → Broker — \texttt{/ · /ws · /mqtt}\\requested subprotocol \texttt{mqtt}};
 
-\coordinate (bus) at ($(dash.west)+(-\MQGapS,0)$);
-\coordinate (busbottom) at ($(ws.west)+(-\MQGapS,0)$);
-\draw[mqtt association] (router.west) -- ++(-\MQGapS,0) |- (bus);
-\draw[mqtt association] (bus) -- (busbottom);
-\draw[mqtt flow] (bus) -- (dash.west);
-\draw[mqtt flow] (bus |- sse.west) -- (sse.west);
-\draw[mqtt flow] (bus |- admin.west) -- (admin.west);
-\draw[mqtt data flow] (busbottom) -- (ws.west);
+\coordinate (routesTitleGuard) at ($(dash.north)+(0,\MQGapL)$);
+\begin{pgfonlayer}{background}
+  \node[mqtt group,fit=(routesTitleGuard)(dash)(sse)(admin)(ws)] (routes) {};
+\end{pgfonlayer}
+\node[mqtt section title] at ($(routes.north west)+(\MQTitleGap,-\MQTitleGap)$)
+  {Routes on the shared router};
+\draw[mqtt control flow] (router.south) -- (routes.north);
 
-\node[mqtt control,half,below=\MQGapL of ws,xshift=-19mm] (broker)
-  {Broker singleton\\+ MQTT handlers\\data/admin effects};
-\node[mqtt state,half,below=\MQGapL of ws,xshift=19mm] (model)
-  {\texttt{MqttModel}\\observable state\\+ SSE events};
+\node[mqtt control,wide,below=22mm of routes] (broker)
+  {Broker singleton + MQTT handlers\\MQTT data path + selected administration effects};
+\node[mqtt state,wide,below=\MQGapS of broker] (model)
+  {\texttt{MqttModel} — observable client / subscription / retained state\\+ SSE event source};
+\draw[mqtt observation] (broker.south) -- node[mqtt edge label,right]{connection / state events} (model.north);
 
-\draw[mqtt data flow] \MQPortSouth{ws}{.30} -- ++(0,-6mm) -| (broker.north);
-\draw[mqtt observation] \MQPortSouth{sse}{.72} -- ++(8mm,0) |- (model.east);
-\draw[mqtt control flow] \MQPortSouth{admin}{.28} -- ++(-8mm,0) |- (broker.west);
-\draw[mqtt observation] (broker.east) -- (model.west);
+\coordinate (ownersTitleGuard) at ($(broker.north)+(0,\MQGapL)$);
+\begin{pgfonlayer}{background}
+  \node[mqtt group,fit=(ownersTitleGuard)(broker)(model)] (owners) {};
+\end{pgfonlayer}
+\node[mqtt section title] at ($(owners.north west)+(\MQTitleGap,-\MQTitleGap)$)
+  {Runtime ownership};
 
-\node[mqtt note,wide,below=\MQGapM of $(broker.south)!0.5!(model.south)$] (note)
-  {Dashboard JavaScript consumes the administration/SSE surfaces;\\MQTT-over-WebSocket is a separate MQTT data route.};
+\node[mqtt note,wide,below=\MQGapM of owners] (note)
+  {Dashboard JavaScript consumes the administration/SSE routes;\\MQTT-over-WebSocket is a separate MQTT data route.};
 
 \coordinate (titleguard) at ($(listener.north)+(0,\MQGapL)$);
 \begin{pgfonlayer}{background}
-  \node[mqtt figure frame,fit=(titleguard)(listener)(router)(dash)(sse)(admin)(ws)(broker)(model)(note)] (frame) {};
+  \node[mqtt figure frame,fit=(titleguard)(listener)(router)(routes)(owners)(note)] (frame) {};
 \end{pgfonlayer}
 \node[mqtt section title] at ($(frame.north west)+(\MQTitleGap,-\MQTitleGap)$)
   {Broker HTTP surfaces};
