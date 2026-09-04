@@ -34,7 +34,7 @@
 \draw[mqtt data flow] (directfactory.south) -- ++(0,-6mm) -| \MQPortNorth{mqtt}{.30};
 \draw[mqtt data flow] (wsfactory.south) -- ++(0,-6mm) -| \MQPortNorth{mqtt}{.70};
 \draw[mqtt data flow] (mqtt.south) -- (broker.north);
-\draw[mqtt observation] (mqtt.east) -- ++(8mm,0) |- (model.east);
+\draw[mqtt observation] (mqtt.east) -- ++(\MQTitleGap,0) |- (model.east);
 
 \coordinate (titleguard) at ($(direct.north)+(0,\MQGapL)$);
 \begin{pgfonlayer}{background}
