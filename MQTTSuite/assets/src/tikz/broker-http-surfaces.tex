@@ -6,10 +6,9 @@
 \begin{document}
 \begin{tikzpicture}[mqtt desktop]
 \tikzset{
-  surface/.style={mqtt process,minimum width=51mm,text width=45mm},
-  route/.style={mqtt data,minimum width=51mm,text width=45mm},
-  runtime/.style={mqtt control,minimum width=51mm,text width=45mm},
-  model/.style={mqtt state,minimum width=51mm,text width=45mm}
+  surface/.style={mqtt process,minimum width=50mm,text width=44mm},
+  route/.style={mqtt data,minimum width=50mm,text width=44mm},
+  owner/.style={minimum width=52mm,text width=46mm}
 }
 
 \node[mqtt external,minimum width=48mm,text width=42mm] (listener)
@@ -18,47 +17,45 @@
   {shared Express router\\request dispatch};
 \draw[mqtt control flow] (listener.east) -- (router.west);
 
-\node[surface,below=\MQGapL of listener] (dash)
-  {Bundled dashboard assets\\\texttt{/clients/*}\\non-upgrade \texttt{/} redirects to \texttt{/clients}};
+\node[surface,below=22mm of listener] (dash)
+  {Dashboard / static assets\\\texttt{/clients/*}\\non-upgrade \texttt{/} redirects to \texttt{/clients}};
 \node[surface,right=\MQGapM of dash] (sse)
-  {SSE current state + live events\\\texttt{GET /api/mqtt/events}\\legacy \texttt{GET /sse}};
+  {SSE current state + live events\\\texttt{GET /api/mqtt/events}\\legacy \texttt{GET /sse}\\source: \texttt{MqttModel}};
 \node[surface,below=\MQGapM of dash] (admin)
-  {Mutating JSON administration\\\texttt{POST /api/mqtt/}\{\texttt{disconnect}, \texttt{subscribe},\\\texttt{unsubscribe}, \texttt{release}\}};
+  {JSON administration → Broker\\\texttt{POST /api/mqtt/}\\\texttt{disconnect · subscribe · unsubscribe · release}};
 \node[route,below=\MQGapM of sse] (ws)
-  {MQTT-over-WebSocket upgrade\\\texttt{/}, \texttt{/ws}, \texttt{/mqtt}\\requested subprotocol \texttt{mqtt}};
+  {MQTT WebSocket → Broker\\\texttt{/ · /ws · /mqtt}\\requested subprotocol \texttt{mqtt}};
 
-\coordinate (dispatch) at ($(dash.north)!0.5!(sse.north)+(0,7mm)$);
-\draw[mqtt association] (router.south) -- (dispatch);
-\draw[mqtt flow] (dispatch) -| (dash.north);
-\draw[mqtt flow] (dispatch) -| (sse.north);
-\draw[mqtt flow] (dispatch) -- ++(0,-7mm) -| (admin.north);
-\draw[mqtt data flow] (dispatch) -- ++(0,-7mm) -| (ws.north);
+\coordinate (routesTitleGuard) at ($(dash.north)+(0,\MQGapL)$);
+\begin{pgfonlayer}{background}
+  \node[mqtt group,fit=(routesTitleGuard)(dash)(sse)(admin)(ws)] (routes) {};
+\end{pgfonlayer}
+\node[mqtt section title] at ($(routes.north west)+(\MQTitleGap,-\MQTitleGap)$)
+  {Routes installed on the shared HTTP router};
+\draw[mqtt control flow] (router.south) -- (routes.north);
 
-\node[runtime,below=\MQGapL of admin] (broker)
-  {Broker singleton + per-connection MQTT handlers\\data-plane routing and selected admin effects};
-\node[model,right=\MQGapM of broker] (model)
-  {\texttt{MqttModel}\\current observable client / subscription / retained state\\+ SSE event source};
-
-\draw[mqtt control flow] (admin.south) -- (broker.north);
-\draw[mqtt data flow] (ws.south) -- ++(0,-6mm) -| (broker.east);
+\node[mqtt control,owner,below=22mm of routes,xshift=-29mm] (broker)
+  {Broker singleton + MQTT handlers\\MQTT data path + selected admin effects};
+\node[mqtt state,owner,below=22mm of routes,xshift=29mm] (model)
+  {\texttt{MqttModel}\\observable client / subscription / retained state\\+ SSE event source};
 \draw[mqtt observation] (broker.east) -- node[mqtt edge label,above]{connection / state events} (model.west);
-\draw[mqtt observation] (sse.south) -- ++(0,-6mm) -| (model.north);
 
-\node[mqtt note,below=\MQGapS of $(broker.south)!0.5!(model.south)$,minimum width=110mm,text width=104mm] (note)
-  {The dashboard is a browser client of the HTTP administration/SSE surfaces. MQTT-over-WebSocket is a separate MQTT data route through the same HTTP server infrastructure.};
+\coordinate (ownersTitleGuard) at ($(broker.north)+(0,\MQGapL)$);
+\begin{pgfonlayer}{background}
+  \node[mqtt group,fit=(ownersTitleGuard)(broker)(model)] (owners) {};
+\end{pgfonlayer}
+\node[mqtt section title] at ($(owners.north west)+(\MQTitleGap,-\MQTitleGap)$)
+  {Runtime ownership};
+
+\node[mqtt note,below=\MQGapM of owners,minimum width=110mm,text width=104mm] (note)
+  {The bundled dashboard is a browser client of the administration/SSE routes. MQTT-over-WebSocket is a separate MQTT data route through the same HTTP server infrastructure.};
 
 \coordinate (titleguard) at ($(listener.north)+(0,\MQGapL)$);
 \begin{pgfonlayer}{background}
-  \node[mqtt figure frame,fit=(titleguard)(listener)(router)(dash)(sse)(admin)(ws)(broker)(model)(note)] (frame) {};
-  \node[mqtt admin plane,fit=(dash)(sse)(admin)] (adminplane) {};
-  \node[mqtt data plane,fit=(ws)] (dataplane) {};
+  \node[mqtt figure frame,fit=(titleguard)(listener)(router)(routes)(owners)(note)] (frame) {};
 \end{pgfonlayer}
 \node[mqtt section title] at ($(frame.north west)+(\MQTitleGap,-\MQTitleGap)$)
   {Broker HTTP surfaces};
-\node[mqtt annotation,anchor=west] at ($(adminplane.north west)+(\MQTitleGap,-\MQTitleGap)$)
-  {operator / state surfaces};
-\node[mqtt annotation,anchor=west] at ($(dataplane.north west)+(\MQTitleGap,-\MQTitleGap)$)
-  {MQTT data route};
 
 % Authoritative SNode.C desktop canvas: exactly 160 mm wide, native drawing.
 \coordinate (snodecCanvasCenter) at (current bounding box.center);
