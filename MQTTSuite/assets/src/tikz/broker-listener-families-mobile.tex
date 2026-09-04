@@ -2,41 +2,46 @@
 \usepackage[T1]{fontenc}
 \usepackage{lmodern}
 \input{mqttsystem-figure-system.tex}
+\input{snodec-canonical-figure-system.tex}
 \begin{document}
 \begin{tikzpicture}[mqtt mobile]
 \tikzset{
   half/.style={minimum width=34mm,text width=29mm},
-  wide/.style={minimum width=76mm,text width=69mm}
+  wide/.style={minimum width=74mm,text width=66mm}
 }
 
 \node[mqtt external,half] (direct)
-  {Direct MQTT\\\texttt{in / in6 / un}\\plain / TLS};
-\node[mqtt external,half,right=8mm of direct] (http)
-  {HTTP / HTTPS\\\texttt{in / in6 / un}\\MQTT upgrade};
-\node[mqtt process,half,below=\MQGapS of direct] (directctx)
-  {per-connection\\MQTT server context};
-\node[mqtt process,half,below=\MQGapS of http] (wsctx)
-  {per-connection\\WebSocket + MQTT context};
-\node[mqtt application,wide,below=\MQGapL of $(directctx.south)!0.5!(wsctx.south)$] (broker)
-  {shared Broker core};
-\node[mqtt state,wide,below=\MQGapS of broker] (state)
-  {shared sessions + subscriptions + retained state};
-\node[mqtt state,wide,below=\MQGapS of state] (model)
-  {observable \texttt{MqttModel} state};
+  {Direct MQTT\\IPv4 / IPv6 / Unix\\plain / TLS};
+\node[mqtt external,half,right=\MQGapS of direct] (http)
+  {HTTP / HTTPS\\IPv4 / IPv6 / Unix\\MQTT WebSocket upgrade};
 
-\draw[mqtt data flow] (direct.south) -- (directctx.north);
-\draw[mqtt data flow] (http.south) -- (wsctx.north);
-\draw[mqtt data flow] (directctx.south) -- ++(0,-6mm) -| \MQPortNorth{broker}{.30};
-\draw[mqtt data flow] (wsctx.south) -- ++(0,-6mm) -| \MQPortNorth{broker}{.70};
-\draw[mqtt flow] (broker.south) -- (state.north);
-\draw[mqtt observation] (broker.east) -- ++(8mm,0) |- ($(model.east)+(8mm,0)$) -- (model.east);
+\node[mqtt process,half,below=\MQGapS of direct] (directfactory)
+  {\texttt{SocketContextFactory}\\MQTT socket context};
+\node[mqtt process,half,below=\MQGapS of http] (wsfactory)
+  {\texttt{mqtt} subprotocol\\\texttt{SubProtocolFactory}};
 
+\node[mqtt application,wide,below=\MQGapL of $(directfactory.south)!0.5!(wsfactory.south)$] (mqtt)
+  {per accepted MQTT connection — \texttt{mqttbroker::lib::Mqtt}};
+\node[mqtt control,wide,below=\MQGapM of mqtt] (broker)
+  {one shared Broker singleton\\routing + sessions + subscriptions + retained messages};
+\node[mqtt state,wide,below=\MQGapM of broker] (model)
+  {\texttt{MqttModel} — observable/admin model\\updated from connection events};
+\node[mqtt note,wide,below=\MQGapS of model] (note)
+  {Direct and WebSocket paths converge on the same Broker singleton;\\\texttt{MqttModel} is not a second broker-state store.};
+
+\draw[mqtt data flow] (direct.south) -- (directfactory.north);
+\draw[mqtt data flow] (http.south) -- (wsfactory.north);
+\draw[mqtt data flow] (directfactory.south) -- ++(0,-6mm) -| \MQPortNorth{mqtt}{.30};
+\draw[mqtt data flow] (wsfactory.south) -- ++(0,-6mm) -| \MQPortNorth{mqtt}{.70};
+\draw[mqtt data flow] (mqtt.south) -- (broker.north);
+\draw[mqtt observation] (mqtt.east) -- ++(8mm,0) |- (model.east);
+
+\coordinate (titleguard) at ($(direct.north)+(0,\MQGapL)$);
 \begin{pgfonlayer}{background}
-  \node[mqtt figure frame,fit=(direct)(http)(directctx)(wsctx)(broker)(state)(model)] (frame) {};
-  \node[mqtt data plane,fit=(direct)(http)(directctx)(wsctx)(broker)(state)] (plane) {};
+  \node[mqtt figure frame,fit=(titleguard)(direct)(http)(directfactory)(wsfactory)(mqtt)(broker)(model)(note)] (frame) {};
 \end{pgfonlayer}
 \node[mqtt section title] at ($(frame.north west)+(\MQTitleGap,-\MQTitleGap)$)
-  {One shared Broker core};
+  {One shared Broker singleton};
 
 \end{tikzpicture}
 \end{document}
