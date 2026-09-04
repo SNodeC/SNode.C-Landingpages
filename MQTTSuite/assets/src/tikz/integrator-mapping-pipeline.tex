@@ -6,49 +6,79 @@
 \begin{document}
 \begin{tikzpicture}[mqtt desktop]
 \tikzset{
-  stage/.style={minimum width=39mm,text width=33mm},
-  note/.style={mqtt note,minimum width=48mm,text width=42mm}
+  setup/.style={mqtt config,minimum width=35mm,text width=30mm},
+  stage/.style={mqtt process,minimum width=35mm,text width=30mm},
+  controlstage/.style={mqtt control,minimum width=38mm,text width=33mm},
+  out/.style={mqtt process,minimum width=36mm,text width=31mm}
 }
 
-\node[mqtt external,stage] (brokerin)
-  {Broker delivers a PUBLISH matching a mapping-derived subscription};
-\node[mqtt application,stage,right=\MQHorizontalGap of brokerin] (client)
-  {MQTTIntegrator\\MQTT client connection};
-\node[mqtt control,stage,right=\MQHorizontalGap of client] (match)
-  {topic-tree match\\literal / \texttt{+} / terminal \texttt{\#}};
-\draw[mqtt data flow] (brokerin.east) -- (client.west);
-\draw[mqtt data flow] (client.east) -- (match.west);
-
-\node[mqtt control,stage,below=\MQGapM of match] (rules)
-  {apply mapping modes\\static / value / JSON};
-\node[mqtt process,stage,left=\MQHorizontalGap of rules] (outputs)
-  {produce $0..n$ mapped PUBLISH messages\\immediate and/or scheduled};
-\node[mqtt data,stage,left=\MQHorizontalGap of outputs] (send)
-  {send mapped PUBLISH\\through the same MQTT client connection};
-\draw[mqtt control flow] (match.south) -- (rules.north);
-\draw[mqtt control flow] (rules.west) -- (outputs.east);
-\draw[mqtt data flow] (outputs.west) -- (send.east);
-\draw[mqtt data flow] (send.north) -- ++(0,6mm) -| \MQPortSouth{client}{.28};
-
-\node[note,below=\MQGapM of send] (subqos)
-  {Subscription QoS comes from \texttt{subscription.qos} when the mapping-derived subscription is created.};
-\node[note,below=\MQGapM of rules] (pubqos)
-  {Each mapped PUBLISH carries its own output QoS and retain settings; delayed outputs use the same values when the timer fires.};
-\draw[mqtt association] (brokerin.south) -- (subqos.north);
-\draw[mqtt association] (outputs.south) -- (pubqos.north);
-
-\coordinate (titleguard) at ($(brokerin.north)+(0,\MQGapL)$);
+% Subscription setup is configuration/startup work, not part of each message's
+% processing spine.
+\node[setup] (mappingdoc) {mapping document\\subscription filters + \texttt{subscription.qos}};
+\node[controlstage,right=\MQGapS of mappingdoc] (extract)
+  {\texttt{extractSubscriptions()}\\build MQTT topic filters};
+\node[setup,right=\MQGapS of extract] (subscribe)
+  {SUBSCRIBE setup\\requested delivery QoS};
+\draw[mqtt control flow] (mappingdoc.east) -- (extract.west);
+\draw[mqtt control flow] (extract.east) -- (subscribe.west);
 \begin{pgfonlayer}{background}
-  \node[mqtt figure frame,fit=(titleguard)(brokerin)(client)(match)(rules)(outputs)(send)(subqos)(pubqos)] (frame) {};
+  \node[mqtt group,fit=(mappingdoc)(extract)(subscribe)] (setupframe) {};
+\end{pgfonlayer}
+\node[mqtt annotation,anchor=west] at ($(setupframe.north west)+(\MQTitleGap,-\MQTitleGap)$)
+  {subscription setup — outside the per-PUBLISH processing spine};
+
+% Per-message runtime path.
+\node[mqtt external,stage,below=22mm of setupframe] (brokerin)
+  {Broker delivers PUBLISH\\selected by active subscriptions};
+\node[mqtt application,stage,right=\MQGapS of brokerin] (client)
+  {MQTTIntegrator\\MQTT client};
+\node[controlstage,right=\MQGapS of client] (mapper)
+  {\texttt{MqttMapper::getMappings()}\\topic-tree first match};
+\draw[mqtt data flow] (brokerin.east) -- (client.west);
+\draw[mqtt data flow] (client.east) -- (mapper.west);
+
+\node[controlstage,below=\MQGapM of mapper] (rules)
+  {evaluate present mapping keys\\\texttt{static}, \texttt{value}, \texttt{json} independently};
+\draw[mqtt control flow] (mapper.south) -- (rules.north);
+
+\node[out,left=\MQGapS of rules] (immediate)
+  {immediate outputs\\$0..n$ publications\\mapping-defined QoS + retain};
+\node[out,right=\MQGapS of rules] (scheduled)
+  {scheduled outputs\\$0..n$ publications\\delay + mapping-defined QoS / retain};
+\draw[mqtt control flow] \MQPortSouth{rules}{.30} -- ++(0,-6mm) -| (immediate.north);
+\draw[mqtt control flow] \MQPortSouth{rules}{.70} -- ++(0,-6mm) -| (scheduled.north);
+
+\node[mqtt process,below=\MQGapM of immediate,minimum width=37mm,text width=32mm] (sendnow)
+  {\texttt{sendPublish(...)}\\immediately};
+\node[mqtt state,below=\MQGapM of scheduled,minimum width=37mm,text width=32mm] (queue)
+  {enqueue in \texttt{DelayedQueue}\\timer releases when due};
+\draw[mqtt data flow] (immediate.south) -- (sendnow.north);
+\draw[mqtt control flow] (scheduled.south) -- (queue.north);
+
+\node[mqtt process,below=\MQGapM of queue,minimum width=37mm,text width=32mm] (sendlater)
+  {when due: \texttt{sendPublish(...)} };
+\draw[mqtt data flow] (queue.south) -- (sendlater.north);
+
+\node[mqtt note,below=\MQGapM of sendnow,xshift=21mm,minimum width=82mm,text width=76mm] (note)
+  {Both republish paths use the same MQTT client connection.\\Outgoing PUBLISH QoS is an output-mapping decision, independent of SUBSCRIBE QoS.};
+\draw[mqtt association] (sendnow.south) -- ++(0,-5mm) -| \MQPortNorth{note}{.32};
+\draw[mqtt association] (sendlater.south) -- ++(0,-5mm) -| \MQPortNorth{note}{.68};
+
+\coordinate (titleguard) at ($(setupframe.north)+(0,\MQGapL)$);
+\begin{pgfonlayer}{background}
+  \node[mqtt figure frame,fit=(titleguard)(setupframe)(brokerin)(client)(mapper)(rules)(immediate)(scheduled)(sendnow)(queue)(sendlater)(note)] (frame) {};
 \end{pgfonlayer}
 \node[mqtt section title] at ($(frame.north west)+(\MQTitleGap,-\MQTitleGap)$)
   {MQTTIntegrator mapping pipeline};
 
-% Authoritative SNode.C desktop canvas: exactly 160 mm wide, native drawing.
+% Canonical SNode.C desktop canvas: exactly 160 mm wide, native drawing.
 \coordinate (snodecCanvasCenter) at (current bounding box.center);
-\coordinate (snodecCanvasSW) at ($(snodecCanvasCenter)+(-80mm,0)$ |- current bounding box.south);
-\coordinate (snodecCanvasNE) at ($(snodecCanvasCenter)+(80mm,0)$ |- current bounding box.north);
-\path[use as bounding box] ([yshift=-7pt]snodecCanvasSW) rectangle ([yshift=7pt]snodecCanvasNE);
+\coordinate (snodecCanvasSW)
+  at ($(snodecCanvasCenter)+(-80mm,0)$ |- current bounding box.south);
+\coordinate (snodecCanvasNE)
+  at ($(snodecCanvasCenter)+(80mm,0)$ |- current bounding box.north);
+\path[use as bounding box]
+  ([yshift=-7pt]snodecCanvasSW) rectangle ([yshift=7pt]snodecCanvasNE);
 
 \end{tikzpicture}
 \end{document}

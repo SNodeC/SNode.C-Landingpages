@@ -6,45 +6,67 @@
 \begin{document}
 \begin{tikzpicture}[mqtt mobile]
 \tikzset{
-  wide/.style={minimum width=66mm,text width=58mm},
-  half/.style={minimum width=30mm,text width=25mm}
+  wide/.style={minimum width=72mm,text width=64mm},
+  half/.style={minimum width=33mm,text width=28mm}
 }
 
-\node[mqtt external,wide] (brokerin)
-  {Broker delivers a PUBLISH matching a mapping-derived subscription};
+% Subscription setup is intentionally separate from the per-message spine.
+\node[mqtt config,wide] (mappingdoc)
+  {mapping document — subscription filters + \texttt{subscription.qos}};
+\node[mqtt control,wide,below=\MQGapS of mappingdoc] (extract)
+  {\texttt{extractSubscriptions()} builds MQTT topic filters};
+\node[mqtt config,wide,below=\MQGapS of extract] (subscribe)
+  {SUBSCRIBE setup — requested delivery QoS};
+\draw[mqtt control flow] (mappingdoc.south) -- (extract.north);
+\draw[mqtt control flow] (extract.south) -- (subscribe.north);
+\begin{pgfonlayer}{background}
+  \node[mqtt group,fit=(mappingdoc)(extract)(subscribe)] (setupframe) {};
+\end{pgfonlayer}
+\node[mqtt annotation,anchor=west] at ($(setupframe.north west)+(\MQTitleGap,-\MQTitleGap)$)
+  {subscription setup};
+
+\node[mqtt external,wide,below=22mm of setupframe] (brokerin)
+  {Broker delivers PUBLISH selected by active subscriptions};
 \node[mqtt application,wide,below=\MQGapS of brokerin] (client)
-  {MQTTIntegrator MQTT client connection};
-\node[mqtt control,wide,below=\MQGapM of client] (match)
-  {topic-tree match — literal / \texttt{+} / terminal \texttt{\#}};
-\node[mqtt control,wide,below=\MQGapS of match] (rules)
-  {apply static / value / JSON mapping modes};
-\node[mqtt process,wide,below=\MQGapM of rules] (outputs)
-  {produce $0..n$ mapped PUBLISH messages\\immediate and/or scheduled};
-\node[mqtt data,wide,below=\MQGapS of outputs] (send)
-  {send mapped PUBLISH through the same MQTT client connection};
+  {MQTTIntegrator MQTT client};
+\node[mqtt control,wide,below=\MQGapS of client] (mapper)
+  {\texttt{MqttMapper::getMappings()} — topic-tree first match};
+\node[mqtt control,wide,below=\MQGapM of mapper] (rules)
+  {evaluate present \texttt{static}, \texttt{value}, and \texttt{json} keys independently};
 
 \draw[mqtt data flow] (brokerin.south) -- (client.north);
-\draw[mqtt data flow] (client.south) -- (match.north);
-\draw[mqtt control flow] (match.south) -- (rules.north);
-\draw[mqtt control flow] (rules.south) -- (outputs.north);
-\draw[mqtt data flow] (outputs.south) -- (send.north);
+\draw[mqtt data flow] (client.south) -- (mapper.north);
+\draw[mqtt control flow] (mapper.south) -- (rules.north);
 
-\node[mqtt note,half,below=\MQGapM of send,xshift=-17mm] (subqos)
-  {SUBSCRIBE QoS comes from \texttt{subscription.qos}};
-\node[mqtt note,half,below=\MQGapM of send,xshift=17mm] (pubqos)
-  {each output has its own QoS + retain};
-\draw[mqtt association] \MQPortSouth{send}{.28} -- ++(0,-6mm) -| (subqos.north);
-\draw[mqtt association] \MQPortSouth{send}{.72} -- ++(0,-6mm) -| (pubqos.north);
+\node[mqtt process,half,below=\MQGapM of rules,xshift=-19mm] (immediate)
+  {immediate outputs\\$0..n$ publications\\mapping QoS + retain};
+\node[mqtt process,half,below=\MQGapM of rules,xshift=19mm] (scheduled)
+  {scheduled outputs\\$0..n$ publications\\delay + mapping QoS / retain};
+\draw[mqtt control flow] \MQPortSouth{rules}{.28} -- ++(0,-6mm) -| (immediate.north);
+\draw[mqtt control flow] \MQPortSouth{rules}{.72} -- ++(0,-6mm) -| (scheduled.north);
 
-\node[mqtt note,wide,below=\MQGapM of $(subqos.south)!0.5!(pubqos.south)$] (delayed)
-  {scheduled outputs use their mapped QoS/retain values when the timer fires};
+\node[mqtt process,half,below=\MQGapM of immediate] (sendnow)
+  {\texttt{sendPublish(...)}\\immediately};
+\node[mqtt state,half,below=\MQGapM of scheduled] (queue)
+  {enqueue in\\\texttt{DelayedQueue}};
+\draw[mqtt data flow] (immediate.south) -- (sendnow.north);
+\draw[mqtt control flow] (scheduled.south) -- (queue.north);
 
-\coordinate (titleguard) at ($(brokerin.north)+(0,\MQGapL)$);
+\node[mqtt process,half,below=\MQGapM of queue] (sendlater)
+  {when due:\\\texttt{sendPublish(...)}};
+\draw[mqtt data flow] (queue.south) -- (sendlater.north);
+
+\node[mqtt note,wide,below=\MQGapM of sendnow,xshift=19mm] (note)
+  {Both republish paths use the same MQTT client connection.\\Outgoing PUBLISH QoS is independent of SUBSCRIBE QoS.};
+\draw[mqtt association] (sendnow.south) -- ++(0,-5mm) -| \MQPortNorth{note}{.30};
+\draw[mqtt association] (sendlater.south) -- ++(0,-5mm) -| \MQPortNorth{note}{.70};
+
+\coordinate (titleguard) at ($(setupframe.north)+(0,\MQGapL)$);
 \begin{pgfonlayer}{background}
-  \node[mqtt figure frame,fit=(titleguard)(brokerin)(client)(match)(rules)(outputs)(send)(subqos)(pubqos)(delayed)] (frame) {};
+  \node[mqtt figure frame,fit=(titleguard)(setupframe)(brokerin)(client)(mapper)(rules)(immediate)(scheduled)(sendnow)(queue)(sendlater)(note)] (frame) {};
 \end{pgfonlayer}
 \node[mqtt section title] at ($(frame.north west)+(\MQTitleGap,-\MQTitleGap)$)
-  {Integrator mapping pipeline};
+  {MQTTIntegrator mapping pipeline};
 
 \end{tikzpicture}
 \end{document}
