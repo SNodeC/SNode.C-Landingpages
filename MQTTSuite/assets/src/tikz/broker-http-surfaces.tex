@@ -11,15 +11,15 @@
   owner/.style={minimum width=52mm,text width=46mm}
 }
 
-\node[mqtt external,minimum width=48mm,text width=42mm] (listener)
+\node[mqtt external,minimum width=58mm,text width=52mm] (listener)
   {Broker HTTP / HTTPS listener family};
-\node[mqtt control,minimum width=48mm,text width=42mm,right=\MQGapM of listener] (router)
-  {shared Express router\\request dispatch};
-\draw[mqtt control flow] (listener.east) -- (router.west);
+\node[mqtt control,minimum width=58mm,text width=52mm,below=\MQGapS of listener] (router)
+  {shared Express router — request dispatch};
+\draw[mqtt control flow] (listener.south) -- (router.north);
 
-\node[surface,below=22mm of listener] (dash)
+\node[surface,below=22mm of router,xshift=-28mm] (dash)
   {Dashboard / static assets\\\texttt{/clients/*}\\non-upgrade \texttt{/} redirects to \texttt{/clients}};
-\node[surface,right=\MQGapM of dash] (sse)
+\node[surface,below=22mm of router,xshift=28mm] (sse)
   {SSE current state + live events\\\texttt{GET /api/mqtt/events}\\legacy \texttt{GET /sse}\\source: \texttt{MqttModel}};
 \node[surface,below=\MQGapM of dash] (admin)
   {JSON administration → Broker\\\texttt{POST /api/mqtt/}\\\texttt{disconnect · subscribe · unsubscribe · release}};
@@ -37,8 +37,8 @@
 \node[mqtt control,owner,below=22mm of routes,xshift=-29mm] (broker)
   {Broker singleton + MQTT handlers\\MQTT data path + selected admin effects};
 \node[mqtt state,owner,below=22mm of routes,xshift=29mm] (model)
-  {\texttt{MqttModel}\\observable client / subscription / retained state\\+ SSE event source};
-\draw[mqtt observation] (broker.east) -- node[mqtt edge label,above]{connection / state events} (model.west);
+  {\texttt{MqttModel}\\observable client / subscription / retained state\\+ SSE event source\\fed by Broker connection/state events};
+\draw[mqtt observation] (broker.east) -- (model.west);
 
 \coordinate (ownersTitleGuard) at ($(broker.north)+(0,\MQGapL)$);
 \begin{pgfonlayer}{background}
