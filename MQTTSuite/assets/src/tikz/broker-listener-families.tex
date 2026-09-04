@@ -6,44 +6,44 @@
 \begin{document}
 \begin{tikzpicture}[mqtt desktop]
 \tikzset{
-  family/.style={mqtt external,minimum width=37mm,text width=31mm},
-  adapter/.style={mqtt process,minimum width=39mm,text width=33mm},
-  handler/.style={mqtt application,minimum width=43mm,text width=37mm},
-  core/.style={mqtt control,minimum width=47mm,text width=41mm},
-  model/.style={mqtt state,minimum width=52mm,text width=46mm}
+  family/.style={mqtt external,minimum width=43mm,text width=37mm},
+  adapter/.style={mqtt process,minimum width=43mm,text width=37mm},
+  handler/.style={mqtt application,minimum width=58mm,text width=52mm},
+  core/.style={mqtt control,minimum width=49mm,text width=43mm},
+  model/.style={mqtt state,minimum width=49mm,text width=43mm}
 }
 
 \node[family] (direct)
   {Direct MQTT listener family\\IPv4 / IPv6 / Unix\\plain or TLS stream};
-\node[adapter,right=\MQGapS of direct] (directfactory)
-  {\texttt{SocketContextFactory}\\creates MQTT socket context};
-
-\node[family,below=\MQGapM of direct] (http)
+\node[family,right=\MQGapM of direct] (http)
   {HTTP / HTTPS listener family\\IPv4 / IPv6 / Unix\\UI/admin + MQTT WebSocket upgrade};
-\node[adapter,right=\MQGapS of http] (wsfactory)
+
+\node[adapter,below=\MQGapS of direct] (directfactory)
+  {\texttt{SocketContextFactory}\\creates MQTT socket context};
+\node[adapter,below=\MQGapS of http] (wsfactory)
   {WebSocket \texttt{mqtt} subprotocol\\\texttt{SubProtocolFactory}};
 
-\node[handler,right=\MQGapM of $(directfactory.east)!0.5!(wsfactory.east)$] (mqtt)
-  {per accepted MQTT connection\\\texttt{mqttbroker::lib::Mqtt}};
-\node[core,right=\MQGapM of mqtt] (broker)
+\node[handler,below=\MQGapL of $(directfactory.south)!0.5!(wsfactory.south)$] (mqtt)
+  {per accepted MQTT connection — \texttt{mqttbroker::lib::Mqtt}};
+
+\node[core,below=\MQGapM of mqtt,xshift=-28.5mm] (broker)
   {one shared Broker singleton\\routing + MQTT session state\\subscriptions + retained messages};
-\node[model,below=\MQGapM of mqtt] (model)
-  {\texttt{MqttModel}\\observable/admin model updated from connection events};
+\node[model,below=\MQGapM of mqtt,xshift=28.5mm] (model)
+  {\texttt{MqttModel}\\observable/admin model\\updated from connection events};
 
-\draw[mqtt data flow] (direct.east) -- (directfactory.west);
-\draw[mqtt data flow] (http.east) -- (wsfactory.west);
-\draw[mqtt data flow] (directfactory.east) -- ++(6mm,0) |- \MQPortWest{mqtt}{.70};
-\draw[mqtt data flow] (wsfactory.east) -- ++(6mm,0) |- \MQPortWest{mqtt}{.30};
-\draw[mqtt data flow] (mqtt.east) -- (broker.west);
-\draw[mqtt observation] (mqtt.south) -- node[mqtt edge label,right]{connect / publish / subscribe / unsubscribe / disconnect} (model.north);
+\draw[mqtt data flow] (direct.south) -- (directfactory.north);
+\draw[mqtt data flow] (http.south) -- (wsfactory.north);
+\draw[mqtt data flow] (directfactory.south) -- ++(0,-6mm) -| \MQPortNorth{mqtt}{.30};
+\draw[mqtt data flow] (wsfactory.south) -- ++(0,-6mm) -| \MQPortNorth{mqtt}{.70};
+\draw[mqtt data flow] \MQPortSouth{mqtt}{.30} -- ++(0,-6mm) -| (broker.north);
+\draw[mqtt observation] \MQPortSouth{mqtt}{.70} -- ++(0,-6mm) -| node[mqtt edge label,near end,right]{connection events} (model.north);
 
-\node[mqtt note,below=\MQGapS of broker,minimum width=54mm,text width=48mm] (singleton)
-  {Direct contexts receive the shared Broker pointer; WebSocket contexts call \texttt{Broker::instance(...)} — both converge on the same singleton.};
-\draw[mqtt association] (broker.south) -- (singleton.north);
+\node[mqtt note,below=\MQGapM of $(broker.south)!0.5!(model.south)$,minimum width=108mm,text width=102mm] (note)
+  {Direct contexts receive the shared Broker pointer; WebSocket contexts call \texttt{Broker::instance(...)}. Both paths therefore converge on the same singleton. \texttt{MqttModel} mirrors connection activity for observability/admin surfaces; it is not a second broker-state store.};
 
 \coordinate (titleguard) at ($(direct.north)+(0,\MQGapL)$);
 \begin{pgfonlayer}{background}
-  \node[mqtt figure frame,fit=(titleguard)(direct)(http)(directfactory)(wsfactory)(mqtt)(broker)(model)(singleton)] (frame) {};
+  \node[mqtt figure frame,fit=(titleguard)(direct)(http)(directfactory)(wsfactory)(mqtt)(broker)(model)(note)] (frame) {};
 \end{pgfonlayer}
 \node[mqtt section title] at ($(frame.north west)+(\MQTitleGap,-\MQTitleGap)$)
   {Listener families converge on one Broker singleton};
