@@ -1,38 +1,66 @@
-\documentclass[tikz,border=8pt]{standalone}
+\documentclass[tikz,border=0pt]{standalone}
 \usepackage[T1]{fontenc}
 \usepackage{lmodern}
 \input{mqttsystem-figure-system.tex}
+\input{snodec-canonical-figure-system.tex}
 \begin{document}
 \begin{tikzpicture}[mqtt desktop]
-\tikzset{stage/.style={mqtt process,minimum width=47mm,text width=42mm}}
+\tikzset{
+  wide/.style={minimum width=72mm,text width=66mm},
+  half/.style={minimum width=49mm,text width=43mm}
+}
 
-\node[mqtt external,stage] (incoming) {incoming MQTT PUBLISH};
-\node[mqtt application,minimum width=51mm,text width=46mm,right=\MQHorizontalGapLoose of incoming] (broker)
-  {Broker publish-processing path};
-\node[stage,right=\MQHorizontalGapLoose of broker] (normal)
-  {ordinary publish routed to subscribers};
-\draw[mqtt data flow] (incoming.east) -- (broker.west);
-\draw[mqtt data flow] (broker.east) -- (normal.west);
+\node[mqtt external,wide] (incoming)
+  {incoming MQTT PUBLISH accepted by the Broker connection};
+\node[mqtt process,wide,below=\MQGapS of incoming] (distribute)
+  {SNode.C \texttt{server::Mqtt::distributePublish(publish)}};
+\draw[mqtt data flow] (incoming.south) -- (distribute.north);
 
-\node[mqtt control,minimum width=51mm,text width=46mm,below=\MQGapL of broker] (mapper)
-  {optional shared \texttt{MqttMapper}\\inside MQTTBroker};
-\node[stage,right=\MQHorizontalGapLoose of mapper] (mapped)
-  {zero / one / many mapped PUBLISH messages\\immediate or scheduled};
-\draw[mqtt control flow] (broker.south) -- (mapper.north);
-\draw[mqtt control flow] (mapper.east) -- (mapped.west);
-\draw[mqtt data flow] (mapped.north) -- ++(0,8mm) -| \MQPortSouth{broker}{.72};
+\node[mqtt data,wide,below=\MQGapM of distribute] (ordinary)
+  {1 · \texttt{broker->publish(...)}\\ordinary Broker routing to matching subscribers};
+\node[mqtt application,wide,below=\MQGapM of ordinary] (hook)
+  {2 · \texttt{mqttbroker::lib::Mqtt::onPublish(publish)}\\post-route application hook};
+\draw[mqtt data flow] (distribute.south) -- (ordinary.north);
+\draw[mqtt control flow] (ordinary.south) -- (hook.north);
 
-\node[mqtt note,minimum width=62mm,text width=56mm,below=\MQGapM of mapper] (note)
-  {Mapped outputs call the same Broker publish-processing path again; mapping may therefore cascade. No child \texttt{mqttintegrator} process is created.};
-\draw[mqtt association] (mapper.south) -- (note.north);
+\node[mqtt state,half,below=\MQGapM of hook,xshift=-28mm] (model)
+  {update \texttt{MqttModel}\\observable publish state};
+\node[mqtt control,half,below=\MQGapM of hook,xshift=28mm] (mapper)
+  {shared in-process \texttt{MqttMapper}\\\texttt{getMappings(publish)}};
+\draw[mqtt observation] \MQPortSouth{hook}{.30} -- ++(0,-6mm) -| (model.north);
+\draw[mqtt control flow] \MQPortSouth{hook}{.70} -- ++(0,-6mm) -| (mapper.north);
 
+\node[mqtt process,half,below=\MQGapM of mapper,xshift=-28mm] (immediate)
+  {$0..n$ immediate mapped PUBLISH messages};
+\node[mqtt process,half,below=\MQGapM of mapper,xshift=28mm] (scheduled)
+  {$0..n$ scheduled mapped PUBLISH messages\\per-connection delay queue / timer};
+\draw[mqtt control flow] \MQPortSouth{mapper}{.30} -- ++(0,-6mm) -| (immediate.north);
+\draw[mqtt control flow] \MQPortSouth{mapper}{.70} -- ++(0,-6mm) -| (scheduled.north);
+
+\node[mqtt data,wide,below=\MQGapL of $(immediate.south)!0.5!(scheduled.south)$] (mapped)
+  {for each immediate output — or scheduled output when due:\\\texttt{broker->publish(...)} then \texttt{onPublish(mapped)}};
+\draw[mqtt data flow] (immediate.south) -- ++(0,-6mm) -| \MQPortNorth{mapped}{.30};
+\draw[mqtt data flow] (scheduled.south) -- ++(0,-6mm) -| \MQPortNorth{mapped}{.70};
+
+\node[mqtt note,below=\MQGapM of mapped,minimum width=108mm,text width=102mm] (note)
+  {Mapped outputs therefore invoke the same MQTTBroker \texttt{onPublish} hook again and may cascade through further mappings. The mapper is one shared in-process object supplied to Broker MQTT connections; an empty mapping produces no mapped outputs.};
+\draw[mqtt association] (mapped.south) -- (note.north);
+
+\coordinate (titleguard) at ($(incoming.north)+(0,\MQGapL)$);
 \begin{pgfonlayer}{background}
-  \node[mqtt figure frame,fit=(incoming)(broker)(normal)(mapper)(mapped)(note)] (frame) {};
-  \node[mqtt data plane,fit=(incoming)(broker)(normal)] (data) {};
-  \node[mqtt group,fit=(mapper)(mapped)(note)] (mapping) {};
+  \node[mqtt figure frame,fit=(titleguard)(incoming)(distribute)(ordinary)(hook)(model)(mapper)(immediate)(scheduled)(mapped)(note)] (frame) {};
 \end{pgfonlayer}
 \node[mqtt section title] at ($(frame.north west)+(\MQTitleGap,-\MQTitleGap)$)
-  {Optional embedded mapping inside MQTTBroker};
+  {Embedded mapping runs after ordinary Broker routing};
+
+% Authoritative SNode.C desktop canvas: exactly 160 mm wide, native drawing.
+\coordinate (snodecCanvasCenter) at (current bounding box.center);
+\coordinate (snodecCanvasSW)
+  at ($(snodecCanvasCenter)+(-80mm,0)$ |- current bounding box.south);
+\coordinate (snodecCanvasNE)
+  at ($(snodecCanvasCenter)+(80mm,0)$ |- current bounding box.north);
+\path[use as bounding box]
+  ([yshift=-7pt]snodecCanvasSW) rectangle ([yshift=7pt]snodecCanvasNE);
 
 \end{tikzpicture}
 \end{document}
