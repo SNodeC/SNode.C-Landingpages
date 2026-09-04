@@ -6,8 +6,8 @@
 \begin{document}
 \begin{tikzpicture}[mqtt mobile]
 \tikzset{
-  wide/.style={minimum width=74mm,text width=66mm},
-  half/.style={minimum width=34mm,text width=29mm}
+  wide/.style={minimum width=66mm,text width=58mm},
+  half/.style={minimum width=30mm,text width=25mm}
 }
 
 \node[mqtt external,wide] (incoming)
@@ -23,16 +23,16 @@
 \draw[mqtt data flow] (distribute.south) -- (ordinary.north);
 \draw[mqtt control flow] (ordinary.south) -- (hook.north);
 
-\node[mqtt state,half,below=\MQGapM of hook,xshift=-19mm] (model)
+\node[mqtt state,half,below=\MQGapM of hook,xshift=-17mm] (model)
   {update\\\texttt{MqttModel}};
-\node[mqtt control,half,below=\MQGapM of hook,xshift=19mm] (mapper)
+\node[mqtt control,half,below=\MQGapM of hook,xshift=17mm] (mapper)
   {shared\\\texttt{MqttMapper}\\\texttt{getMappings}};
 \draw[mqtt observation] \MQPortSouth{hook}{.30} -- ++(0,-6mm) -| (model.north);
 \draw[mqtt control flow] \MQPortSouth{hook}{.70} -- ++(0,-6mm) -| (mapper.north);
 
-\node[mqtt process,half,below=\MQGapM of mapper,xshift=-19mm] (immediate)
+\node[mqtt process,half,below=\MQGapM of mapper,xshift=-17mm] (immediate)
   {$0..n$ immediate\\mapped PUBLISH};
-\node[mqtt process,half,below=\MQGapM of mapper,xshift=19mm] (scheduled)
+\node[mqtt process,half,below=\MQGapM of mapper,xshift=17mm] (scheduled)
   {$0..n$ scheduled\\mapped PUBLISH\\delay queue / timer};
 \draw[mqtt control flow] \MQPortSouth{mapper}{.30} -- ++(0,-6mm) -| (immediate.north);
 \draw[mqtt control flow] \MQPortSouth{mapper}{.70} -- ++(0,-6mm) -| (scheduled.north);
