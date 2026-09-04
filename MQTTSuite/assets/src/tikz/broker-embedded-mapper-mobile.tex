@@ -2,40 +2,55 @@
 \usepackage[T1]{fontenc}
 \usepackage{lmodern}
 \input{mqttsystem-figure-system.tex}
+\input{snodec-canonical-figure-system.tex}
 \begin{document}
 \begin{tikzpicture}[mqtt mobile]
 \tikzset{
-  wide/.style={minimum width=72mm,text width=64mm},
-  half/.style={minimum width=32mm,text width=27mm}
+  wide/.style={minimum width=74mm,text width=66mm},
+  half/.style={minimum width=34mm,text width=29mm}
 }
 
-\node[mqtt external,wide] (incoming) {incoming MQTT PUBLISH};
-\node[mqtt application,wide,below=\MQGapS of incoming] (broker)
-  {Broker publish-processing path};
-\draw[mqtt data flow] (incoming.south) -- (broker.north);
+\node[mqtt external,wide] (incoming)
+  {incoming MQTT PUBLISH accepted by the Broker connection};
+\node[mqtt process,wide,below=\MQGapS of incoming] (distribute)
+  {SNode.C \texttt{server::Mqtt::distributePublish(publish)}};
+\node[mqtt data,wide,below=\MQGapM of distribute] (ordinary)
+  {1 · \texttt{broker->publish(...)} — ordinary routing to subscribers};
+\node[mqtt application,wide,below=\MQGapM of ordinary] (hook)
+  {2 · MQTTBroker \texttt{Mqtt::onPublish(publish)} — post-route hook};
 
-\node[mqtt process,half,below=\MQBranchGap of broker,xshift=-20mm] (normal)
-  {ordinary routing\\to subscribers};
-\node[mqtt control,half,below=\MQBranchGap of broker,xshift=20mm] (mapper)
-  {optional shared\\\texttt{MqttMapper}};
-\draw[mqtt data flow] \MQPortSouth{broker}{.30} -- ++(0,-6mm) -| (normal.north);
-\draw[mqtt control flow] \MQPortSouth{broker}{.70} -- ++(0,-6mm) -| (mapper.north);
+\draw[mqtt data flow] (incoming.south) -- (distribute.north);
+\draw[mqtt data flow] (distribute.south) -- (ordinary.north);
+\draw[mqtt control flow] (ordinary.south) -- (hook.north);
 
-\node[mqtt process,half,below=\MQGapS of mapper] (mapped)
-  {zero / one / many\\mapped PUBLISH messages};
-\draw[mqtt control flow] (mapper.south) -- (mapped.north);
-\draw[mqtt data flow] (mapped.east) -- ++(8mm,0) |- ($(broker.east)+(8mm,0)$) -- (broker.east);
+\node[mqtt state,half,below=\MQGapM of hook,xshift=-19mm] (model)
+  {update\\\texttt{MqttModel}};
+\node[mqtt control,half,below=\MQGapM of hook,xshift=19mm] (mapper)
+  {shared\\\texttt{MqttMapper}\\\texttt{getMappings}};
+\draw[mqtt observation] \MQPortSouth{hook}{.30} -- ++(0,-6mm) -| (model.north);
+\draw[mqtt control flow] \MQPortSouth{hook}{.70} -- ++(0,-6mm) -| (mapper.north);
 
-\node[mqtt note,wide,below=\MQGapM of mapped,xshift=-20mm] (note)
-  {Mapped outputs re-enter the same publish-processing path and may be mapped again. No child \texttt{mqttintegrator} process.};
+\node[mqtt process,half,below=\MQGapM of mapper,xshift=-19mm] (immediate)
+  {$0..n$ immediate\\mapped PUBLISH};
+\node[mqtt process,half,below=\MQGapM of mapper,xshift=19mm] (scheduled)
+  {$0..n$ scheduled\\mapped PUBLISH\\delay queue / timer};
+\draw[mqtt control flow] \MQPortSouth{mapper}{.30} -- ++(0,-6mm) -| (immediate.north);
+\draw[mqtt control flow] \MQPortSouth{mapper}{.70} -- ++(0,-6mm) -| (scheduled.north);
 
+\node[mqtt data,wide,below=\MQGapL of $(immediate.south)!0.5!(scheduled.south)$] (mapped)
+  {for each immediate output — or scheduled output when due:\\\texttt{broker->publish(...)} then \texttt{onPublish(mapped)}};
+\draw[mqtt data flow] (immediate.south) -- ++(0,-6mm) -| \MQPortNorth{mapped}{.30};
+\draw[mqtt data flow] (scheduled.south) -- ++(0,-6mm) -| \MQPortNorth{mapped}{.70};
+
+\node[mqtt note,wide,below=\MQGapM of mapped] (note)
+  {Mapped outputs invoke the same \texttt{onPublish} hook again, so mapping may cascade.\\The mapper is shared and in-process; an empty mapping yields no mapped outputs.};
+
+\coordinate (titleguard) at ($(incoming.north)+(0,\MQGapL)$);
 \begin{pgfonlayer}{background}
-  \node[mqtt figure frame,fit=(incoming)(broker)(normal)(mapper)(mapped)(note)] (frame) {};
-  \node[mqtt data plane,fit=(incoming)(broker)(normal)] (data) {};
-  \node[mqtt group,fit=(mapper)(mapped)(note)] (mapping) {};
+  \node[mqtt figure frame,fit=(titleguard)(incoming)(distribute)(ordinary)(hook)(model)(mapper)(immediate)(scheduled)(mapped)(note)] (frame) {};
 \end{pgfonlayer}
 \node[mqtt section title] at ($(frame.north west)+(\MQTitleGap,-\MQTitleGap)$)
-  {Embedded mapper};
+  {Embedded mapper after ordinary routing};
 
 \end{tikzpicture}
 \end{document}
