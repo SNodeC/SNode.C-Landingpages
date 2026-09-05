@@ -25,7 +25,7 @@
   \node[mqtt group,fit=(mappingdoc)(extract)(subscribe)] (setupframe) {};
 \end{pgfonlayer}
 \node[mqtt annotation,anchor=west] at ($(setupframe.north west)+(\MQTitleGap,-\MQTitleGap)$)
-  {subscription setup — outside the per-PUBLISH processing spine};
+  {subscription setup --- outside the per-PUBLISH processing spine};
 
 % Per-message runtime path.
 \node[mqtt external,stage,below=22mm of setupframe] (brokerin)
