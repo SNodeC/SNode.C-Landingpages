@@ -9,13 +9,15 @@
   setup/.style={mqtt config,minimum width=35mm,text width=30mm},
   stage/.style={mqtt process,minimum width=35mm,text width=30mm},
   controlstage/.style={mqtt control,minimum width=38mm,text width=33mm},
+  extractstage/.style={mqtt control,minimum width=43mm,text width=38mm},
+  mapperstage/.style={mqtt control,minimum width=48mm,text width=43mm},
   outputstage/.style={mqtt process,minimum width=36mm,text width=31mm}
 }
 
 % Subscription setup is configuration/startup work, not part of each message's
 % processing spine.
 \node[setup] (mappingdoc) {mapping document\\subscription filters + \texttt{subscription.qos}};
-\node[controlstage,right=\MQGapS of mappingdoc] (extract)
+\node[extractstage,right=\MQGapS of mappingdoc] (extract)
   {\texttt{extractSubscriptions()}\\build MQTT topic filters};
 \node[setup,right=\MQGapS of extract] (subscribe)
   {SUBSCRIBE setup\\requested delivery QoS};
@@ -32,7 +34,7 @@
   {Broker delivers PUBLISH\\selected by active subscriptions};
 \node[mqtt application,stage,right=\MQGapS of brokerin] (client)
   {MQTTIntegrator\\MQTT client};
-\node[controlstage,right=\MQGapS of client] (mapper)
+\node[mapperstage,right=\MQGapS of client] (mapper)
   {\texttt{MqttMapper::getMappings()}\\topic-tree first match};
 \draw[mqtt data flow] (brokerin.east) -- (client.west);
 \draw[mqtt data flow] (client.east) -- (mapper.west);
@@ -48,14 +50,14 @@
 \draw[mqtt control flow] \MQPortSouth{rules}{.30} -- ++(0,-6mm) -| (immediate.north);
 \draw[mqtt control flow] \MQPortSouth{rules}{.70} -- ++(0,-6mm) -| (scheduled.north);
 
-\node[mqtt process,below=\MQGapM of immediate,minimum width=37mm,text width=32mm] (sendnow)
+\node[mqtt process,below=\MQGapM of immediate,minimum width=40mm,text width=35mm] (sendnow)
   {\texttt{sendPublish(...)}\\immediately};
 \node[mqtt state,below=\MQGapM of scheduled,minimum width=37mm,text width=32mm] (queue)
   {enqueue in \texttt{DelayedQueue}\\timer releases when due};
 \draw[mqtt data flow] (immediate.south) -- (sendnow.north);
 \draw[mqtt control flow] (scheduled.south) -- (queue.north);
 
-\node[mqtt process,below=\MQGapM of queue,minimum width=37mm,text width=32mm] (sendlater)
+\node[mqtt process,below=\MQGapM of queue,minimum width=40mm,text width=35mm] (sendlater)
   {when due: \texttt{sendPublish(...)} };
 \draw[mqtt data flow] (queue.south) -- (sendlater.north);
 
