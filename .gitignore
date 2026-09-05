@@ -1,0 +1,7 @@
+# Local CMake build directories
+cmake-build-*/
+
+# MQTTSuite TikZ publication figures are generated build outputs.
+MQTTSuite/assets/*.svg
+!MQTTSuite/assets/mqttsuite-hero.svg
+!MQTTSuite/assets/integration-scenario.svg
