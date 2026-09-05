@@ -14,16 +14,16 @@
 }
 
 \node[broker] (a) {Broker A\\source domain};
-\node[member,right=\MQGapS of a] (ma)
-  {member A\\configured subscriptions\\select the input};
-\node[core,right=\MQGapS of ma] (bridge)
+\node[member,right=\MQHorizontalGapTight of a] (ma)
+  {member A\\configured subscriptions\\select received PUBLISH};
+\node[core,right=\MQHorizontalGapTight of ma] (bridge)
   {logical bridge\\fan-out forwarding};
 
-\draw[mqtt data flow] (a.east) -- node[mqtt topic label,above]{selected PUBLISH} (ma.west);
+\draw[mqtt data flow] (a.east) -- (ma.west);
 \draw[mqtt data flow] (ma.east) -- (bridge.west);
 
 \node[mqtt state,below=\MQGapM of bridge,minimum width=74mm,text width=68mm] (fanout)
-  {destination set = currently connected bridge members\\except the origin member A};
+  {connected destination set\\all currently connected bridge members\\except origin member A};
 \draw[mqtt data flow] (bridge.south) -- (fanout.north);
 
 \node[peer,below=\MQGapM of fanout,xshift=-21mm] (mb) {member B\\destination};
@@ -31,30 +31,28 @@
 \node[peerbroker,below=\MQGapS of mb] (b) {Broker B};
 \node[peerbroker,below=\MQGapS of mc] (c) {Broker C};
 
-\draw[mqtt data flow] \MQPortSouth{fanout}{.30} -- ++(0,-6mm) -| (mb.north);
-\draw[mqtt data flow] \MQPortSouth{fanout}{.70} -- ++(0,-6mm) -| (mc.north);
+% Two evenly distributed fan-out ports. Each V-H-V connector turns exactly at
+% the midpoint between source and destination border levels, so both vertical
+% outer legs are equal and the connector remains orthogonal at both boxes.
+\coordinate (fanoutB) at ($(fanout.south west)!.333333!(fanout.south east)$);
+\coordinate (fanoutC) at ($(fanout.south west)!.666667!(fanout.south east)$);
+\coordinate (fanoutMidB) at ($(fanoutB)!0.5!(mb.north)$);
+\coordinate (fanoutMidC) at ($(fanoutC)!0.5!(mc.north)$);
+\draw[mqtt data flow] (fanoutB) -- (fanoutB |- fanoutMidB) -| (mb.north);
+\draw[mqtt data flow] (fanoutC) -- (fanoutC |- fanoutMidC) -| (mc.north);
 \draw[mqtt data flow] (mb.south) -- (b.north);
 \draw[mqtt data flow] (mc.south) -- (c.north);
 
-\node[mqtt note,below=\MQGapM of b,xshift=21mm,minimum width=94mm,text width=88mm] (preserve)
-  {payload / message bytes, received QoS, and retain are preserved;\\the forwarded topic is rebuilt from bridge/member prefixes and documented separately};
+\coordinate (brokersMid) at ($(b.south)!0.5!(c.south)$);
+\node[mqtt note,below=\MQGapM of brokersMid,minimum width=94mm,text width=88mm] (preserve)
+  {message bytes, received QoS, and retain are preserved;\\the forwarded topic is rebuilt from bridge/member prefixes and documented separately};
 
-\coordinate (titleguard) at ($(a.north)+(0,\MQGapL)$);
+\coordinate (titleguard) at ($(ma.north)+(0,\MQGapL)$);
 \begin{pgfonlayer}{background}
   \node[mqtt figure frame,fit=(titleguard)(a)(ma)(bridge)(fanout)(mb)(mc)(b)(c)(preserve)] (frame) {};
 \end{pgfonlayer}
 \node[mqtt section title] at ($(frame.north west)+(\MQTitleGap,-\MQTitleGap)$)
   {Logical bridge forwarding};
-
-% Canonical SNode.C fixed-width desktop canvas: native drawing, centered on
-% exactly 160 mm with 7 pt vertical breathing room.
-\coordinate (snodecCanvasCenter) at (current bounding box.center);
-\coordinate (snodecCanvasSW)
-  at ($(snodecCanvasCenter)+(-80mm,0)$ |- current bounding box.south);
-\coordinate (snodecCanvasNE)
-  at ($(snodecCanvasCenter)+(80mm,0)$ |- current bounding box.north);
-\path[use as bounding box]
-  ([yshift=-7pt]snodecCanvasSW) rectangle ([yshift=7pt]snodecCanvasNE);
 
 \end{tikzpicture}
 \end{document}
