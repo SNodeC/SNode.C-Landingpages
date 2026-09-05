@@ -23,14 +23,15 @@
 
 % Exact symmetric H-V-H doglegs: the turn x-coordinate is the midpoint
 % between the source and destination border ports, so the two horizontal outer
-% legs have exactly equal length.
-\coordinate (effective-defaults) at \MQPortWest{effective}{.75};
-\coordinate (effective-cli) at \MQPortWest{effective}{.25};
-\coordinate (defaults-mid) at ($(defaults.east)!0.5!(effective-defaults)$);
-\coordinate (cli-mid) at ($(cli.east)!0.5!(effective-cli)$);
-\draw[mqtt control flow] (defaults.east) -- (defaults.east -| defaults-mid) |- (effective-defaults);
+% legs have exactly equal length. Calc-safe temporary names intentionally avoid
+% hyphens because TikZ calc parses hyphenated shape references ambiguously.
+\coordinate (effectiveDefaults) at \MQPortWest{effective}{.75};
+\coordinate (effectiveCli) at \MQPortWest{effective}{.25};
+\coordinate (defaultsMid) at ($(defaults.east)!0.5!(effectiveDefaults)$);
+\coordinate (cliMid) at ($(cli.east)!0.5!(effectiveCli)$);
+\draw[mqtt control flow] (defaults.east) -- (defaults.east -| defaultsMid) |- (effectiveDefaults);
 \draw[mqtt control flow] (file.east) -- \MQPortWest{effective}{.50};
-\draw[mqtt control flow] (cli.east) -- (cli.east -| cli-mid) |- (effective-cli);
+\draw[mqtt control flow] (cli.east) -- (cli.east -| cliMid) |- (effectiveCli);
 
 \node[outcome,right=\MQHorizontalGapLoose of effective,yshift=12mm] (inspect)
   {inspect effective state\\\texttt{--show-config}\\{\MQCodeSmallFont --command-line=active}};
@@ -39,12 +40,12 @@
 \node[outcome,below=\MQGapS of write] (saved)
   {written application configuration file\\\textbf{not runtime success}};
 
-\coordinate (effective-inspect) at \MQPortEast{effective}{.70};
-\coordinate (effective-write) at \MQPortEast{effective}{.30};
-\coordinate (inspect-mid) at ($(effective-inspect)!0.5!(inspect.west)$);
-\coordinate (write-mid) at ($(effective-write)!0.5!(write.west)$);
-\draw[mqtt observation] (effective-inspect) -- (effective-inspect -| inspect-mid) |- (inspect.west);
-\draw[mqtt control flow] (effective-write) -- (effective-write -| write-mid) |- (write.west);
+\coordinate (effectiveInspect) at \MQPortEast{effective}{.70};
+\coordinate (effectiveWrite) at \MQPortEast{effective}{.30};
+\coordinate (inspectMid) at ($(effectiveInspect)!0.5!(inspect.west)$);
+\coordinate (writeMid) at ($(effectiveWrite)!0.5!(write.west)$);
+\draw[mqtt observation] (effectiveInspect) -- (effectiveInspect -| inspectMid) |- (inspect.west);
+\draw[mqtt control flow] (effectiveWrite) -- (effectiveWrite -| writeMid) |- (write.west);
 \draw[mqtt control flow] (write.south) -- (saved.north);
 
 \coordinate (apptitleguard) at ($(precedence.north)+(0,\MQGapL)$);
