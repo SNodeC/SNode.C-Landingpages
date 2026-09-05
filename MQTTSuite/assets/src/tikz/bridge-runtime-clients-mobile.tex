@@ -16,7 +16,7 @@
   {one outbound SNode.C MQTT client/context per enabled, runtime-supported, compiled member};
 \node[mqtt note,wide,below=\MQGapS of clients] (support)
   {Schema-valid choices are not automatically runtime-supported by every build.};
-\node[mqtt note,wide,below=\MQGapS of support] (connack)
+\node[mqtt note,wide,below=\MQGapM of support] (connack)
   {Successful CONNACK → client joins Bridge → SUBSCRIBE configured filters};
 
 \draw[mqtt control flow] (json.south) -- (store.north);
@@ -24,7 +24,9 @@
 \draw[mqtt contains] (bridge.south) -- (members.north);
 \draw[mqtt control flow] (members.south) -- (clients.north);
 \draw[mqtt association] (clients.south) -- (support.north);
-\draw[mqtt data flow] (support.south) -- (connack.north);
+% Runtime progression bypasses the explanatory support note: a successful
+% CONNACK belongs to the materialized client lifecycle, not to schema support.
+\draw[mqtt data flow] \MQPortSouth{clients}{.72} -- ++(8mm,0) |- \MQPortNorth{connack}{.72};
 
 \begin{pgfonlayer}{background}
   \node[mqtt figure frame,fit=(json)(store)(bridge)(members)(clients)(support)(connack)] (frame) {};
