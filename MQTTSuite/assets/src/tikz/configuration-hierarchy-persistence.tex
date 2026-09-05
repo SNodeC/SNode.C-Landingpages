@@ -21,27 +21,23 @@
 \node[main,right=\MQHorizontalGap of file] (effective)
   {effective parsed SNode.C configuration\\application $\rightarrow$ named instance\\$\rightarrow$ sections / options};
 
-% Exact symmetric H-V-H doglegs: the turn x-coordinate is the midpoint
-% between the source and destination border ports, so the two horizontal outer
-% legs have exactly equal length. Calc-safe temporary names intentionally avoid
-% hyphens because TikZ calc parses hyphenated shape references ambiguously.
-\coordinate (effectiveDefaults) at \MQPortWest{effective}{.75};
-\coordinate (effectiveCli) at \MQPortWest{effective}{.25};
+\coordinate (effectiveDefaults) at ($(effective.south west)!.75!(effective.north west)$);
+\coordinate (effectiveCli) at ($(effective.south west)!.25!(effective.north west)$);
 \coordinate (defaultsMid) at ($(defaults.east)!0.5!(effectiveDefaults)$);
 \coordinate (cliMid) at ($(cli.east)!0.5!(effectiveCli)$);
 \draw[mqtt control flow] (defaults.east) -- (defaults.east -| defaultsMid) |- (effectiveDefaults);
-\draw[mqtt control flow] (file.east) -- \MQPortWest{effective}{.50};
+\draw[mqtt control flow] (file.east) -- ($(effective.south west)!.50!(effective.north west)$);
 \draw[mqtt control flow] (cli.east) -- (cli.east -| cliMid) |- (effectiveCli);
 
-\node[outcome,right=\MQHorizontalGapLoose of effective,yshift=12mm] (inspect)
+\node[outcome,right=\MQHorizontalGap of effective,yshift=12mm] (inspect)
   {inspect effective state\\\texttt{--show-config}\\{\MQCodeSmallFont --command-line=active}};
-\node[outcome,right=\MQHorizontalGapLoose of effective,yshift=-12mm] (write)
+\node[outcome,right=\MQHorizontalGap of effective,yshift=-12mm] (write)
   {serialize effective parsed state\\\texttt{--write-config}};
-\node[outcome,below=\MQGapS of write] (saved)
+\node[mqtt config,minimum width=36mm,text width=31mm,below=\MQGapS of write] (saved)
   {written application configuration file\\\textbf{not runtime success}};
 
-\coordinate (effectiveInspect) at \MQPortEast{effective}{.70};
-\coordinate (effectiveWrite) at \MQPortEast{effective}{.30};
+\coordinate (effectiveInspect) at ($(effective.south east)!.70!(effective.north east)$);
+\coordinate (effectiveWrite) at ($(effective.south east)!.30!(effective.north east)$);
 \coordinate (inspectMid) at ($(effectiveInspect)!0.5!(inspect.west)$);
 \coordinate (writeMid) at ($(effectiveWrite)!0.5!(write.west)$);
 \draw[mqtt observation] (effectiveInspect) -- (effectiveInspect -| inspectMid) |- (inspect.west);
@@ -53,10 +49,8 @@
   \node[mqtt figure frame,fit=(apptitleguard)(precedence)(defaults)(file)(cli)(effective)(inspect)(write)(saved)] (appframe) {};
 \end{pgfonlayer}
 \node[mqtt section title] at ($(appframe.north west)+(\MQTitleGap,-\MQTitleGap)$)
-  {SNode.C application configuration};
+  {Configuration hierarchy and persistence};
 
-% The domain-document panel owns its own title band. Keep enough external gap
-% that the band's fit/padding cannot intrude into the application frame.
 \node[doc,below=22mm of appframe] (bridge)
   {bridge-definition JSON\\MQTTBridge};
 \node[doc,left=\MQHorizontalGap of bridge] (mapping)

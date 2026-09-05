@@ -7,52 +7,57 @@
 \begin{tikzpicture}[mqtt mobile]
 \tikzset{
   wide/.style={minimum width=72mm,text width=64mm},
-  half/.style={minimum width=34mm,text width=29mm}
+  half/.style={minimum width=34mm,text width=29mm},
+  inspectbox/.style={minimum width=42mm,text width=36mm}
 }
 
-\node[mqtt config,wide] (defaults) {API / compiled defaults};
-\node[mqtt config,wide,below=\MQGapS of defaults] (file) {configuration file};
-\node[mqtt config,wide,below=\MQGapS of file] (cli) {command line};
-\node[mqtt annotation,above=3mm of defaults] (precedence)
+\node[mqtt annotation] (precedence)
   {precedence: defaults $<$ file $<$ command line};
+\node[mqtt config,minimum width=24mm,text width=18mm,below=3mm of precedence] (file)
+  {configuration\\file};
+\node[mqtt config,minimum width=24mm,text width=18mm,left=\MQGapS of file] (defaults)
+  {API / compiled\\defaults};
+\node[mqtt config,minimum width=24mm,text width=18mm,right=\MQGapS of file] (cli)
+  {command\\line};
 
-\begin{pgfonlayer}{background}
-  \node[mqtt group,fit=(precedence)(defaults)(file)(cli)] (inputs) {};
-\end{pgfonlayer}
-
-\node[mqtt control,wide,below=\MQBranchGap of inputs] (effective)
+\node[mqtt control,wide,below=\MQBranchGap of file] (effective)
   {effective parsed SNode.C application / instance configuration};
-\draw[mqtt control flow] (inputs.south) -- (effective.north);
 
-\node[mqtt process,half,below=\MQBranchGap of effective,xshift=-19mm] (inspect)
-  {inspect\\\texttt{--show-config}\\\texttt{--command-line}\\\texttt{=active}};
-\node[mqtt process,half,below=\MQBranchGap of effective,xshift=19mm] (write)
+% Three configuration sources converge directly on the effective parsed state.
+% The two off-axis V-H-V connectors turn at the exact midpoint between source
+% and destination border levels, making their outer vertical legs equal.
+\coordinate (effectiveDefaults) at ($(effective.north west)!.25!(effective.north east)$);
+\coordinate (effectiveFile) at ($(effective.north west)!.50!(effective.north east)$);
+\coordinate (effectiveCli) at ($(effective.north west)!.75!(effective.north east)$);
+\coordinate (defaultsMid) at ($(defaults.south)!0.5!(effectiveDefaults)$);
+\coordinate (cliMid) at ($(cli.south)!0.5!(effectiveCli)$);
+\draw[mqtt control flow] (defaults.south) -- (defaults.south |- defaultsMid) -| (effectiveDefaults);
+\draw[mqtt control flow] (file.south) -- (effectiveFile);
+\draw[mqtt control flow] (cli.south) -- (cli.south |- cliMid) -| (effectiveCli);
+
+\node[mqtt process,inspectbox,below=\MQBranchGap of effective,xshift=-21mm] (inspect)
+  {inspect\\\texttt{--show-config}\\{\MQCodeSmallFont\texttt{--command-line=active}}};
+\node[mqtt process,half,below=\MQBranchGap of effective,xshift=21mm] (write)
   {serialize\\effective state\\\texttt{--write-config}};
 
-% Exact symmetric V-H-V doglegs: the turn y-coordinate is the midpoint
-% between each source/destination border-port pair, so the two vertical outer
-% legs have exactly equal length. Calc-safe temporary names intentionally avoid
-% hyphens because TikZ calc parses hyphenated shape references ambiguously.
-\coordinate (effectiveInspect) at \MQPortSouth{effective}{.32};
-\coordinate (effectiveWrite) at \MQPortSouth{effective}{.68};
+\coordinate (effectiveInspect) at ($(effective.south west)!.32!(effective.south east)$);
+\coordinate (effectiveWrite) at ($(effective.south west)!.68!(effective.south east)$);
 \coordinate (inspectMid) at ($(effectiveInspect)!0.5!(inspect.north)$);
 \coordinate (writeMid) at ($(effectiveWrite)!0.5!(write.north)$);
 \draw[mqtt observation] (effectiveInspect) -- (effectiveInspect |- inspectMid) -| (inspect.north);
 \draw[mqtt control flow] (effectiveWrite) -- (effectiveWrite |- writeMid) -| (write.north);
 
-\node[mqtt process,half,below=\MQGapS of write] (saved)
+\node[mqtt config,half,below=\MQGapS of write] (saved)
   {written config file\\\textbf{not runtime success}};
 \draw[mqtt control flow] (write.south) -- (saved.north);
 
-\coordinate (apptitleguard) at ($(inputs.north)+(0,\MQGapL)$);
+\coordinate (apptitleguard) at ($(precedence.north)+(0,\MQGapL)$);
 \begin{pgfonlayer}{background}
-  \node[mqtt figure frame,fit=(apptitleguard)(inputs)(effective)(inspect)(write)(saved)] (appframe) {};
+  \node[mqtt figure frame,fit=(apptitleguard)(precedence)(defaults)(file)(cli)(effective)(inspect)(write)(saved)] (appframe) {};
 \end{pgfonlayer}
 \node[mqtt section title] at ($(appframe.north west)+(\MQTitleGap,-\MQTitleGap)$)
   {Configuration hierarchy and persistence};
 
-% Separate the second panel by enough space for its own 11 mm title band plus
-% fit padding; otherwise the two independently owned containers overlap.
 \node[mqtt config,wide,below=22mm of appframe] (mapping)
   {mapping JSON — Integrator / optional Broker mapper};
 \node[mqtt config,wide,below=\MQGapS of mapping] (bridge)
