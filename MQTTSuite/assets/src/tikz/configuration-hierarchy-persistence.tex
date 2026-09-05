@@ -29,19 +29,29 @@
 \draw[mqtt control flow] (file.east) -- ($(effective.south west)!.50!(effective.north west)$);
 \draw[mqtt control flow] (cli.east) -- (cli.east -| cliMid) |- (effectiveCli);
 
-\node[outcome,right=\MQHorizontalGap of effective,yshift=12mm] (inspect)
-  {inspect effective state\\\texttt{--show-config}\\{\MQCodeSmallFont --command-line=active}};
-\node[outcome,right=\MQHorizontalGap of effective,yshift=-12mm] (write)
+% Right column alignment is deliberate: defaults <-> inspect and
+% file <-> effective <-> serialize share exact horizontal centerlines.
+% The effective-state box retains its natural height; no artificial height is
+% introduced to force the alignment.
+\node[outcome,anchor=west] (write)
+  at ($(effective.east)+(\MQHorizontalGap,0)$)
   {serialize effective parsed state\\\texttt{--write-config}};
+\node[outcome,anchor=west] (inspect)
+  at ($(write.west |- defaults.center)$)
+  {inspect effective state\\\texttt{--show-config}\\{\MQCodeSmallFont --command-line=active}};
 \node[mqtt config,minimum width=36mm,text width=31mm,below=\MQGapS of write] (saved)
   {written application configuration file\\\textbf{not runtime success}};
 
-\coordinate (effectiveInspect) at ($(effective.south east)!.70!(effective.north east)$);
-\coordinate (effectiveWrite) at ($(effective.south east)!.30!(effective.north east)$);
-\coordinate (inspectMid) at ($(effectiveInspect)!0.5!(inspect.west)$);
-\coordinate (writeMid) at ($(effectiveWrite)!0.5!(write.west)$);
-\draw[mqtt observation] (effectiveInspect) -- (effectiveInspect -| inspectMid) |- (inspect.west);
-\draw[mqtt control flow] (effectiveWrite) -- (effectiveWrite -| writeMid) |- (write.west);
+% Two outgoing ports divide the effective-state box edge into equal thirds:
+% top third / inspect port / middle third / write port / bottom third.
+\coordinate (effectiveInspect) at ($(effective.south east)!0.6666667!(effective.north east)$);
+\coordinate (effectiveWrite) at ($(effective.south east)!0.3333333!(effective.north east)$);
+% Both right-side doglegs turn at the exact horizontal midpoint of the
+% canonical inter-column gap. Their vertical segments occupy disjoint y-ranges,
+% so the centered tracks do not overdraw each other.
+\coordinate (rightTrackMid) at ($(effective.east)!0.5!(write.west)$);
+\draw[mqtt observation] (effectiveInspect) -- (effectiveInspect -| rightTrackMid) |- (inspect.west);
+\draw[mqtt control flow] (effectiveWrite) -- (effectiveWrite -| rightTrackMid) |- (write.west);
 \draw[mqtt control flow] (write.south) -- (saved.north);
 
 \coordinate (apptitleguard) at ($(precedence.north)+(0,\MQGapL)$);
