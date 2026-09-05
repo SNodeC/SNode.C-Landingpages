@@ -66,8 +66,18 @@ For the canonical review raster used during figure approval, an ordinary straigh
 - Recurring straight arrows must use this canonical run unless a genuine semantic or geometric constraint requires another shared spacing token.
 - Do not shorten arrows merely to reduce figure height or width; recompose the layout instead.
 - Desktop and mobile remain independently art-directed, but their final review renders must preserve the same canonical visual arrow rhythm.
-- Three-segment doglegs are governed by the exact midpoint symmetry rule below rather than by forcing each individual leg to 75 px.
 - Observation/association/dependency routes may be longer when their semantic destinations require it, but must still use the canonical connector grammar and deliberate spacing.
+
+### Canonical bent-arrow primary-axis span
+
+An ordinary multi-segment bent process/data/control connector consumes the **same total primary-axis span as an ordinary straight arrow**. Bending a connector must not increase or reduce the row/column separation between its source and destination.
+
+- For a normal vertically progressing `|-|` connector, the total source-border-to-destination-border height is **75 px**, approximately **8.3 mm** in the current TikZ approval geometry.
+- Because the dogleg is centered, its two vertical outer legs are each exactly **37.5 px**, approximately **4.15 mm**: `4.15 mm + 4.15 mm = 8.3 mm`.
+- For a normal horizontally progressing `-|-` connector, the total source-border-to-destination-border width is likewise **75 px / approximately 8.3 mm**, split into two exactly equal **37.5 px / approximately 4.15 mm** horizontal outer legs.
+- The perpendicular middle segment may be as long as required by the real horizontal/vertical offset; it does not change the canonical primary-axis span.
+- Do not add extra height or width merely because a connector bends. Recompose nodes instead.
+- A genuine semantic bypass such as a long observation/association/dependency route may span multiple layout levels. Such an exception is not forced into 75 px, but it still obeys exact centered-dogleg symmetry where applicable.
 
 ### Hard centered-dogleg symmetry rule
 
@@ -75,6 +85,7 @@ For every three-segment orthogonal connector whose geometric shape is `|-|` or `
 
 - `|-|` means vertical → horizontal → vertical. The first and final vertical legs must be exactly equal in length. Therefore the horizontal middle segment is exactly centered between the endpoint levels.
 - `-|-` means horizontal → vertical → horizontal. The first and final horizontal legs must be exactly equal in length. Therefore the vertical middle segment is exactly centered between the endpoint columns.
+- For an ordinary adjacent-level connector, this symmetry rule and the 75 px primary-axis-span rule apply together: the two outer legs are exactly half of the canonical span.
 
 This is an exact geometry rule, not an approximate visual preference. An off-center three-segment dogleg fails the figure contract even when it is technically connected and otherwise readable.
 
