@@ -6,39 +6,47 @@
 \begin{document}
 \begin{tikzpicture}[mqtt desktop]
 \tikzset{
-  family/.style={mqtt external,minimum width=43mm,text width=37mm},
-  adapter/.style={mqtt process,minimum width=43mm,text width=37mm},
-  handler/.style={mqtt application,minimum width=58mm,text width=52mm},
-  core/.style={mqtt control,minimum width=49mm,text width=43mm},
-  model/.style={mqtt state,minimum width=49mm,text width=43mm}
+  family/.style={mqtt external,minimum width=50mm,text width=44mm},
+  adapter/.style={mqtt process,minimum width=50mm,text width=44mm},
+  handler/.style={mqtt application,minimum width=76mm,text width=68mm},
+  core/.style={mqtt control,minimum width=56mm,text width=50mm},
+  model/.style={mqtt state,minimum width=56mm,text width=50mm}
 }
 
+% Canonical adjacent-level arrow span: 75 px ~= 8.3 mm.
+% Centered doglegs split that span exactly: 4.15 mm + 4.15 mm.
 \node[family] (direct)
   {Direct MQTT listener family\\IPv4 / IPv6 / Unix\\plain or TLS stream};
-\node[family,right=\MQGapM of direct] (http)
+\node[family,right=\MQHorizontalGap of direct] (http)
   {HTTP / HTTPS listener family\\IPv4 / IPv6 / Unix\\UI/admin + MQTT WebSocket upgrade};
 
-\node[adapter,below=\MQGapS of direct] (directfactory)
+\node[adapter,below=8.3mm of direct] (directfactory)
   {\texttt{SocketContextFactory}\\creates MQTT socket context};
-\node[adapter,below=\MQGapS of http] (wsfactory)
+\node[adapter,below=8.3mm of http] (wsfactory)
   {WebSocket \texttt{mqtt} subprotocol\\\texttt{SubProtocolFactory}};
 
-\node[handler,below=\MQGapL of $(directfactory.south)!0.5!(wsfactory.south)$] (mqtt)
+\node[handler,below=8.3mm of $(directfactory.south)!0.5!(wsfactory.south)$] (mqtt)
   {per accepted MQTT connection — \texttt{mqttbroker::lib::Mqtt}};
 
-\node[core,below=\MQGapM of mqtt,xshift=-28.5mm] (broker)
+\node[core,below=8.3mm of mqtt,xshift=-31mm] (broker)
   {one shared Broker singleton\\routing + MQTT session state\\subscriptions + retained messages};
-\node[model,below=\MQGapM of mqtt,xshift=28.5mm] (model)
+\node[model,below=8.3mm of mqtt,xshift=31mm] (model)
   {\texttt{MqttModel}\\observable/admin model\\updated from connection events};
+
+\coordinate (mqttInLeft) at \MQPortNorth{mqtt}{.333333};
+\coordinate (mqttInRight) at \MQPortNorth{mqtt}{.666667};
+\coordinate (mqttOutLeft) at \MQPortSouth{mqtt}{.333333};
+\coordinate (mqttOutRight) at \MQPortSouth{mqtt}{.666667};
 
 \draw[mqtt data flow] (direct.south) -- (directfactory.north);
 \draw[mqtt data flow] (http.south) -- (wsfactory.north);
-\draw[mqtt data flow] (directfactory.south) -- ++(0,-6mm) -| \MQPortNorth{mqtt}{.30};
-\draw[mqtt data flow] (wsfactory.south) -- ++(0,-6mm) -| \MQPortNorth{mqtt}{.70};
-\draw[mqtt data flow] \MQPortSouth{mqtt}{.30} -- ++(0,-6mm) -| (broker.north);
-\draw[mqtt observation] \MQPortSouth{mqtt}{.70} -- ++(0,-6mm) -| node[mqtt edge label,near end,right]{connection events} (model.north);
+\draw[mqtt data flow] (directfactory.south) -- ++(0,-4.15mm) -| (mqttInLeft);
+\draw[mqtt data flow] (wsfactory.south) -- ++(0,-4.15mm) -| (mqttInRight);
+\draw[mqtt data flow] (mqttOutLeft) -- ++(0,-4.15mm) -| (broker.north);
+\draw[mqtt observation] (mqttOutRight) -- ++(0,-4.15mm) -|
+  node[mqtt edge label,near end,right]{connection events} (model.north);
 
-\node[mqtt note,below=\MQGapM of $(broker.south)!0.5!(model.south)$,minimum width=108mm,text width=102mm] (note)
+\node[mqtt note,below=\MQGapM of $(broker.south)!0.5!(model.south)$,minimum width=122mm,text width=114mm] (note)
   {Direct contexts receive the shared Broker pointer; WebSocket contexts call \texttt{Broker::instance(...)}. Both paths therefore converge on the same singleton. \texttt{MqttModel} mirrors connection activity for observability/admin surfaces; it is not a second broker-state store.};
 
 \coordinate (titleguard) at ($(direct.north)+(0,\MQGapL)$);
