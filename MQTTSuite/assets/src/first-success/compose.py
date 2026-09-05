@@ -91,7 +91,10 @@ def semantic_row(draw, y, label, roles, canvas_w, left=40):
     for i, role in enumerate(roles):
         role_chip(draw, x, y, chip_w, chip_h, role, 'broker' if role == 'Broker' else 'client')
         if i < len(roles)-1:
-            arrow(draw, x + chip_w + 8, y + chip_h/2, x + chip_w + gap - 8)
+            # Hard figure-style rule: the connector is one continuous geometry
+            # whose shaft starts exactly on the source-chip border and whose
+            # arrow tip terminates exactly on the destination-chip border.
+            arrow(draw, x + chip_w, y + chip_h/2, x + chip_w + gap)
         x += chip_w + gap
 
 
