@@ -56,7 +56,10 @@
   {when due:\\\texttt{sendPublish(...)}};
 \draw[mqtt data flow] (queue.south) -- (sendlater.north);
 
-\node[mqtt note,wide,below=\MQGapM of sendnow,xshift=19mm] (note)
+% Place the shared note below the lower delayed-send stage so the delayed
+% republish step remains fully visible and both association routes stay inside
+% the figure frame.
+\node[mqtt note,wide,below=\MQGapM of sendlater,xshift=-19mm] (note)
   {Both republish paths use the same MQTT client connection.\\Outgoing PUBLISH QoS is independent of SUBSCRIBE QoS.};
 \draw[mqtt association] (sendnow.south) -- ++(0,-5mm) -| \MQPortNorth{note}{.30};
 \draw[mqtt association] (sendlater.south) -- ++(0,-5mm) -| \MQPortNorth{note}{.70};
