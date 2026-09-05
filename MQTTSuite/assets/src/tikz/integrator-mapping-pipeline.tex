@@ -9,7 +9,7 @@
   setup/.style={mqtt config,minimum width=35mm,text width=30mm},
   stage/.style={mqtt process,minimum width=35mm,text width=30mm},
   controlstage/.style={mqtt control,minimum width=38mm,text width=33mm},
-  out/.style={mqtt process,minimum width=36mm,text width=31mm}
+  outputstage/.style={mqtt process,minimum width=36mm,text width=31mm}
 }
 
 % Subscription setup is configuration/startup work, not part of each message's
@@ -41,9 +41,9 @@
   {evaluate present mapping keys\\\texttt{static}, \texttt{value}, \texttt{json} independently};
 \draw[mqtt control flow] (mapper.south) -- (rules.north);
 
-\node[out,left=\MQGapS of rules] (immediate)
+\node[outputstage,left=\MQGapS of rules] (immediate)
   {immediate outputs\\$0..n$ publications\\mapping-defined QoS + retain};
-\node[out,right=\MQGapS of rules] (scheduled)
+\node[outputstage,right=\MQGapS of rules] (scheduled)
   {scheduled outputs\\$0..n$ publications\\delay + mapping-defined QoS / retain};
 \draw[mqtt control flow] \MQPortSouth{rules}{.30} -- ++(0,-6mm) -| (immediate.north);
 \draw[mqtt control flow] \MQPortSouth{rules}{.70} -- ++(0,-6mm) -| (scheduled.north);
