@@ -59,6 +59,16 @@ A figure is compliant only when its technical semantics, composition, typography
 - Use the canonical semantic connector styles: data/control flow, observation, handoff, association, containment, dependency. Do not interchange them for decoration.
 - Branch/edge labels must be unambiguously attached to the correct segment and must not obscure a line, bend, box, or arrowhead.
 
+### Canonical straight-arrow length
+
+For the canonical review raster used during figure approval, an ordinary straight process/data/control connector run has a **75 px** edge-to-edge shaft length. At the current desktop review scale this is approximately **8.3 mm** in TikZ source geometry.
+
+- Recurring straight arrows must use this canonical run unless a genuine semantic or geometric constraint requires another shared spacing token.
+- Do not shorten arrows merely to reduce figure height or width; recompose the layout instead.
+- Desktop and mobile remain independently art-directed, but their final review renders must preserve the same canonical visual arrow rhythm.
+- Three-segment doglegs are governed by the exact midpoint symmetry rule below rather than by forcing each individual leg to 75 px.
+- Observation/association/dependency routes may be longer when their semantic destinations require it, but must still use the canonical connector grammar and deliberate spacing.
+
 ### Hard centered-dogleg symmetry rule
 
 For every three-segment orthogonal connector whose geometric shape is `|-|` or `-|-`, the two parallel outer legs **MUST have exactly equal length**.

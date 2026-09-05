@@ -15,41 +15,53 @@
   note/.style={mqtt note,minimum width=43mm,text width=37mm}
 }
 
+% Canonical approval-raster straight-arrow run: 75 px ~= 8.3 mm here.
+\newcommand{\MQArrowGap}{8.3mm}
+
 \node[input] (publish)
   {received MQTT PUBLISH\\topic + payload + QoS + flags};
-\node[parse,right=\MQHorizontalGap of publish] (parse)
+\node[parse,right=\MQArrowGap of publish] (parse)
   {parse / classify payload once\\JSON when valid, otherwise text / binary};
-\node[raw,right=\MQHorizontalGap of parse] (raw)
+\node[raw,right=\MQArrowGap of parse] (raw)
   {issue raw-table INSERT attempt\\via \texttt{mariaDB.exec(...)}\\for every PUBLISH};
 
 \draw[mqtt data flow] (publish.east) -- (parse.west);
 \draw[mqtt data flow] (parse.east) -- (raw.west);
 
-\node[stage,below=\MQGapM of raw] (projections)
-  {next source-level call\\\texttt{storeProjections(message, payloadJson)}};
-\node[note,left=\MQHorizontalGap of projections] (rawoutcome)
+\node[stage,below=\MQArrowGap of raw] (projections)
+  {next source-level call\\\texttt{storeProjections(message,}\\\texttt{payloadJson)}};
+\node[note,left=\MQArrowGap of projections] (rawoutcome)
   {raw INSERT success / failure callback is independent\\and does not gate projection processing};
 
 \draw[mqtt control flow] (raw.south) -- node[mqtt edge label,right]{after issuing the raw exec call} (projections.north);
-\draw[mqtt observation] \MQPortSouth{raw}{.28} -- ++(0,-6mm) -| (rawoutcome.north);
 
-\node[mqtt decision,below=\MQGapM of projections] (json)
+% Raw completion is asynchronous observation, not a prerequisite for projections.
+% The V-H-V route is midpoint-derived so its outer vertical legs are exactly equal.
+\coordinate (rawOutcomeStart) at \MQPortSouth{raw}{.30};
+\coordinate (rawOutcomeMid) at ($(rawOutcomeStart)!0.5!(rawoutcome.north)$);
+\draw[mqtt observation]
+  (rawOutcomeStart)
+  -- (rawOutcomeStart |- rawOutcomeMid)
+  -- (rawoutcome.north |- rawOutcomeMid)
+  -- (rawoutcome.north);
+
+\node[mqtt decision,below=\MQArrowGap of projections] (json)
   {parsed JSON\\available?};
 \draw[mqtt control flow] (projections.south) -- (json.north);
 
-\node[mqtt note,right=\MQHorizontalGap of json,minimum width=39mm,text width=33mm] (skip)
+\node[mqtt note,right=\MQArrowGap of json,minimum width=39mm,text width=33mm] (skip)
   {NO: projection path returns\\raw outcome remains independent};
-\draw[mqtt association] (json.east) -- node[mqtt branch label,above]{NO} (skip.west);
+\draw[mqtt control flow] (json.east) -- node[mqtt branch label,above]{NO} (skip.west);
 
-\node[branch,below=\MQGapM of json] (match)
+\node[branch,below=\MQArrowGap of json] (match)
   {YES: match topic against storage plan\\$0..n$ matching projections};
 \draw[mqtt control flow] (json.south) -- node[mqtt branch label,right]{YES} (match.north);
 
-\node[typed,below=\MQGapM of match] (typed)
+\node[typed,below=\MQArrowGap of match] (typed)
   {for each match: build projected row\\+ issue projection INSERT attempt\\$0..n$ independent writes};
 \draw[mqtt data flow] (match.south) -- (typed.north);
 
-\node[mqtt note,below=\MQGapS of typed,minimum width=88mm,text width=82mm] (boundary)
+\node[mqtt note,below=\MQArrowGap of typed,minimum width=88mm,text width=82mm] (boundary)
   {The code orders the \emph{attempts}: raw \texttt{exec()} first, projection processing next.\\It does not wait for or require successful raw persistence before projection INSERT attempts.};
 
 \coordinate (titleguard) at ($(publish.north)+(0,\MQGapL)$);

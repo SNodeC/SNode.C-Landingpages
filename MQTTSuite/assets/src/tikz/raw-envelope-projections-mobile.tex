@@ -10,40 +10,76 @@
   half/.style={minimum width=33mm,text width=28mm}
 }
 
+% Canonical approval-raster straight-arrow run: 75 px ~= 8.3 mm here.
+\newcommand{\MQArrowGap}{8.3mm}
+
 \node[mqtt external,wide] (publish)
   {received MQTT PUBLISH\\topic + payload + QoS + flags};
-\node[mqtt process,wide,below=\MQGapS of publish] (parse)
+\node[mqtt process,wide,below=\MQArrowGap of publish] (parse)
   {parse / classify payload once\\JSON when valid, otherwise text / binary};
-\node[mqtt database,wide,below=\MQGapM of parse] (raw)
+\node[mqtt database,wide,below=\MQArrowGap of parse] (raw)
   {issue raw-table INSERT attempt\\via \texttt{mariaDB.exec(...)} for every PUBLISH};
 
 \draw[mqtt data flow] (publish.south) -- (parse.north);
 \draw[mqtt data flow] (parse.south) -- (raw.north);
 
-\node[mqtt note,half,below=\MQGapM of raw,xshift=-19mm] (rawoutcome)
+\node[mqtt note,half,below=\MQArrowGap of raw,xshift=-19mm] (rawoutcome)
   {raw success / failure callback\\does not gate projections};
-\node[mqtt control,half,below=\MQGapM of raw,xshift=19mm] (projections)
+\node[mqtt control,half,below=\MQArrowGap of raw,xshift=19mm] (projections)
   {next call\\\texttt{storeProjections(...)}\\after raw \texttt{exec()}};
 
-\draw[mqtt observation] \MQPortSouth{raw}{.28} -- ++(0,-6mm) -| (rawoutcome.north);
-\draw[mqtt control flow] \MQPortSouth{raw}{.72} -- ++(0,-6mm) -| (projections.north);
+% Both raw-result branches use exact midpoint V-H-V geometry.
+\coordinate (rawOutcomeStart) at \MQPortSouth{raw}{.30};
+\coordinate (rawOutcomeMid) at ($(rawOutcomeStart)!0.5!(rawoutcome.north)$);
+\draw[mqtt observation]
+  (rawOutcomeStart)
+  -- (rawOutcomeStart |- rawOutcomeMid)
+  -- (rawoutcome.north |- rawOutcomeMid)
+  -- (rawoutcome.north);
 
-\node[mqtt decision,below=\MQGapM of projections] (json)
+\coordinate (projectionStart) at \MQPortSouth{raw}{.70};
+\coordinate (projectionMid) at ($(projectionStart)!0.5!(projections.north)$);
+\draw[mqtt control flow]
+  (projectionStart)
+  -- (projectionStart |- projectionMid)
+  -- (projections.north |- projectionMid)
+  -- (projections.north);
+
+\node[mqtt decision,below=\MQArrowGap of projections] (json)
   {parsed JSON\\available?};
 \draw[mqtt control flow] (projections.south) -- (json.north);
 
-\node[mqtt note,half,below=\MQGapM of json,xshift=-19mm] (skip)
+\node[mqtt note,half,below=\MQArrowGap of json,xshift=-19mm] (skip)
   {NO: projection path returns};
-\node[mqtt process,half,below=\MQGapM of json,xshift=19mm] (match)
+\node[mqtt process,half,below=\MQArrowGap of json,xshift=19mm] (match)
   {YES: storage-plan match\\$0..n$ projections};
-\draw[mqtt association] \MQPortSouth{json}{.28} -- ++(0,-6mm) -| node[mqtt branch label,near end,left]{NO} (skip.north);
-\draw[mqtt control flow] \MQPortSouth{json}{.72} -- ++(0,-6mm) -| node[mqtt branch label,near end,right]{YES} (match.north);
 
-\node[mqtt database,wide,below=\MQGapM of match,xshift=-19mm] (typed)
+\coordinate (skipStart) at \MQPortSouth{json}{.30};
+\coordinate (skipMid) at ($(skipStart)!0.5!(skip.north)$);
+\draw[mqtt control flow]
+  (skipStart)
+  -- (skipStart |- skipMid)
+  -- (skip.north |- skipMid)
+  -- node[mqtt branch label,near end,left]{NO} (skip.north);
+
+\coordinate (matchStart) at \MQPortSouth{json}{.70};
+\coordinate (matchMid) at ($(matchStart)!0.5!(match.north)$);
+\draw[mqtt control flow]
+  (matchStart)
+  -- (matchStart |- matchMid)
+  -- (match.north |- matchMid)
+  -- node[mqtt branch label,near end,right]{YES} (match.north);
+
+\node[mqtt database,wide,below=\MQArrowGap of match,xshift=-19mm] (typed)
   {for each match: build projected row + issue projection INSERT attempt\\zero / one / many independent attempts};
-\draw[mqtt data flow] (match.south) -- ++(0,-6mm) -| (typed.north);
+\coordinate (typedMid) at ($(match.south)!0.5!(typed.north)$);
+\draw[mqtt data flow]
+  (match.south)
+  -- (match.south |- typedMid)
+  -- (typed.north |- typedMid)
+  -- (typed.north);
 
-\node[mqtt note,wide,below=\MQGapM of typed] (boundary)
+\node[mqtt note,wide,below=\MQArrowGap of typed] (boundary)
   {raw \texttt{exec()} is issued first; code then evaluates projections\\without waiting for or requiring raw-insert success};
 
 \coordinate (titleguard) at ($(publish.north)+(0,\MQGapL)$);
