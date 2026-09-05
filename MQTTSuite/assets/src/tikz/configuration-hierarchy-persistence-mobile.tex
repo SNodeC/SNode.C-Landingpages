@@ -28,8 +28,16 @@
   {inspect\\\texttt{--show-config}\\\texttt{--command-line}\\\texttt{=active}};
 \node[mqtt process,half,below=\MQBranchGap of effective,xshift=19mm] (write)
   {serialize\\effective state\\\texttt{--write-config}};
-\draw[mqtt observation] \MQPortSouth{effective}{.32} -- ++(0,-6mm) -| (inspect.north);
-\draw[mqtt control flow] \MQPortSouth{effective}{.68} -- ++(0,-6mm) -| (write.north);
+
+% Exact symmetric V-H-V doglegs: the turn y-coordinate is the midpoint
+% between each source/destination border-port pair, so the two vertical outer
+% legs have exactly equal length.
+\coordinate (effective-inspect) at \MQPortSouth{effective}{.32};
+\coordinate (effective-write) at \MQPortSouth{effective}{.68};
+\coordinate (inspect-mid) at ($(effective-inspect)!0.5!(inspect.north)$);
+\coordinate (write-mid) at ($(effective-write)!0.5!(write.north)$);
+\draw[mqtt observation] (effective-inspect) -- (effective-inspect |- inspect-mid) -| (inspect.north);
+\draw[mqtt control flow] (effective-write) -- (effective-write |- write-mid) -| (write.north);
 
 \node[mqtt process,half,below=\MQGapS of write] (saved)
   {written config file\\\textbf{not runtime success}};

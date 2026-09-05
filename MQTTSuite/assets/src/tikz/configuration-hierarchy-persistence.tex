@@ -1,4 +1,4 @@
-\documentclass[tikz,border=8pt]{standalone}
+\documentclass[tikz,border=0pt]{standalone}
 \usepackage[T1]{fontenc}
 \usepackage{lmodern}
 \input{mqttsystem-figure-system.tex}
@@ -21,19 +21,30 @@
 \node[main,right=\MQHorizontalGap of file] (effective)
   {effective parsed SNode.C configuration\\application $\rightarrow$ named instance\\$\rightarrow$ sections / options};
 
-\draw[mqtt control flow] (defaults.east) -- ++(6mm,0) |- \MQPortWest{effective}{.75};
+% Exact symmetric H-V-H doglegs: the turn x-coordinate is the midpoint
+% between the source and destination border ports, so the two horizontal outer
+% legs have exactly equal length.
+\coordinate (effective-defaults) at \MQPortWest{effective}{.75};
+\coordinate (effective-cli) at \MQPortWest{effective}{.25};
+\coordinate (defaults-mid) at ($(defaults.east)!0.5!(effective-defaults)$);
+\coordinate (cli-mid) at ($(cli.east)!0.5!(effective-cli)$);
+\draw[mqtt control flow] (defaults.east) -- (defaults.east -| defaults-mid) |- (effective-defaults);
 \draw[mqtt control flow] (file.east) -- \MQPortWest{effective}{.50};
-\draw[mqtt control flow] (cli.east) -- ++(6mm,0) |- \MQPortWest{effective}{.25};
+\draw[mqtt control flow] (cli.east) -- (cli.east -| cli-mid) |- (effective-cli);
 
 \node[outcome,right=\MQHorizontalGapLoose of effective,yshift=12mm] (inspect)
-  {inspect effective state\\\texttt{--show-config}\\\texttt{--command-line=active}};
+  {inspect effective state\\\texttt{--show-config}\\{\MQCodeSmallFont --command-line=active}};
 \node[outcome,right=\MQHorizontalGapLoose of effective,yshift=-12mm] (write)
   {serialize effective parsed state\\\texttt{--write-config}};
 \node[outcome,below=\MQGapS of write] (saved)
   {written application configuration file\\\textbf{not runtime success}};
 
-\draw[mqtt observation] \MQPortEast{effective}{.70} -- ++(6mm,0) |- (inspect.west);
-\draw[mqtt control flow] \MQPortEast{effective}{.30} -- ++(6mm,0) |- (write.west);
+\coordinate (effective-inspect) at \MQPortEast{effective}{.70};
+\coordinate (effective-write) at \MQPortEast{effective}{.30};
+\coordinate (inspect-mid) at ($(effective-inspect)!0.5!(inspect.west)$);
+\coordinate (write-mid) at ($(effective-write)!0.5!(write.west)$);
+\draw[mqtt observation] (effective-inspect) -- (effective-inspect -| inspect-mid) |- (inspect.west);
+\draw[mqtt control flow] (effective-write) -- (effective-write -| write-mid) |- (write.west);
 \draw[mqtt control flow] (write.south) -- (saved.north);
 
 \coordinate (apptitleguard) at ($(precedence.north)+(0,\MQGapL)$);
