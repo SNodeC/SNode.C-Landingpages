@@ -3,61 +3,110 @@
 \usepackage{lmodern}
 \input{mqttsystem-figure-system.tex}
 \input{snodec-canonical-figure-system.tex}
+\pgfdeclarelayer{framebackground}
+\pgfsetlayers{framebackground,background,main}
 \begin{document}
 \begin{tikzpicture}[mqtt desktop]
+\newcommand{\MQArrowRun}{8.3mm}
+\newcommand{\MQArrowHalf}{4.15mm}
 \tikzset{
-  surface/.style={mqtt process,minimum width=50mm,text width=44mm},
-  route/.style={mqtt data,minimum width=50mm,text width=44mm},
-  owner/.style={minimum width=52mm,text width=46mm}
+  ingress/.style={minimum width=58mm,text width=52mm},
+  dashboard/.style={mqtt process,minimum width=82mm,text width=76mm,minimum height=17mm},
+  operatorcard/.style={mqtt process,minimum width=36mm,text width=30mm,minimum height=29mm},
+  websocket/.style={mqtt data,minimum width=40mm,text width=34mm,minimum height=23mm},
+  owner/.style={minimum width=54mm,text width=48mm,minimum height=22mm}
 }
 
-\node[mqtt external,minimum width=58mm,text width=52mm] (listener)
+% Shared ingress stays outside the semantic plane split.
+\node[mqtt external,ingress] (listener)
   {Broker HTTP / HTTPS listener family};
-\node[mqtt control,minimum width=58mm,text width=52mm,below=\MQGapS of listener] (router)
+\node[mqtt control,ingress,below=\MQArrowRun of listener] (router)
   {shared Express router — request dispatch};
 \draw[mqtt control flow] (listener.south) -- (router.north);
 
-\node[surface,below=22mm of router,xshift=-28mm] (dash)
-  {Dashboard / static assets\\\texttt{/clients/*}\\non-upgrade \texttt{/} redirects to \texttt{/clients}};
-\node[surface,below=22mm of router,xshift=28mm] (sse)
-  {SSE current state + live events\\\texttt{GET /api/mqtt/events}\\legacy \texttt{GET /sse}\\source: \texttt{MqttModel}};
-\node[surface,below=\MQGapM of dash] (admin)
-  {JSON administration → Broker\\\texttt{POST /api/mqtt/}\\\texttt{disconnect · subscribe · unsubscribe · release}};
-\node[route,below=\MQGapM of sse] (ws)
-  {MQTT WebSocket → Broker\\\texttt{/ · /ws · /mqtt}\\requested subprotocol \texttt{mqtt}};
-
-\coordinate (routesTitleGuard) at ($(dash.north)+(0,\MQGapL)$);
+% Fixed, aligned semantic planes: 92 + 8 + 50 = 150 mm.
+\coordinate (planesTop) at ($(router.south)+(0,-\MQArrowRun)$);
 \begin{pgfonlayer}{background}
-  \node[mqtt group,fit=(routesTitleGuard)(dash)(sse)(admin)(ws)] (routes) {};
+  \node[mqtt admin plane,minimum width=92mm,minimum height=72mm,inner sep=0pt,
+        anchor=north] (operatorplane) at ($(planesTop)+(-29mm,0)$) {};
+  \node[mqtt data plane,minimum width=50mm,minimum height=72mm,inner sep=0pt,
+        anchor=north] (dataplane) at ($(planesTop)+(50mm,0)$) {};
 \end{pgfonlayer}
-\node[mqtt section title] at ($(routes.north west)+(\MQTitleGap,-\MQTitleGap)$)
-  {Routes installed on the shared HTTP router};
-\draw[mqtt control flow] (router.south) -- (routes.north);
+\node[mqtt section title] at ($(operatorplane.north west)+(4.5mm,-4mm)$)
+  {Operator / browser surfaces};
+\node[mqtt section title] at ($(dataplane.north west)+(4.5mm,-4mm)$)
+  {MQTT data surface};
 
-\node[mqtt control,owner,below=22mm of routes,xshift=-29mm] (broker)
-  {Broker singleton + MQTT handlers\\MQTT data path + selected admin effects};
-\node[mqtt state,owner,below=22mm of routes,xshift=29mm] (model)
-  {\texttt{MqttModel}\\observable client / subscription / retained state\\+ SSE event source\\fed by Broker connection/state events};
-\draw[mqtt observation] (broker.east) -- (model.west);
+% Exact 75 px / 8.3 mm bent-arrow primary-axis span from router to both planes.
+\draw[mqtt control flow]
+  \MQPortSouth{router}{.35} -- ++(0,-\MQArrowHalf) -| (operatorplane.north);
+\draw[mqtt data flow]
+  \MQPortSouth{router}{.65} -- ++(0,-\MQArrowHalf) -| (dataplane.north);
 
-\coordinate (ownersTitleGuard) at ($(broker.north)+(0,\MQGapL)$);
-\begin{pgfonlayer}{background}
-  \node[mqtt group,fit=(ownersTitleGuard)(broker)(model)] (owners) {};
-\end{pgfonlayer}
-\node[mqtt section title] at ($(owners.north west)+(\MQTitleGap,-\MQTitleGap)$)
-  {Runtime ownership};
+% Operator/browser plane. Side/bottom content clearances are deliberately balanced.
+\node[dashboard,anchor=north] (dash)
+  at ($(operatorplane.north)+(0,-13mm)$)
+  {Dashboard / static assets\\\texttt{/clients/* · non-upgrade / → /clients}};
+\coordinate (operatorLowerTop) at ($(dash.south)+(0,-\MQArrowRun)$);
+\node[operatorcard,anchor=north] (sse)
+  at ($(operatorLowerTop)+(-22mm,0)$)
+  {SSE events\\\texttt{/api/mqtt/events}\\legacy \texttt{/sse}};
+\node[operatorcard,anchor=north] (admin)
+  at ($(operatorLowerTop)+(22mm,0)$)
+  {JSON administration\\\texttt{POST /api/mqtt/}\\disconnect · subscribe ·\\unsubscribe · release};
 
-\node[mqtt note,below=\MQGapM of owners,minimum width=110mm,text width=104mm] (note)
-  {The bundled dashboard is a browser client of the administration/SSE routes. MQTT-over-WebSocket is a separate MQTT data route through the same HTTP server infrastructure.};
+% Internal related routes share one level and one canonical 8.3 mm vertical span.
+\coordinate (sseDashMid) at ($(sse.north)!0.5!(dash.south)$);
+\draw[mqtt observation]
+  (sse.north) -- (sse.north |- sseDashMid) -|
+  node[mqtt edge label,near end,left]{events} \MQPortSouth{dash}{.30};
+\coordinate (dashAdminMid) at ($(dash.south)!0.5!(admin.north)$);
+\coordinate (dashAdminPort) at ($(dash.south west)!.70!(dash.south east)$);
+\draw[mqtt control flow]
+  (dashAdminPort) -- (dashAdminPort |- dashAdminMid) -|
+  node[mqtt edge label,near end,right]{requests} (admin.north);
 
+% MQTT data-plane route card, vertically centered in the usable plane content.
+\node[websocket] (ws) at ($(dataplane.north)+(0,-40.25mm)$)
+  {MQTT WebSocket\\\texttt{/ · /ws · /mqtt}\\subprotocol \texttt{mqtt}};
+
+% Runtime ownership row: equal boxes, aligned and separated by the canonical horizontal run.
+\node[mqtt state,owner,anchor=north] (model)
+  at ($(operatorplane.south)+(-2.15mm,-\MQArrowRun)$)
+  {\texttt{MqttModel}\\observable client / subscription / retained state\\SSE event source};
+\node[mqtt control,owner,anchor=north] (broker)
+  at ($(dataplane.south)+(-18.85mm,-\MQArrowRun)$)
+  {Broker singleton + MQTT handlers\\MQTT data path + administration effects};
+
+% Actual route cards, not their containers, drive Broker effects.
+\coordinate (brokerAdminPort) at ($(broker.north west)!.35!(broker.north east)$);
+\coordinate (brokerWsPort) at ($(broker.north west)!.65!(broker.north east)$);
+\coordinate (adminBrokerMid) at ($(admin.south)!0.5!(brokerAdminPort)$);
+\draw[mqtt control flow]
+  (admin.south) -- (admin.south |- adminBrokerMid) -| (brokerAdminPort);
+\coordinate (wsBrokerMid) at ($(ws.south)!0.5!(brokerWsPort)$);
+\draw[mqtt data flow]
+  (ws.south) -- (ws.south |- wsBrokerMid) -| (brokerWsPort);
+
+% Broker updates the observable model; the model supplies the SSE stream.
+\draw[mqtt observation] (broker.west) -- (model.east);
+\coordinate (modelSseMid) at ($(model.north)!0.5!(sse.south)$);
+\draw[mqtt observation]
+  (model.north) -- (model.north |- modelSseMid) -| (sse.south);
+
+\node[mqtt note,below=\MQArrowRun of $(model.south)!0.5!(broker.south)$,
+      minimum width=132mm,text width=126mm] (note)
+  {The shared listener/router is neither an administration plane nor an MQTT data plane. The dashboard is a browser client of the administration/SSE routes; MQTT-over-WebSocket is a separate MQTT data route through the same HTTP infrastructure.};
+
+% Neutral whole-figure frame on its own layer, behind semantic planes.
 \coordinate (titleguard) at ($(listener.north)+(0,\MQGapL)$);
-\begin{pgfonlayer}{background}
-  \node[mqtt figure frame,fit=(titleguard)(listener)(router)(routes)(owners)(note)] (frame) {};
+\begin{pgfonlayer}{framebackground}
+  \node[mqtt figure frame,fit=(titleguard)(listener)(router)(operatorplane)(dataplane)(model)(broker)(note)] (frame) {};
 \end{pgfonlayer}
 \node[mqtt section title] at ($(frame.north west)+(\MQTitleGap,-\MQTitleGap)$)
   {Broker HTTP surfaces};
 
-% Authoritative SNode.C desktop canvas: exactly 160 mm wide, native drawing.
+% Authoritative desktop review canvas: exactly 160 mm wide.
 \coordinate (snodecCanvasCenter) at (current bounding box.center);
 \coordinate (snodecCanvasSW)
   at ($(snodecCanvasCenter)+(-80mm,0)$ |- current bounding box.south);
@@ -65,6 +114,5 @@
   at ($(snodecCanvasCenter)+(80mm,0)$ |- current bounding box.north);
 \path[use as bounding box]
   ([yshift=-7pt]snodecCanvasSW) rectangle ([yshift=7pt]snodecCanvasNE);
-
 \end{tikzpicture}
 \end{document}

@@ -3,53 +3,95 @@
 \usepackage{lmodern}
 \input{mqttsystem-figure-system.tex}
 \input{snodec-canonical-figure-system.tex}
+\pgfdeclarelayer{framebackground}
+\pgfsetlayers{framebackground,background,main}
 \begin{document}
 \begin{tikzpicture}[mqtt mobile]
-\tikzset{wide/.style={minimum width=74mm,text width=66mm}}
+\newcommand{\MQArrowRun}{8.3mm}
+\newcommand{\MQArrowHalf}{4.15mm}
+\tikzset{
+  wide/.style={minimum width=74mm,text width=66mm},
+  opcard/.style={mqtt process,minimum width=40mm,text width=34mm},
+  owner/.style={minimum width=34mm,text width=28mm,minimum height=27mm}
+}
 
 \node[mqtt external,wide] (listener) {Broker HTTP / HTTPS listener family};
-\node[mqtt control,wide,below=\MQGapS of listener] (router) {shared Express router — request dispatch};
+\node[mqtt control,wide,below=\MQArrowRun of listener] (router)
+  {shared Express router — request dispatch};
 \draw[mqtt control flow] (listener.south) -- (router.north);
 
-\node[mqtt process,wide,below=22mm of router] (dash)
-  {Dashboard / static assets — \texttt{/clients/*}\\non-upgrade \texttt{/} redirects to \texttt{/clients}};
-\node[mqtt process,wide,below=\MQGapS of dash] (sse)
-  {SSE — \texttt{GET /api/mqtt/events}, legacy \texttt{GET /sse}\\current state + live events from \texttt{MqttModel}};
-\node[mqtt process,wide,below=\MQGapS of sse] (admin)
-  {JSON administration → Broker\\\texttt{POST /api/mqtt/}: disconnect · subscribe · unsubscribe · release};
-\node[mqtt data,wide,below=\MQGapS of admin] (ws)
-  {MQTT WebSocket → Broker — \texttt{/ · /ws · /mqtt}\\requested subprotocol \texttt{mqtt}};
-
-\coordinate (routesTitleGuard) at ($(dash.north)+(0,\MQGapL)$);
+% 48 + 8 + 34 = 90 mm; with the canonical frame padding this stays below 100 mm.
+\coordinate (planesTop) at ($(router.south)+(0,-\MQArrowRun)$);
 \begin{pgfonlayer}{background}
-  \node[mqtt group,fit=(routesTitleGuard)(dash)(sse)(admin)(ws)] (routes) {};
+  \node[mqtt admin plane,minimum width=48mm,minimum height=114mm,inner sep=0pt,
+        anchor=north] (operatorplane) at ($(planesTop)+(-21mm,0)$) {};
+  \node[mqtt data plane,minimum width=34mm,minimum height=114mm,inner sep=0pt,
+        anchor=north] (dataplane) at ($(planesTop)+(28mm,0)$) {};
 \end{pgfonlayer}
-\node[mqtt section title] at ($(routes.north west)+(\MQTitleGap,-\MQTitleGap)$)
-  {Routes on the shared router};
-\draw[mqtt control flow] (router.south) -- (routes.north);
+\node[mqtt section title] at ($(operatorplane.north west)+(4.5mm,-4mm)$)
+  {Operator / browser};
+\node[mqtt section title] at ($(dataplane.north west)+(4.5mm,-4mm)$)
+  {MQTT data};
 
-\node[mqtt control,wide,below=22mm of routes] (broker)
-  {Broker singleton + MQTT handlers\\MQTT data path + selected administration effects};
-\node[mqtt state,wide,below=\MQGapS of broker] (model)
-  {\texttt{MqttModel} — observable client / subscription / retained state\\+ SSE event source};
-\draw[mqtt observation] (broker.south) -- node[mqtt edge label,right]{connection / state events} (model.north);
+\draw[mqtt control flow]
+  \MQPortSouth{router}{.35} -- ++(0,-\MQArrowHalf) -| (operatorplane.north);
+\draw[mqtt data flow]
+  \MQPortSouth{router}{.65} -- ++(0,-\MQArrowHalf) -| (dataplane.north);
 
-\coordinate (ownersTitleGuard) at ($(broker.north)+(0,\MQGapL)$);
-\begin{pgfonlayer}{background}
-  \node[mqtt group,fit=(ownersTitleGuard)(broker)(model)] (owners) {};
-\end{pgfonlayer}
-\node[mqtt section title] at ($(owners.north west)+(\MQTitleGap,-\MQTitleGap)$)
-  {Runtime ownership};
+% Mobile siblings are vertically recomposed, but use canonical adjacent spacing.
+\node[opcard,minimum height=28mm,anchor=north] (dash)
+  at ($(operatorplane.north)+(0,-13mm)$)
+  {Dashboard / static\\\texttt{/clients/*}\\non-upgrade \texttt{/ → /clients}};
+\node[opcard,minimum height=31mm,below=\MQArrowRun of dash] (admin)
+  {JSON admin API\\\texttt{POST /api/mqtt/}\\disconnect · subscribe\\unsubscribe · release};
+\node[opcard,minimum height=20mm,below=\MQArrowRun of admin] (sse)
+  {SSE\\\texttt{/api/mqtt/events}\\legacy \texttt{/sse}};
+\draw[mqtt control flow]
+  (dash.south) -- node[mqtt edge label,right]{requests} (admin.north);
 
-\node[mqtt note,wide,below=\MQGapM of owners] (note)
-  {Dashboard JavaScript consumes the administration/SSE routes;\\MQTT-over-WebSocket is a separate MQTT data route.};
+% SSE is a sibling source consumed by the dashboard, not a post-admin process stage.
+\draw[mqtt observation]
+  (sse.west) -- ++(-2mm,0) |- (dash.west);
+
+\node[mqtt data,minimum width=26mm,text width=20mm,minimum height=32mm] (ws)
+  at ($(dataplane.north)+(0,-63.5mm)$)
+  {MQTT\\WebSocket\\\texttt{/ · /ws}\\\texttt{/mqtt}\\\texttt{mqtt} subprotocol};
+
+% Runtime row. Boxes use the canonical 8.3 mm horizontal separation.
+\node[mqtt state,owner,anchor=north] (model)
+  at ($(operatorplane.south)+(0,-\MQArrowRun)$)
+  {\texttt{MqttModel}\\observable state\\+ SSE event source};
+\node[mqtt control,owner,anchor=north] (broker)
+  at ($(operatorplane.south)+(42.3mm,-\MQArrowRun)$)
+  {Broker singleton\\+ MQTT handlers\\data + admin effects};
+
+% Two Broker top ports are ordered left-to-right: admin on the left, MQTT data on the right.
+\coordinate (brokerAdminPort) at ($(broker.north west)!.30!(broker.north east)$);
+\coordinate (brokerWsPort) at ($(broker.north west)!.70!(broker.north east)$);
+% Route the administration effect through the inter-plane gap so it never crosses the SSE card.
+% The final segment enters the Broker top border vertically at 90 degrees.
+\coordinate (adminGapTrack) at ($(operatorplane.north east)!0.5!(dataplane.north west)$);
+\coordinate (adminBrokerYTrack) at ($(operatorplane.south)!0.5!(broker.north)$);
+\draw[mqtt control flow]
+  (admin.east) -- (adminGapTrack |- admin.east) --
+  (adminGapTrack |- adminBrokerYTrack) -- (brokerAdminPort |- adminBrokerYTrack) --
+  (brokerAdminPort);
+% MQTT WebSocket reaches the right Broker port as one continuous centered dogleg.
+\coordinate (wsBrokerMid) at ($(ws.south)!0.5!(brokerWsPort)$);
+\draw[mqtt data flow]
+  (ws.south) -- (ws.south |- wsBrokerMid) -| (brokerWsPort);
+\draw[mqtt observation] (broker.west) -- (model.east);
+% MqttModel is vertically aligned with the SSE card: no diagonal observation shortcut.
+\draw[mqtt observation] (model.north) -- (sse.south);
+
+\node[mqtt note,wide,below=\MQArrowRun of $(model.south)!0.5!(broker.south)$] (note)
+  {Shared ingress stays outside the plane split. Dashboard uses API/SSE; MQTT-over-WebSocket is the separate MQTT data route.};
 
 \coordinate (titleguard) at ($(listener.north)+(0,\MQGapL)$);
-\begin{pgfonlayer}{background}
-  \node[mqtt figure frame,fit=(titleguard)(listener)(router)(routes)(owners)(note)] (frame) {};
+\begin{pgfonlayer}{framebackground}
+  \node[mqtt figure frame,fit=(titleguard)(listener)(router)(operatorplane)(dataplane)(model)(broker)(note)] (frame) {};
 \end{pgfonlayer}
 \node[mqtt section title] at ($(frame.north west)+(\MQTitleGap,-\MQTitleGap)$)
   {Broker HTTP surfaces};
-
 \end{tikzpicture}
 \end{document}
