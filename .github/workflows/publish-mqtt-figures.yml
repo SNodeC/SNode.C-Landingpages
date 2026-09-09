@@ -1,6 +1,6 @@
 name: MQTTSuite figure validation
-# CI compiles the canonical TikZ sources and uploads review artifacts.
-# Generated SVGs are build outputs only and are never committed to the repository.
+# CI compiles the canonical TikZ sources, publishes their generated SVGs on
+# main so README figures are immediately visible, and uploads review artifacts.
 
 on:
   push:
@@ -12,6 +12,9 @@ on:
       - MQTTSuite/assets/src/tikz/**
       - MQTTSuite/assets/src/first-success/**
   workflow_dispatch:
+
+permissions:
+  contents: write
 
 concurrency:
   group: mqttsuite-figures-${{ github.ref }}
@@ -77,6 +80,48 @@ jobs:
           cp MQTTSuite/assets/*.png figure-review/runtime-publication/
           cp MQTTSuite/assets/src/first-success/*.png figure-review/runtime-source/
           cp figure-build.log figure-review/
+
+      - name: Publish generated MQTTSuite SVGs
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          files=()
+          while IFS= read -r source; do
+            stem="$(basename "${source%.tex}")"
+            files+=("MQTTSuite/assets/${stem}.svg")
+          done < <(
+            find MQTTSuite/assets/src/tikz \
+              -maxdepth 1 \
+              -type f \
+              -name '*.tex' \
+              ! -name '*-figure-system.tex' \
+              -print | sort
+          )
+
+          if (( ${#files[@]} == 0 )); then
+            echo "No MQTTSuite TikZ figure sources found."
+            exit 1
+          fi
+
+          for file in "${files[@]}"; do
+            if [[ ! -f "$file" ]]; then
+              echo "Expected generated SVG is missing: $file" >&2
+              exit 1
+            fi
+          done
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -f -- "${files[@]}"
+
+          if git diff --cached --quiet; then
+            echo "Generated MQTTSuite SVGs already match the committed publication outputs."
+          else
+            git commit -m "Regenerate MQTTSuite figures"
+            git push origin HEAD:main
+          fi
 
       - name: Upload review renders
         uses: actions/upload-artifact@v4
