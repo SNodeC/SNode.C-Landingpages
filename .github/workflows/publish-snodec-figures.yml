@@ -1,0 +1,145 @@
+name: SNode.C figure validation
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - CMakeLists.txt
+      - .github/workflows/publish-snodec-figures.yml
+      - shared/assets/src/tikz/**
+      - SNode.C/assets/src/tikz/**
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: snodec-figures-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Enforce canonical SNode.C figure-source rules
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          import sys
+
+          root = Path("SNode.C/assets/src/tikz")
+          errors = []
+          patterns = [
+              (r"\bat\s*\(", "absolute at(...) placement"),
+              (r"\b(?:xshift|yshift)\s*=", "absolute shift placement"),
+              (r"\\tikzset\s*\{", "figure-local tikzset"),
+              (r"\b(?:draw|fill|line width|rounded corners|font|text|opacity)\s*=", "figure-local visual override"),
+              (r"-\{(?:Latex|Stealth)", "figure-local arrowhead definition"),
+          ]
+
+          for path in sorted(root.glob("*.tex")):
+              text = path.read_text(encoding="utf-8")
+              if "\\input{landingpages-figure-system.tex}" not in text:
+                  errors.append(f"{path}: does not load canonical landingpages-figure-system.tex")
+              for pattern, description in patterns:
+                  if re.search(pattern, text):
+                      errors.append(f"{path}: {description}")
+              if re.search(r"\([+-]?\d+(?:\.\d+)?,\s*[+-]?\d+(?:\.\d+)?\)", text):
+                  errors.append(f"{path}: absolute numeric coordinate")
+              for match in re.finditer(r"\\node\[([^]]+)\]", text):
+                  if "mqtt " not in match.group(1):
+                      errors.append(f"{path}: node without canonical mqtt style: {match.group(1)}")
+              for match in re.finditer(r"\\(?:draw|path)\[([^]]+)\]", text):
+                  if "mqtt " not in match.group(1):
+                      errors.append(f"{path}: connector/path without canonical mqtt style: {match.group(1)}")
+
+          if errors:
+              print("\n".join(errors))
+              sys.exit(1)
+          print(f"validated {len(list(root.glob('*.tex')))} SNode.C TikZ sources")
+          PY
+
+      - name: Install figure toolchain
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            texlive-latex-extra \
+            texlive-fonts-recommended \
+            lmodern \
+            fonts-lmodern \
+            poppler-utils \
+            inkscape \
+            scour
+
+      - name: Generate technical figures
+        shell: bash
+        run: |
+          set -o pipefail
+          cmake -S . -B cmake-build-figures
+          cmake --build cmake-build-figures --target figures --parallel 8 2>&1 | tee figure-build.log
+
+      - name: Rasterize SNode.C review renders
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p figure-review/generated figure-review/generated-svg
+          for svg in SNode.C/assets/*.svg; do
+            name="$(basename "${svg%.svg}")"
+            case "$name" in
+              programming-model|programming-model-mobile|event-loop-dispatch|event-loop-dispatch-mobile|endpoint-composition|endpoint-composition-mobile|protocol-relationships|protocol-relationships-mobile|http-websocket-context-switch|http-websocket-context-switch-mobile|configuration-hierarchy|configuration-hierarchy-mobile|configuration-resolution|configuration-resolution-mobile|retry-vs-reconnect|retry-vs-reconnect-mobile)
+                if [[ "$name" == *-mobile ]]; then width=350; else width=830; fi
+                inkscape "$svg" --export-type=png --export-width="$width" --export-filename="figure-review/generated/${name}.png"
+                cp "$svg" figure-review/generated-svg/
+                ;;
+            esac
+          done
+          cp figure-build.log figure-review/
+
+      - name: Publish generated SNode.C SVGs
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        shell: bash
+        run: |
+          set -euo pipefail
+          files=(
+            SNode.C/assets/programming-model.svg
+            SNode.C/assets/programming-model-mobile.svg
+            SNode.C/assets/event-loop-dispatch.svg
+            SNode.C/assets/event-loop-dispatch-mobile.svg
+            SNode.C/assets/endpoint-composition.svg
+            SNode.C/assets/endpoint-composition-mobile.svg
+            SNode.C/assets/protocol-relationships.svg
+            SNode.C/assets/protocol-relationships-mobile.svg
+            SNode.C/assets/http-websocket-context-switch.svg
+            SNode.C/assets/http-websocket-context-switch-mobile.svg
+            SNode.C/assets/configuration-hierarchy.svg
+            SNode.C/assets/configuration-hierarchy-mobile.svg
+            SNode.C/assets/configuration-resolution.svg
+            SNode.C/assets/configuration-resolution-mobile.svg
+            SNode.C/assets/retry-vs-reconnect.svg
+            SNode.C/assets/retry-vs-reconnect-mobile.svg
+          )
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -f "${files[@]}"
+          if git diff --cached --quiet; then
+            echo "Generated SNode.C SVGs already match the committed publication outputs."
+            exit 0
+          fi
+          git commit -m "Regenerate SNode.C figures"
+          git push origin HEAD:main
+
+      - name: Upload review renders
+        uses: actions/upload-artifact@v4
+        with:
+          name: snodec-figure-review-${{ github.sha }}
+          path: figure-review/
+          if-no-files-found: error
+          retention-days: 14

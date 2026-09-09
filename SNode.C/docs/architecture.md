@@ -1,213 +1,108 @@
 # Architecture and extension points
 
-[← SNode.C](../README.md) · [Configuration](configuration.md) ·
-[Capability map](capabilities.md) ·
-[API reference](https://snodec.github.io/snode.c-doc/html/index.html)
+[← SNode.C](../README.md) · [Configuration](configuration.md) · [Capability map](capabilities.md) · [API reference](https://snodec.github.io/snode.c-doc/html/index.html)
 
-SNode.C separates five decisions that are commonly tangled together in a
-network application: when work is ready, which address family identifies a
-peer, whether an endpoint listens or connects, how an established stream is
-managed, and which protocol behavior is attached to that stream.
+SNode.C separates decisions that are commonly tangled together in a network application: when work is ready, which address family identifies a peer, whether an endpoint listens or connects, how the established stream is managed, and which protocol/application behavior is attached to it.
 
-The result is not an arbitrary “mix every layer with every other layer” system.
-It is a typed composition model with explicit extension points. A concrete
-application still has to select compatible components, build them, and qualify
-the path it intends to deploy.
+The result is a **typed composition model**, not an arbitrary “mix every layer with every other layer” system. A concrete application must still select compatible components and qualify the exact path it intends to deploy.
 
 <picture>
-  <source media="(max-width: 600px)" srcset="../assets/layer-architecture-mobile.svg">
-  <img src="../assets/layer-architecture.svg" alt="SNode.C composition map showing the event runtime, address families, endpoint roles, connection modes, and application contexts">
+  <source media="(max-width: 600px)" srcset="../assets/endpoint-composition-mobile.svg">
+  <img src="../assets/endpoint-composition.svg" alt="Typed SNode.C endpoint composition. One concrete endpoint selects an address family, server or client role, plain or OpenSSL-backed TLS connection mode, and a compatible SocketContext or framework protocol context, then uses the shared event runtime. RFCOMM and L2CAP are marked source-verified rather than runtime-qualified, and the figure explicitly rejects arbitrary cross-product assumptions.">
 </picture>
 
-<sub>The stack separates application behavior from endpoint and connection mechanics; dashed RFCOMM and L2CAP entries are present in source but are not runtime-qualified here.</sub>
+<sub>Component presence is not a compatibility or qualification matrix; concrete compositions remain typed and evidence-scoped.</sub>
 
 ## 1. Event runtime
 
-`core::SNodeC::start()` enters the framework event loop. The loop delegates
-descriptor readiness and timer publication to an `EventMultiplexer`, queues the
-resulting events, and dispatches them to their receivers. Current source
-contains select, poll, and epoll multiplexer implementations.
+`core::SNodeC::start()` enters the framework event loop synchronously on the caller thread. At configure time one event-multiplexer backend is selected; current source contains `epoll`, `poll`, and `select` implementations. It is one selected backend, not three simultaneously active multiplexers.
 
-This is the shared runtime underneath clients, servers, timers, and stream
-connections. Application contexts react to events; they do not run their own
-accept or polling loop. That keeps protocol code focused, but it does not by
-itself establish performance, fairness, or workload suitability. Those require
-measurements and tests for the concrete build and traffic pattern.
+A normal loop iteration waits for work, spans descriptor readiness into active events, executes the queued events, checks timed-out events, releases expired resources, and repeats while the loop is running. Descriptor and timer publishers feed the same event-dispatch path; callbacks are not handed to a framework worker pool.
 
-Source anchors:
+<picture>
+  <source media="(max-width: 600px)" srcset="../assets/event-loop-dispatch-mobile.svg">
+  <img src="../assets/event-loop-dispatch.svg" alt="SNode.C event-loop dispatch cycle. A selected epoll, poll, or select backend is chosen at configure time. SNodeC start runs on the caller thread, waits for descriptor or timer work, places resulting work into the event queue, dispatches events to endpoint, connection, and context callbacks, completes the tick, and repeats while running.">
+</picture>
 
-- [`EventLoop`](https://github.com/SNodeC/snode.c/blob/60f26d9ae54b3e9ffde954d0ca75e53f79f31d79/src/core/EventLoop.h)
-- [`EventMultiplexer`](https://github.com/SNodeC/snode.c/blob/60f26d9ae54b3e9ffde954d0ca75e53f79f31d79/src/core/EventMultiplexer.h)
-- [multiplexer implementations](https://github.com/SNodeC/snode.c/tree/60f26d9ae54b3e9ffde954d0ca75e53f79f31d79/src/core/multiplexer)
+<sub>`start()` drives the loop on its caller thread; the figure does not imply a worker pool, fairness guarantee, or real-time scheduling.</sub>
+
+This model keeps protocol code reactive, but it does not itself establish throughput, latency, fairness, or workload suitability. Those properties require measurements on the concrete build and traffic pattern.
+
+Source anchors at the reviewed head [`1f0f728`](https://github.com/SNodeC/snode.c/commit/1f0f728fc9b3b45174f2cd790d83b2f493e58af1): [`SNodeC.cpp`](https://github.com/SNodeC/snode.c/blob/1f0f728fc9b3b45174f2cd790d83b2f493e58af1/src/core/SNodeC.cpp), [`EventLoop.cpp`](https://github.com/SNodeC/snode.c/blob/1f0f728fc9b3b45174f2cd790d83b2f493e58af1/src/core/EventLoop.cpp), and [`EventMultiplexer.cpp`](https://github.com/SNodeC/snode.c/blob/1f0f728fc9b3b45174f2cd790d83b2f493e58af1/src/core/EventMultiplexer.cpp).
 
 ## 2. Address family and endpoint role
 
-Address-family layers provide the concrete socket and address types. Current
-source trees exist for IPv4, IPv6, Unix-domain, Bluetooth RFCOMM, and Bluetooth
-L2CAP communication. Stream clients and servers are then composed above the
-selected family:
+Current source contains address/network families for IPv4, IPv6, Unix-domain, Bluetooth RFCOMM, and Bluetooth L2CAP. Stream clients and servers are then composed above the selected family:
 
-- a `SocketServer` owns listener setup and accepts connections;
-- a `SocketClient` owns connection attempts and client-side reconnect policy;
-- both create a `SocketConnection` after the underlying operation succeeds.
+- `SocketServer` owns listener setup and accepts connections;
+- `SocketClient` owns connection attempts and client-side reconnect policy;
+- a successful accept/connect path constructs a `SocketConnection`.
 
-The role affects configuration. A server requires a local listener endpoint and
-learns remote addresses from accepted peers. A client requires a remote
-destination and may optionally bind a local endpoint. The framework reflects
-those differences in its configuration sections rather than forcing both roles
-through an undifferentiated address object.
+The role affects configuration. A server normally owns a local listener endpoint and learns remote addresses from accepted peers. A client normally requires a remote destination and may optionally bind a local endpoint. Server-specific accept/listen policy and client-specific reconnect policy therefore remain separate.
 
-Application-wide settings use the same configuration tree. `ConfigRoot` is a
-`SubCommand`, and applications can attach their own typed `SubCommand` branches
-alongside the framework-provided endpoint hierarchy; the
-[configuration guide](configuration.md) covers that extension point.
-
-The source tree is broader than the launch qualification. The published echo
-evidence covers IPv4, IPv6, and Unix-domain plain streams plus mutual TLS over
-IPv4. RFCOMM and L2CAP remain source-verified paths requiring suitable hardware
-and their own runtime qualification.
+The source surface is broader than the recorded runtime qualification. IPv4, IPv6, and Unix-domain plain streams have recorded runtime evidence; RFCOMM and L2CAP remain source/build-visible paths requiring suitable hardware and their own runtime qualification.
 
 ## 3. Connection layer
 
-`SocketConnection` owns the established connection and the mechanics shared by
-protocols: local and remote addresses, connection identity, reads and writes,
-queue accounting, timeouts, shutdown, and the currently attached context.
+`SocketConnection` owns the established connection mechanics shared by protocols: local and remote addresses, identity, reads and writes, output accounting, timeouts, shutdown, and the currently attached context.
 
-Plain stream and OpenSSL-backed TLS variants provide different connection
-mechanics below the same application-context boundary. TLS is therefore a
-selected and configured connection mode, not an automatic property of a server
-or client. Certificates, keys, trust anchors, verification policy, ciphers,
-timeouts, and SNI still need deliberate configuration.
+Plain and OpenSSL-backed TLS variants provide different connection mechanics below the same application-context boundary. TLS is therefore a selected connection mode, not an automatic property of every server or client. Certificates, keys, trust anchors, verification policy, ciphers, timeouts, and SNI remain explicit deployment choices.
 
-The connection exposes both ordinary send operations and `trySendToPeer`
-results. Current configuration also includes maximum queued bytes and high/low
-watermarks. Those mechanisms make queue policy visible to applications, but
-their existence should not be turned into an unqualified backpressure or
-resource-bound guarantee. A deployed protocol still needs an explicit policy
-for full queues, slow peers, and shutdown.
-
-Source anchors:
-
-- [`SocketConnection`](https://github.com/SNodeC/snode.c/blob/60f26d9ae54b3e9ffde954d0ca75e53f79f31d79/src/core/socket/stream/SocketConnection.h)
-- [`SocketContext`](https://github.com/SNodeC/snode.c/blob/60f26d9ae54b3e9ffde954d0ca75e53f79f31d79/src/core/socket/stream/SocketContext.h)
-- [`ConfigConnection`](https://github.com/SNodeC/snode.c/blob/60f26d9ae54b3e9ffde954d0ca75e53f79f31d79/src/net/config/ConfigConnection.h)
+Current connection configuration exposes queue limits and high/low watermarks. Those mechanisms make queue state and policy visible; they should not be promoted into an unqualified claim that every application has automatic or sufficient backpressure behavior.
 
 ## 4. Factory and per-connection context
 
-When a connection becomes usable, its `SocketContextFactory` creates the
-application-facing `SocketContext`. The context is attached to exactly that
-connection and receives lifecycle and data callbacks.
+Each endpoint flow retains its own `SocketContextFactory`. When its `SocketConnection` becomes usable, the connection calls `SocketContextFactory::create(this)`. The returned non-null `SocketContext` is installed and attached as connection-local behavior.
 
-```text
-configured client/server instance
-              │
-        accept or connect
-              │
-              ▼
-       SocketConnection
-              │
-     SocketContextFactory
-              │ creates
-              ▼
-        SocketContext
-```
+The context owns protocol/application behavior, **not** the physical socket. It reads, sends, sets timeouts, and closes through its `SocketConnection`. That boundary is what lets the endpoint family or connection mode vary underneath a stable application-facing context model.
 
-The echo application demonstrates the minimum useful implementation. Separate
-server and client factories construct the same `EchoSocketContext` with a
-different role. The client sends its initial greeting from `onConnected()`;
-`onReceivedFromPeer()` reads and reflects data; `onDisconnected()` observes why
-the context was detached.
-
-The context owns protocol behavior, not the physical socket. It sends, reads,
-sets timeouts, and closes through its `SocketConnection`. That boundary allows
-the application model to remain stable while the endpoint family or connection
-mode changes underneath it.
-
-Source anchors:
-
-- [`SocketContextFactory`](https://github.com/SNodeC/snode.c/blob/60f26d9ae54b3e9ffde954d0ca75e53f79f31d79/src/core/socket/stream/SocketContextFactory.h)
-- [echo context and factories](https://github.com/SNodeC/snode.c/blob/60f26d9ae54b3e9ffde954d0ca75e53f79f31d79/src/apps/echo/model/EchoSocketContext.h)
-- [echo callback implementation](https://github.com/SNodeC/snode.c/blob/60f26d9ae54b3e9ffde954d0ca75e53f79f31d79/src/apps/echo/model/EchoSocketContext.cpp)
+The [programming-model figure](../README.md#the-programming-model) shows server and client flows separately so it does not imply that both roles share a global factory or one connection object.
 
 ## 5. Context replacement and protocol upgrades
 
-A `SocketConnection` can replace its attached context. The previous context is
-detached with `DetachReason::ContextSwitch`; the next context attaches to the
-same established connection. HTTP-to-WebSocket upgrade is the clearest example.
+A `SocketConnection` can stage a replacement context while the current context is still active. After the current read dispatch returns, the old context detaches with `DetachReason::ContextSwitch`, the staged context becomes current, and the replacement attaches to the **same** established connection.
 
 <picture>
   <source media="(max-width: 600px)" srcset="../assets/http-websocket-context-switch-mobile.svg">
-  <img src="../assets/http-websocket-context-switch.svg" alt="HTTP-to-WebSocket context switch in SNode.C: an accepted HTTP Upgrade stages a replacement WebSocket context; after the current HTTP read callback, the HTTP context detaches for ContextSwitch, is removed, and the WebSocket SocketContextUpgrade attaches to the same established SocketConnection.">
+  <img src="../assets/http-websocket-context-switch.svg" alt="HTTP-to-WebSocket context replacement inside one established SocketConnection. HTTP is active while an accepted Upgrade stages a WebSocket replacement. After the current HTTP read callback returns, the HTTP context detaches with ContextSwitch, the staged context is selected and attached, and WebSocket becomes active without replacing the transport connection.">
 </picture>
 
-<sub>The replacement is staged while HTTP remains active; the same established connection continues through the switch.</sub>
+<sub>The old and replacement contexts are not simultaneously active; replacement is staged until the current HTTP read callback completes.</sub>
 
-The server-side HTTP upgrade path is protocol-generic. An accepted
-`Connection: Upgrade` request is matched through its `Upgrade` header to a
-`SocketContextUpgradeFactory`, which creates the protocol-specific replacement
-context. WebSocket is the concrete implementation shown here, not the only
-possible upgrade target.
+The HTTP server upgrade path is protocol-generic: an accepted `Connection: Upgrade` request is matched by its `Upgrade` header to a `SocketContextUpgradeFactory`. WebSocket is the concrete implementation shown here, not the conceptual limit of the replacement mechanism.
 
-`setSocketContext(new)` stages the replacement while HTTP is still active, and
-the protocol-specific factory prepares the switching response. After the current
-HTTP read callback returns, the old context detaches with
-`DetachReason::ContextSwitch`, the replacement attaches to the same established
-`SocketConnection`, and no second transport connection is created. For
-WebSocket, the replacement adds frame handling and optional subprotocol
-selection.
+Source anchors: [`SocketConnection.cpp`](https://github.com/SNodeC/snode.c/blob/1f0f728fc9b3b45174f2cd790d83b2f493e58af1/src/core/socket/stream/SocketConnection.cpp), [`SocketConnection.hpp`](https://github.com/SNodeC/snode.c/blob/1f0f728fc9b3b45174f2cd790d83b2f493e58af1/src/core/socket/stream/SocketConnection.hpp), and [`SocketContextUpgradeFactory.h`](https://github.com/SNodeC/snode.c/blob/1f0f728fc9b3b45174f2cd790d83b2f493e58af1/src/web/http/SocketContextUpgradeFactory.h).
 
-Upgrade factories and WebSocket subprotocol factories can be linked into the
-application; the current implementation also contains dynamic loading paths.
-A loadable extension executes code inside the process, so packaging, search
-paths, ownership, version compatibility, and allowed plugin names belong to the
-deployment threat model rather than forming a security boundary.
+## 6. Higher protocol relationships
 
-Source anchors:
+SNode.C supplies several higher-level protocol/application components, but they do **not** all occupy the same architectural role.
 
-- [`SocketContextUpgradeFactory`](https://github.com/SNodeC/snode.c/blob/60f26d9ae54b3e9ffde954d0ca75e53f79f31d79/src/web/http/SocketContextUpgradeFactory.h)
-- [server-side upgrade selection](https://github.com/SNodeC/snode.c/blob/60f26d9ae54b3e9ffde954d0ca75e53f79f31d79/src/web/http/server/Response.cpp)
-- [WebSocket upgrade context](https://github.com/SNodeC/snode.c/blob/60f26d9ae54b3e9ffde954d0ca75e53f79f31d79/src/web/websocket/SocketContextUpgrade.h)
+<picture>
+  <source media="(max-width: 600px)" srcset="../assets/protocol-relationships-mobile.svg">
+  <img src="../assets/protocol-relationships.svg" alt="Relationship map for SNode.C protocol contexts. A custom byte-protocol SocketContext and direct MQTT 3.1.1 can attach directly to an established stream. In the HTTP family, Express-style routing and middleware sit above HTTP, SSE/EventSource remains within HTTP, WebSocket is reached through HTTP Upgrade, and MQTT can compose as a WebSocket subprotocol. All paths ultimately use an established stream connection.">
+</picture>
 
-## 6. Higher protocol layers
+<sub>Express, SSE, WebSocket, and MQTT are related by different semantics; the figure deliberately avoids presenting them as one flat stack.</sub>
 
-SNode.C supplies source components above the stream layer:
+- **Custom byte protocol:** implement a `SocketContext` directly over the stream connection.
+- **HTTP:** provides request/response contexts.
+- **Express-style routing/middleware:** application-facing API above the HTTP server context.
+- **SSE/EventSource:** stays within HTTP and adds event-stream semantics; it does not use the context-replacement path.
+- **WebSocket:** starts from HTTP Upgrade and replaces the HTTP context with framed bidirectional behavior.
+- **MQTT 3.1.1:** has direct client/server protocol components and also composes through WebSocket as a subprotocol.
 
-- HTTP client and server contexts with request and response parsing;
-- Express-style server routing and middleware above the HTTP server context;
-- SSE/EventSource support for long-lived server-to-client event streams over
-  HTTP, including event IDs and reconnection;
-- WebSocket client/server upgrades and subprotocol infrastructure;
-- MQTT 3.1.1 client/broker protocol components, including composition through
-  WebSocket.
-
-These layers do not all have the same role. Express-style routing is an
-application-facing API above HTTP. SSE/EventSource remains within HTTP and adds
-event-stream parsing and reconnection semantics; unlike WebSocket, it does not
-replace the HTTP context through a protocol upgrade. WebSocket uses the upgrade
-mechanism described above to attach a framed bidirectional protocol context.
-MQTT supplies protocol framework components; MQTTSuite owns the ready-made
-broker, integration, bridge, CLI, and storage application workflows.
-
-Choose the highest layer that already owns the semantics the program needs. Use
-the stream context for a custom byte protocol, HTTP for request/response
-communication, SSE/EventSource for one-way server-to-client event streams,
-WebSocket for framed bidirectional messages, and MQTT components for an MQTT
-peer. Avoid wrapping a higher-level protocol in a second, competing lifecycle
-abstraction.
+MQTTSuite owns the ready-made MQTT broker, integration, bridge, CLI, and storage application workflows; SNode.C owns the lower-level framework components they use.
 
 ## Extension checklist
 
 Before adding a transport or protocol context, answer these questions:
 
 1. Which object owns the connection, context, and application state?
-2. What creates one context for each connection?
+2. What creates one context for each established connection?
 3. Which events attach, deliver data, signal failure, and detach the context?
 4. How are partial reads, queued writes, slow peers, and orderly shutdown handled?
-5. Which settings belong to an application-owned configuration subcommand, or
-   to local, remote, connection, socket, or TLS endpoint sections?
-6. Which combinations are built and tested rather than merely expressible?
-7. If a plugin is loaded, who controls its path and compatibility?
+5. Which settings belong to application-owned configuration, local/remote endpoint sections, connection/socket policy, or TLS?
+6. Which concrete combinations are built and tested rather than merely expressible?
+7. If dynamically loaded code is involved, who controls its path, compatibility, and deployment trust?
 
-For application and endpoint policy and inspection commands, continue with the
-[configuration guide](configuration.md). For qualified versus source-only
-scope, use the [capability map](capabilities.md).
+Continue with [Configuration](configuration.md) for operator-facing policy and inspection, or [Capabilities](capabilities.md) for source versus runtime evidence scope.

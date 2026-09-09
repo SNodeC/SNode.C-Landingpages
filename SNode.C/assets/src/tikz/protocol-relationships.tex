@@ -1,0 +1,45 @@
+\documentclass[tikz,border=8pt]{standalone}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\input{landingpages-figure-system.tex}
+\begin{document}
+\begin{tikzpicture}[mqtt desktop]
+
+\node[mqtt section title] (title) {Protocol / application contexts};
+\node[mqtt section title,below=\MQGapS of title] (httptitle) {HTTP family};
+\node[mqtt application,below=\MQGapS of httptitle,minimum width=44mm,text width=38mm] (express)
+  {Express-style routing\\and middleware};
+\node[mqtt state,below=\MQGapM of express,minimum width=34mm] (http) {HTTP context};
+\node[mqtt process,left=\MQGapL of http,minimum width=30mm,text width=24mm] (custom)
+  {custom byte protocol\\\texttt{SocketContext}};
+\node[mqtt process,right=\MQGapL of http,minimum width=30mm,text width=24mm] (mqttdirect)
+  {direct MQTT 3.1.1};
+\node[mqtt process,below=\MQGapM of http,minimum width=34mm] (sse) {SSE / EventSource};
+\node[mqtt process,below=\MQGapM of sse,minimum width=34mm] (ws) {WebSocket};
+\node[mqtt process,below=\MQGapM of ws,minimum width=38mm,text width=32mm] (mqttws) {MQTT over WebSocket};
+\path (http.east) ++(\MQGapS,0) coordinate (upgrade-rail);
+
+\draw[mqtt association] (express.south) -- node[mqtt edge label,right] {API above HTTP} (http.north);
+\draw[mqtt association] (http.south) -- node[mqtt edge label,right] {stays within HTTP} (sse.north);
+\path (http.east) -- (ws.east) coordinate[midway] (upgrade-mid);
+\node[mqtt annotation,right=\MQGapXS of upgrade-mid] (upgrade-label) {HTTP\\Upgrade};
+\draw[mqtt handoff] (http.east) -- (upgrade-rail) |- (ws.east);
+\draw[mqtt association] (ws.south) -- node[mqtt edge label,right] {MQTT subprotocol} (mqttws.north);
+
+\node[mqtt state,below=\MQGapL of mqttws,minimum width=94mm,text width=84mm] (stream)
+  {established stream connection};
+\node[mqtt note,below=\MQGapM of stream,minimum width=116mm,text width=106mm] (note)
+  {Express is above HTTP. SSE/EventSource remains in HTTP. WebSocket replaces the HTTP context after Upgrade. MQTT can attach directly or compose as a WebSocket subprotocol.};
+
+\begin{scope}[on background layer]
+  \node[mqtt figure frame,fit=(title)(httptitle)(express)(http)(custom)(mqttdirect)(sse)(ws)(mqttws)(upgrade-rail)(upgrade-label)(stream)(note)] {};
+  \node[mqtt group,fit=(httptitle)(express)(http)(sse)(ws)(mqttws)(upgrade-rail)(upgrade-label)] (httpgroup) {};
+\end{scope}
+
+\draw[mqtt association] (custom.south) -- (custom.south |- stream.west) -- (stream.west);
+\path (httpgroup.south) -- (stream.north) coordinate[midway] (httpstream-mid);
+\draw[mqtt association] (httpgroup.south) -- (httpgroup.south |- httpstream-mid) -- (stream.north |- httpstream-mid) -- (stream.north);
+\draw[mqtt association] (mqttdirect.south) -- (mqttdirect.south |- stream.east) -- (stream.east);
+
+\end{tikzpicture}
+\end{document}

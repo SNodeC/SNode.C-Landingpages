@@ -1,0 +1,33 @@
+\documentclass[tikz,border=8pt]{standalone}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\input{landingpages-figure-system.tex}
+\begin{document}
+\begin{tikzpicture}[mqtt desktop]
+
+\node[mqtt config,minimum width=32mm,text width=26mm] (api) {1 --- API / defaults\\lowest precedence};
+\node[mqtt config,right=\MQGapM of api,minimum width=32mm] (file) {2 --- configuration file};
+\node[mqtt config,right=\MQGapM of file,minimum width=32mm,text width=26mm] (cli) {3 --- command line\\highest precedence};
+\node[mqtt control,below=\MQGapL of file,minimum width=44mm] (resolve) {value resolution};
+\node[mqtt state,below=\MQGapM of resolve,minimum width=44mm] (effective) {effective configuration};
+
+\draw[mqtt flow] (api.south) |- (resolve.west);
+\draw[mqtt flow] (file.south) -- (resolve.north);
+\draw[mqtt flow] (cli.south) |- (resolve.east);
+\draw[mqtt control flow] (resolve.south) -- (effective.north);
+
+\node[mqtt section title,below=\MQGapL of effective] (outputstitle) {Effective-value inspection / persistence};
+\node[mqtt process,below=\MQGapS of outputstitle,minimum width=34mm] (cmd) {\texttt{--command-line=...}};
+\node[mqtt process,left=\MQGapS of cmd,minimum width=34mm] (show) {\texttt{--show-config}};
+\node[mqtt process,right=\MQGapS of cmd,minimum width=34mm] (write) {\texttt{--write-config}\\persistent values};
+\node[mqtt note,below=\MQGapL of cmd,minimum width=88mm] (help) {\texttt{--help=expanded} inspects the hierarchy};
+
+\begin{scope}[on background layer]
+  \node[mqtt figure frame,fit=(api)(file)(cli)(resolve)(effective)(outputstitle)(show)(cmd)(write)(help)] {};
+  \node[mqtt group,fit=(outputstitle)(show)(cmd)(write)] (outputs) {};
+\end{scope}
+
+\draw[mqtt observation] (effective.south) -- node[mqtt edge label,right] {inspect / serialize} (outputs.north);
+
+\end{tikzpicture}
+\end{document}

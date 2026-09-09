@@ -1,0 +1,48 @@
+\documentclass[tikz,border=8pt]{standalone}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\input{landingpages-figure-system.tex}
+\begin{document}
+\begin{tikzpicture}[mqtt mobile]
+
+\node[mqtt section title] (title) {Protocol / application contexts};
+\node[mqtt process,below=\MQGapS of title,minimum width=62mm,text width=52mm] (custom)
+  {custom byte protocol --- \texttt{SocketContext}};
+\node[mqtt process,below=\MQGapM of custom,minimum width=62mm] (mqttdirect) {direct MQTT 3.1.1};
+
+\node[mqtt section title,below=\MQGapXL of mqttdirect] (httptitle) {HTTP family};
+\node[mqtt application,below=\MQGapS of httptitle,minimum width=62mm,text width=52mm] (express)
+  {Express-style routing and middleware};
+\node[mqtt state,below=\MQGapM of express,minimum width=46mm] (http) {HTTP context};
+\node[mqtt process,below=\MQGapM of http,minimum width=46mm] (sse) {SSE / EventSource};
+\node[mqtt process,below=\MQGapM of sse,minimum width=46mm] (ws) {WebSocket};
+\node[mqtt process,below=\MQGapM of ws,minimum width=50mm,text width=42mm] (mqttws) {MQTT over WebSocket};
+\path (http.east) ++(\MQGapS,0) coordinate (upgrade-rail);
+
+\draw[mqtt association] (express.south) -- node[mqtt edge label,right] {above HTTP} (http.north);
+\draw[mqtt association] (http.south) -- node[mqtt edge label,right] {stays within HTTP} (sse.north);
+\path (http.east) -- (ws.east) coordinate[midway] (upgrade-mid);
+\node[mqtt annotation,right=\MQGapXS of upgrade-mid] (upgrade-label) {HTTP\\Upgrade};
+\draw[mqtt handoff] (http.east) -- (upgrade-rail) |- (ws.east);
+\draw[mqtt association] (ws.south) -- node[mqtt edge label,right] {MQTT subprotocol} (mqttws.north);
+
+\node[mqtt state,below=\MQGapL of mqttws,minimum width=62mm,text width=54mm] (stream)
+  {established stream connection};
+\node[mqtt note,below=\MQGapM of stream,minimum width=76mm,text width=66mm] (note)
+  {Express is above HTTP; SSE remains HTTP; WebSocket replaces HTTP after Upgrade; MQTT has direct and WebSocket-composed paths.};
+
+\path (custom.west) ++(-\MQGapS,0) coordinate (custom-rail);
+\path (mqttdirect.east) ++(\MQGapS,0) coordinate (mqtt-rail);
+
+\begin{scope}[on background layer]
+  \node[mqtt figure frame,fit=(title)(custom)(mqttdirect)(httptitle)(express)(http)(sse)(ws)(mqttws)(upgrade-rail)(upgrade-label)(stream)(note)(custom-rail)(mqtt-rail)] {};
+  \node[mqtt group,fit=(httptitle)(express)(http)(sse)(ws)(mqttws)(upgrade-rail)(upgrade-label)] (httpgroup) {};
+\end{scope}
+
+\draw[mqtt association] (custom.west) -- (custom-rail) |- (stream.west);
+\draw[mqtt association] (mqttdirect.east) -- (mqtt-rail) |- (stream.east);
+\path (httpgroup.south) -- (stream.north) coordinate[midway] (httpstream-mid);
+\draw[mqtt association] (httpgroup.south) -- (httpgroup.south |- httpstream-mid) -- (stream.north |- httpstream-mid) -- (stream.north);
+
+\end{tikzpicture}
+\end{document}

@@ -1,0 +1,35 @@
+\documentclass[tikz,border=8pt]{standalone}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\input{landingpages-figure-system.tex}
+\begin{document}
+\begin{tikzpicture}[mqtt mobile]
+
+\node[mqtt section title] (title) {One concrete endpoint};
+\node[mqtt config,below=\MQGapS of title,minimum width=78mm,text width=68mm] (address)
+  {\textbf{Address family}\\IPv4 · IPv6 · Unix domain\\RFCOMM · L2CAP};
+\node[mqtt evidence source,below=\MQGapS of address] (bluetooth) {RFCOMM / L2CAP: source-verified};
+\node[mqtt config,below=\MQGapM of bluetooth,minimum width=78mm,text width=68mm] (role)
+  {\textbf{Endpoint role}\\\texttt{SocketServer} · \texttt{SocketClient}};
+\node[mqtt config,below=\MQGapM of role,minimum width=78mm,text width=68mm] (mode)
+  {\textbf{Connection mode}\\plain stream · OpenSSL-backed TLS};
+\node[mqtt config,below=\MQGapM of mode,minimum width=78mm,text width=68mm] (context)
+  {\textbf{Protocol / application context}\\custom \texttt{SocketContext} or compatible protocol context};
+
+\draw[mqtt association] (address.south) -- (bluetooth.north);
+\draw[mqtt association] (bluetooth.south) -- (role.north);
+\draw[mqtt association] (role.south) -- (mode.north);
+\draw[mqtt association] (mode.south) -- (context.north);
+
+\begin{scope}[on background layer]
+  \node[mqtt figure frame,fit=(title)(address)(bluetooth)(role)(mode)(context)] (endpoint) {};
+\end{scope}
+
+\node[mqtt control,below=\MQGapL of endpoint,minimum width=78mm,text width=68mm] (runtime)
+  {\textbf{Shared event runtime}\\selected multiplexer drives endpoint and connection work};
+\draw[mqtt association] (endpoint.south) -- node[mqtt edge label,right] {uses} (runtime.north);
+\node[mqtt note,below=\MQGapM of runtime,minimum width=84mm,text width=74mm] (qualification)
+  {Compatible typed compositions only; not every theoretical cross-product is built, tested, or runtime-qualified.};
+
+\end{tikzpicture}
+\end{document}

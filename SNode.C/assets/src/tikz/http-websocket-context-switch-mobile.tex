@@ -1,0 +1,31 @@
+\documentclass[tikz,border=8pt]{standalone}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\input{landingpages-figure-system.tex}
+\begin{document}
+\begin{tikzpicture}[mqtt mobile]
+
+\node[mqtt section title] (title) {Same established \texttt{SocketConnection}};
+\node[mqtt state,below=\MQGapM of title,minimum width=58mm] (http) {HTTP context --- ACTIVE};
+\node[mqtt warning,below=\MQGapM of http,minimum width=64mm,text width=56mm] (staged)
+  {WebSocket replacement\\STAGED, not active};
+\node[mqtt process,below=\MQGapM of staged,minimum width=64mm,text width=56mm] (return)
+  {current HTTP read callback returns};
+\node[mqtt control,below=\MQGapM of return,minimum width=68mm,text width=60mm] (switch)
+  {\texttt{detach(ContextSwitch)}\\select staged context\\\texttt{attach()}};
+\node[mqtt state,below=\MQGapM of switch,minimum width=58mm] (websocket) {WebSocket context --- ACTIVE};
+
+\draw[mqtt handoff] (http.south) -- node[mqtt edge label,right] {Upgrade accepted} (staged.north);
+\draw[mqtt control flow] (staged.south) -- (return.north);
+\draw[mqtt control flow] (return.south) -- (switch.north);
+\draw[mqtt control flow] (switch.south) -- (websocket.north);
+
+\node[mqtt note,below=\MQGapM of websocket,minimum width=78mm,text width=68mm] (note)
+  {HTTP stays active until the callback returns. The same transport connection continues. SSE/EventSource does not replace the context.};
+
+\begin{scope}[on background layer]
+  \node[mqtt figure frame,fit=(title)(http)(staged)(return)(switch)(websocket)(note)] {};
+\end{scope}
+
+\end{tikzpicture}
+\end{document}

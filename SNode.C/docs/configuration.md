@@ -1,89 +1,70 @@
 # Configuration without duplicated policy
 
-[← SNode.C](../README.md) · [Architecture](architecture.md) ·
-[Capability map](capabilities.md) ·
-[API reference](https://snodec.github.io/snode.c-doc/html/index.html)
+[← SNode.C](../README.md) · [Architecture](architecture.md) · [Capability map](capabilities.md) · [API reference](https://snodec.github.io/snode.c-doc/html/index.html)
 
-SNode.C applications use a typed configuration hierarchy that can combine
-application-owned settings with one or more client or server endpoints. Each
-endpoint is represented by an instance with reusable network configuration
-sections, while applications can add their own `SubCommand` branches to the
-same hierarchy. Configurable values can be supplied through C++ defaults, a
-configuration file, or the generated command line.
+SNode.C applications use one typed configuration hierarchy for framework endpoint settings and application-owned policy. Named client/server instances become addressable branches of `ConfigRoot`; applications can attach their own `SubCommand` branches alongside them. Anonymous endpoint instances remain API-configurable but are not named CLI/config-file branches.
 
 <picture>
-  <source media="(max-width: 600px)" srcset="../assets/configuration-model-mobile.svg">
-  <img src="../assets/configuration-model.svg" alt="API defaults, configuration files, and command-line overrides converging on a named instance and its sections">
+  <source media="(max-width: 600px)" srcset="../assets/configuration-hierarchy-mobile.svg">
+  <img src="../assets/configuration-hierarchy.svg" alt="SNode.C configuration ownership hierarchy. ConfigRoot contains named children including application-owned SubCommand branches and named endpoint instances. One endpoint instance assembles local, remote, connection, socket, and optional TLS sections according to its concrete role and mode. An anonymous endpoint is shown outside the named tree because it is API-configurable but has no named CLI or configuration-file address.">
 </picture>
 
-<sub>One instance hierarchy is addressed through three configuration surfaces; later sources override earlier defaults.</sub>
+<sub>One root owns named application and endpoint branches; section availability depends on the concrete endpoint role, family, and connection mode.</sub>
 
 ## One application, several instances
 
-An **instance** is one concrete client or server endpoint inside the process. A
-program can create more than one instance when it needs, for example, separate
-IPv4 and Unix-domain listeners or independently configured client connections.
-Each named instance becomes its own command in the generated CLI and its own
-prefix in the configuration file.
+An **instance** is one concrete client or server endpoint inside the process. A program can create several independently configured instances, for example an IPv4 listener plus a Unix-domain listener, or multiple outbound client connections.
 
-Instance names must be stable and unambiguous within the application. They are
-part of the operator-facing interface: deployment commands, generated help,
-configuration files, effective-state output, and logs use them to identify the
-endpoint being controlled.
+Each **named** instance becomes its own command in the generated CLI and its own prefix in the configuration file. The instance name is therefore part of the operator-facing interface used by deployment commands, generated help, effective-state output, configuration files, and logs.
 
-Anonymous instances are intentionally different. They can be configured in
-code, but they do not expose a named command-line/config-file address. Use them
-for a genuinely fixed internal endpoint, not to avoid designing a public
-configuration contract.
+An **anonymous** instance is deliberately different: it can be configured through the C++ API but has no named root branch and therefore no instance-name address from the CLI or configuration file.
 
-## The section hierarchy
+## Reusable endpoint sections
 
-Concrete endpoint types assemble their configuration from reusable sections.
-The exact surface depends on role, address family, and connection mode.
+Concrete endpoint types assemble their configuration from reusable sections. The exact surface depends on endpoint role, address family, and connection mode.
 
-| Section | Responsibility | Typical examples |
+| Section | Responsibility | Examples |
 | --- | --- | --- |
-| Instance | Whether this endpoint participates and how it is identified | instance name, disabled state |
-| `local` | Local bind/listen side | host and port, Unix path, Bluetooth address/channel/PSM |
-| `remote` | Peer selection or reverse-address behavior | destination host and port, peer lookup policy |
-| `connection` | Established-stream behavior | read/write timeouts, block sizes, queue limits and watermarks, terminate timeout |
-| `socket` | Listen/connect mechanics | address reuse, retry/backoff, backlog, accepts per tick, connect timeout, client reconnect |
-| `tls` | OpenSSL-backed connection policy | certificate, key, CA sources, verification, ciphers, TLS options, initialization/shutdown timeouts, SNI |
+| Instance | Participation and identity | instance name, disabled state |
+| `local` | Local bind/listen side | host/port, Unix path, Bluetooth address/channel/PSM |
+| `remote` | Peer selection | destination host/port or peer lookup policy |
+| `connection` | Established-stream behavior | read/write timeouts, block sizes, queue limits/watermarks, terminate timeout |
+| `socket` | Listen/connect mechanics | reuse, retry/backoff, backlog, accepts per tick, connect timeout, client reconnect |
+| `tls` | OpenSSL-backed policy | certificate, key, CA, verification, ciphers, TLS options, SNI, init/shutdown timeouts |
 
-A server normally requires its local listener address. A client normally
-requires its remote destination and may optionally configure a local bind
-address. Server-only and client-only options remain separate: backlog and
-accept policy do not belong to a client, while reconnect policy does not belong
-to an accepted server connection.
+A server normally requires a local listener. A client normally requires a remote destination and may optionally bind locally. Server accept/listen policy and client reconnect policy remain separate rather than being forced through one undifferentiated option set.
 
 ## Applications extend the same hierarchy
 
-Endpoint sections are framework-provided branches of a more general
-configuration tree. `ConfigRoot` is itself a `SubCommand`, and applications can
-derive their own `SubCommand` types and attach them with `newSubCommand<T>()`.
-Those nodes can contribute options, flags, nested subcommands, requirements, and
-callbacks through the same configuration machinery.
-
-For example, a program can attach an application-owned configuration node to
-the root instead of introducing a second command-line or configuration parser:
+`ConfigRoot` is a `SubCommand`. Applications can derive their own `SubCommand` types and attach them with `newSubCommand<T>()` instead of introducing a second parser or configuration system:
 
 ```cpp
 auto* appConfig =
     utils::Config::configRoot.newSubCommand<MyApplicationConfig>();
 ```
 
-Configurable application options then participate in the same generated help,
-configuration-file, command-line, and inspection surfaces as the endpoint
-hierarchy. MQTTSuite uses this extension pattern for its application-specific
-configuration.
+Application-owned options then participate in the same help, configuration-file, CLI, callback, and inspection machinery as endpoint configuration.
 
-## Three configuration surfaces
+## Three configuration surfaces, one effective value
+
+Values can enter the hierarchy through:
+
+1. **C++ API/defaults** — initial state and the only configuration surface for anonymous instances;
+2. **configuration file** — persistent values for named branches;
+3. **command line** — per-invocation overrides.
+
+The effective value resolves with the command line at the highest precedence.
+
+<picture>
+  <source media="(max-width: 600px)" srcset="../assets/configuration-resolution-mobile.svg">
+  <img src="../assets/configuration-resolution.svg" alt="SNode.C configuration resolution. API/default values have lowest precedence, configuration-file values override them, and command-line values have highest precedence. Resolution produces the effective configuration, which can be inspected through show-config and command-line output or serialized as persistent values through write-config. help=expanded is shown separately as hierarchy inspection rather than effective-value output.">
+</picture>
+
+<sub>Precedence is API/default &lt; configuration file &lt; command line; hierarchy inspection is distinct from effective-value inspection and persistence.</sub>
 
 ### C++ API
 
-Every concrete client or server exposes its assembled endpoint configuration
-through `getConfig()`. Scope-qualified setters make the side of the connection
-clear when names would otherwise be ambiguous:
+Each concrete endpoint exposes its assembled configuration through `getConfig()`:
 
 ```cpp
 auto config = server.getConfig();
@@ -94,126 +75,76 @@ config->Connection::setReadBlockSize(16 * 1024);
 config->setReuseAddress();
 ```
 
-API values are useful defaults and are the only configuration surface for an
-anonymous instance. Application-owned `SubCommand` types can establish their
-own option defaults through the same API. Avoid embedding deployment-specific
-certificates, credentials, external addresses, or machine paths in those
-defaults.
-
 ### Configuration file
 
-Named endpoint instances and application-owned subcommands can contribute
-persistent values to the application configuration file. The hierarchy is
-flattened into qualified keys, keeping the owning command and section visible.
-For an endpoint instance named `echo`, a local address is represented as:
+Named endpoint instances and application-owned subcommands can contribute persistent configuration. For an endpoint instance named `echo`, local values are addressed with qualified keys such as:
 
 ```ini
 echo.local.host="127.0.0.1"
 echo.local.port=18001
 ```
 
-Use configuration files for reviewed deployment policy that should be
-repeatable across restarts. Protect files containing key paths, key passwords,
-credentials, or remote-service details according to the operating environment.
-
 ### Command line
 
-For endpoint configuration, the generated command hierarchy follows the same
-shape:
+The generated command hierarchy mirrors the ownership structure:
 
 ```sh
 echoserver-legacy-in echoserver local --host 127.0.0.1 --port 18001
 ```
 
-The executable is followed by the instance, then the section, then its options.
-Application-owned `SubCommand` branches appear in the same generated tree;
-application-wide root options remain at the application level. This is why a
-public quick start should show the full hierarchy instead of presenting
-`--port` as an unscoped global switch.
-
-## Precedence
-
-The effective value is resolved in this order:
-
-1. values established through the API provide the initial/default state;
-2. configuration-file values override those defaults;
-3. command-line values override the loaded configuration for that invocation.
-
-The same ordering applies to configurable options contributed by
-application-owned subcommands. That makes a command-line override useful for
-diagnosis without forcing an operator to edit the persistent file. It also
-means the command that happened to launch a process is not necessarily the
-whole configuration: defaults and file values may still be active.
+The executable is followed by the instance, then the section, then the section options. Public examples should therefore show the full hierarchy rather than presenting `--port` as a global switch.
 
 ## Inspect before running
 
-SNode.C exposes the effective configuration and the generated command surface
-directly from the executable, including application-owned subcommands and
-framework-provided endpoint sections:
+The executable can expose both hierarchy and effective state:
 
 ```sh
-# Full hierarchy with descendant sections.
+# Full hierarchy including descendants.
 echoserver-legacy-in --help=expanded
 
-# Resolved configuration.
+# Resolved effective configuration.
 echoserver-legacy-in --show-config
 
-# Complete command line including defaults.
+# Complete generated command line.
 echoserver-legacy-in --command-line=complete
 
-# Only non-default and required values.
+# Non-default / required values.
 echoserver-legacy-in --command-line=standard
 ```
 
-The application can also write its current persistent configuration through
-`--write-config`. Treat the resulting file as a review artifact: inspect paths,
-credentials, certificates, listener exposure, and permissive options before
-installing it as deployment state.
+`--write-config` persists configuration values to a configuration file; it should not be described as serializing arbitrary runtime state. Treat its output as a deployment artifact and review listener exposure, certificate/key paths, credentials, and permissive options before installing it.
 
 ## Retry and reconnect are different policies
 
-The physical-socket configuration contains retry controls for listen/connect
-operations, including attempt count, timeout, exponential base, jitter, and an
-upper time limit. Client configuration separately exposes reconnect behavior
-after an established connection is interrupted.
+Retry and reconnect solve different lifecycle failures.
 
-Those policies solve different failures. A connection attempt that cannot be
-established is not the same lifecycle state as a connection that was established
-and later lost. Set bounded behavior deliberately, and make application handling
-of prolonged outage and full write queues explicit.
+<picture>
+  <source media="(max-width: 600px)" srcset="../assets/retry-vs-reconnect-mobile.svg">
+  <img src="../assets/retry-vs-reconnect.svg" alt="Two SNode.C lifecycle state machines. Retry handles listen or connect establishment failure by evaluating retry policy, waiting or backing off, and starting a new listen/connect attempt. Reconnect is client-only policy after a previously established connection is interrupted; when enabled it waits for the reconnect delay and starts a new connect cycle. If that new cycle then fails to establish, retry policy can apply.">
+</picture>
+
+<sub>Retry applies during establishment; reconnect begins only after a client connection was established and later interrupted.</sub>
+
+The physical-socket configuration exposes retry controls for failed listen/connect establishment, including attempt limits and backoff-related timing. Client configuration separately exposes reconnect behavior after an established connection is interrupted.
+
+A reconnect therefore starts a **new client connect cycle**. If establishment of that new cycle fails, the ordinary retry policy may then govern those failed connect attempts. Reconnect is not a server policy and an initial connect failure is not itself a reconnect event.
 
 ## TLS remains role-specific
 
-The common TLS section covers certificate/key material, CA sources, cipher and
-OpenSSL options, and initialization/shutdown timeouts. Servers add certificate
-selection for SNI and can require SNI. Clients add the server name they send.
+The common TLS section covers certificate/key material, CA sources, cipher/OpenSSL options, and initialization/shutdown timeouts. Servers add server-side certificate/SNI selection policy; clients add the server name they send and verification-related policy.
 
-Configuration availability is not a certificate-management system. The
-application still needs a reviewed trust model, certificate issuance and
-rotation, protected private keys, hostname/SNI rules, and failure behavior. A
-local example that connects with a test CA is evidence for that test path only.
+Configuration availability is not certificate management. A deployment still needs an explicit trust model, certificate issuance/rotation, protected private keys, hostname/SNI rules, and failure behavior.
 
 ## Deployment review
 
-Before publishing application or endpoint configuration:
+Before publishing endpoint or application configuration:
 
 - confirm which local interfaces are exposed;
-- confirm whether the selected variant is plain or TLS;
+- confirm whether the selected endpoint is plain or TLS;
 - review CA, certificate, key, SNI, and verification settings on both peers;
 - set timeouts, retry, reconnect, and queue limits for the workload;
-- inspect the effective configuration from the exact installed executable;
+- inspect effective configuration from the exact installed executable;
 - keep credentials and private keys out of command history and public logs;
-- record the SNode.C revision and concrete executable variant used.
+- record the SNode.C revision and executable variant used.
 
-Source anchors for the reviewed baseline:
-
-- [`Config`](https://github.com/SNodeC/snode.c/blob/60f26d9ae54b3e9ffde954d0ca75e53f79f31d79/src/utils/Config.h)
-- [`SubCommand`](https://github.com/SNodeC/snode.c/blob/60f26d9ae54b3e9ffde954d0ca75e53f79f31d79/src/utils/SubCommand.h)
-- [`ConfigInstance`](https://github.com/SNodeC/snode.c/blob/60f26d9ae54b3e9ffde954d0ca75e53f79f31d79/src/net/config/ConfigInstance.h)
-- [`ConfigConnection`](https://github.com/SNodeC/snode.c/blob/60f26d9ae54b3e9ffde954d0ca75e53f79f31d79/src/net/config/ConfigConnection.h)
-- [`ConfigPhysicalSocket`](https://github.com/SNodeC/snode.c/blob/60f26d9ae54b3e9ffde954d0ca75e53f79f31d79/src/net/config/ConfigPhysicalSocket.h)
-- [`ConfigTls`](https://github.com/SNodeC/snode.c/blob/60f26d9ae54b3e9ffde954d0ca75e53f79f31d79/src/net/config/ConfigTls.h)
-- [generated application configuration](https://github.com/SNodeC/snode.c/blob/60f26d9ae54b3e9ffde954d0ca75e53f79f31d79/src/utils/Config.cpp)
-
-For how endpoint settings become live connection and context objects, return to
-the [architecture guide](architecture.md).
+Reviewed source anchors at [`1f0f728`](https://github.com/SNodeC/snode.c/commit/1f0f728fc9b3b45174f2cd790d83b2f493e58af1): [`Config.h`](https://github.com/SNodeC/snode.c/blob/1f0f728fc9b3b45174f2cd790d83b2f493e58af1/src/utils/Config.h), [`SubCommand.h`](https://github.com/SNodeC/snode.c/blob/1f0f728fc9b3b45174f2cd790d83b2f493e58af1/src/utils/SubCommand.h), [`ConfigInstance.cpp`](https://github.com/SNodeC/snode.c/blob/1f0f728fc9b3b45174f2cd790d83b2f493e58af1/src/net/config/ConfigInstance.cpp), [`ConfigPhysicalSocket.cpp`](https://github.com/SNodeC/snode.c/blob/1f0f728fc9b3b45174f2cd790d83b2f493e58af1/src/net/config/ConfigPhysicalSocket.cpp), and [`ConfigPhysicalSocketClient.cpp`](https://github.com/SNodeC/snode.c/blob/1f0f728fc9b3b45174f2cd790d83b2f493e58af1/src/net/config/ConfigPhysicalSocketClient.cpp).

@@ -4,225 +4,173 @@
 [Configuration](configuration.md) ·
 [API reference](https://snodec.github.io/snode.c-doc/html/index.html)
 
-This page answers a narrow question: what is visible in the reviewed SNode.C
-source, and what did the recorded qualification or current public CI exercise?
+This page separates what exists in the reviewed SNode.C source from what current
+CI or recorded runtime qualification has actually exercised. It is deliberately
+not a permanent support matrix and does not imply that every address-family ×
+connection-mode × protocol combination is built, tested, or deployment-qualified.
 
-It is not a permanent support matrix. The public presentation tracks `master`,
-and the evidence below remains scoped to the reviewed revision and explicitly
-identified earlier qualification runs.
+**Reviewed source head:** public `master` at
+[`1f0f728`](https://github.com/SNodeC/snode.c/commit/1f0f728fc9b3b45174f2cd790d83b2f493e58af1),
+reviewed 9 September 2026.
 
-**Reviewed baseline:** public `master` at
-[`60f26d9`](https://github.com/SNodeC/snode.c/commit/60f26d9ae54b3e9ffde954d0ca75e53f79f31d79),
-observed 30 August 2026.
-
-Compared with the preceding qualified baseline `bf01683`, the current revision
-adds the standalone `examples/echo` consumer, its CTests and CI wiring, an
-annotated application walkthrough, and semantic echo logging. It does not change
-the transport, HTTP, WebSocket, SSE, MQTT, configuration, or event-runtime
-implementation used by the existing publication claims.
+**Current-head CI:**
+[`CI` run 33489538669](https://github.com/SNodeC/snode.c/actions/runs/33489538669),
+`gcc-debug` job
+[`99797488461`](https://github.com/SNodeC/snode.c/actions/runs/33489538669/job/99797488461),
+completed successfully. The job passed both the main repository CTest step and
+the installed-package external echo CTests.
 
 ## Evidence vocabulary
 
-- **Source-verified** means the component and its build integration exist at the
-  reviewed commit.
-- **Test-defined** means the repository contains a focused automated test; it
-  does not say that every invocation passed in this documentation pass.
-- **CI-observed** means the named public workflow/job result was inspected at the
-  reviewed commit.
-- **Runtime-qualified** means the named workflow was run in the recorded
+- **Source-verified** — the component and build integration exist at the reviewed
+  source head.
+- **Test-defined** — focused automated tests exist in the repository.
+- **CI-observed** — the named public workflow/job result was inspected at the
+  reviewed source head.
+- **Runtime-qualified** — a concrete runtime path was executed in a recorded
   qualification environment.
-- **Open** means the landing page must not turn the subject into an unqualified
-  public claim.
+- **Open** — evidence is insufficient for an unqualified support, compatibility,
+  performance, or deployment claim.
 
-The README's simpler **Available** label corresponds to source-verified
-availability. Its **Exercised** label can summarize test-defined, CI-observed,
-or runtime-qualified evidence; this page separates those states when the
-distinction matters.
+The README's **Available** wording corresponds to source presence. Its
+**Exercised** wording may summarize test, CI, or recorded runtime evidence; this
+page keeps those distinctions explicit when they matter.
 
 ## Runtime and connection foundation
 
-- **C++20 event-driven runtime.** **Source:** source-verified. **Runtime
-  evidence:** the earlier clean Release configure/build/install and echo runs
-  remain recorded; the current public
-  [`gcc-debug` job](https://github.com/SNodeC/snode.c/actions/runs/33293707417/job/99209664201)
-  also builds the tree and passes the main 181-test CTest suite. **Boundary:** no
-  performance or real-time guarantee.
-- **select, poll, and epoll multiplexer implementations.** **Source:**
-  source-verified. **Runtime evidence:** the documented qualification and current
-  CI use the configured/default implementation; no comparative run. **Boundary:**
-  availability is not a benchmark.
-- **Timers, descriptor events, event queue, signals.** **Source:**
-  source-verified; repository tests exist. **Runtime evidence:** used indirectly
-  by qualified applications and current tests. **Boundary:** no universal
-  ordering/fairness claim.
-- **Hierarchical application configuration.** **Source:** `ConfigRoot` and
-  `SubCommand` provide a typed command tree that applications can extend with
-  their own options and nested subcommands while sharing generated help,
-  configuration-file, command-line, and inspection surfaces. **Runtime
-  evidence:** the external echo example tests this surface; downstream MQTTSuite
-  uses application-owned `SubCommand` types. **Boundary:** applications still own
-  their configuration structure, defaults, validation, and secret-management
-  policy.
-- **Stream client and server roles.** **Source:** runtime-qualified for echo.
-  **Runtime evidence:** listener and connector completed on recorded paths;
-  current `examples/echo` builds as an installed-package consumer. **Boundary:**
-  other protocols need their own qualification.
-- **Connection read/write queues and accounting.** **Source:** source-verified;
-  tests exist. **Runtime evidence:** echo exercised ordinary send/read.
-  **Boundary:** queue-bound and overload policy remain application concerns.
-- **Retry/backoff and client reconnect configuration.** **Source:**
-  source-verified; tests exist. **Runtime evidence:** not part of the launch echo
-  evidence. **Boundary:** exact failure sequences remain outside this claim.
+- **C++20 event-driven runtime.** **Source:** source-verified. `SNodeC::start()`
+  runs the event loop synchronously on its caller thread; descriptor and timer
+  activity are dispatched through the event queue. **CI:** current-head build
+  and main CTest step pass. **Boundary:** no throughput, latency, fairness, or
+  real-time guarantee is implied.
+- **Event multiplexers.** **Source:** `epoll`, `poll`, and `select`
+  implementations are present; one backend is selected for a build. **Evidence:**
+  current CI exercises its configured backend, not a comparative backend matrix.
+- **Timers, descriptors, event queue, lifecycle dispatch.** **Source:**
+  source-verified with focused tests. **Runtime:** exercised indirectly by the
+  qualified client/server paths. **Boundary:** no universal event-ordering or
+  workload-suitability claim.
+- **Stream server/client roles.** **Source:** `SocketServer` and `SocketClient`
+  flows retain their context factory and create connection-local
+  `SocketConnection` / `SocketContext` state. **CI:** the installed external echo
+  server/client is configured, built, and tested at the current head.
+- **Connection queues/accounting.** **Source:** send queues, accounting,
+  timeouts, shutdown and watermarks exist. **Boundary:** mechanism presence is
+  not an automatic backpressure/resource-bound policy for every application.
+- **Retry and reconnect.** **Source:** establishment retry/backoff is separate
+  from client reconnect after a previously established connection is
+  interrupted. **Boundary:** deployment policy still has to select bounded
+  behavior appropriate to the workload.
+
+## Configuration
+
+SNode.C uses a typed `ConfigRoot` / `SubCommand` hierarchy shared by framework
+endpoint configuration and application-owned settings.
+
+- **Named endpoint instances** are addressable through generated CLI and
+  configuration-file paths.
+- **Anonymous instances** are API-configurable but do not expose a named
+  CLI/config-file instance address.
+- **Resolution precedence** is API/default < configuration file < command line.
+- **Inspection surfaces** include `--help=expanded`, `--show-config`, and
+  `--command-line=...`; `--write-config` persists configuration values rather
+  than serializing arbitrary runtime state.
+
+The exact local/remote/connection/socket/TLS section surface depends on the
+concrete endpoint role, address family, and connection mode.
 
 ## Standalone installed-package example
 
-`examples/echo` is a complete external CMake project. It resolves:
+[`examples/echo`](https://github.com/SNodeC/snode.c/tree/1f0f728fc9b3b45174f2cd790d83b2f493e58af1/examples/echo)
+is a complete downstream CMake consumer. It resolves:
 
 ```cmake
 find_package(snodec REQUIRED COMPONENTS net-in-stream-legacy)
 ```
 
-and links `snodec::net-in-stream-legacy`. Its source uses installed public
-`<...>` headers and builds `echoserver` plus `echoclient`. Four application-level
-CTest cases cover the generated configuration surface, real server versus an
-external peer, real client versus an external peer, and a bounded real-pair
-smoke run.
-
-At `60f26d9`, the public
-[`gcc-debug` job](https://github.com/SNodeC/snode.c/actions/runs/33293707417/job/99209664201)
-successfully configured and built the main repository, passed **181/181** main
-CTests, installed SNode.C to a staging prefix, then configured and built
-`examples/echo` against that installed package. The subsequent external-example
-CTest invocation failed **0/4 passed** because the example executables could not
-locate `libsnodec-net-in-stream.so.2` from the staged install prefix at runtime.
-That is recorded as an unresolved CI/runtime-loader integration issue; it is not
-evidence that the four application tests passed, and this publication does not
-describe them as passing.
+and links the namespaced installed target `snodec::net-in-stream-legacy`.
+Current-head CI installs SNode.C into a staging prefix, configures and builds the
+external example against that installed package, then passes its external echo
+CTest step. This supersedes the earlier recorded CI loader failure at
+`60f26d9`.
 
 ## Network and connection variants
 
-- **IPv4 plain stream.** **State:** runtime-qualified. **Runtime evidence:** echo
-  server/client on `127.0.0.1`; current external example is the concrete
-  installed-package IPv4/plain-stream composition.
-- **IPv6 plain stream.** **State:** runtime-qualified on the preceding source
-  baseline. **Runtime evidence:** echo server/client on `::1`. **Boundary:** not
-  rerun in this closure pass.
-- **Unix-domain plain stream.** **State:** runtime-qualified on the preceding
-  source baseline. **Runtime evidence:** echo server/client using an isolated
-  socket path. **Boundary:** not rerun in this closure pass.
-- **TLS over IPv4.** **State:** runtime-qualified for one mutual-TLS echo path on
-  the preceding source baseline. **Runtime evidence:** separate CA-signed server
-  and client certificates connected. **Boundary:** not rerun in this closure
-  pass; no universal TLS matrix.
-- **Bluetooth RFCOMM.** **State:** source-verified. **Runtime evidence:** pending
-  in this documentation pass. **Required environment for qualification:** BlueZ,
-  adapter, peer, and protocol-specific qualification.
-- **Bluetooth L2CAP.** **State:** source-verified. **Runtime evidence:** pending in
-  this documentation pass. **Required environment for qualification:** BlueZ,
-  adapter, peer, and protocol-specific qualification.
+| Path | Current source | Strongest recorded evidence | Boundary |
+| --- | --- | --- | --- |
+| IPv4 plain stream | Source-verified | Current external echo CI + recorded loopback runtime | Concrete plain-stream path, not every higher protocol combination |
+| IPv6 plain stream | Source-verified | Earlier recorded loopback runtime | Not rerun as part of this landing-page closure |
+| Unix-domain plain stream | Source-verified | Earlier recorded Unix-socket runtime | Not rerun as part of this landing-page closure |
+| OpenSSL-backed TLS | Source-verified | Focused TLS tests + earlier mutual-TLS IPv4 echo | No universal certificate/cipher/family matrix |
+| Bluetooth RFCOMM | Conditional source/build path | Source/build evidence | No hardware runtime qualification here |
+| Bluetooth L2CAP | Conditional source/build path | Source/build evidence | No hardware runtime qualification here |
 
-The source layout makes additional compositions expressible. These entries do
-not promote an unrun composition merely because its types or targets exist.
+The existence of compatible layer types or CMake components does not promote an
+unrun composition to a supported/qualified combination.
 
 ## Application protocol components
 
-- **HTTP.** Client/server contexts, request/response parsers, connection handling,
-  transfer decoders, and upgrade selection. **Evidence boundary:** source-verified
-  with repository component tests; no universal address-family matrix.
-- **Express-style server API.** `WebApp`, routers, route matching, middleware,
-  and request/response conveniences. **Evidence boundary:** source-verified;
-  “Express-style” describes the programming approach, not Node.js API
-  compatibility.
-- **SSE/EventSource.** Server-sent-event streaming over HTTP and EventSource
-  client support, including event parsing, event IDs, and reconnect handling.
-  **Evidence boundary:** source-verified with plain-IPv4 SSE tests; no universal
-  transport/address-family matrix.
-- **WebSocket.** Client/server HTTP upgrade contexts, frame receiver/transmitter,
-  subprotocol factories, and linked/loadable extension paths. **Evidence
-  boundary:** source-verified with repository tests; plugin deployment policy is
-  application-owned.
-- **MQTT.** MQTT 3.1.1 protocol level, client and broker framework components,
-  session-related source, and MQTT-over-WebSocket composition. **Evidence
-  boundary:** source-verified; do not say “fully compliant” without a current
-  conformance record.
-- **MariaDB.** Optional database integration components. **Evidence boundary:**
-  source-verified when the MariaDB development dependency is selected; database
-  version/operations matrix remains open.
-- **MIME detection.** Optional content-type helper using libmagic. **Evidence
-  boundary:** source-verified when libmagic is available.
+- **HTTP.** HTTP/1.0 and HTTP/1.1 client/server contexts, parsing, transfer
+  handling, and upgrade selection. **Evidence:** source and repository tests;
+  coverage breadth differs by address family and connection mode. **No HTTP/2
+  claim.**
+- **Express-style API.** Routing, middleware and request/response conveniences
+  above HTTP. “Express-style” describes the programming model, not Node.js
+  Express API compatibility.
+- **SSE / EventSource.** Event-stream support remains within HTTP and includes
+  EventSource parsing/reconnect semantics. It does not use the WebSocket context
+  replacement path.
+- **WebSocket.** Version-13 client/server upgrade contexts, frame handling and
+  subprotocol infrastructure. HTTP Upgrade stages a replacement context on the
+  same established `SocketConnection`.
+- **MQTT.** MQTT 3.1.1 client/server framework components plus
+  MQTT-over-WebSocket composition. Do not infer MQTT 5 or conformance breadth
+  beyond current tests/qualification.
+- **MariaDB.** Optional database integration source/build components when the
+  dependency is selected. Database-version and operations matrices remain
+  outside this landing-page claim.
+- **MIME detection.** Optional libmagic-backed content-type support when the
+  dependency is available.
 
-MQTTSuite is the appropriate public destination for ready-made MQTTBroker,
-MQTTIntegrator, MQTTBridge, MQTTCli, and MQTTStore workflows. Their application
-behavior should not be attributed to SNode.C itself.
+[MQTTSuite](https://github.com/SNodeC/mqttsuite) is the public destination for
+ready-made MQTTBroker, MQTTIntegrator, MQTTBridge, MQTTCli and MQTTStore
+application workflows. Those application behaviors are not attributed to the
+SNode.C framework itself.
 
 ## Build and dependency surface
 
-The recorded Debian qualification environment used these package names for the
-base source-build path:
+The documented source-build path requires a C++20 compiler, CMake 3.18+, Git,
+`pkg-config`/`pkgconf`, OpenSSL development files and nlohmann/json 3.11+.
+CLI11 is vendored; the documented build fetches pinned logging source as part of
+its dependency graph. BlueZ, libmagic, MariaDB client development files, curses,
+Doxygen/Graphviz, IWYU and formatting tools are optional according to the
+selected components or maintainer tasks.
 
-```sh
-sudo apt install --yes \
-  build-essential ca-certificates cmake git ninja-build pkgconf \
-  libssl-dev nlohmann-json3-dev
-```
+Current-head CI provides a Linux/GCC Debug lane. Earlier documentation
+qualification also used a Debian/x86-64 Release build. This does **not** establish
+an operating-system, distribution, compiler, architecture, ABI/API stability,
+performance, footprint, or production-readiness support matrix.
 
-- **C++20 compiler — required.** Compiles SNode.C.
-- **CMake 3.18 or newer — required.** Configures and generates builds; the
-  minimum comes from project metadata.
-- **Git and CA roots — required for the documented source workflow.** Used for
-  clone and first-configure source retrieval.
-- **`pkg-config`/`pkgconf` — required by the current graph.** Dependency
-  discovery.
-- **OpenSSL development files — required for the documented build.** TLS source
-  and default graph.
-- **nlohmann/json 3.11 or newer — required by the current graph.**
-  JSON/configuration-related components.
-- **CLI11 — vendored.** Command/configuration parser; no system package required.
-- **spdlog — fetched as pinned source in the documented path.** Logging
-  implementation; no system package required there.
-- **BlueZ — optional.** RFCOMM/L2CAP layers.
-- **libmagic — optional.** MIME detection.
-- **MariaDB client development files — optional.** Database integration.
-- **Curses — optional.** `snodec-control` TUI.
-- **Doxygen and Graphviz — optional maintainer tools.** Generated API
-  documentation and diagrams.
-- **IWYU — optional maintainer tool.** Include analysis.
-- **clang-format and cmake-format — optional maintainer tools.** Formatting
-  targets.
+## Release and package status
 
-## Packaging, platforms, and release status
-
-The preceding source qualification configured, built, and installed SNode.C in
-an isolated Debian GNU/Linux forky/sid x86-64 environment with GCC 16.2.0,
-CMake 4.3.4, and Ninja 1.13.2. Current public CI at `60f26d9` provides a separate
-Ubuntu/GCC Debug lane and validates the installed CMake consumer through
-configuration and build, with the external example runtime-loader caveat above.
-
-That evidence does not establish:
-
-- a supported distribution list;
-- a general GCC or Clang version range beyond project metadata and CI shapes;
-- ARM, OpenWrt, Android/Termux, or other architecture support;
-- ABI or API stability;
-- current binary/package availability;
-- performance, footprint, or production-readiness claims.
-
-The CMake source version at the reviewed commit is `2.0.0`, while the latest
-public GitHub release remains `v1.0.2`. Use the source number to identify project
-metadata, not as proof that a 2.0 release, compatibility promise, or maturity
-level exists.
+The reviewed source metadata declares version `2.0.0` in
+[`CMakeLists.txt`](https://github.com/SNodeC/snode.c/blob/1f0f728fc9b3b45174f2cd790d83b2f493e58af1/CMakeLists.txt).
+The latest public GitHub release is still
+[`v1.0.2`](https://github.com/SNodeC/snode.c/releases/tag/v1.0.2), published
+28 June 2026, and contains no binary release assets. Therefore source version
+`2.0.0` is not presented here as proof of a tagged 2.0 release, binary package,
+compatibility promise, or maturity level.
 
 ## License and public routes
 
-The source-verified license expression is `MIT OR LGPL-3.0-or-later`; the
-repository contains both license texts. Canonical routes currently available
-are:
+The source-verified license expression is `MIT OR LGPL-3.0-or-later`.
 
-- [repository](https://github.com/SNodeC/snode.c)
+- [Repository](https://github.com/SNodeC/snode.c)
 - [API reference](https://snodec.github.io/snode.c-doc/html/index.html)
 - [Issues](https://github.com/SNodeC/snode.c/issues)
 - [Discussions](https://github.com/SNodeC/snode.c/discussions)
 - [Releases](https://github.com/SNodeC/snode.c/releases)
 
-Dedicated public security, support, contribution, and compatibility policies
-remain launch gaps.
+Dedicated public security, support, contribution, compatibility and release
+policies should be treated as separate project surfaces rather than inferred
+from source presence.

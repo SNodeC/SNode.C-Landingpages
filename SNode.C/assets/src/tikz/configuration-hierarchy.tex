@@ -1,0 +1,37 @@
+\documentclass[tikz,border=8pt]{standalone}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\input{landingpages-figure-system.tex}
+\begin{document}
+\begin{tikzpicture}[mqtt desktop]
+
+\node[mqtt config,minimum width=40mm] (root) {\texttt{ConfigRoot}\\application configuration root};
+\node[mqtt section title,below=\MQGapL of root] (namedtitle) {Named children of \texttt{ConfigRoot}};
+\node[mqtt config,below=\MQGapS of namedtitle,minimum width=34mm] (instancea) {named endpoint\\instance A};
+\node[mqtt application,left=\MQGapS of instancea,minimum width=34mm,text width=28mm] (app)
+  {application-owned\\\texttt{SubCommand}};
+\node[mqtt config,right=\MQGapS of instancea,minimum width=34mm] (instanceb) {named endpoint\\instance B};
+
+\node[mqtt section title,below=\MQGapL of instancea] (sectionstitle) {Instance A sections};
+\node[mqtt config,below=\MQGapS of sectionstitle,minimum width=26mm] (local) {\texttt{local}};
+\node[mqtt config,left=\MQGapS of local,minimum width=26mm] (remote) {\texttt{remote}};
+\node[mqtt config,right=\MQGapS of local,minimum width=26mm] (connection) {\texttt{connection}};
+\node[mqtt config,below left=\MQGapS and \MQGapS of local,minimum width=26mm] (socket) {\texttt{socket}};
+\node[mqtt config,below right=\MQGapS and \MQGapS of local,minimum width=26mm] (tls) {\texttt{tls}\\when selected};
+
+\begin{scope}[on background layer]
+  \node[mqtt figure frame,fit=(root)(namedtitle)(app)(instancea)(instanceb)(sectionstitle)(remote)(local)(connection)(socket)(tls)] (tree) {};
+  \node[mqtt group,fit=(namedtitle)(app)(instancea)(instanceb)] (children) {};
+  \node[mqtt group,fit=(sectionstitle)(remote)(local)(connection)(socket)(tls)] (sections) {};
+\end{scope}
+
+\draw[mqtt contains] (root.south) -- node[mqtt edge label,right] {contains} (children.north);
+\draw[mqtt contains] (instancea.south) -- node[mqtt edge label,right] {assembles} (sections.north);
+
+\node[mqtt note,below=\MQGapM of tree,minimum width=76mm,text width=66mm] (dependent)
+  {Section availability is role/mode dependent; the figure shows the reusable section vocabulary.};
+\node[mqtt note,below=\MQGapM of dependent,minimum width=104mm,text width=94mm] (anonymous)
+  {Anonymous endpoint instance: configurable through the C++ API, but not a named \texttt{ConfigRoot} child and therefore not addressable by instance name from CLI or configuration file.};
+
+\end{tikzpicture}
+\end{document}
