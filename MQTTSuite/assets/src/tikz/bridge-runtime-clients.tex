@@ -9,7 +9,7 @@
   stage/.style={mqtt process,minimum width=64mm,text width=58mm},
   member/.style={mqtt process,minimum width=38mm,text width=32mm,minimum height=18mm},
   client/.style={mqtt process,minimum width=38mm,text width=32mm,minimum height=16mm},
-  foot/.style={mqtt note,minimum width=61mm,text width=55mm,minimum height=19mm}
+  foot/.style={mqtt note,minimum width=61mm,text width=55mm,minimum height=25mm}
 }
 \def\MQArrowSpan{8.3mm}
 \def\MQHalfArrowSpan{4.15mm}
@@ -47,9 +47,12 @@
 \draw[mqtt control flow] (m2.south) -- (c2.north);
 \draw[mqtt control flow] (m3.south) -- (c3.north);
 
-\node[foot,below=\MQGapM of c1,xshift=31mm] (gate)
+% Center the two explanatory panels as one 61 mm + 8 mm + 61 mm block
+% on the same axis as the main hierarchy. Their centers therefore sit at
+% +/-34.5 mm from c2: half of the canonical 69 mm center-to-center span.
+\node[foot,below=\MQGapM of c2,xshift=-34.5mm] (gate)
   {\textbf{Runtime creation gate}\\Both Bridge and member must be enabled, and the selected transport/protocol/encryption path must be implemented and compiled. Schema validity alone is insufficient.};
-\node[foot,right=\MQHorizontalGap of gate] (connack)
+\node[foot,below=\MQGapM of c2,xshift=34.5mm] (connack)
   {\textbf{After successful CONNACK}\\The client is added to its logical Bridge and SUBSCRIBEs to the member's configured topic filters.};
 
 \coordinate (titleY) at ($(json.north)+(0,\MQTitleGap)$);
