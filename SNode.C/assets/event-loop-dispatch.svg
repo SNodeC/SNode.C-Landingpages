@@ -380,15 +380,15 @@
 <path transform="matrix(0 .998 .998 0 198 333)" d="m4.41-0.00119c-0.544 0.133-2.92 0.869-4.41 1.67v-3.34c1.49 0.802 3.86 1.54 4.41 1.67zm0 0" fill="#548398" stroke="#548398" stroke-linecap="round" stroke-miterlimit="10" stroke-width=".697"/>
 <path transform="matrix(.998 0 0 -.998 198 38)" d="m-0.00119-330v-16.8" fill="none" stroke="#548398" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" stroke-width=".697"/>
 <path transform="matrix(0 .998 .998 0 198 384)" d="m4.41-0.00119c-0.544 0.133-2.92 0.869-4.41 1.67v-3.34c1.48 0.802 3.86 1.54 4.41 1.67zm0 0" fill="#548398" stroke="#548398" stroke-linecap="round" stroke-miterlimit="10" stroke-width=".697"/>
-<path transform="matrix(.998 0 0 -.998 198 38)" d="m62.7-368h22.7v259h-16.8" fill="none" stroke="#548398" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" stroke-width=".697"/>
+<path transform="matrix(.998 0 0 -.998 198 38)" d="m62.7-368h49.9v259h-44" fill="none" stroke="#548398" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" stroke-width=".697"/>
 <path transform="matrix(-.998 0 0 .998 266 147)" d="m4.41 9.09e-4c-0.544 0.129-2.92 0.865-4.41 1.67v-3.34c1.49 0.802 3.86 1.54 4.41 1.67zm0 0" fill="#548398" stroke="#548398" stroke-linecap="round" stroke-miterlimit="10" stroke-width=".697"/>
-<path d="m272 151h24.1v-8.03h-24.1z" fill="#fff"/>
+<path d="m285 151h24.1v-8.03h-24.1z" fill="#fff"/>
 <g fill="#4b5f67">
-<use x="272.865167" y="148.18211" xlink:href="#ah"/>
-<use x="275.751869" y="148.18211" xlink:href="#t"/>
-<use x="279.508002" y="148.18211" xlink:href="#ag"/>
-<use x="284.110498" y="148.18211" xlink:href="#t"/>
-<use x="287.866631" y="148.18211" xlink:href="#af"/>
-<use x="291.926628" y="148.18211" xlink:href="#ae"/>
+<use x="286.438613" y="148.18211" xlink:href="#ah"/>
+<use x="289.325315" y="148.18211" xlink:href="#t"/>
+<use x="293.081448" y="148.18211" xlink:href="#ag"/>
+<use x="297.683944" y="148.18211" xlink:href="#t"/>
+<use x="301.440077" y="148.18211" xlink:href="#af"/>
+<use x="305.500074" y="148.18211" xlink:href="#ae"/>
 </g>
 </svg>
