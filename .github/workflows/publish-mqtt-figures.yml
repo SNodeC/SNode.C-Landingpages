@@ -137,9 +137,18 @@ jobs:
           git add -f -- "${files[@]}"
 
           if git diff --cached --quiet; then
+            # compose.py intentionally regenerates tracked runtime PNG evidence for
+            # review. It is not part of this SVG publication commit, so restore it
+            # before leaving the publication step with a clean worktree.
+            git restore --worktree -- .
             echo "Generated refined MQTTSuite SVGs already match the committed publication outputs."
           else
             git commit -m "Regenerate refined MQTTSuite figures"
+
+            # The runtime-evidence step can leave tracked PNGs modified. Those
+            # changes are review-only here and must not prevent rebasing the
+            # generated-SVG commit onto a concurrently advanced main branch.
+            git restore --worktree -- .
 
             # main can advance while the comparatively long figure job runs.
             # Rebase the generated-only commit onto the latest main and retry a
