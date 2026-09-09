@@ -140,7 +140,26 @@ jobs:
             echo "Generated refined MQTTSuite SVGs already match the committed publication outputs."
           else
             git commit -m "Regenerate refined MQTTSuite figures"
-            git push origin HEAD:main
+
+            # main can advance while the comparatively long figure job runs.
+            # Rebase the generated-only commit onto the latest main and retry a
+            # normal fast-forward push; never force over unrelated repository work.
+            for attempt in 1 2 3; do
+              git fetch origin main
+              if ! git rebase origin/main; then
+                echo "Generated SVG publication conflicts with newer main; refusing to overwrite it." >&2
+                git rebase --abort || true
+                exit 1
+              fi
+              if git push origin HEAD:main; then
+                exit 0
+              fi
+              echo "Publish race on attempt ${attempt}; retrying against latest main..." >&2
+              sleep 2
+            done
+
+            echo "Unable to publish generated SVGs after 3 safe rebase/push attempts." >&2
+            exit 1
           fi
 
       - name: Upload review renders
