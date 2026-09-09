@@ -8,8 +8,8 @@
 \node[mqtt section title] (title) {One concrete endpoint};
 \node[mqtt config,below=\MQGapS of title,minimum width=92mm,text width=82mm] (address)
   {\textbf{Address family}\\IPv4 · IPv6 · Unix domain · RFCOMM · L2CAP};
-\node[mqtt evidence source,below=\MQGapXS of address.south east,anchor=north east] (bluetooth) {RFCOMM / L2CAP: source-verified};
-\node[mqtt config,below=\MQGapXL of address,minimum width=92mm,text width=82mm] (role)
+\node[mqtt evidence source,below=\MQGapXS of address.south east,anchor=north east] (bluetooth) {RFCOMM / L2CAP\\source-verified};
+\node[mqtt config,below={\MQGapXL+\MQGapXS} of address,minimum width=92mm,text width=82mm] (role)
   {\textbf{Endpoint role}\\\texttt{SocketServer} · \texttt{SocketClient}};
 \node[mqtt config,below=\MQGapM of role,minimum width=92mm,text width=82mm] (mode)
   {\textbf{Connection mode}\\plain stream · OpenSSL-backed TLS};
