@@ -23,16 +23,15 @@
   {\texttt{detach(ContextSwitch)}\\select staged context\\\texttt{attach()}};
 \node[mqtt state,below=\MQGapM of switch,minimum width=42mm] (websocket) {WebSocket context\\ACTIVE};
 \draw[mqtt control flow] (return.south) -- (switch.north);
-\path (staged.east) ++(\MQGapM,0) coordinate (stagedrail);
-\path (stagedrail |- switch.east) coordinate (stagedswitch);
-\draw[mqtt dependency] (staged.east) -- (stagedrail) -- (stagedswitch) -- (switch.east);
+\path (staged.east) -- (switch.east) coordinate[midway] (dependencycenter);
+\draw[mqtt dependency] (staged.east) -- (dependencycenter |- staged.east) -- (dependencycenter |- switch.east) -- (switch.east);
 \draw[mqtt control flow] (switch.south) -- (websocket.north);
 
 \node[mqtt note,below=\MQGapM of websocket,minimum width=88mm,text width=78mm] (note)
   {HTTP remains active until its current read callback returns. The same connection and transport continue through the switch. SSE/EventSource does not use this replacement path.};
 
 \begin{scope}[on background layer]
-  \node[mqtt figure frame,fit=(title)(http)(staged)(handofflabel)(return)(switch)(stagedrail)(websocket)(note)] {};
+  \node[mqtt figure frame,fit=(title)(http)(staged)(handofflabel)(return)(switch)(dependencycenter)(websocket)(note)] {};
 \end{scope}
 
 \end{tikzpicture}
