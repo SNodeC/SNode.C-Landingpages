@@ -50,4 +50,8 @@ integrator-mapping-modes-mobile
 bridge-runtime-clients
 bridge-runtime-clients-mobile
 
-# Figure 13 and later stay disabled until their individual refinement round starts.
+# Figure 13 — Bridge-definition hierarchy
+bridge-definition-hierarchy
+bridge-definition-hierarchy-mobile
+
+# Figure 14 and later stay disabled until their individual refinement round starts.
