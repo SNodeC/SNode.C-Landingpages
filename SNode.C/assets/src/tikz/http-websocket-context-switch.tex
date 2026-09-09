@@ -7,7 +7,7 @@
 
 \node[mqtt section title] (title) {Same established \texttt{SocketConnection}};
 \node[mqtt state,below=\MQGapM of title,minimum width=42mm] (http) {HTTP context\\ACTIVE};
-\node[mqtt warning,right=\MQGapL of http,minimum width=48mm,text width=42mm] (staged)
+\node[mqtt process,right=\MQGapL of http,minimum width=48mm,text width=42mm] (staged)
   {WebSocket replacement\\STAGED, not active};
 \path (http.east) -- (staged.west) coordinate[midway] (handoffmid);
 \draw[mqtt handoff] (http.east) -- (staged.west);
@@ -16,20 +16,23 @@
 \path (http.south) -- (staged.south) coordinate[midway] (topmid);
 \node[mqtt process,below=\MQGapM of topmid,minimum width=48mm,text width=42mm] (return)
   {current HTTP read callback returns};
-\path (staged.south) -- (return.north) coordinate[midway] (returnmid);
-\draw[mqtt control flow] (staged.south) -- (staged.south |- returnmid) -- (return.north |- returnmid) -- (return.north);
+\path (http.south) -- (return.north) coordinate[midway] (returnmid);
+\draw[mqtt control flow] (http.south) -- (http.south |- returnmid) -- (return.north |- returnmid) -- (return.north);
 
 \node[mqtt control,below=\MQGapM of return,minimum width=50mm,text width=44mm] (switch)
   {\texttt{detach(ContextSwitch)}\\select staged context\\\texttt{attach()}};
 \node[mqtt state,below=\MQGapM of switch,minimum width=42mm] (websocket) {WebSocket context\\ACTIVE};
 \draw[mqtt control flow] (return.south) -- (switch.north);
+\path (staged.east) ++(\MQGapM,0) coordinate (stagedrail);
+\path (stagedrail |- switch.east) coordinate (stagedswitch);
+\draw[mqtt dependency] (staged.east) -- (stagedrail) -- (stagedswitch) -- (switch.east);
 \draw[mqtt control flow] (switch.south) -- (websocket.north);
 
-\node[mqtt note,below=\MQGapM of websocket,minimum width=98mm,text width=88mm] (note)
+\node[mqtt note,below=\MQGapM of websocket,minimum width=88mm,text width=78mm] (note)
   {HTTP remains active until its current read callback returns. The same connection and transport continue through the switch. SSE/EventSource does not use this replacement path.};
 
 \begin{scope}[on background layer]
-  \node[mqtt figure frame,fit=(title)(http)(staged)(handofflabel)(return)(switch)(websocket)(note)] {};
+  \node[mqtt figure frame,fit=(title)(http)(staged)(handofflabel)(return)(switch)(stagedrail)(websocket)(note)] {};
 \end{scope}
 
 \end{tikzpicture}
