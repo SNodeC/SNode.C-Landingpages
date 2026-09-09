@@ -9,11 +9,10 @@ on:
       - .github/workflows/publish-snodec-figures.yml
       - shared/assets/src/tikz/**
       - SNode.C/assets/src/tikz/**
-      - SNode.C/assets/*.svg
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: snodec-figures-${{ github.ref }}
@@ -122,15 +121,37 @@ jobs:
           done
           cp figure-build.log figure-review/
 
-      - name: Verify generated SNode.C SVGs remain untracked
+      - name: Publish generated SNode.C SVGs
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         shell: bash
         run: |
           set -euo pipefail
-          tracked="$(git ls-files 'SNode.C/assets/*.svg' | grep -E '/(programming-model|event-loop-dispatch|endpoint-composition|protocol-relationships|http-websocket-context-switch|configuration-hierarchy|configuration-resolution|retry-vs-reconnect)(-mobile)?\.svg$' || true)"
-          if [[ -n "$tracked" ]]; then
-            echo "Generated SNode.C SVGs must not be tracked:"
-            echo "$tracked"
-            exit 1
+          files=(
+            SNode.C/assets/programming-model.svg
+            SNode.C/assets/programming-model-mobile.svg
+            SNode.C/assets/event-loop-dispatch.svg
+            SNode.C/assets/event-loop-dispatch-mobile.svg
+            SNode.C/assets/endpoint-composition.svg
+            SNode.C/assets/endpoint-composition-mobile.svg
+            SNode.C/assets/protocol-relationships.svg
+            SNode.C/assets/protocol-relationships-mobile.svg
+            SNode.C/assets/http-websocket-context-switch.svg
+            SNode.C/assets/http-websocket-context-switch-mobile.svg
+            SNode.C/assets/configuration-hierarchy.svg
+            SNode.C/assets/configuration-hierarchy-mobile.svg
+            SNode.C/assets/configuration-resolution.svg
+            SNode.C/assets/configuration-resolution-mobile.svg
+            SNode.C/assets/retry-vs-reconnect.svg
+            SNode.C/assets/retry-vs-reconnect-mobile.svg
+          )
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -f "${files[@]}"
+          if git diff --cached --quiet; then
+            echo "Generated SNode.C SVGs already match the committed publication outputs."
+          else
+            git commit -m "Regenerate SNode.C figures"
+            git push origin HEAD:main
           fi
 
       - name: Upload review renders
