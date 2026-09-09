@@ -10,14 +10,17 @@
 \node[mqtt application,below=\MQGapS of httptitle,minimum width=58mm,text width=50mm] (express)
   {Express-style routing\\and middleware};
 \node[mqtt state,below=\MQGapM of express,minimum width=46mm] (http) {HTTP context};
-\node[mqtt process,below=\MQGapM of http,minimum width=46mm] (sse) {SSE / EventSource};
-\node[mqtt process,below=\MQGapL of sse,minimum width=46mm] (ws) {WebSocket};
-\node[mqtt process,below=\MQGapM of ws,minimum width=46mm,text width=38mm] (mqttws) {MQTT over WebSocket};
-\path (http.east) ++(\MQGapS,0) coordinate (upgrade-rail);
+\node[mqtt process,below left=\MQGapM and \MQGapXS of http,minimum width=34mm,text width=28mm] (sse) {SSE / EventSource};
+\node[mqtt process,below right=\MQGapM and \MQGapXS of http,minimum width=34mm] (ws) {WebSocket};
+\node[mqtt process,below=\MQGapM of ws,minimum width=40mm,text width=34mm] (mqttws) {MQTT over WebSocket};
 
 \draw[mqtt association] (express.south) -- node[mqtt edge label,right] {above HTTP} (http.north);
-\draw[mqtt association] (http.south) -- node[mqtt edge label,right] {SSE stays HTTP} (sse.north);
-\draw[mqtt handoff] (http.east) -- (upgrade-rail) |- node[mqtt edge label,near end,left] {Upgrade} (ws.east);
+\path \MQPortSouth{http}{.32} coordinate (http-s32);
+\path \MQPortSouth{http}{.68} coordinate (http-s68);
+\path (http-s32) -- (sse.north) coordinate[midway] (ssemid);
+\draw[mqtt association] (http-s32) -- (http-s32 |- ssemid) -- node[mqtt edge label,above] {stays HTTP} (sse.north |- ssemid) -- (sse.north);
+\path (http-s68) -- (ws.north) coordinate[midway] (wsmid);
+\draw[mqtt handoff] (http-s68) -- (http-s68 |- wsmid) -- node[mqtt edge label,above] {Upgrade} (ws.north |- wsmid) -- (ws.north);
 \draw[mqtt association] (ws.south) -- node[mqtt edge label,right] {MQTT subprotocol} (mqttws.north);
 
 \path (http.center |- mqttws.south) ++(0,-\MQMobileLaneGap-\MQGroupPad) coordinate (directrow);
@@ -26,15 +29,15 @@
 \node[mqtt process,right=\MQGapS of directrow,anchor=west,minimum width=32mm,text width=26mm] (mqttdirect)
   {direct\\MQTT 3.1.1};
 \path (custom.south) -- (mqttdirect.south) coordinate[midway] (directbottom);
-\node[mqtt state,below=\MQMobileLaneGap of directbottom,minimum width=76mm,text width=66mm] (stream)
+\node[mqtt state,below=\MQGapM of directbottom,minimum width=74mm,text width=64mm] (stream)
   {established stream connection};
-\node[mqtt note,below=\MQGapM of stream,minimum width=80mm,text width=70mm] (note)
+\node[mqtt note,below=\MQGapM of stream,minimum width=76mm,text width=66mm] (note)
   {Express is above HTTP; SSE remains HTTP; WebSocket replaces HTTP after Upgrade; MQTT has direct and WebSocket-composed paths.};
 \path (title.north) ++(0,\MQGroupPad) coordinate (outertop);
 
 \begin{scope}[on background layer]
-  \node[mqtt figure frame,fit=(outertop)(title)(httptitle)(express)(http)(sse)(ws)(mqttws)(upgrade-rail)(custom)(mqttdirect)(stream)(note)] {};
-  \node[mqtt group,fit=(httptitle)(express)(http)(sse)(ws)(mqttws)(upgrade-rail)] (httpgroup) {};
+  \node[mqtt figure frame,fit=(outertop)(title)(httptitle)(express)(http)(sse)(ws)(mqttws)(custom)(mqttdirect)(stream)(note)] {};
+  \node[mqtt group,fit=(httptitle)(express)(http)(sse)(ws)(mqttws)] (httpgroup) {};
 \end{scope}
 
 \path \MQPortNorth{stream}{.18} coordinate (stream-n18);
