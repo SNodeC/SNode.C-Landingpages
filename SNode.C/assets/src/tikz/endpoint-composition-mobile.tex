@@ -17,7 +17,8 @@
   {\textbf{Protocol / application context}\\custom \texttt{SocketContext} or compatible protocol context};
 
 \draw[mqtt association] (address.south) -- (role.north);
-\draw[mqtt observation] (address.south east) |- (bluetooth.east);
+\path (address.east) ++(\MQGapXS,0) coordinate (evidencerail);
+\draw[mqtt observation] (address.east) -- (evidencerail) |- (bluetooth.east);
 \draw[mqtt association] (role.south) -- (mode.north);
 \draw[mqtt association] (mode.south) -- (context.north);
 
@@ -26,10 +27,11 @@
 \node[mqtt note,below=\MQGapM of runtime,minimum width=76mm,text width=66mm] (qualification)
   {Compatible typed compositions only; not every theoretical cross-product is built, tested, or runtime-qualified.};
 \path (title.north) ++(0,\MQGroupPad) coordinate (outertop);
+\path (evidencerail) ++(\MQGroupPad,0) coordinate (outerright);
 
 \begin{scope}[on background layer]
-  \node[mqtt figure frame,fit=(outertop)(title)(address)(bluetooth)(role)(mode)(context)(runtime)(qualification)] {};
-  \node[mqtt group,fit=(title)(address)(bluetooth)(role)(mode)(context)] (endpoint) {};
+  \node[mqtt figure frame,fit=(outertop)(outerright)(title)(address)(bluetooth)(evidencerail)(role)(mode)(context)(runtime)(qualification)] {};
+  \node[mqtt group,fit=(title)(address)(bluetooth)(evidencerail)(role)(mode)(context)] (endpoint) {};
 \end{scope}
 
 \draw[mqtt association] (endpoint.south) -- node[mqtt edge label,right] {uses} (runtime.north);
