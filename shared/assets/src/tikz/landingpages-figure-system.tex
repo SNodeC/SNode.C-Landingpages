@@ -1,5 +1,12 @@
-% mqttsystem-figure-system.tex
-% Canonical TikZ visual system for MQTTSuite technical figures.
+% landingpages-figure-system.tex
+% Canonical shared TikZ visual system for technical landing-page figures.
+%
+% This file is the single cross-project style authority for newly migrated
+% landing-page figures. It combines the reusable TikZ vocabulary originally
+% developed for MQTTSuite with the authoritative SNode.C presentation contract.
+%
+% Presentation authority:
+%   SNodeC/SNode.C-Book/assets/figures/src/snodec-figure-style.tex
 %
 % Canonical source rule:
 % - figure .tex sources + this file are authoritative;
@@ -22,91 +29,101 @@
 % Canonical palette
 % ---------------------------------------------------------------------------
 
-\definecolor{MQText}{HTML}{0F172A}
-\definecolor{MQTextMuted}{HTML}{475569}
-\definecolor{MQLine}{HTML}{475569}
-\definecolor{MQBorder}{HTML}{CBD5E1}
-\definecolor{MQSurface}{HTML}{F8FAFC}
-\definecolor{MQSurfaceAlt}{HTML}{F1F5F9}
-\definecolor{MQWhite}{HTML}{FFFFFF}
-\definecolor{MQDecisionFill}{HTML}{FFF7ED}
-\definecolor{MQDecisionLine}{HTML}{D97706}
-\definecolor{MQSuccessFill}{HTML}{ECFDF5}
-\definecolor{MQSuccessLine}{HTML}{10B981}
-\definecolor{MQErrorFill}{HTML}{FEF2F2}
-\definecolor{MQErrorLine}{HTML}{EF4444}
-\definecolor{MQControlFill}{HTML}{EFF6FF}
-\definecolor{MQControlLine}{HTML}{3B82F6}
-\definecolor{MQWarningFill}{HTML}{FFF7ED}
-\definecolor{MQWarningLine}{HTML}{F59E0B}
-\definecolor{MQCrossLane}{HTML}{2563EB}
-\definecolor{MQDataPlaneFill}{HTML}{EFF6FF}
-\definecolor{MQDataPlaneLine}{HTML}{2563EB}
-\definecolor{MQAdminPlaneFill}{HTML}{F8FAFC}
-\definecolor{MQAdminPlaneLine}{HTML}{64748B}
-\definecolor{MQTrustFill}{HTML}{FFF7ED}
-\definecolor{MQTrustLine}{HTML}{D97706}
-\definecolor{MQEvidenceRuntimeFill}{HTML}{ECFDF5}
-\definecolor{MQEvidenceRuntimeLine}{HTML}{10B981}
-\definecolor{MQEvidenceSourceFill}{HTML}{EFF6FF}
-\definecolor{MQEvidenceSourceLine}{HTML}{3B82F6}
+\definecolor{snodecInk}{HTML}{17212B}
+\definecolor{snodecMuted}{HTML}{4B5F68}
+\definecolor{snodecRule}{HTML}{7A8B93}
+\definecolor{snodecBlue}{HTML}{0B4F6C}
+\definecolor{snodecBlueSoft}{HTML}{E3F2F8}
+\definecolor{snodecGreen}{HTML}{1F7A68}
+\definecolor{snodecGreenSoft}{HTML}{E5F4EF}
+\definecolor{snodecOrange}{HTML}{C46A1B}
+\definecolor{snodecOrangeSoft}{HTML}{FAEFE3}
+\definecolor{snodecRed}{HTML}{B24A4A}
+\definecolor{snodecRedSoft}{HTML}{F8E8E8}
+\definecolor{snodecGraySoft}{HTML}{F1F3F2}
+
+% Compatibility names used by the shared semantic TikZ vocabulary.
+\colorlet{MQText}{snodecInk}
+\colorlet{MQTextMuted}{snodecMuted}
+\colorlet{MQLine}{snodecMuted!76}
+\colorlet{MQBorder}{snodecRule!85}
+\colorlet{MQSurface}{white}
+\colorlet{MQSurfaceAlt}{snodecGraySoft}
+\colorlet{MQWhite}{white}
+\colorlet{MQDecisionFill}{snodecOrangeSoft}
+\colorlet{MQDecisionLine}{snodecOrange!80}
+\colorlet{MQSuccessFill}{snodecGreenSoft}
+\colorlet{MQSuccessLine}{snodecGreen!78}
+\colorlet{MQErrorFill}{snodecRedSoft}
+\colorlet{MQErrorLine}{snodecRed!82}
+\colorlet{MQControlFill}{snodecBlueSoft}
+\colorlet{MQControlLine}{snodecBlue!78}
+\colorlet{MQWarningFill}{snodecOrangeSoft}
+\colorlet{MQWarningLine}{snodecOrange!80}
+\colorlet{MQCrossLane}{snodecBlue!70}
+\colorlet{MQDataPlaneFill}{snodecBlueSoft}
+\colorlet{MQDataPlaneLine}{snodecBlue!78}
+\colorlet{MQAdminPlaneFill}{snodecGraySoft}
+\colorlet{MQAdminPlaneLine}{snodecRule!85}
+\colorlet{MQTrustFill}{white}
+\colorlet{MQTrustLine}{snodecRule!82}
+\colorlet{MQEvidenceRuntimeFill}{snodecGreenSoft}
+\colorlet{MQEvidenceRuntimeLine}{snodecGreen!78}
+\colorlet{MQEvidenceSourceFill}{snodecBlueSoft}
+\colorlet{MQEvidenceSourceLine}{snodecBlue!78}
 
 % ---------------------------------------------------------------------------
 % Canonical radius system
 % ---------------------------------------------------------------------------
 
-\newcommand{\MQRadiusXS}{1.2pt}
-\newcommand{\MQRadiusS}{1.8pt}
-\newcommand{\MQRadiusM}{2.8pt}
-\newcommand{\MQRadiusL}{5.0pt}
-\newcommand{\MQRadiusXL}{7.0pt}
+\newcommand{\MQRadiusXS}{2.5pt}
+\newcommand{\MQRadiusS}{2.5pt}
+\newcommand{\MQRadiusM}{2.5pt}
+\newcommand{\MQRadiusL}{3pt}
+\newcommand{\MQRadiusXL}{3pt}
 
 % ---------------------------------------------------------------------------
 % Canonical spacing and responsive budgets
 % ---------------------------------------------------------------------------
-%
-% Base grid: 1 unit = 2 mm. Derived dimensions are explicit so TeX does not
-% interpret macro concatenation as decimal text.
 
 \newcommand{\MQU}{2mm}
 
-% Generic scale
-\newcommand{\MQGapXS}{4mm}
+% Generic scale.
+\newcommand{\MQGapXS}{6mm}
 \newcommand{\MQGapS}{6mm}
-\newcommand{\MQGapM}{10mm}
-\newcommand{\MQGapL}{14mm}
-\newcommand{\MQGapXL}{20mm}
+\newcommand{\MQGapM}{8mm}
+\newcommand{\MQGapL}{11mm}
+\newcommand{\MQGapXL}{14mm}
 
-% Node interior
-\newcommand{\MQNodePadX}{5mm}
-\newcommand{\MQNodePadY}{4mm}
+% Node interior.
+\newcommand{\MQNodePadX}{3mm}
+\newcommand{\MQNodePadY}{2.5mm}
 
-% Canonical horizontal rhythm — edge-to-edge gaps
+% Canonical horizontal rhythm -- edge-to-edge gaps.
 \newcommand{\MQHorizontalGapTight}{6mm}
-\newcommand{\MQHorizontalGap}{10mm}
-\newcommand{\MQHorizontalGapLoose}{14mm}
-\newcommand{\MQHorizontalMilestoneGap}{16mm}
+\newcommand{\MQHorizontalGap}{8mm}
+\newcommand{\MQHorizontalGapLoose}{11mm}
+\newcommand{\MQHorizontalMilestoneGap}{14mm}
 
-% Vertical / branch rhythm
-\newcommand{\MQBranchGapTight}{8mm}
-\newcommand{\MQBranchGap}{14mm}
-\newcommand{\MQLaneGap}{24mm}
-\newcommand{\MQLanePadX}{8mm}
-\newcommand{\MQLanePadY}{8mm}
-\newcommand{\MQGroupPad}{6mm}
-\newcommand{\MQTrustPad}{8mm}
+% Vertical / branch rhythm.
+\newcommand{\MQBranchGapTight}{6mm}
+\newcommand{\MQBranchGap}{8mm}
+\newcommand{\MQLaneGap}{14mm}
+\newcommand{\MQLanePadX}{4.5mm}
+\newcommand{\MQLanePadY}{4.5mm}
+\newcommand{\MQGroupPad}{4.5mm}
+\newcommand{\MQTrustPad}{4.5mm}
 \newcommand{\MQTitleGap}{4mm}
 \newcommand{\MQLabelGap}{2mm}
 \newcommand{\MQFigureSafeX}{10mm}
 \newcommand{\MQFigureSafeY}{10mm}
-\newcommand{\MQDesktopSafe}{\MQFigureSafeX}
+\newcommand{\MQDesktopSafe}{8mm}
 \newcommand{\MQMobileSafe}{8mm}
-\newcommand{\MQMobileHorizontalGap}{12mm}
-\newcommand{\MQMobileLaneGap}{20mm}
+\newcommand{\MQMobileHorizontalGap}{8mm}
+\newcommand{\MQMobileLaneGap}{11mm}
 
 % Review budgets. These are composition limits, not scaling instructions.
-% A figure that exceeds the budget must be recomposed rather than shrunk.
-\newcommand{\MQDesktopMaxWidth}{245mm}
+\newcommand{\MQDesktopMaxWidth}{160mm}
 \newcommand{\MQMobileMaxWidth}{100mm}
 
 % ---------------------------------------------------------------------------
@@ -116,8 +133,6 @@
 % Directional connectors attach to node borders orthogonally. Use the middle
 % of the relevant border by default (fraction .5). If several connectors share
 % one border, distribute the fractions evenly, e.g. .25/.5/.75 for three.
-% These helpers provide explicit, reproducible border ports without detached
-% arrowheads or diagonal shortcuts.
 
 \newcommand{\MQPortNorth}[2]{($(#1.north west)!#2!(#1.north east)$)}
 \newcommand{\MQPortSouth}[2]{($(#1.south west)!#2!(#1.south east)$)}
@@ -125,11 +140,11 @@
 \newcommand{\MQPortEast}[2]{($(#1.south east)!#2!(#1.north east)$)}
 
 % ---------------------------------------------------------------------------
-% Canonical shading / elevation system
+% Canonical rendering / elevation
 % ---------------------------------------------------------------------------
 %
-% Flat rendering is the default. Shadows are opt-in and reserved for semantic
-% emphasis, never general decoration.
+% Flat rendering is authoritative. Keep the elevation vocabulary available as
+% no-ops so figures cannot silently introduce decorative shadows.
 
 \newcommand{\MQShadowXSubtle}{0.7pt}
 \newcommand{\MQShadowYSubtle}{-0.7pt}
@@ -142,48 +157,32 @@
 
 \tikzset{
   mqtt elevated none/.style={},
-  mqtt elevated subtle/.style={
-    blur shadow={
-      shadow xshift=\MQShadowXSubtle,
-      shadow yshift=\MQShadowYSubtle,
-      shadow blur radius=\MQShadowBlurSubtle,
-      opacity=\MQShadowOpacitySubtle
-    }
-  },
-  mqtt elevated raised/.style={
-    blur shadow={
-      shadow xshift=\MQShadowXRaised,
-      shadow yshift=\MQShadowYRaised,
-      shadow blur radius=\MQShadowBlurRaised,
-      opacity=\MQShadowOpacityRaised
-    }
-  }
+  mqtt elevated subtle/.style={},
+  mqtt elevated raised/.style={}
 }
 
 % ---------------------------------------------------------------------------
 % Typography
 % ---------------------------------------------------------------------------
-%
-% Figure presets select these macros at picture start. Node styles consume the
-% macros directly, so mobile typography cannot be silently overwritten by a
-% later node style. Technical labels disable automatic word hyphenation.
 
 \newcommand{\MQBodyFont}{\sffamily\small}
 \newcommand{\MQTitleFont}{\sffamily\bfseries\large}
 \newcommand{\MQSectionFont}{\sffamily\bfseries\small}
-\newcommand{\MQAnnotationFont}{\sffamily\scriptsize}
+\newcommand{\MQAnnotationFont}{\sffamily\footnotesize}
 \newcommand{\MQCodeFont}{\ttfamily\small}
-\newcommand{\MQCodeSmallFont}{\ttfamily\scriptsize}
+\newcommand{\MQCodeSmallFont}{\ttfamily\footnotesize}
 
 \newcommand{\MQDesktopTypography}{%
   \renewcommand{\MQBodyFont}{\sffamily\small}%
   \renewcommand{\MQTitleFont}{\sffamily\bfseries\large}%
   \renewcommand{\MQSectionFont}{\sffamily\bfseries\small}%
-  \renewcommand{\MQAnnotationFont}{\sffamily\scriptsize}%
+  \renewcommand{\MQAnnotationFont}{\sffamily\footnotesize}%
   \renewcommand{\MQCodeFont}{\ttfamily\small}%
-  \renewcommand{\MQCodeSmallFont}{\ttfamily\scriptsize}%
+  \renewcommand{\MQCodeSmallFont}{\ttfamily\footnotesize}%
 }
 
+% Mobile intentionally uses a type-size uplift; layout must be recomposed rather
+% than shrinking type to make a desktop composition fit.
 \newcommand{\MQMobileTypography}{%
   \renewcommand{\MQBodyFont}{\sffamily\normalsize}%
   \renewcommand{\MQTitleFont}{\sffamily\bfseries\large}%
@@ -197,13 +196,13 @@
   mqtt no hyphenation/.style={
     execute at begin node={\hyphenpenalty=10000\exhyphenpenalty=10000\relax}
   },
-  mqtt text/.style={mqtt no hyphenation,font=\MQBodyFont,text=MQText,align=center},
+  mqtt text/.style={mqtt no hyphenation,font=\MQBodyFont,text=snodecInk,align=center},
   mqtt text left/.style={mqtt text,align=left},
-  mqtt title/.style={mqtt no hyphenation,font=\MQTitleFont,text=MQText,align=left},
-  mqtt section title/.style={mqtt no hyphenation,font=\MQSectionFont,text=MQText,align=left,anchor=west},
-  mqtt annotation/.style={mqtt no hyphenation,font=\MQAnnotationFont,text=MQTextMuted,align=center},
-  mqtt code/.style={mqtt no hyphenation,font=\MQCodeFont,text=MQText},
-  mqtt code small/.style={mqtt no hyphenation,font=\MQCodeSmallFont,text=MQText}
+  mqtt title/.style={mqtt no hyphenation,font=\MQTitleFont,text=snodecInk,align=left},
+  mqtt section title/.style={mqtt no hyphenation,font=\MQSectionFont,text=snodecBlue,align=left,anchor=west},
+  mqtt annotation/.style={mqtt no hyphenation,font=\MQAnnotationFont,text=snodecMuted,align=center},
+  mqtt code/.style={mqtt no hyphenation,font=\MQCodeFont,text=snodecInk},
+  mqtt code small/.style={mqtt no hyphenation,font=\MQCodeSmallFont,text=snodecInk}
 }
 
 % ---------------------------------------------------------------------------
@@ -226,81 +225,56 @@
 % ---------------------------------------------------------------------------
 % Core node families
 % ---------------------------------------------------------------------------
+%
+% Keep this key list paragraph-free: pgfkeys does not accept \par tokens inside
+% \tikzset.
 
 \tikzset{
-  mqtt process/.style={
-    mqtt text,draw=MQLine,fill=MQWhite,rounded corners=\MQRadiusM,
-    line width=.75pt,minimum height=10mm,minimum width=25mm,
-    inner xsep=\MQNodePadX,inner ysep=\MQNodePadY
-  },
-  mqtt application/.style={mqtt process,minimum width=31mm,minimum height=13mm,line width=.9pt},
-  mqtt external/.style={mqtt process,fill=MQSurfaceAlt,draw=MQBorder},
-  mqtt state/.style={mqtt process,fill=MQSurface},
-  mqtt decision/.style={
-    mqtt text,diamond,aspect=1.75,draw=MQDecisionLine,fill=MQDecisionFill,
-    line width=.8pt,inner sep=1.2pt,minimum width=27mm,minimum height=14mm
-  },
-  mqtt success/.style={mqtt process,fill=MQSuccessFill,draw=MQSuccessLine},
-  mqtt error/.style={mqtt process,fill=MQErrorFill,draw=MQErrorLine},
-  mqtt control/.style={mqtt process,fill=MQControlFill,draw=MQControlLine},
-  mqtt warning/.style={mqtt process,fill=MQWarningFill,draw=MQWarningLine},
-  mqtt note/.style={
-    mqtt text,draw=MQBorder,fill=MQSurfaceAlt,rounded corners=\MQRadiusS,
-    line width=.65pt,font=\MQAnnotationFont,minimum height=8mm,
-    inner xsep=\MQNodePadX,inner ysep=\MQNodePadY
-  },
-  mqtt config/.style={mqtt process,fill=MQSurfaceAlt,draw=MQBorder,rounded corners=\MQRadiusS},
-  mqtt data/.style={mqtt process,fill=MQWhite,draw=MQBorder},
-  mqtt database/.style={
-    mqtt text,cylinder,shape border rotate=90,aspect=.25,draw=MQLine,fill=MQWhite,
-    line width=.75pt,minimum width=24mm,minimum height=13mm,
-    inner xsep=\MQNodePadX,inner ysep=\MQNodePadY
-  }
+  mqtt process/.style={mqtt text,draw=snodecRule!85,fill=white,rounded corners=2.5pt,line width=.70pt,minimum height=10mm,minimum width=25mm,inner xsep=3mm,inner ysep=2.5mm},
+  mqtt application/.style={mqtt text,draw=snodecGreen!78,fill=snodecGreenSoft,rounded corners=2.5pt,line width=.70pt,minimum height=10mm,minimum width=25mm,inner xsep=3mm,inner ysep=2.5mm},
+  mqtt external/.style={mqtt process,fill=snodecGraySoft,draw=snodecRule!85},
+  mqtt state/.style={mqtt process,fill=snodecBlueSoft,draw=snodecBlue!78},
+  mqtt decision/.style={mqtt text,diamond,aspect=1.75,draw=snodecOrange!80,fill=snodecOrangeSoft,line width=.70pt,inner sep=1.2pt,minimum width=27mm,minimum height=14mm},
+  mqtt success/.style={mqtt process,fill=snodecGreenSoft,draw=snodecGreen!78},
+  mqtt error/.style={mqtt process,fill=snodecRedSoft,draw=snodecRed!82},
+  mqtt control/.style={mqtt process,fill=snodecBlueSoft,draw=snodecBlue!78},
+  mqtt warning/.style={mqtt process,fill=snodecOrangeSoft,draw=snodecOrange!80},
+  mqtt note/.style={mqtt text,draw=snodecRule!85,fill=snodecGraySoft,rounded corners=2.5pt,line width=.58pt,font=\MQAnnotationFont,minimum height=8mm,inner xsep=3mm,inner ysep=2.5mm},
+  mqtt config/.style={mqtt process,fill=snodecGraySoft,draw=snodecRule!85},
+  mqtt data/.style={mqtt process,fill=white,draw=snodecRule!85},
+  mqtt database/.style={mqtt text,cylinder,shape border rotate=90,aspect=.25,draw=snodecRule!85,fill=snodecGraySoft,line width=.70pt,minimum width=24mm,minimum height=13mm,inner xsep=3mm,inner ysep=2.5mm}
 }
 
 % ---------------------------------------------------------------------------
 % Semantic containers
 % ---------------------------------------------------------------------------
-%
-% mqtt figure frame is the neutral enclosing surface and is drawn first.
-% Semantic lanes/groups/planes are distinct concepts. mqtt lane deliberately has
-% no opaque fill so drawing it after an inner plane cannot erase that plane.
 
 \tikzset{
-  mqtt figure frame/.style={
-    draw=MQBorder,fill=MQSurface,rounded corners=\MQRadiusL,line width=.8pt,
-    inner xsep=\MQLanePadX,inner ysep=\MQLanePadY
-  },
-  mqtt lane/.style={
-    draw=MQBorder,fill=none,rounded corners=\MQRadiusL,line width=.8pt,
-    inner xsep=\MQLanePadX,inner ysep=\MQLanePadY
-  },
-  mqtt group/.style={draw=MQBorder,fill=MQWhite,rounded corners=\MQRadiusL,line width=.75pt,inner sep=\MQGroupPad},
-  mqtt data plane/.style={draw=MQDataPlaneLine,fill=MQDataPlaneFill,rounded corners=\MQRadiusL,line width=.9pt,inner sep=\MQGroupPad},
-  mqtt admin plane/.style={draw=MQAdminPlaneLine,fill=MQAdminPlaneFill,rounded corners=\MQRadiusL,line width=.9pt,inner sep=\MQGroupPad},
-  mqtt trust boundary/.style={draw=MQTrustLine,fill=none,rounded corners=\MQRadiusXL,line width=1pt,dashed,inner sep=\MQTrustPad}
+  mqtt figure frame/.style={draw=snodecRule!82,fill=white,rounded corners=3pt,line width=.58pt,inner xsep=4.5mm,inner ysep=4.5mm},
+  mqtt lane/.style={draw=snodecRule!82,fill=none,dashed,rounded corners=3pt,line width=.58pt,inner xsep=4.5mm,inner ysep=4.5mm},
+  mqtt group/.style={draw=snodecRule!82,fill=none,rounded corners=3pt,line width=.58pt,inner sep=4.5mm},
+  mqtt data plane/.style={draw=snodecBlue!78,fill=snodecBlueSoft,rounded corners=3pt,line width=.58pt,inner sep=4.5mm},
+  mqtt admin plane/.style={draw=snodecRule!85,fill=snodecGraySoft,rounded corners=3pt,line width=.58pt,inner sep=4.5mm},
+  mqtt trust boundary/.style={draw=snodecRule!82,fill=none,dashed,rounded corners=3pt,line width=.58pt,inner sep=4.5mm}
 }
 
 % ---------------------------------------------------------------------------
 % Arrow and connector semantics
 % ---------------------------------------------------------------------------
 %
-% Every directional connector is one TikZ path whose arrow tip is part of that
-% same path. Never draw a line and place a separate arrowhead on top of it.
-% Off-axis routing is orthogonal (Manhattan-style) using |- / -| and explicit
-% border ports. A diagonal is permitted only when the geometry or semantics
-% genuinely require it; it is never the default shortcut between boxes.
+% Every directional connector is one continuous TikZ path whose arrowhead is
+% attached to that same path. Off-axis routing is orthogonal by default.
 
 \tikzset{
-  mqtt connector/.style={line cap=butt,line join=round},
-  mqtt flow/.style={mqtt connector,-{Stealth[length=2.2mm,width=1.5mm]},draw=MQLine,line width=.8pt},
-  mqtt data flow/.style={mqtt connector,-{Stealth[length=2.2mm,width=1.5mm]},draw=MQDataPlaneLine,line width=.9pt},
-  mqtt control flow/.style={mqtt connector,-{Stealth[length=2.2mm,width=1.5mm]},draw=MQControlLine,line width=.9pt},
-  mqtt observation/.style={mqtt connector,-{Stealth[length=2.0mm,width=1.4mm]},draw=MQLine,line width=.75pt,dashed},
-  mqtt handoff/.style={mqtt connector,-{Stealth[length=2.3mm,width=1.6mm]},draw=MQCrossLane,line width=1pt},
-  mqtt association/.style={mqtt connector,draw=MQBorder,line width=.7pt},
-  mqtt contains/.style={mqtt connector,draw=MQBorder,line width=.8pt},
-  mqtt dependency/.style={mqtt connector,-{Stealth[length=2.0mm,width=1.4mm]},draw=MQLine,line width=.7pt,densely dotted}
+  mqtt connector/.style={line cap=round,line join=round},
+  mqtt flow/.style={mqtt connector,-{Latex[length=2.2mm,width=1.6mm]},draw=snodecMuted!76,line width=.70pt},
+  mqtt data flow/.style={mqtt connector,-{Latex[length=2.2mm,width=1.6mm]},draw=snodecBlue!70,line width=.70pt},
+  mqtt control flow/.style={mqtt connector,-{Latex[length=2.2mm,width=1.6mm]},draw=snodecBlue!70,line width=.70pt},
+  mqtt observation/.style={mqtt connector,-{Latex[length=2.0mm,width=1.4mm]},draw=snodecMuted!72,line width=.58pt,dashed},
+  mqtt handoff/.style={mqtt connector,-{Latex[length=2.2mm,width=1.6mm]},draw=snodecBlue!70,line width=.70pt},
+  mqtt association/.style={mqtt connector,draw=snodecMuted!68,line width=.58pt},
+  mqtt contains/.style={mqtt connector,draw=snodecMuted!68,line width=.58pt},
+  mqtt dependency/.style={mqtt connector,-{Latex[length=2.0mm,width=1.4mm]},draw=snodecMuted!68,line width=.58pt,densely dotted}
 }
 
 % ---------------------------------------------------------------------------
@@ -308,20 +282,12 @@
 % ---------------------------------------------------------------------------
 
 \tikzset{
-  mqtt branch label/.style={mqtt no hyphenation,font=\MQAnnotationFont\bfseries,text=MQTextMuted,fill=MQWhite,inner sep=1.4pt},
-  mqtt edge label/.style={mqtt no hyphenation,font=\MQAnnotationFont,text=MQTextMuted,fill=MQWhite,inner sep=1.4pt},
-  mqtt topic label/.style={mqtt no hyphenation,font=\MQCodeSmallFont,text=MQText,fill=MQWhite,inner sep=1.4pt},
-  mqtt route label/.style={mqtt no hyphenation,font=\MQCodeSmallFont,text=MQText,fill=MQWhite,inner sep=1.4pt},
-  mqtt evidence runtime/.style={
-    mqtt no hyphenation,font=\MQAnnotationFont\bfseries,text=MQSuccessLine,draw=MQEvidenceRuntimeLine,
-    fill=MQEvidenceRuntimeFill,rounded corners=\MQRadiusXS,line width=.6pt,
-    inner xsep=4pt,inner ysep=2pt
-  },
-  mqtt evidence source/.style={
-    mqtt no hyphenation,font=\MQAnnotationFont\bfseries,text=MQControlLine,draw=MQEvidenceSourceLine,
-    fill=MQEvidenceSourceFill,rounded corners=\MQRadiusXS,line width=.6pt,
-    inner xsep=4pt,inner ysep=2pt
-  }
+  mqtt branch label/.style={mqtt no hyphenation,font=\MQAnnotationFont\bfseries,text=snodecInk,fill=white,inner sep=1pt},
+  mqtt edge label/.style={mqtt no hyphenation,font=\MQAnnotationFont,text=snodecMuted,fill=white,inner sep=1pt},
+  mqtt topic label/.style={mqtt no hyphenation,font=\MQCodeSmallFont,text=snodecInk,fill=white,inner sep=1pt},
+  mqtt route label/.style={mqtt no hyphenation,font=\MQCodeSmallFont,text=snodecInk,fill=white,inner sep=1pt},
+  mqtt evidence runtime/.style={mqtt no hyphenation,font=\MQAnnotationFont\bfseries,text=snodecGreen!78,draw=snodecGreen!78,fill=snodecGreenSoft,rounded corners=2.5pt,line width=.58pt,inner xsep=4pt,inner ysep=2pt},
+  mqtt evidence source/.style={mqtt no hyphenation,font=\MQAnnotationFont\bfseries,text=snodecBlue!78,draw=snodecBlue!78,fill=snodecBlueSoft,rounded corners=2.5pt,line width=.58pt,inner xsep=4pt,inner ysep=2pt}
 }
 
 % ---------------------------------------------------------------------------
@@ -329,7 +295,7 @@
 % ---------------------------------------------------------------------------
 %
 % 1. Figure .tex + this style file are canonical.
-% 2. Generated SVGs are never hand-edited.
+% 2. Generated SVGs are never hand-edited or committed as canonical source.
 % 3. SVG is the publication format for technical diagrams.
 % 4. PNG is reserved for genuine runtime/UI evidence or raster-only input.
 % 5. Desktop/mobile may share semantics but use independently art-directed geometry.
@@ -339,7 +305,7 @@
 % 9. Color never carries the only semantic distinction.
 % 10. Horizontal sequences use the canonical horizontal rhythm; avoid arbitrary x-spacing.
 % 11. Rounded corners follow the semantic radius scale; avoid one-off radii.
-% 12. Flat rendering is the default; elevation/shadows are explicit and justified.
+% 12. Flat rendering is authoritative; do not introduce decorative elevation/shadows.
 % 13. Prefer explicit anchors/ports and orthogonal routing wherever boxes are connected.
 % 14. Preserve readable text size at actual GitHub desktop/mobile rendering widths.
 % 15. Every directional connector is a single path with its arrowhead attached to that path; detached or separately placed arrowheads are forbidden.
