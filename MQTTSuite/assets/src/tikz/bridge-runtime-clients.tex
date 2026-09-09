@@ -1,58 +1,62 @@
-\documentclass[tikz,border=8pt]{standalone}
+\documentclass[tikz,border=0pt]{standalone}
 \usepackage[T1]{fontenc}
 \usepackage{lmodern}
 \input{mqttsystem-figure-system.tex}
+\input{snodec-canonical-figure-system.tex}
 \begin{document}
 \begin{tikzpicture}[mqtt desktop]
 \tikzset{
-  box/.style={mqtt process,minimum width=44mm,text width=39mm},
-  member/.style={mqtt process,minimum width=39mm,text width=34mm},
-  client/.style={mqtt data,minimum width=39mm,text width=34mm}
+  stage/.style={mqtt process,minimum width=64mm,text width=58mm},
+  member/.style={mqtt process,minimum width=38mm,text width=32mm,minimum height=18mm},
+  client/.style={mqtt process,minimum width=38mm,text width=32mm,minimum height=16mm},
+  foot/.style={mqtt note,minimum width=61mm,text width=55mm,minimum height=19mm}
 }
+\def\MQArrowSpan{8.3mm}
+\def\MQHalfArrowSpan{4.15mm}
 
-\node[mqtt external,box] (json) {bridge-definition JSON\\\texttt{bridges[]}};
-\node[mqtt control,box,right=\MQHorizontalGap of json] (store)
-  {\texttt{BridgeStore}\\parse + validate + defaults};
-\node[mqtt application,box,right=\MQHorizontalGap of store] (bridge)
-  {logical Bridge\\name + prefix + disabled};
-\draw[mqtt control flow] (json.east) -- (store.west);
-\draw[mqtt control flow] (store.east) -- (bridge.west);
+\node[mqtt external,stage] (json)
+  {bridge-definition JSON\\\texttt{bridges[]}};
+\node[mqtt control,stage,below=\MQArrowSpan of json] (store)
+  {\texttt{BridgeStore}\\parse + validate + apply schema defaults};
+\node[mqtt process,stage,below=\MQArrowSpan of store] (bridge)
+  {\textbf{logical Bridge}\\name + prefix + disabled state};
+\draw[mqtt control flow] (json.south) -- (store.north);
+\draw[mqtt control flow] (store.south) -- (bridge.north);
 
-\node[member,below=\MQGapXL of json] (m1)
-  {broker member A\\network + MQTT + topics};
-\node[member,right=\MQHorizontalGap of m1] (m2)
-  {broker member B\\network + MQTT + topics};
-\node[member,right=\MQHorizontalGap of m2] (m3)
+\node[member,below=\MQArrowSpan of bridge] (m2)
+  {broker member B\\network + MQTT\\session + topics\\prefix + disabled};
+\node[member,left=\MQArrowSpan of m2] (m1)
+  {broker member A\\network + MQTT\\session + topics\\prefix + disabled};
+\node[member,right=\MQArrowSpan of m2] (m3)
   {broker member …\\same member model};
 
-\coordinate (memberhub) at ($(bridge.south)+(0,-9mm)$);
-\coordinate (memberbusL) at (m1.north |- memberhub);
-\coordinate (memberbusM) at (m2.north |- memberhub);
-\coordinate (memberbusR) at (m3.north |- memberhub);
-\draw[mqtt contains] (bridge.south) -- (memberhub);
-\draw[mqtt contains] (memberbusL) -- (memberbusR);
-\draw[mqtt contains] (memberbusL) -- (m1.north);
-\draw[mqtt contains] (memberbusM) -- (m2.north);
-\draw[mqtt contains] (memberbusR) -- (m3.north);
+\coordinate (memberBus) at ($(bridge.south)+(0,-\MQHalfArrowSpan)$);
+\draw[mqtt contains] (bridge.south) -- (memberBus);
+\draw[mqtt contains] (m1.north |- memberBus) -- (m3.north |- memberBus);
+\draw[mqtt contains] (m1.north |- memberBus) -- (m1.north);
+\draw[mqtt contains] (m2.north |- memberBus) -- (m2.north);
+\draw[mqtt contains] (m3.north |- memberBus) -- (m3.north);
 
-\node[client,below=\MQGapS of m1] (c1) {outbound SNode.C\\MQTT client + context};
-\node[client,below=\MQGapS of m2] (c2) {outbound SNode.C\\MQTT client + context};
-\node[client,below=\MQGapS of m3] (c3) {outbound SNode.C\\MQTT client + context};
+\node[client,below=\MQArrowSpan of m1] (c1)
+  {SNode.C outbound\\MQTT client A};
+\node[client,below=\MQArrowSpan of m2] (c2)
+  {SNode.C outbound\\MQTT client B};
+\node[client,below=\MQArrowSpan of m3] (c3)
+  {SNode.C outbound\\MQTT client …};
 \draw[mqtt control flow] (m1.south) -- (c1.north);
 \draw[mqtt control flow] (m2.south) -- (c2.north);
 \draw[mqtt control flow] (m3.south) -- (c3.north);
 
-\node[mqtt note,minimum width=96mm,text width=89mm,below=\MQGapM of c2] (support)
-  {One runtime client is materialized for each enabled member whose transport/protocol combination is implemented and compiled into this build. Schema admission alone does not prove runtime availability.};
-\node[mqtt note,minimum width=96mm,text width=89mm,below=\MQGapS of support] (connack)
-  {After a successful CONNACK, that runtime client joins its logical Bridge and SUBSCRIBEs to the member's configured topic filters.};
+\node[foot,below=\MQGapM of c1,xshift=31mm] (gate)
+  {\textbf{Runtime creation gate}\\Both Bridge and member must be enabled, and the selected transport/protocol/encryption path must be implemented and compiled. Schema validity alone is insufficient.};
+\node[foot,right=\MQHorizontalGap of gate] (connack)
+  {\textbf{After successful CONNACK}\\The client is added to its logical Bridge and SUBSCRIBEs to the member's configured topic filters.};
 
+\coordinate (titleY) at ($(json.north)+(0,\MQTitleGap)$);
+\node[mqtt section title,anchor=south west] (figureTitle)
+  at (m1.west |- titleY) {Bridge definition to runtime MQTT clients};
 \begin{pgfonlayer}{background}
-  \node[mqtt figure frame,fit=(json)(store)(bridge)(m1)(m2)(m3)(c1)(c2)(c3)(support)(connack)] (frame) {};
-  \node[mqtt group,fit=(m1)(m2)(m3)(c1)(c2)(c3)] (members) {};
+  \node[mqtt figure frame,fit=(figureTitle)(json)(store)(bridge)(m1)(m2)(m3)(c1)(c2)(c3)(gate)(connack)] (frame) {};
 \end{pgfonlayer}
-\node[mqtt section title] at ($(frame.north west)+(\MQTitleGap,-\MQTitleGap)$)
-  {Bridge definition to runtime MQTT clients};
-
 \end{tikzpicture}
 \end{document}

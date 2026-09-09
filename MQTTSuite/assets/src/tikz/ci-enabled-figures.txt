@@ -46,4 +46,8 @@ integrator-topic-tree-matching-mobile
 integrator-mapping-modes
 integrator-mapping-modes-mobile
 
-# Figure 12 and later stay disabled until their individual refinement round starts.
+# Figure 12 — Bridge definition to runtime clients
+bridge-runtime-clients
+bridge-runtime-clients-mobile
+
+# Figure 13 and later stay disabled until their individual refinement round starts.
