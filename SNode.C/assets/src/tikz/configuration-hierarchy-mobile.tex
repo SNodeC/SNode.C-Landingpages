@@ -6,30 +6,30 @@
 \begin{tikzpicture}[mqtt mobile]
 
 \node[mqtt config,minimum width=64mm] (root) {\texttt{ConfigRoot}\\application configuration root};
-\node[mqtt section title,below=\MQGapL of root] (namedtitle) {Named root children};
+\node[mqtt section title,below=\MQGapXL of root] (namedtitle) {Named root children};
 \node[mqtt application,below=\MQGapS of namedtitle,minimum width=66mm] (app) {application-owned \texttt{SubCommand}};
 \node[mqtt config,below=\MQGapM of app,minimum width=66mm] (instanceb) {named endpoint instance B};
 \node[mqtt config,below=\MQGapM of instanceb,minimum width=66mm] (instancea) {named endpoint instance A};
 
-\node[mqtt section title,below=\MQGapL of instancea] (sectionstitle) {Instance A sections};
+\node[mqtt section title,below=\MQGapXL of instancea] (sectionstitle) {Instance A sections};
 \node[mqtt config,below=\MQGapS of sectionstitle,minimum width=56mm] (local) {\texttt{local} / \texttt{remote}};
 \node[mqtt config,below=\MQGapS of local,minimum width=56mm] (connection) {\texttt{connection}};
 \node[mqtt config,below=\MQGapS of connection,minimum width=56mm] (socket) {\texttt{socket}};
 \node[mqtt config,below=\MQGapS of socket,minimum width=56mm] (tls) {\texttt{tls} when selected};
 
+\node[mqtt note,below=\MQGapXL of tls,minimum width=76mm,text width=66mm] (dependent)
+  {Section availability is role/mode dependent; the figure shows the reusable section vocabulary.};
+\node[mqtt note,below=\MQGapM of dependent,minimum width=80mm,text width=70mm] (anonymous)
+  {Anonymous endpoint: API-configurable only; it is not a named root child and has no named CLI/config-file address.};
+
 \begin{scope}[on background layer]
-  \node[mqtt figure frame,fit=(root)(namedtitle)(app)(instanceb)(instancea)(sectionstitle)(local)(connection)(socket)(tls)] (tree) {};
+  \node[mqtt figure frame,fit=(root)(namedtitle)(app)(instanceb)(instancea)(sectionstitle)(local)(connection)(socket)(tls)(dependent)(anonymous)] {};
   \node[mqtt group,fit=(namedtitle)(app)(instanceb)(instancea)] (children) {};
   \node[mqtt group,fit=(sectionstitle)(local)(connection)(socket)(tls)] (sections) {};
 \end{scope}
 
 \draw[mqtt contains] (root.south) -- node[mqtt edge label,right] {contains} (children.north);
-\draw[mqtt contains] (instancea.south) -- node[mqtt edge label,right] {assembles} (sections.north);
-
-\node[mqtt note,below=\MQGapM of tree,minimum width=76mm,text width=66mm] (dependent)
-  {Section availability is role/mode dependent; the figure shows the reusable section vocabulary.};
-\node[mqtt note,below=\MQGapM of dependent,minimum width=80mm,text width=70mm] (anonymous)
-  {Anonymous endpoint: API-configurable only; it is not a named root child and has no named CLI/config-file address.};
+\draw[mqtt contains] (instancea.south) -- node[mqtt edge label,right,pos=.76] {assembles} (sections.north);
 
 \end{tikzpicture}
 \end{document}

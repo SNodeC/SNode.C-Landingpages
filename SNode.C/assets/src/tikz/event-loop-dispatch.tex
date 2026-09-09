@@ -5,7 +5,7 @@
 \begin{document}
 \begin{tikzpicture}[mqtt desktop]
 
-\node[mqtt note,minimum width=58mm] (backend)
+\node[mqtt config,minimum width=58mm] (backend)
   {selected backend at configure time\\\texttt{epoll} · \texttt{poll} · \texttt{select}};
 \node[mqtt control,below=\MQGapM of backend,minimum width=44mm] (start) {\texttt{SNodeC::start()}\\caller thread};
 \node[mqtt control,below=\MQGapM of start,minimum width=44mm] (wait) {wait for work};
@@ -39,10 +39,11 @@
 \draw[mqtt control flow] (queue.south) -- (dispatch.north);
 \draw[mqtt control flow] (dispatch.south) -- (callbacks.north);
 \draw[mqtt control flow] (callbacks.south) -- (next.north);
-\draw[mqtt control flow] (next.east) -- ++(\MQGapL,0) |- node[mqtt edge label,near end,right] {repeat while running} (wait.east);
+\path (next.east) ++(\MQGapM,0) coordinate (repeatrail);
+\draw[mqtt control flow] (next.east) -- (repeatrail) |- node[mqtt edge label,near end,right] {repeat} (wait.east);
 
 \begin{scope}[on background layer]
-  \node[mqtt figure frame,fit=(start)(backend)(wait)(descriptors)(timers)(queue)(dispatch)(callbacks)(next)] {};
+  \node[mqtt figure frame,fit=(start)(backend)(wait)(descriptors)(timers)(queue)(dispatch)(callbacks)(next)(repeatrail)] {};
 \end{scope}
 
 \end{tikzpicture}
