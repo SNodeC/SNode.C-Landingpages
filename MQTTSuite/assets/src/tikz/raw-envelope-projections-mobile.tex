@@ -29,7 +29,7 @@
   {next call\\\texttt{storeProjections(...)}\\after raw \texttt{exec()}};
 
 % Both raw-result branches use exact midpoint V-H-V geometry.
-\coordinate (rawOutcomeStart) at \MQPortSouth{raw}{.30};
+\coordinate (rawOutcomeStart) at ($(raw.south west)!.30!(raw.south east)$);
 \coordinate (rawOutcomeMid) at ($(rawOutcomeStart)!0.5!(rawoutcome.north)$);
 \draw[mqtt observation]
   (rawOutcomeStart)
@@ -37,7 +37,7 @@
   -- (rawoutcome.north |- rawOutcomeMid)
   -- (rawoutcome.north);
 
-\coordinate (projectionStart) at \MQPortSouth{raw}{.70};
+\coordinate (projectionStart) at ($(raw.south west)!.70!(raw.south east)$);
 \coordinate (projectionMid) at ($(projectionStart)!0.5!(projections.north)$);
 \draw[mqtt control flow]
   (projectionStart)
@@ -54,7 +54,7 @@
 \node[mqtt process,half,below=\MQArrowGap of json,xshift=19mm] (match)
   {YES: storage-plan match\\$0..n$ projections};
 
-\coordinate (skipStart) at \MQPortSouth{json}{.30};
+\coordinate (skipStart) at ($(json.south west)!.30!(json.south east)$);
 \coordinate (skipMid) at ($(skipStart)!0.5!(skip.north)$);
 \draw[mqtt control flow]
   (skipStart)
@@ -62,7 +62,7 @@
   -- (skip.north |- skipMid)
   -- node[mqtt branch label,near end,left]{NO} (skip.north);
 
-\coordinate (matchStart) at \MQPortSouth{json}{.70};
+\coordinate (matchStart) at ($(json.south west)!.70!(json.south east)$);
 \coordinate (matchMid) at ($(matchStart)!0.5!(match.north)$);
 \draw[mqtt control flow]
   (matchStart)
