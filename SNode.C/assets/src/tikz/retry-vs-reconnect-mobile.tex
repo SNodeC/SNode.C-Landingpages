@@ -6,40 +6,40 @@
 \begin{tikzpicture}[mqtt mobile]
 
 \node[mqtt section title] (retrytitle) {Retry --- establishment failure};
-\node[mqtt process,below=\MQGapS of retrytitle,minimum width=52mm] (attempt) {listen / connect attempt};
-\node[mqtt error,below=\MQGapM of attempt,minimum width=52mm] (failed) {establishment fails};
+\node[mqtt process,below=\MQGapS of retrytitle,minimum width=48mm] (attempt) {listen / connect attempt};
+\node[mqtt error,below=\MQGapM of attempt,minimum width=48mm] (failed) {establishment fails};
 \node[mqtt decision,below=\MQGapM of failed,minimum width=36mm,text width=28mm] (retrypolicy) {retry allowed?};
-\node[mqtt process,below=\MQGapM of retrypolicy,minimum width=52mm] (backoff) {wait / backoff};
-\node[mqtt process,below=\MQGapM of backoff,minimum width=52mm] (newattempt) {new listen / connect attempt};
-\node[mqtt note,right=\MQGapS of retrypolicy,minimum width=18mm,text width=12mm] (retryend) {flow ends};
-\path (newattempt.west) ++(-\MQGapM,0) coordinate (retryrail);
+\node[mqtt process,below=\MQGapM of retrypolicy,minimum width=48mm] (backoff) {wait / backoff};
+\node[mqtt process,below=\MQGapM of backoff,minimum width=48mm] (newattempt) {new listen / connect attempt};
+\node[mqtt process,left=\MQGapS of retrypolicy,minimum width=18mm,text width=12mm] (retryend) {flow ends};
+\path (newattempt.east) ++(\MQGapM,0) coordinate (retryrail);
 
 \draw[mqtt control flow] (attempt.south) -- (failed.north);
 \draw[mqtt control flow] (failed.south) -- (retrypolicy.north);
 \draw[mqtt control flow] (retrypolicy.south) -- node[mqtt branch label,right] {yes} (backoff.north);
-\draw[mqtt control flow] (retrypolicy.east) -- node[mqtt branch label,above] {no} (retryend.west);
+\draw[mqtt control flow] (retrypolicy.west) -- node[mqtt branch label,above] {no} (retryend.east);
 \draw[mqtt control flow] (backoff.south) -- (newattempt.north);
-\draw[mqtt control flow] (newattempt.west) -- (retryrail) |- node[mqtt edge label,near end,left] {repeat} (attempt.west);
+\draw[mqtt control flow] (newattempt.east) -- (retryrail) |- node[mqtt edge label,near end,right] {repeat} (attempt.east);
 
-\node[mqtt section title,below={\MQMobileLaneGap+\MQGroupPad} of newattempt] (reconnecttitle) {Reconnect --- later interruption};
-\node[mqtt success,below=\MQGapS of reconnecttitle,minimum width=52mm] (connected) {connection established};
-\node[mqtt error,below=\MQGapM of connected,minimum width=52mm] (interrupted) {connection interrupted};
+\node[mqtt section title,below=\MQMobileLaneGap of newattempt] (reconnecttitle) {Reconnect --- later interruption};
+\node[mqtt success,below=\MQGapS of reconnecttitle,minimum width=48mm] (connected) {connection established};
+\node[mqtt error,below=\MQGapM of connected,minimum width=48mm] (interrupted) {connection interrupted};
 \node[mqtt decision,below=\MQGapM of interrupted,minimum width=36mm,text width=28mm] (reconnectpolicy) {reconnect enabled?};
-\node[mqtt process,below=\MQGapM of reconnectpolicy,minimum width=52mm] (delay) {reconnect delay};
-\node[mqtt process,below=\MQGapM of delay,minimum width=52mm] (newcycle) {new connect cycle};
-\node[mqtt note,right=\MQGapS of reconnectpolicy,minimum width=18mm,text width=12mm] (reconnectend) {flow ends};
+\node[mqtt process,below=\MQGapM of reconnectpolicy,minimum width=48mm] (delay) {reconnect delay};
+\node[mqtt process,below=\MQGapM of delay,minimum width=48mm] (newcycle) {new connect cycle};
+\node[mqtt process,left=\MQGapS of reconnectpolicy,minimum width=18mm,text width=12mm] (reconnectend) {flow ends};
 
 \draw[mqtt control flow] (connected.south) -- (interrupted.north);
 \draw[mqtt control flow] (interrupted.south) -- (reconnectpolicy.north);
 \draw[mqtt control flow] (reconnectpolicy.south) -- node[mqtt branch label,right] {yes} (delay.north);
-\draw[mqtt control flow] (reconnectpolicy.east) -- node[mqtt branch label,above] {no} (reconnectend.west);
+\draw[mqtt control flow] (reconnectpolicy.west) -- node[mqtt branch label,above] {no} (reconnectend.east);
 \draw[mqtt control flow] (delay.south) -- (newcycle.north);
 
-\node[mqtt note,below={\MQGapL+\MQGroupPad} of newcycle,minimum width=74mm,text width=64mm] (relationship)
+\node[mqtt note,below={\MQGapM+\MQGroupPad} of newcycle,minimum width=70mm,text width=60mm] (relationship)
   {Reconnect starts a new client connect cycle. If its establishment fails, retry policy can apply there.};
 \path (retrytitle.north) ++(0,\MQGroupPad) coordinate (outertop);
-\path (retryrail) ++(-\MQGroupPad,0) coordinate (outerleft);
-\path (retryend.east) ++(\MQGroupPad,0) coordinate (outerright);
+\path (retryend.west) ++(-\MQGroupPad,0) coordinate (outerleft);
+\path (retryrail) ++(\MQGroupPad,0) coordinate (outerright);
 
 \begin{scope}[on background layer]
   \node[mqtt figure frame,fit=(outertop)(outerleft)(outerright)(retrytitle)(attempt)(failed)(retrypolicy)(backoff)(newattempt)(retryend)(retryrail)(reconnecttitle)(connected)(interrupted)(reconnectpolicy)(delay)(newcycle)(reconnectend)(relationship)] {};
