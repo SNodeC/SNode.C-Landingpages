@@ -1,88 +1,133 @@
 \documentclass[tikz,border=0pt]{standalone}
 \usepackage[T1]{fontenc}
 \usepackage{lmodern}
+\usetikzlibrary{matrix}
 \input{mqttsystem-figure-system.tex}
 \input{snodec-canonical-figure-system.tex}
 \begin{document}
 \begin{tikzpicture}[mqtt desktop]
 \tikzset{
-  setup/.style={mqtt config,minimum width=35mm,text width=30mm},
-  stage/.style={mqtt process,minimum width=35mm,text width=30mm},
-  controlstage/.style={mqtt control,minimum width=38mm,text width=33mm},
-  extractstage/.style={mqtt control,minimum width=43mm,text width=38mm},
-  mapperstage/.style={mqtt control,minimum width=48mm,text width=43mm},
-  outputstage/.style={mqtt process,minimum width=36mm,text width=31mm}
+  setup/.style={mqtt config,minimum width=35mm,text width=29mm},
+  extractstage/.style={mqtt control,minimum width=43mm,text width=37mm},
+  runtime/.style={mqtt process,minimum width=35mm,text width=29mm},
+  externalstage/.style={mqtt external,minimum width=35mm,text width=29mm},
+  mapperstage/.style={mqtt control,minimum width=48mm,text width=42mm},
+  controlstage/.style={mqtt control,minimum width=42mm,text width=36mm},
+  outputleft/.style={mqtt process,minimum width=36mm,text width=30mm},
+  outputright/.style={mqtt process,minimum width=39mm,text width=33mm},
+  sendstage/.style={mqtt process,minimum width=40mm,text width=34mm},
+  queuestage/.style={mqtt state,minimum width=39mm,text width=33mm},
+  sharednote/.style={mqtt note,minimum width=82mm,text width=76mm}
 }
 
-% Subscription setup is configuration/startup work, not part of each message's
-% processing spine.
-\node[setup] (mappingdoc) {mapping document\\subscription filters + \texttt{subscription.qos}};
-\node[extractstage,right=\MQGapS of mappingdoc] (extract)
-  {\texttt{extractSubscriptions()}\\build MQTT topic filters};
-\node[setup,right=\MQGapS of extract] (subscribe)
-  {SUBSCRIBE setup\\requested delivery QoS};
+\def\MQArrowSpan{8.3mm}
+
+% Subscription setup: one centered semantic band.
+\matrix (setuprow) [
+  matrix of nodes,
+  inner sep=0pt,
+  row sep=0pt,
+  column sep=\MQArrowSpan,
+  nodes={anchor=center}
+] {
+  |[setup,name=mappingdoc]| {mapping document\\subscription filters + \texttt{subscription.qos}} &
+  |[extractstage,name=extract]| {\texttt{extractSubscriptions()}\\build MQTT topic filters} &
+  |[setup,name=subscribe]| {SUBSCRIBE setup\\requested delivery QoS} \\
+};
 \draw[mqtt control flow] (mappingdoc.east) -- (extract.west);
 \draw[mqtt control flow] (extract.east) -- (subscribe.west);
-\begin{pgfonlayer}{background}
-  \node[mqtt group,fit=(mappingdoc)(extract)(subscribe)] (setupframe) {};
-\end{pgfonlayer}
-\node[mqtt annotation,anchor=west] at ($(setupframe.north west)+(\MQTitleGap,-\MQTitleGap)$)
-  {subscription setup --- outside the per-PUBLISH processing spine};
 
-% Per-message runtime path.
-\node[mqtt external,stage,below=22mm of setupframe] (brokerin)
-  {Broker delivers PUBLISH\\selected by active subscriptions};
-\node[mqtt application,stage,right=\MQGapS of brokerin] (client)
-  {MQTTIntegrator\\MQTT client};
-\node[mapperstage,right=\MQGapS of client] (mapper)
-  {\texttt{MqttMapper::getMappings()}\\topic-tree first match};
+% Per-message runtime row: centered as one unit below setup.
+\matrix (runtimeRow) [
+  matrix of nodes,
+  inner sep=0pt,
+  row sep=0pt,
+  below=\MQLaneGap of setuprow,
+  column sep=\MQArrowSpan,
+  nodes={anchor=center}
+] {
+  |[externalstage,name=brokerin]| {Broker delivers PUBLISH\\selected by active subscriptions} &
+  |[runtime,name=client]| {MQTTIntegrator\\MQTT client} &
+  |[mapperstage,name=mapper]| {\texttt{MqttMapper::getMappings()}\\topic-tree first match} \\
+};
 \draw[mqtt data flow] (brokerin.east) -- (client.west);
 \draw[mqtt data flow] (client.east) -- (mapper.west);
 
-\node[controlstage,below=\MQGapM of mapper] (rules)
+% Mapping evaluation is centered on the complete figure/runtime row.
+\coordinate (rulesNorthY) at ($(mapper.south)+(0,-\MQArrowSpan)$);
+\node[controlstage,anchor=north] (rules) at (runtimeRow.center |- rulesNorthY)
   {evaluate present mapping keys\\\texttt{static}, \texttt{value}, \texttt{json} independently};
-\draw[mqtt control flow] (mapper.south) -- (rules.north);
 
-\node[outputstage,left=\MQGapS of rules] (immediate)
-  {immediate outputs\\$0..n$ publications\\mapping-defined QoS + retain};
-\node[outputstage,right=\MQGapS of rules] (scheduled)
-  {scheduled outputs\\$0..n$ publications\\delay + mapping-defined QoS / retain};
-\draw[mqtt control flow] \MQPortSouth{rules}{.30} -- ++(0,-6mm) -| (immediate.north);
-\draw[mqtt control flow] \MQPortSouth{rules}{.70} -- ++(0,-6mm) -| (scheduled.north);
+% Mapper -> rules: canonical centered dogleg; total vertical span = one arrow span.
+\coordinate (mapperRulesMid) at ($(mapper.south)!0.5!(rules.north)$);
+\draw[mqtt control flow]
+  (mapper.south) -- (mapper.south |- mapperRulesMid)
+  -- (rules.north |- mapperRulesMid) -- (rules.north);
 
-\node[mqtt process,below=\MQGapM of immediate,minimum width=40mm,text width=35mm] (sendnow)
+% Independent output collections are a centered sibling pair below rules.
+\matrix (outputs) [
+  matrix of nodes,
+  inner sep=0pt,
+  row sep=0pt,
+  below=\MQArrowSpan of rules,
+  column sep=\MQHorizontalGap,
+  nodes={anchor=north}
+] {
+  |[outputleft,name=immediate]| {immediate outputs\\$0..n$ publications\\mapping-defined QoS + retain} &
+  |[outputright,name=scheduled]| {scheduled outputs\\$0..m$ publications\\delay + mapping-defined QoS / retain} \\
+};
+\coordinate (rulesLeft) at ($(rules.south west)!0.333333!(rules.south east)$);
+\coordinate (rulesRight) at ($(rules.south west)!0.666667!(rules.south east)$);
+\coordinate (rulesOutputsMid) at ($(rules.south)!0.5!(immediate.north)$);
+\draw[mqtt control flow]
+  (rulesLeft) -- (rulesLeft |- rulesOutputsMid)
+  -- (immediate.north |- rulesOutputsMid) -- (immediate.north);
+\draw[mqtt control flow]
+  (rulesRight) -- (rulesRight |- rulesOutputsMid)
+  -- (scheduled.north |- rulesOutputsMid) -- (scheduled.north);
+
+% Immediate and delayed terminal paths keep their real unequal semantic depth.
+\node[sendstage,below=\MQArrowSpan of immediate] (sendnow)
   {\texttt{sendPublish(...)}\\immediately};
-\node[mqtt state,below=\MQGapM of scheduled,minimum width=37mm,text width=32mm] (queue)
+\node[queuestage,below=\MQArrowSpan of scheduled] (queue)
   {enqueue in \texttt{DelayedQueue}\\timer releases when due};
 \draw[mqtt data flow] (immediate.south) -- (sendnow.north);
 \draw[mqtt control flow] (scheduled.south) -- (queue.north);
 
-\node[mqtt process,below=\MQGapM of queue,minimum width=40mm,text width=35mm] (sendlater)
+\node[sendstage,below=\MQArrowSpan of queue] (sendlater)
   {when due: \texttt{sendPublish(...)} };
 \draw[mqtt data flow] (queue.south) -- (sendlater.north);
 
-% The shared note sits below both terminal send stages. Keeping it below the
-% lower delayed-send node prevents association routes from escaping the frame.
-\node[mqtt note,below=\MQGapM of sendlater,xshift=-21mm,minimum width=82mm,text width=76mm] (note)
+% Shared explanatory note: centered on the figure axis, below the deepest path.
+\coordinate (noteY) at ($(sendlater.south)+(0,-\MQGapM)$);
+\node[sharednote,anchor=north] (note) at (rules.center |- noteY)
   {Both republish paths use the same MQTT client connection.\\Outgoing PUBLISH QoS is an output-mapping decision, independent of SUBSCRIBE QoS.};
-\draw[mqtt association] (sendnow.south) -- ++(0,-5mm) -| \MQPortNorth{note}{.32};
-\draw[mqtt association] (sendlater.south) -- ++(0,-5mm) -| \MQPortNorth{note}{.68};
 
-\coordinate (titleguard) at ($(setupframe.north)+(0,\MQGapL)$);
-\begin{pgfonlayer}{background}
-  \node[mqtt figure frame,fit=(titleguard)(setupframe)(brokerin)(client)(mapper)(rules)(immediate)(scheduled)(sendnow)(queue)(sendlater)(note)] (frame) {};
-\end{pgfonlayer}
-\node[mqtt section title] at ($(frame.north west)+(\MQTitleGap,-\MQTitleGap)$)
+% Setup label uses canonical clearance above the first setup box.
+\node[mqtt annotation,anchor=south west] (setupLabel)
+  at ($(mappingdoc.north west)+(0,\MQLabelGap)$)
+  {subscription setup --- outside the per-PUBLISH processing spine};
+
+% Invisible relative bounds let the figure title and outer frame be derived from
+% the semantic setup group without hand-positioning either one.
+\node[draw=none,fill=none,inner sep=\MQGroupPad,fit=(setupLabel)(mappingdoc)(extract)(subscribe)]
+  (setupBounds) {};
+\node[mqtt section title,anchor=south west] (figureTitle)
+  at ($(setupBounds.north west)+(0,\MQTitleGap)$)
   {MQTTIntegrator mapping pipeline};
 
-% Canonical SNode.C desktop canvas: exactly 160 mm wide, native drawing.
-\coordinate (snodecCanvasCenter) at (current bounding box.center);
-\coordinate (snodecCanvasSW)
-  at ($(snodecCanvasCenter)+(-80mm,0)$ |- current bounding box.south);
-\coordinate (snodecCanvasNE)
-  at ($(snodecCanvasCenter)+(80mm,0)$ |- current bounding box.north);
-\path[use as bounding box]
-  ([yshift=-7pt]snodecCanvasSW) rectangle ([yshift=7pt]snodecCanvasNE);
+% Outer frame is painted first. The setup group is painted afterwards so its
+% border remains visible. Fitting the title gives canonical frame clearance.
+\begin{pgfonlayer}{background}
+  \node[mqtt figure frame,fit=(figureTitle)(setupBounds)(runtimeRow)(rules)(outputs)(sendnow)(queue)(sendlater)(note)] (frame) {};
+  \node[mqtt group,fit=(setupLabel)(mappingdoc)(extract)(subscribe)] (setupframe) {};
+\end{pgfonlayer}
 
+% Canonical SNode.C desktop canvas: 160 mm, without scaling the drawing.
+\coordinate (canvasCenter) at (current bounding box.center);
+\coordinate (canvasSW) at ($(canvasCenter)+(-80mm,0)$ |- current bounding box.south);
+\coordinate (canvasNE) at ($(canvasCenter)+(80mm,0)$ |- current bounding box.north);
+\path[use as bounding box]
+  ([yshift=-7pt]canvasSW) rectangle ([yshift=7pt]canvasNE);
 \end{tikzpicture}
 \end{document}
