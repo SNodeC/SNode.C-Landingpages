@@ -6,7 +6,7 @@
 \begin{tikzpicture}[mqtt mobile]
 
 \node[mqtt section title] (title) {Same established \texttt{SocketConnection}};
-\path (title.south) ++(0,-\MQGapM) coordinate (toprow);
+\path (title.south) ++(0,-\MQGapXL) coordinate (toprow);
 \node[mqtt state,left=\MQGapM of toprow,anchor=east,minimum width=30mm,text width=24mm] (http)
   {HTTP context\\ACTIVE};
 \node[mqtt process,right=\MQGapM of toprow,anchor=west,minimum width=36mm,text width=30mm] (staged)
