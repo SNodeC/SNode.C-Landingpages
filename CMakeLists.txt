@@ -6,9 +6,18 @@ project(SNodeCLandingpagesFigures NONE)
 # Reproducible technical-figure generation
 # -----------------------------------------------------------------------------
 #
-# Canonical technical figure sources live below:
+# Canonical technical figure sources live below each project:
 #
 #   <project>/assets/src/tikz/*.tex
+#
+# Shared canonical visual-system sources live at:
+#
+#   shared/assets/src/tikz/*-figure-system.tex
+#
+# Project-local system files remain supported during staged migration and take
+# precedence over the shared directory. This keeps the existing MQTTSuite TikZ
+# figures unchanged while new SNode.C figures can consume the shared system with
+# the same stable \input{...} names.
 #
 # Figure names are intentionally not enumerated here. New TikZ figures become
 # build inputs automatically when their .tex source is added. Shared visual
@@ -29,6 +38,13 @@ project(SNodeCLandingpagesFigures NONE)
 find_program(PDFLATEX_EXECUTABLE NAMES pdflatex REQUIRED)
 find_program(PDFTOCAIRO_EXECUTABLE NAMES pdftocairo REQUIRED)
 find_program(SCOUR_EXECUTABLE NAMES scour REQUIRED)
+
+set(TIKZ_SHARED_SYSTEM_DIR "${CMAKE_SOURCE_DIR}/shared/assets/src/tikz")
+file(
+    GLOB TIKZ_SHARED_SYSTEM_DEPENDENCIES
+    CONFIGURE_DEPENDS
+    "${TIKZ_SHARED_SYSTEM_DIR}/*-figure-system.tex"
+)
 
 file(
     GLOB_RECURSE TIKZ_TEX_SOURCES
@@ -106,6 +122,8 @@ foreach(TIKZ_SOURCE_REL IN LISTS TIKZ_TEX_SOURCES)
         "${TIKZ_TARGET}"
         COMMAND "${CMAKE_COMMAND}" -E make_directory "${TIKZ_WORK_DIR}"
         COMMAND
+            "${CMAKE_COMMAND}" -E env
+            "TEXINPUTS=${TIKZ_SOURCE_DIR}:${TIKZ_SHARED_SYSTEM_DIR}:"
             "${PDFLATEX_EXECUTABLE}"
             -interaction=nonstopmode
             -halt-on-error
@@ -140,6 +158,7 @@ foreach(TIKZ_SOURCE_REL IN LISTS TIKZ_TEX_SOURCES)
         DEPENDS
             "${TIKZ_SOURCE_ABS}"
             ${TIKZ_LOCAL_SYSTEM_DEPENDENCIES}
+            ${TIKZ_SHARED_SYSTEM_DEPENDENCIES}
         WORKING_DIRECTORY "${TIKZ_SOURCE_DIR}"
         COMMENT "TikZ -> SVG: ${TIKZ_SOURCE_REL}"
         VERBATIM
