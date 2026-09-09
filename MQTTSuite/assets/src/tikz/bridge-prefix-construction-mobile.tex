@@ -1,34 +1,38 @@
-\documentclass[tikz,border=8pt]{standalone}
+\documentclass[tikz,border=0pt]{standalone}
 \usepackage[T1]{fontenc}
 \usepackage{lmodern}
 \input{mqttsystem-figure-system.tex}
+\input{snodec-canonical-figure-system.tex}
 \begin{document}
 \begin{tikzpicture}[mqtt mobile]
-\tikzset{wide/.style={minimum width=72mm,text width=64mm}}
+\tikzset{token/.style={mqtt config,minimum width=72mm,text width=66mm}}
 
-\node[mqtt config,wide] (bridge) {1. bridge prefix — \texttt{bridge/}};
-\node[mqtt config,wide,below=\MQGapS of bridge] (source)
-  {2. source-member prefix — \texttt{from-a/}};
-\node[mqtt config,wide,below=\MQGapS of source] (dest)
-  {3. destination-member prefix — \texttt{to-b/}};
-\node[mqtt config,wide,below=\MQGapS of dest] (topic)
-  {4. original topic — \texttt{a/temperature}};
-\node[mqtt process,wide,below=\MQGapM of topic] (result)
+\node[token] (bridge) {\textbf{1}\\bridge prefix\\\texttt{bridge/}};
+\node[token,below=5mm of bridge] (source) {\textbf{2}\\source-member prefix\\\texttt{from-a/}};
+\node[token,below=5mm of source] (dest) {\textbf{3}\\destination-member prefix\\\texttt{to-b/}};
+\node[token,below=5mm of dest] (topic) {\textbf{4}\\original topic\\\texttt{a/temperature}};
+
+\node[mqtt text] at ($(bridge.south)!0.5!(source.north)$) {+};
+\node[mqtt text] at ($(source.south)!0.5!(dest.north)$) {+};
+\node[mqtt text] at ($(dest.south)!0.5!(topic.north)$) {+};
+
+\node[mqtt group,fit=(bridge)(source)(dest)(topic)] (tokens) {};
+
+\node[mqtt data,minimum width=72mm,text width=66mm,below=8.3mm of tokens] (result)
   {forwarded topic\\\texttt{bridge/from-a/to-b/a/temperature}};
-\node[mqtt note,wide,below=\MQGapS of result] (meta)
-  {literal concatenation: include separators such as \texttt{/} deliberately; payload, received QoS, and retain are preserved};
+\draw[mqtt data flow] (tokens.south) -- (result.north);
+\node[mqtt annotation,anchor=west] at ($(tokens.south)!0.5!(result.north)+(3mm,0)$) {literal concatenation};
 
-\draw[mqtt flow] (bridge.south) -- node[mqtt edge label,right]{+} (source.north);
-\draw[mqtt flow] (source.south) -- node[mqtt edge label,right]{+} (dest.north);
-\draw[mqtt flow] (dest.south) -- node[mqtt edge label,right]{+} (topic.north);
-\draw[mqtt data flow] (topic.south) -- (result.north);
+\node[mqtt note,minimum width=72mm,text width=66mm,below=\MQGapS of result] (meta)
+  {No separator is inserted automatically. Prefixes must include separators such as \texttt{/} explicitly.\\Payload, received QoS, and retain are preserved.};
 \draw[mqtt association] (result.south) -- (meta.north);
 
+\coordinate (titleGuard) at ($(tokens.north)+(0,8mm)$);
 \begin{pgfonlayer}{background}
-  \node[mqtt figure frame,fit=(bridge)(source)(dest)(topic)(result)(meta)] (frame) {};
+  \node[mqtt figure frame,fit=(titleGuard)(tokens)(result)(meta)] (frame) {};
 \end{pgfonlayer}
 \node[mqtt section title] at ($(frame.north west)+(\MQTitleGap,-\MQTitleGap)$)
-  {Prefix construction};
+  {Prefix and forwarding construction};
 
 \end{tikzpicture}
 \end{document}
