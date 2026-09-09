@@ -23,15 +23,19 @@
   {\texttt{detach(ContextSwitch)}\\select staged context\\\texttt{attach()}};
 \node[mqtt state,below=\MQGapM of switch,minimum width=42mm] (websocket) {WebSocket context\\ACTIVE};
 \draw[mqtt control flow] (return.south) -- (switch.north);
-\path (staged.east) -- (switch.east) coordinate[midway] (dependencycenter);
-\draw[mqtt dependency] (staged.east) -- (dependencycenter |- staged.east) -- (dependencycenter |- switch.east) -- (switch.east);
+\path (return.south) -- (switch.north) coordinate[midway] (dependencybridge);
+\path (staged.east) ++(\MQGapS,0) coordinate (stagedout);
+\path (switch.east) ++(\MQGapS,0) coordinate (switchout);
+\draw[mqtt dependency]
+  (staged.east) -- (stagedout) -- (stagedout |- dependencybridge)
+  -- (switchout |- dependencybridge) -- (switchout) -- (switch.east);
 \draw[mqtt control flow] (switch.south) -- (websocket.north);
 
 \node[mqtt note,below=\MQGapM of websocket,minimum width=88mm,text width=78mm] (note)
   {HTTP remains active until its current read callback returns. The same connection and transport continue through the switch. SSE/EventSource does not use this replacement path.};
 
 \begin{scope}[on background layer]
-  \node[mqtt figure frame,fit=(title)(http)(staged)(handofflabel)(return)(switch)(dependencycenter)(websocket)(note)] {};
+  \node[mqtt figure frame,fit=(title)(http)(staged)(handofflabel)(return)(switch)(stagedout)(switchout)(websocket)(note)] {};
 \end{scope}
 
 \end{tikzpicture}
