@@ -1,34 +1,38 @@
-\documentclass[tikz,border=8pt]{standalone}
+\documentclass[tikz,border=0pt]{standalone}
 \usepackage[T1]{fontenc}
 \usepackage{lmodern}
 \input{mqttsystem-figure-system.tex}
+\input{snodec-canonical-figure-system.tex}
 \begin{document}
 \begin{tikzpicture}[mqtt desktop]
-\tikzset{token/.style={mqtt config,minimum width=38mm,text width=34mm}}
+\tikzset{token/.style={mqtt config,minimum width=31mm,text width=27mm}}
 
-\node[token] (bridge) {bridge prefix\\\texttt{bridge/}};
-\node[token,right=\MQHorizontalGap of bridge] (source) {source-member prefix\\\texttt{from-a/}};
-\node[token,right=\MQHorizontalGap of source] (dest) {destination prefix\\\texttt{to-b/}};
-\node[token,right=\MQHorizontalGap of dest] (topic) {original topic\\\texttt{a/temperature}};
-\draw[mqtt flow] (bridge.east) -- node[mqtt edge label,above]{+} (source.west);
-\draw[mqtt flow] (source.east) -- node[mqtt edge label,above]{+} (dest.west);
-\draw[mqtt flow] (dest.east) -- node[mqtt edge label,above]{+} (topic.west);
+\node[token] (bridge) {\textbf{1}\\bridge prefix\\\texttt{bridge/}};
+\node[token,right=5mm of bridge] (source) {\textbf{2}\\source-member prefix\\\texttt{from-a/}};
+\node[token,right=5mm of source] (dest) {\textbf{3}\\destination-member prefix\\\texttt{to-b/}};
+\node[token,right=5mm of dest] (topic) {\textbf{4}\\original topic\\\texttt{a/temperature}};
 
-\coordinate (chainCenter) at ($(bridge.south)!0.5!(topic.south)$);
-\node[mqtt annotation,below=4mm of chainCenter] (combine) {concatenate left $\rightarrow$ right};
-\node[mqtt process,minimum width=82mm,text width=76mm,below=\MQGapS of combine] (result)
+\node[mqtt text] at ($(bridge.east)!0.5!(source.west)$) {+};
+\node[mqtt text] at ($(source.east)!0.5!(dest.west)$) {+};
+\node[mqtt text] at ($(dest.east)!0.5!(topic.west)$) {+};
+
+\node[mqtt group,fit=(bridge)(source)(dest)(topic)] (tokens) {};
+
+\node[mqtt data,minimum width=100mm,text width=94mm,below=8.3mm of tokens] (result)
   {forwarded topic\\\texttt{bridge/from-a/to-b/a/temperature}};
-\draw[mqtt data flow] (combine.south) -- (result.north);
+\draw[mqtt data flow] (tokens.south) -- (result.north);
+\node[mqtt annotation,anchor=west] at ($(tokens.south)!0.5!(result.north)+(3mm,0)$) {literal concatenation};
 
-\node[mqtt note,minimum width=82mm,text width=76mm,below=\MQGapS of result] (meta)
-  {Payload, received QoS, and retain are preserved. Prefixes are literal concatenation; include separators such as \texttt{/} deliberately.};
+\node[mqtt note,minimum width=120mm,text width=114mm,below=\MQGapS of result] (meta)
+  {No separator is inserted automatically. Prefixes must include separators such as \texttt{/} explicitly.\\Payload, received QoS, and retain are preserved.};
 \draw[mqtt association] (result.south) -- (meta.north);
 
+\coordinate (titleGuard) at ($(tokens.north)+(0,7mm)$);
 \begin{pgfonlayer}{background}
-  \node[mqtt figure frame,fit=(bridge)(source)(dest)(topic)(result)(meta)] (frame) {};
+  \node[mqtt figure frame,fit=(titleGuard)(tokens)(result)(meta)] (frame) {};
 \end{pgfonlayer}
 \node[mqtt section title] at ($(frame.north west)+(\MQTitleGap,-\MQTitleGap)$)
-  {Exact forwarding-topic construction};
+  {Forwarding topic: exact token construction};
 
 \end{tikzpicture}
 \end{document}
