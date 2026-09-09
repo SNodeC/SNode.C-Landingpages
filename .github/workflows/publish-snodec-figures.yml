@@ -12,7 +12,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: snodec-figures-${{ github.ref }}
@@ -79,12 +79,30 @@ jobs:
             inkscape \
             scour
 
-      - name: Generate technical figures
+      - name: Generate SNode.C technical figures
         shell: bash
         run: |
           set -o pipefail
           cmake -S . -B cmake-build-figures
-          cmake --build cmake-build-figures --target figures --parallel 8 2>&1 | tee figure-build.log
+          cmake --build cmake-build-figures \
+            --target \
+              tikz_SNode_C_configuration_hierarchy_mobile \
+              tikz_SNode_C_configuration_hierarchy \
+              tikz_SNode_C_configuration_resolution_mobile \
+              tikz_SNode_C_configuration_resolution \
+              tikz_SNode_C_endpoint_composition_mobile \
+              tikz_SNode_C_endpoint_composition \
+              tikz_SNode_C_event_loop_dispatch_mobile \
+              tikz_SNode_C_event_loop_dispatch \
+              tikz_SNode_C_http_websocket_context_switch_mobile \
+              tikz_SNode_C_http_websocket_context_switch \
+              tikz_SNode_C_programming_model_mobile \
+              tikz_SNode_C_programming_model \
+              tikz_SNode_C_protocol_relationships_mobile \
+              tikz_SNode_C_protocol_relationships \
+              tikz_SNode_C_retry_vs_reconnect_mobile \
+              tikz_SNode_C_retry_vs_reconnect \
+            --parallel 8 2>&1 | tee figure-build.log
 
       - name: Rasterize SNode.C review renders
         shell: bash
@@ -103,38 +121,16 @@ jobs:
           done
           cp figure-build.log figure-review/
 
-      - name: Publish generated SNode.C SVGs
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+      - name: Verify generated SNode.C SVGs remain untracked
         shell: bash
         run: |
           set -euo pipefail
-          files=(
-            SNode.C/assets/programming-model.svg
-            SNode.C/assets/programming-model-mobile.svg
-            SNode.C/assets/event-loop-dispatch.svg
-            SNode.C/assets/event-loop-dispatch-mobile.svg
-            SNode.C/assets/endpoint-composition.svg
-            SNode.C/assets/endpoint-composition-mobile.svg
-            SNode.C/assets/protocol-relationships.svg
-            SNode.C/assets/protocol-relationships-mobile.svg
-            SNode.C/assets/http-websocket-context-switch.svg
-            SNode.C/assets/http-websocket-context-switch-mobile.svg
-            SNode.C/assets/configuration-hierarchy.svg
-            SNode.C/assets/configuration-hierarchy-mobile.svg
-            SNode.C/assets/configuration-resolution.svg
-            SNode.C/assets/configuration-resolution-mobile.svg
-            SNode.C/assets/retry-vs-reconnect.svg
-            SNode.C/assets/retry-vs-reconnect-mobile.svg
-          )
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -f "${files[@]}"
-          if git diff --cached --quiet; then
-            echo "Generated SNode.C SVGs already match the committed publication outputs."
-            exit 0
+          tracked="$(git ls-files 'SNode.C/assets/*.svg' | grep -E '/(programming-model|event-loop-dispatch|endpoint-composition|protocol-relationships|http-websocket-context-switch|configuration-hierarchy|configuration-resolution|retry-vs-reconnect)(-mobile)?\.svg$' || true)"
+          if [[ -n "$tracked" ]]; then
+            echo "Generated SNode.C SVGs must not be tracked:"
+            echo "$tracked"
+            exit 1
           fi
-          git commit -m "Regenerate SNode.C figures"
-          git push origin HEAD:main
 
       - name: Upload review renders
         uses: actions/upload-artifact@v4
