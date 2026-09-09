@@ -1,44 +1,49 @@
-\documentclass[tikz,border=8pt]{standalone}
+\documentclass[tikz,border=0pt]{standalone}
 \usepackage[T1]{fontenc}
 \usepackage{lmodern}
 \input{mqttsystem-figure-system.tex}
+\input{snodec-canonical-figure-system.tex}
 \begin{document}
 \begin{tikzpicture}[mqtt mobile]
-\tikzset{wide/.style={minimum width=72mm,text width=64mm}}
+\tikzset{
+  stage/.style={mqtt config,minimum width=76mm,text width=68mm},
+  field/.style={mqtt process,minimum width=76mm,text width=68mm,minimum height=18mm},
+  fieldgroup/.style={mqtt group,inner sep=7mm}
+}
+\def\MQHierarchySpan{8.3mm}
+\def\MQGroupLead{15.3mm}
 
-\node[mqtt config,wide] (root) {definition root — \texttt{bridges[]}};
-\node[mqtt config,wide,below=\MQGapS of root] (bridge)
-  {logical bridge: \texttt{name}, \texttt{disabled}, \texttt{prefix}, \texttt{brokers[]}};
-\node[mqtt config,wide,below=\MQGapS of bridge] (member)
-  {broker member: \texttt{network}, \texttt{disabled}, \texttt{prefix}, \texttt{session\_store}, \texttt{topics[]}};
+\node[stage] (root)
+  {\textbf{definition root}\\required: \texttt{bridges[]}};
+\node[stage,below=\MQHierarchySpan of root] (bridge)
+  {\textbf{logical bridge}\\required: \texttt{name}, \texttt{brokers[]}\\peer fields: \texttt{disabled}, \texttt{prefix}};
+\node[stage,below=\MQHierarchySpan of bridge] (member)
+  {\textbf{broker member}\\one \texttt{brokers[]} entry\\required: \texttt{network}};
 \draw[mqtt contains] (root.south) -- (bridge.north);
 \draw[mqtt contains] (bridge.south) -- (member.north);
 
-\node[mqtt annotation,below=\MQGapM of member] (contains) {member-owned objects:};
-\node[mqtt process,wide,below=\MQGapS of contains] (network)
-  {network: instance + protocol / address + transport + encryption};
-\node[mqtt process,wide,below=\MQGapS of network] (mqtt)
-  {MQTT session: client id / keep alive / clean session + will + credentials + loop prevention};
-\node[mqtt process,wide,below=\MQGapS of mqtt] (topics)
-  {topics: MQTT filter + subscription QoS};
+\node[field,below=\MQGroupLead of member] (network)
+  {\texttt{network}\\\texttt{instance\_name} · protocol + address\\transport + encryption};
+\node[field,below=\MQGapS of network] (mqtt)
+  {\texttt{mqtt} session\\client id + keep alive · clean session + will\\credentials + loop prevention};
+\node[field,below=\MQGapS of mqtt] (topics)
+  {\texttt{topics[]}\\topic filter + subscription QoS};
+\node[field,below=\MQGapS of topics] (scalars)
+  {\textbf{scalar fields}\\\texttt{disabled} · \texttt{prefix} · \texttt{session\_store}};
 
-\coordinate (bus-top) at ($(network.west)+(-7mm,0)$);
-\coordinate (bus-mid) at ($(mqtt.west)+(-7mm,0)$);
-\coordinate (bus-bottom) at ($(topics.west)+(-7mm,0)$);
-\draw[mqtt contains] (bus-top) -- (bus-bottom);
-\draw[mqtt contains] (member.west) -- ++(-7mm,0) |- (bus-mid);
-\draw[mqtt contains] (bus-top) -- (network.west);
-\draw[mqtt contains] (bus-mid) -- (mqtt.west);
-\draw[mqtt contains] (bus-bottom) -- (topics.west);
+\node[fit=(network)(mqtt)(topics)(scalars),inner sep=7mm] (fieldBounds) {};
+\draw[mqtt contains] (member.south) -- (fieldBounds.north);
 
-\node[mqtt note,wide,below=\MQGapM of topics] (note)
-  {Prefix and session-store path are peer member fields. Prefix separators are literal configuration, not inserted automatically.};
+\coordinate (titleY) at ($(root.north)+(0,\MQTitleGap)$);
+\node[mqtt section title,anchor=south west] (figureTitle)
+  at (fieldBounds.west |- titleY) {Bridge-definition hierarchy};
 
 \begin{pgfonlayer}{background}
-  \node[mqtt figure frame,fit=(root)(bridge)(member)(contains)(network)(mqtt)(topics)(note)] (frame) {};
+  \node[mqtt figure frame,fit=(figureTitle)(root)(bridge)(member)(fieldBounds)] (frame) {};
+  \node[fieldgroup,fit=(network)(mqtt)(topics)(scalars)] (fields) {};
 \end{pgfonlayer}
-\node[mqtt section title] at ($(frame.north west)+(\MQTitleGap,-\MQTitleGap)$)
-  {Bridge-definition hierarchy};
+\node[mqtt annotation,anchor=north west]
+  at ($(fields.north west)+(3mm,-2mm)$) {broker-member peer fields};
 
 \end{tikzpicture}
 \end{document}
