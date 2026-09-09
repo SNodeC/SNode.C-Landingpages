@@ -5,9 +5,9 @@
 \begin{document}
 \begin{tikzpicture}[mqtt desktop]
 
-\node[mqtt process,minimum width=44mm] (server) {\texttt{SocketServer}\\server endpoint};
+\node[mqtt process,minimum width=48mm] (server) {\texttt{SocketServer}\\server endpoint};
 \node[mqtt section title,above=\MQGapXS of server] (servertitle) {Server flow};
-\node[mqtt state,below=\MQGapM of server,minimum width=44mm] (serverconn) {\texttt{SocketConnection}\\established stream};
+\node[mqtt state,below=\MQGapM of server,minimum width=48mm] (serverconn) {\texttt{SocketConnection}\\established stream};
 \node[mqtt process,below=\MQGapM of serverconn,minimum width=48mm] (serverfactory) {\texttt{SocketContextFactory}\\retained by endpoint flow};
 \node[mqtt application,below=\MQGapM of serverfactory,minimum width=48mm] (serverctx) {\texttt{SocketContext}\\one active per connection};
 \path (serverconn.west) ++(-\MQGapS,0) coordinate (serverrail);
@@ -17,9 +17,9 @@
 \draw[mqtt flow] (serverfactory.south) -- node[mqtt edge label,right] {returns new} (serverctx.north);
 \draw[mqtt association] (serverconn.west) -- (serverrail) |- (serverctx.west);
 
-\node[mqtt process,right={\MQLaneGap+2*\MQGroupPad} of server,minimum width=44mm] (client) {\texttt{SocketClient}\\client endpoint};
+\node[mqtt process,right={\MQLaneGap+2*\MQGroupPad} of server,minimum width=48mm] (client) {\texttt{SocketClient}\\client endpoint};
 \node[mqtt section title,above=\MQGapXS of client] (clienttitle) {Client flow};
-\node[mqtt state,below=\MQGapM of client,minimum width=44mm] (clientconn) {\texttt{SocketConnection}\\established stream};
+\node[mqtt state,below=\MQGapM of client,minimum width=48mm] (clientconn) {\texttt{SocketConnection}\\established stream};
 \node[mqtt process,below=\MQGapM of clientconn,minimum width=48mm] (clientfactory) {\texttt{SocketContextFactory}\\retained by endpoint flow};
 \node[mqtt application,below=\MQGapM of clientfactory,minimum width=48mm] (clientctx) {\texttt{SocketContext}\\one active per connection};
 \path (clientconn.east) ++(\MQGapS,0) coordinate (clientrail);
@@ -30,7 +30,7 @@
 \draw[mqtt association] (clientconn.east) -- (clientrail) |- (clientctx.east);
 
 \path (serverctx.south) -- (clientctx.south) coordinate[midway] (lanemid);
-\node[mqtt control,below={\MQGapL+\MQGroupPad} of lanemid,minimum width=118mm,text width=108mm] (loop)
+\node[mqtt control,below={\MQGapM+\MQGroupPad} of lanemid,minimum width=106mm,text width=96mm] (loop)
   {\textbf{Event loop --- \texttt{start()}}\\descriptor readiness, timers, lifecycle and data callbacks run on the caller thread};
 
 \path (servertitle.north) ++(0,\MQGroupPad) coordinate (outertop);
