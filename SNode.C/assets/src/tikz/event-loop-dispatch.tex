@@ -39,7 +39,8 @@
 \draw[mqtt control flow] (queue.south) -- (dispatch.north);
 \draw[mqtt control flow] (dispatch.south) -- (callbacks.north);
 \draw[mqtt control flow] (callbacks.south) -- (next.north);
-\path (next.east) ++(\MQGapM,0) coordinate (repeatrail);
+\path (callbacks.east) ++(\MQGapM,0) coordinate (repeatx);
+\path (repeatx |- next.east) coordinate (repeatrail);
 \draw[mqtt control flow] (next.east) -- (repeatrail) |- node[mqtt edge label,near end,right] {repeat} (wait.east);
 
 \begin{scope}[on background layer]
