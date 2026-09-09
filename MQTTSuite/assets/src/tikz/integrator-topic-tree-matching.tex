@@ -1,53 +1,67 @@
-\documentclass[tikz,border=8pt]{standalone}
+\documentclass[tikz,border=0pt]{standalone}
 \usepackage[T1]{fontenc}
 \usepackage{lmodern}
 \input{mqttsystem-figure-system.tex}
+\input{snodec-canonical-figure-system.tex}
 \begin{document}
 \begin{tikzpicture}[mqtt desktop]
 \tikzset{
-  branch/.style={mqtt process,minimum width=40mm,text width=35mm},
-  example/.style={mqtt note,minimum width=55mm,text width=50mm,align=left}
+  parent/.style={mqtt control,minimum width=42mm,text width=36mm},
+  scan/.style={mqtt control,minimum width=70mm,text width=64mm},
+  candidate/.style={mqtt config,minimum width=38mm,text width=32mm,minimum height=16mm},
+  example/.style={mqtt note,minimum width=38mm,text width=32mm,minimum height=24mm},
+  warningwide/.style={mqtt warning,minimum width=104mm,text width=98mm},
+  qosnote/.style={mqtt note,minimum width=82mm,text width=76mm}
 }
+\def\MQArrowSpan{8.3mm}
 
-\node[mqtt control,minimum width=39mm,text width=34mm] (root)
-  {one parent topic level\\\texttt{devices}};
-\node[branch,right=32mm of root,yshift=25mm] (literal)
-  {literal sibling\\\texttt{room-01}};
-\node[branch,right=32mm of root] (plus)
-  {single-level sibling\\\texttt{+}};
-\node[branch,right=32mm of root,yshift=-25mm] (hash)
-  {terminal multi-level sibling\\\texttt{\#}};
+% Matching context and evaluation rule.
+\node[parent] (root) {one parent topic level\\\texttt{devices}};
+\node[scan,below=\MQArrowSpan of root] (scan)
+  {test siblings 1 → 2 → 3 in document order\\stop at the first matching branch};
+\draw[mqtt control flow] (root.south) -- (scan.north);
 
-\coordinate (literalbus) at ($(literal.west)+(-8mm,0)$);
-\coordinate (plusbus) at ($(plus.west)+(-8mm,0)$);
-\coordinate (hashbus) at ($(hash.west)+(-8mm,0)$);
-\draw[mqtt association] (literalbus) -- (hashbus);
-\draw[mqtt association] (root.east) -- (plusbus);
-\draw[mqtt flow] (literalbus) -- (literal.west);
-\draw[mqtt flow] (plusbus) -- (plus.west);
-\draw[mqtt flow] (hashbus) -- (hash.west);
+% Example sibling array. The middle candidate is centered below the matcher;
+% equal-width siblings then extend symmetrically left/right with canonical gaps.
+\node[candidate,below=\MQArrowSpan of scan] (plus)
+  {2 · single-level sibling\\\texttt{+}};
+\node[candidate,left=\MQArrowSpan of plus] (literal)
+  {1 · literal sibling\\\texttt{room-01}};
+\node[candidate,right=\MQArrowSpan of plus] (hash)
+  {3 · terminal multi-level sibling\\\texttt{\#}};
 
-\node[example,right=\MQHorizontalGapLoose of literal] (elit)
+\node[example,below=\MQGapM of literal] (elit)
   {\texttt{devices/room-01}\\literal matches the exact level};
-\node[example,right=\MQHorizontalGapLoose of plus] (eplus)
+\node[example,below=\MQGapM of plus] (eplus)
   {\texttt{devices/lab}\\\texttt{+} consumes exactly one level};
-\node[example,right=\MQHorizontalGapLoose of hash] (ehash)
-  {\texttt{devices/lab/x}: terminal \texttt{\#} consumes the remainder.\\
-   \texttt{devices}: a child terminal \texttt{\#} may match zero remaining levels when the matched parent has no subscription.};
-\draw[mqtt association] (literal.east) -- (elit.west);
-\draw[mqtt association] (plus.east) -- (eplus.west);
-\draw[mqtt association] (hash.east) -- (ehash.west);
+\node[example,below=\MQGapM of hash] (ehash)
+  {\texttt{devices/lab/x}: \texttt{\#} consumes the remainder.\\\texttt{devices}: child \texttt{\#} only if the matched parent has no subscription.};
 
-\node[mqtt warning,minimum width=82mm,text width=76mm,below=\MQGapL of hash,xshift=24mm] (order)
-  {These are sibling alternatives, not a built-in precedence ladder. Sibling arrays are evaluated in document order; the first branch that returns a match wins.};
+% Enter the first sibling candidate; later candidates are tried only after no match.
+\coordinate (scanLiteralMid) at ($(scan.south)!0.5!(literal.north)$);
+\draw[mqtt control flow]
+  (scan.south) -- (scan.south |- scanLiteralMid)
+  -- (literal.north |- scanLiteralMid) -- (literal.north);
+\draw[mqtt control flow] (literal.east) -- (plus.west);
+\draw[mqtt control flow] (plus.east) -- (hash.west);
 
+% Examples explain each candidate; they are associations, not runtime steps.
+\draw[mqtt association] (literal.south) -- (elit.north);
+\draw[mqtt association] (plus.south) -- (eplus.north);
+\draw[mqtt association] (hash.south) -- (ehash.north);
+
+% Ordering and QoS qualifications are explanatory, not process stages.
+\node[warningwide,below=\MQGapM of eplus] (order)
+  {1 → 2 → 3 is only this example's document order. There is no built-in literal → \texttt{+} → \texttt{\#} precedence.};
+\node[qosnote,below=\MQGapM of order] (qos)
+  {Subscription QoS belongs to the selected topic branch.};
+
+% Relative title and neutral frame geometry.
+\coordinate (titleY) at ($(root.north)+(0,\MQTitleGap)$);
+\node[mqtt section title,anchor=south west] (figureTitle)
+  at (literal.west |- titleY) {Topic-tree matching};
 \begin{pgfonlayer}{background}
-  \node[mqtt figure frame,fit=(root)(literal)(plus)(hash)(elit)(eplus)(ehash)(order)] (frame) {};
+  \node[mqtt figure frame,fit=(figureTitle)(root)(scan)(literal)(plus)(hash)(elit)(eplus)(ehash)(order)(qos)] (frame) {};
 \end{pgfonlayer}
-\node[mqtt section title] at ($(frame.north west)+(\MQTitleGap,-\MQTitleGap)$)
-  {Topic-tree matching};
-\node[mqtt annotation,anchor=east] at ($(frame.north east)+(-\MQTitleGap,-\MQTitleGap)$)
-  {subscription QoS attaches to the selected topic branch};
-
 \end{tikzpicture}
 \end{document}
