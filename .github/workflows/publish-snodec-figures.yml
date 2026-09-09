@@ -121,6 +121,14 @@ jobs:
           done
           cp figure-build.log figure-review/
 
+      - name: Upload review renders
+        uses: actions/upload-artifact@v4
+        with:
+          name: snodec-figure-review-${{ github.sha }}
+          path: figure-review/
+          if-no-files-found: error
+          retention-days: 14
+
       - name: Publish generated SNode.C SVGs
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         shell: bash
@@ -144,20 +152,35 @@ jobs:
             SNode.C/assets/retry-vs-reconnect.svg
             SNode.C/assets/retry-vs-reconnect-mobile.svg
           )
+          source_inputs=(
+            CMakeLists.txt
+            .github/workflows/publish-snodec-figures.yml
+            shared/assets/src/tikz
+            SNode.C/assets/src/tikz
+          )
+
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -f "${files[@]}"
           if git diff --cached --quiet; then
             echo "Generated SNode.C SVGs already match the committed publication outputs."
-          else
-            git commit -m "Regenerate SNode.C figures"
-            git push origin HEAD:main
+            exit 0
           fi
 
-      - name: Upload review renders
-        uses: actions/upload-artifact@v4
-        with:
-          name: snodec-figure-review-${{ github.sha }}
-          path: figure-review/
-          if-no-files-found: error
-          retention-days: 14
+          git commit -m "Regenerate SNode.C figures"
+
+          for attempt in 1 2 3; do
+            git fetch origin main
+            if ! git diff --quiet "${GITHUB_SHA}"..origin/main -- "${source_inputs[@]}"; then
+              echo "Newer SNode.C figure inputs exist on main; skip stale publication."
+              exit 0
+            fi
+            git rebase origin/main
+            if git push origin HEAD:main; then
+              exit 0
+            fi
+            echo "main moved during publication; retrying (${attempt}/3)."
+          done
+
+          echo "Unable to publish generated SNode.C SVGs after retries."
+          exit 1
