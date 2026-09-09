@@ -32,6 +32,11 @@ jobs:
 
       - name: Install figure toolchain
         run: |
+          # GitHub-hosted runners currently carry a Chrome apt source that is
+          # unrelated to figure generation and can transiently publish a stale
+          # Packages index. Disable only that unused third-party source so an
+          # external Chrome mirror inconsistency cannot make figure CI red.
+          sudo rm -f /etc/apt/sources.list.d/google-chrome.list
           sudo apt-get update
           sudo apt-get install -y \
             texlive-latex-extra \
