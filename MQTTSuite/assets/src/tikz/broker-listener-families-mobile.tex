@@ -31,8 +31,8 @@
 \node[mqtt note,wide,below=\MQGapS of model] (note)
   {Direct and WebSocket paths converge on the same Broker singleton;\\\texttt{MqttModel} is not a second broker-state store.};
 
-\coordinate (mqttInLeft) at \MQPortNorth{mqtt}{.333333};
-\coordinate (mqttInRight) at \MQPortNorth{mqtt}{.666667};
+\coordinate (mqttInLeft) at ($(mqtt.north west)!.333333!(mqtt.north east)$);
+\coordinate (mqttInRight) at ($(mqtt.north west)!.666667!(mqtt.north east)$);
 
 \draw[mqtt data flow] (direct.south) -- (directfactory.north);
 \draw[mqtt data flow] (http.south) -- (wsfactory.north);
