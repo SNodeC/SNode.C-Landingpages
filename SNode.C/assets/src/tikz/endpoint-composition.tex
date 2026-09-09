@@ -8,22 +8,22 @@
 \node[mqtt section title] (title) {One concrete endpoint};
 \node[mqtt config,below=\MQGapS of title,minimum width=92mm,text width=82mm] (address)
   {\textbf{Address family}\\IPv4 · IPv6 · Unix domain · RFCOMM · L2CAP};
-\node[mqtt evidence source,below=\MQGapXS of address] (bluetooth) {RFCOMM / L2CAP: source-verified};
-\node[mqtt config,below=\MQGapM of bluetooth,minimum width=92mm,text width=82mm] (role)
+\node[mqtt evidence source,below=\MQGapXS of address.south east,anchor=north east] (bluetooth) {RFCOMM / L2CAP: source-verified};
+\node[mqtt config,below=\MQGapXL of address,minimum width=92mm,text width=82mm] (role)
   {\textbf{Endpoint role}\\\texttt{SocketServer} · \texttt{SocketClient}};
 \node[mqtt config,below=\MQGapM of role,minimum width=92mm,text width=82mm] (mode)
   {\textbf{Connection mode}\\plain stream · OpenSSL-backed TLS};
 \node[mqtt config,below=\MQGapM of mode,minimum width=92mm,text width=82mm] (context)
   {\textbf{Protocol / application context}\\custom \texttt{SocketContext} or compatible framework protocol context};
 
-\draw[mqtt association] (address.south) -- (bluetooth.north);
-\draw[mqtt association] (bluetooth.south) -- (role.north);
+\draw[mqtt association] (address.south) -- (role.north);
+\draw[mqtt observation] (address.south east) |- (bluetooth.east);
 \draw[mqtt association] (role.south) -- (mode.north);
 \draw[mqtt association] (mode.south) -- (context.north);
 
 \node[mqtt control,below={\MQGapL+\MQGroupPad} of context,minimum width=92mm,text width=82mm] (runtime)
   {\textbf{Shared event runtime}\\one selected multiplexer drives endpoint and connection work};
-\node[mqtt note,below=\MQGapM of runtime,minimum width=108mm,text width=98mm] (qualification)
+\node[mqtt note,below=\MQGapM of runtime,minimum width=96mm,text width=86mm] (qualification)
   {Compatible typed compositions only. Component presence does not imply that every cross-product is built, tested, or runtime-qualified.};
 \path (title.north) ++(0,\MQGroupPad) coordinate (outertop);
 
