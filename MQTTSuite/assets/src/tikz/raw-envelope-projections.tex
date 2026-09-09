@@ -29,7 +29,7 @@
 \draw[mqtt data flow] (parse.east) -- (raw.west);
 
 \node[stage,below=\MQArrowGap of raw] (projections)
-  {next source-level call\\\texttt{storeProjections(message,}\\\texttt{payloadJson)}};
+  {next source-level call\\\texttt{storeProjections(}\\\texttt{message, payloadJson)}};
 \node[note,left=\MQArrowGap of projections] (rawoutcome)
   {raw INSERT success / failure callback is independent\\and does not gate projection processing};
 
@@ -37,7 +37,7 @@
 
 % Raw completion is asynchronous observation, not a prerequisite for projections.
 % The V-H-V route is midpoint-derived so its outer vertical legs are exactly equal.
-\coordinate (rawOutcomeStart) at \MQPortSouth{raw}{.30};
+\coordinate (rawOutcomeStart) at ($(raw.south west)!.30!(raw.south east)$);
 \coordinate (rawOutcomeMid) at ($(rawOutcomeStart)!0.5!(rawoutcome.north)$);
 \draw[mqtt observation]
   (rawOutcomeStart)
