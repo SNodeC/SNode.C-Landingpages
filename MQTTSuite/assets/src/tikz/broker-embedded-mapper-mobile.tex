@@ -1,56 +1,102 @@
-\documentclass[tikz,border=8pt]{standalone}
+\documentclass[tikz,border=0pt]{standalone}
 \usepackage[T1]{fontenc}
 \usepackage{lmodern}
+\usetikzlibrary{matrix}
 \input{mqttsystem-figure-system.tex}
 \input{snodec-canonical-figure-system.tex}
 \begin{document}
 \begin{tikzpicture}[mqtt mobile]
 \tikzset{
-  wide/.style={minimum width=66mm,text width=58mm},
-  half/.style={minimum width=30mm,text width=25mm}
+  wide/.style={minimum width=60mm,text width=52mm},
+  modelcard/.style={minimum width=24mm,text width=19mm},
+  mappercard/.style={minimum width=30mm,text width=25mm},
+  branchleft/.style={minimum width=28mm,text width=23mm},
+  branchright/.style={minimum width=38mm,text width=33mm}
 }
+
+% Figure-local alias for the canonical 75 px approval span.
+\def\MQArrowSpan{8.3mm}
+\def\MQHalfArrowSpan{4.15mm}
 
 \node[mqtt external,wide] (incoming)
   {incoming MQTT PUBLISH accepted by the Broker connection};
-\node[mqtt process,wide,below=\MQGapS of incoming] (distribute)
-  {SNode.C \texttt{server::Mqtt::distributePublish(publish)}};
-\node[mqtt data,wide,below=\MQGapM of distribute] (ordinary)
-  {1 · \texttt{broker->publish(...)} — ordinary routing to subscribers};
-\node[mqtt application,wide,below=\MQGapM of ordinary] (hook)
-  {2 · MQTTBroker \texttt{Mqtt::onPublish(publish)} — post-route hook};
+\node[mqtt process,wide,below=\MQArrowSpan of incoming] (distribute)
+  {SNode.C \texttt{server::Mqtt::}\\\texttt{distributePublish(publish)}};
+\node[mqtt data,wide,below=\MQArrowSpan of distribute] (ordinary)
+  {\texttt{broker->publish(...)}\\ordinary routing to subscribers};
+\node[mqtt process,wide,below=\MQArrowSpan of ordinary] (hook)
+  {MQTTBroker \texttt{Mqtt::onPublish(publish)}\\post-route hook};
+
+% MqttMapper is exactly on the MQTTBroker/hook center axis. MqttModel sits to
+% its left at the canonical horizontal gap; this replaces absolute x-shifts.
+\node[mqtt control,mappercard,below=\MQArrowSpan of hook] (mapper)
+  {shared\\\texttt{MqttMapper}\\\texttt{getMappings}};
+\node[mqtt state,modelcard,left=\MQHorizontalGap of mapper] (model)
+  {update\\\texttt{MqttModel}\\publish state};
 
 \draw[mqtt data flow] (incoming.south) -- (distribute.north);
 \draw[mqtt data flow] (distribute.south) -- (ordinary.north);
 \draw[mqtt control flow] (ordinary.south) -- (hook.north);
 
-\node[mqtt state,half,below=\MQGapM of hook,xshift=-17mm] (model)
-  {update\\\texttt{MqttModel}};
-\node[mqtt control,half,below=\MQGapM of hook,xshift=17mm] (mapper)
-  {shared\\\texttt{MqttMapper}\\\texttt{getMappings}};
-\draw[mqtt observation] \MQPortSouth{hook}{.30} -- ++(0,-6mm) -| (model.north);
-\draw[mqtt control flow] \MQPortSouth{hook}{.70} -- ++(0,-6mm) -| (mapper.north);
+\coordinate (hookModelStart) at ($(hook.south west)!.30!(hook.south east)$);
+\coordinate (hookMapperStart) at ($(hook.south west)!.70!(hook.south east)$);
+\coordinate (hookBranchMid) at ($(hook.south)!0.5!(mapper.north)$);
+\draw[mqtt observation]
+  (hookModelStart) -- (hookModelStart |- hookBranchMid) -- (model.north |- hookBranchMid) -- (model.north);
+\draw[mqtt control flow]
+  (hookMapperStart) -- (hookMapperStart |- hookBranchMid) -- (mapper.north |- hookBranchMid) -- (mapper.north);
 
-\node[mqtt process,half,below=\MQGapM of mapper,xshift=-17mm] (immediate)
-  {$0..n$ immediate\\mapped PUBLISH};
-\node[mqtt process,half,below=\MQGapM of mapper,xshift=17mm] (scheduled)
-  {$0..n$ scheduled\\mapped PUBLISH\\delay queue / timer};
-\draw[mqtt control flow] \MQPortSouth{mapper}{.30} -- ++(0,-6mm) -| (immediate.north);
-\draw[mqtt control flow] \MQPortSouth{mapper}{.70} -- ++(0,-6mm) -| (scheduled.north);
+% Unequal branch widths are intentional. The matrix centers their COMBINED
+% bounding box under MqttMapper while preserving the canonical 8 mm sibling gap.
+\matrix (branchrow) [
+  matrix of nodes,
+  below=\MQArrowSpan of mapper,
+  column sep=\MQHorizontalGap,
+  row sep=0pt,
+  nodes={anchor=center}
+] {
+  |[mqtt process,branchleft,name=immediate]| {$0..n$ immediate\\mapped PUBLISH} &
+  |[mqtt process,branchright,name=scheduled]| {$0..m$ scheduled\\mapped PUBLISH\\delay queue / timer} \\
+};
 
-\node[mqtt data,wide,below=\MQGapL of $(immediate.south)!0.5!(scheduled.south)$] (mapped)
-  {for each immediate output — or scheduled output when due:\\\texttt{broker->publish(...)} then \texttt{onPublish(mapped)}};
-\draw[mqtt data flow] (immediate.south) -- ++(0,-6mm) -| \MQPortNorth{mapped}{.30};
-\draw[mqtt data flow] (scheduled.south) -- ++(0,-6mm) -| \MQPortNorth{mapped}{.70};
+\coordinate (mapperImmediateStart) at ($(mapper.south west)!.30!(mapper.south east)$);
+\coordinate (mapperScheduledStart) at ($(mapper.south west)!.70!(mapper.south east)$);
+\coordinate (mapperBranchMid) at ($(mapper.south)!0.5!(immediate.north)$);
+\draw[mqtt control flow]
+  (mapperImmediateStart) -- (mapperImmediateStart |- mapperBranchMid) -- (immediate.north |- mapperBranchMid) -- (immediate.north);
+\draw[mqtt control flow]
+  (mapperScheduledStart) -- (mapperScheduledStart |- mapperBranchMid) -- (scheduled.north |- mapperBranchMid) -- (scheduled.north);
 
-\node[mqtt note,wide,below=\MQGapM of mapped] (note)
-  {Mapped outputs invoke the same \texttt{onPublish} hook again, so mapping may cascade.\\The mapper is shared and in-process; an empty mapping yields no mapped outputs.};
+% Common output remains on the same center axis as hook and mapper.
+\node[mqtt data,wide,below=\MQArrowSpan of branchrow] (mapped)
+  {each mapped output\\\texttt{broker->publish(...)} routes\\then \texttt{onPublish(mapped)}};
+
+\coordinate (mappedImmediateIn) at ($(mapped.north west)!.30!(mapped.north east)$);
+\coordinate (mappedScheduledIn) at ($(mapped.north west)!.70!(mapped.north east)$);
+\coordinate (mappedMergeMid) at ($(immediate.south)!0.5!(mapped.north)$);
+\draw[mqtt data flow]
+  (immediate.south) -- (immediate.south |- mappedMergeMid) -- (mappedImmediateIn |- mappedMergeMid) -- (mappedImmediateIn);
+\draw[mqtt data flow]
+  (scheduled.south) -- (scheduled.south |- mappedMergeMid) -- (mappedScheduledIn |- mappedMergeMid) -- (mappedScheduledIn);
+
+% Feedback column is positioned relative to the actual scheduled-output card:
+% one canonical half-arrow span to its right, matching the natural clearance of
+% the middle leg of an ordinary dogleg while keeping the route fully Manhattan.
+\coordinate (reentryColumn) at ($(scheduled.east)+(\MQHalfArrowSpan,0)$);
+\coordinate (reentryBottom) at (reentryColumn |- mapped.east);
+\coordinate (reentryTop) at (reentryColumn |- hook.east);
+\draw[mqtt data flow]
+  (mapped.east) -- (reentryBottom) -- (reentryTop)
+  -- node[mqtt edge label,midway,above]{re-entry} (hook.east);
+
+\node[mqtt note,wide,below=\MQArrowSpan of mapped] (note)
+  {Immediate outputs republish now; scheduled outputs republish when due. Both invoke the same \texttt{onPublish} hook again, so mapping may cascade.};
 
 \coordinate (titleguard) at ($(incoming.north)+(0,\MQGapL)$);
 \begin{pgfonlayer}{background}
-  \node[mqtt figure frame,fit=(titleguard)(incoming)(distribute)(ordinary)(hook)(model)(mapper)(immediate)(scheduled)(mapped)(note)] (frame) {};
+  \node[mqtt figure frame,fit=(titleguard)(incoming)(distribute)(ordinary)(hook)(model)(mapper)(branchrow)(mapped)(reentryColumn)(reentryBottom)(reentryTop)(note)] (frame) {};
 \end{pgfonlayer}
 \node[mqtt section title] at ($(frame.north west)+(\MQTitleGap,-\MQTitleGap)$)
   {Embedded mapper after ordinary routing};
-
 \end{tikzpicture}
 \end{document}
