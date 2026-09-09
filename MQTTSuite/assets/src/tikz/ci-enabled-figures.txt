@@ -42,4 +42,8 @@ integrator-mapping-pipeline-mobile
 integrator-topic-tree-matching
 integrator-topic-tree-matching-mobile
 
-# Figure 11 and later stay disabled until their individual refinement round starts.
+# Figure 11 — Static, scalar/value, JSON, and fan-out mapping
+integrator-mapping-modes
+integrator-mapping-modes-mobile
+
+# Figure 12 and later stay disabled until their individual refinement round starts.

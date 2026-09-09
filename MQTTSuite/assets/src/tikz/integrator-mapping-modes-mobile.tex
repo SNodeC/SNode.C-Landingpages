@@ -1,54 +1,67 @@
-\documentclass[tikz,border=8pt]{standalone}
+\documentclass[tikz,border=0pt]{standalone}
 \usepackage[T1]{fontenc}
 \usepackage{lmodern}
 \input{mqttsystem-figure-system.tex}
+\input{snodec-canonical-figure-system.tex}
 \begin{document}
 \begin{tikzpicture}[mqtt mobile]
-\tikzset{wide/.style={minimum width=72mm,text width=64mm}}
+\tikzset{
+  wide/.style={minimum width=72mm,text width=66mm},
+  mode/.style={mqtt control,minimum width=66mm,text width=60mm,minimum height=18mm}
+}
+\def\MQArrowSpan{8.3mm}
 
-\node[mqtt external,wide] (input) {matched MQTT PUBLISH};
-\node[mqtt control,wide,below=\MQGapS of input] (keys)
-  {configured mapping keys are processed independently};
-\draw[mqtt control flow] (input.south) -- (keys.north);
+\node[mqtt external,wide] (input)
+  {matched MQTT PUBLISH};
+\node[mqtt control,wide,below=\MQArrowSpan of input] (dispatch)
+  {evaluate every configured key present\\\texttt{static} + \texttt{value} + \texttt{json} may coexist};
+\draw[mqtt control flow] (input.south) -- (dispatch.north);
 
-\node[mqtt control,wide,below=\MQGapM of keys] (static)
-  {\textbf{static}: exact payload string → configured mapped message(s)};
-\node[mqtt control,wide,below=\MQGapS of static] (value)
-  {\textbf{value}: whole payload becomes template \texttt{message}};
-\node[mqtt control,wide,below=\MQGapS of value] (json)
-  {\textbf{json}: parse payload as JSON; expose JSON as template \texttt{message}};
+\node[mode,below=\MQArrowSpan of dispatch] (static)
+  {\textbf{static}\\exact payload lookup · object/array → 0..n};
+\node[mode,below=\MQGapS of static] (value)
+  {\textbf{value}\\raw payload is template \texttt{message} · object/array → 0..n};
+\node[mode,below=\MQGapS of value] (json)
+  {\textbf{json}\\parse JSON, then template · object/array → 0..n};
 
-\coordinate (inbus-top) at ($(static.west)+(-7mm,0)$);
-\coordinate (inbus-mid) at ($(value.west)+(-7mm,0)$);
-\coordinate (inbus-bottom) at ($(json.west)+(-7mm,0)$);
+% Left-side fan-out bus: sibling cards are independent, not sequential.
+\coordinate (inbus-top) at ($(static.west)+(-\MQArrowSpan,0)$);
+\coordinate (inbus-mid) at ($(value.west)+(-\MQArrowSpan,0)$);
+\coordinate (inbus-bottom) at ($(json.west)+(-\MQArrowSpan,0)$);
 \draw[mqtt association] (inbus-top) -- (inbus-bottom);
-\draw[mqtt association] (keys.west) -- ++(-7mm,0) |- (inbus-mid);
+\draw[mqtt association] (dispatch.west) -- (dispatch.west -| inbus-top) -- (inbus-top);
 \draw[mqtt control flow] (inbus-top) -- (static.west);
 \draw[mqtt control flow] (inbus-mid) -- (value.west);
 \draw[mqtt control flow] (inbus-bottom) -- (json.west);
 
-\node[mqtt process,wide,below=\MQGapM of json] (common)
-  {common mapped-output model\\topic + payload + QoS + retain + delay};
-\coordinate (outbus-top) at ($(static.east)+(7mm,0)$);
-\coordinate (outbus-mid) at ($(value.east)+(7mm,0)$);
-\coordinate (outbus-bottom) at ($(json.east)+(7mm,0)$);
+\node[mqtt process,wide,below=\MQArrowSpan of json] (collector)
+  {append all produced mappings\\topic + payload + QoS + retain + delay};
+
+% Right-side collection bus keeps the three branches visually parallel.
+\coordinate (collectorPort) at ($(collector.east)+(\MQArrowSpan,0)$);
+\coordinate (outbus-top) at (collectorPort |- static.east);
+\coordinate (outbus-mid) at (collectorPort |- value.east);
+\coordinate (outbus-bottom) at (collectorPort |- json.east);
 \draw[mqtt association] (static.east) -- (outbus-top);
 \draw[mqtt association] (value.east) -- (outbus-mid);
 \draw[mqtt association] (json.east) -- (outbus-bottom);
-\draw[mqtt association] (outbus-top) -- (outbus-bottom);
-\draw[mqtt control flow] (outbus-bottom) |- (common.east);
+\draw[mqtt association] (outbus-top) -- (collectorPort);
+\draw[mqtt control flow] (collectorPort) -- (collector.east);
 
-\node[mqtt process,wide,below=\MQGapS of common] (cardinality)
-  {\textbf{zero / one / many} mapped PUBLISH messages; arrays provide fan-out};
-\draw[mqtt data flow] (common.south) -- (cardinality.north);
-\node[mqtt note,wide,below=\MQGapS of cardinality] (note)
-  {Modes are not a sequential pipeline. Invalid, suppressed, or unmatched mappings can produce zero outputs.};
+\node[mqtt process,wide,below=\MQArrowSpan of collector] (result)
+  {combined result\\\textbf{zero / one / many} mapped PUBLISH messages};
+\draw[mqtt data flow] (collector.south) -- (result.north);
 
+\node[mqtt note,wide,below=\MQGapM of result] (note)
+  {Independent sibling rules, not a sequential pipeline. Arrays fan out; no-match, JSON parse/render failure, or suppression may contribute zero.};
+
+\coordinate (titleY) at ($(input.north)+(0,\MQTitleGap)$);
+\node[mqtt section title,anchor=south west] (figureTitle)
+  at (input.west |- titleY) {Mapping modes and fan-out};
+\coordinate (leftBusGuard) at (inbus-mid);
+\coordinate (rightBusGuard) at (collectorPort);
 \begin{pgfonlayer}{background}
-  \node[mqtt figure frame,fit=(input)(keys)(static)(value)(json)(common)(cardinality)(note)] (frame) {};
+  \node[mqtt figure frame,fit=(figureTitle)(input)(dispatch)(static)(value)(json)(collector)(result)(note)(leftBusGuard)(rightBusGuard)] (frame) {};
 \end{pgfonlayer}
-\node[mqtt section title] at ($(frame.north west)+(\MQTitleGap,-\MQTitleGap)$)
-  {Mapping modes};
-
 \end{tikzpicture}
 \end{document}
