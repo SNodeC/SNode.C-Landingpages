@@ -21,8 +21,8 @@
 \node[mqtt config,below=\MQGapS of firstbottom,minimum width=56mm] (connection) {\texttt{connection}};
 \path ($(connection.south west)!.20!(connection.south east)$) ++(0,-\MQGapS) coordinate (sockettop);
 \path ($(connection.south west)!.80!(connection.south east)$) ++(0,-\MQGapS) coordinate (tlstop);
-\node[mqtt config,anchor=north,minimum width=26mm,minimum height=14mm] at (sockettop) (socket) {\texttt{socket}};
-\node[mqtt config,anchor=north,minimum width=26mm,minimum height=14mm] at (tlstop) (tls) {\texttt{tls}\\when selected};
+\node[mqtt config,below=0mm of sockettop,minimum width=26mm,minimum height=14mm] (socket) {\texttt{socket}};
+\node[mqtt config,below=0mm of tlstop,minimum width=26mm,minimum height=14mm] (tls) {\texttt{tls}\\when selected};
 
 \path (socket.south) -- (tls.south) coordinate[midway] (sectionsbottom);
 \node[mqtt note,below=\MQGapXL of sectionsbottom,minimum width=72mm,text width=62mm] (dependent)
