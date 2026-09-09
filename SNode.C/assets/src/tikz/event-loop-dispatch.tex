@@ -1,1 +1,52 @@
-noop
+\documentclass[tikz,border=8pt]{standalone}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\input{landingpages-figure-system.tex}
+\begin{document}
+\begin{tikzpicture}[mqtt desktop]
+
+\node[mqtt config,minimum width=58mm] (backend)
+  {selected backend at configure time\\\texttt{epoll} · \texttt{poll} · \texttt{select}};
+\node[mqtt control,below=\MQGapM of backend,minimum width=44mm] (start) {\texttt{SNodeC::start()}\\caller thread};
+\node[mqtt control,below=\MQGapM of start,minimum width=44mm] (wait) {wait for work};
+\path (wait.south) ++(0,-\MQGapXL) coordinate (sourcesrow);
+\node[mqtt process,left=\MQGapS of sourcesrow,anchor=east,minimum width=30mm,text width=24mm] (descriptors) {descriptor readiness};
+\node[mqtt process,right=\MQGapS of sourcesrow,anchor=west,minimum width=30mm,text width=24mm] (timers) {timer activity};
+\path (descriptors.south) -- (timers.south) coordinate[midway] (sourcesmid);
+\node[mqtt state,below=\MQGapXL of sourcesmid,minimum width=44mm] (queue) {event queue};
+\node[mqtt control,below=\MQGapM of queue,minimum width=44mm] (dispatch) {dispatch events};
+\node[mqtt application,below=\MQGapM of dispatch,minimum width=60mm] (callbacks)
+  {endpoint / connection / context callbacks};
+\node[mqtt process,below=\MQGapM of callbacks,minimum width=44mm] (next) {next tick};
+
+\draw[mqtt flow] (start.south) -- (wait.north);
+\draw[mqtt association] (backend.south) -- (start.north);
+
+\path \MQPortSouth{wait}{.32} coordinate (wait-s32);
+\path \MQPortSouth{wait}{.68} coordinate (wait-s68);
+\path \MQPortNorth{queue}{.32} coordinate (queue-n32);
+\path \MQPortNorth{queue}{.68} coordinate (queue-n68);
+
+\path (wait-s32) -- (descriptors.north) coordinate[midway] (waitdesc-mid);
+\draw[mqtt control flow] (wait-s32) -- (wait-s32 |- waitdesc-mid) -- (descriptors.north |- waitdesc-mid) -- (descriptors.north);
+\path (wait-s68) -- (timers.north) coordinate[midway] (waittimer-mid);
+\draw[mqtt control flow] (wait-s68) -- (wait-s68 |- waittimer-mid) -- (timers.north |- waittimer-mid) -- (timers.north);
+
+\path (descriptors.south) -- (queue-n32) coordinate[midway] (descqueue-mid);
+\draw[mqtt control flow] (descriptors.south) -- (descriptors.south |- descqueue-mid) -- (queue-n32 |- descqueue-mid) -- (queue-n32);
+\path (timers.south) -- (queue-n68) coordinate[midway] (timerqueue-mid);
+\draw[mqtt control flow] (timers.south) -- (timers.south |- timerqueue-mid) -- (queue-n68 |- timerqueue-mid) -- (queue-n68);
+
+\draw[mqtt control flow] (queue.south) -- (dispatch.north);
+\draw[mqtt control flow] (dispatch.south) -- (callbacks.north);
+\draw[mqtt control flow] (callbacks.south) -- (next.north);
+\path (callbacks.east) ++(\MQGapM,0) coordinate (repeatx);
+\path (repeatx |- next.east) coordinate (repeatrail);
+\draw[mqtt control flow] (next.east) -- (repeatrail) |- node[mqtt edge label,near end,right] {repeat} (wait.east);
+
+\begin{scope}[on background layer]
+  \node[mqtt figure frame,fit=(start)(backend)(wait)(descriptors)(timers)(queue)(dispatch)(callbacks)(next)(repeatrail)] {};
+\end{scope}
+
+\end{tikzpicture}
+\end{document}

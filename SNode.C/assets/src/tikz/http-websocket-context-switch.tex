@@ -14,7 +14,7 @@
 \node[mqtt annotation,above=\MQGapS of handoffmid] (handofflabel) {Upgrade accepted};
 
 \path (http.south) -- (staged.south) coordinate[midway] (topmid);
-\node[mqtt process,below=\MQGapM of topmid,minimum width=48mm,text width=42mm] (return)
+\node[mqtt process,below=\MQGapXL of topmid,minimum width=48mm,text width=42mm] (return)
   {current HTTP read callback returns};
 \path (http.south) -- (return.north) coordinate[midway] (returnmid);
 \draw[mqtt control flow] (http.south) -- (http.south |- returnmid) -- (return.north |- returnmid) -- (return.north);

@@ -29,7 +29,7 @@
 \node[mqtt process,right=\MQGapM of directrow,anchor=west,minimum width=34mm] (mqttdirect)
   {direct MQTT 3.1.1};
 \path (custom.south) -- (mqttdirect.south) coordinate[midway] (directmid);
-\node[mqtt state,below=\MQGapM of directmid,minimum width=90mm,text width=80mm] (stream)
+\node[mqtt state,below=\MQGapXL of directmid,minimum width=90mm,text width=80mm] (stream)
   {established stream connection};
 \node[mqtt note,below=\MQGapM of stream,minimum width=96mm,text width=86mm] (note)
   {Express is above HTTP. SSE/EventSource remains in HTTP. WebSocket replaces the HTTP context after Upgrade. MQTT can attach directly or compose as a WebSocket subprotocol.};
