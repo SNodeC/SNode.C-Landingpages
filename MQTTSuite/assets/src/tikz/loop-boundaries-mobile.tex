@@ -1,33 +1,45 @@
-\documentclass[tikz,border=8pt]{standalone}
+\documentclass[tikz,border=0pt]{standalone}
 \usepackage[T1]{fontenc}
 \usepackage{lmodern}
 \input{mqttsystem-figure-system.tex}
+\input{snodec-canonical-figure-system.tex}
 \begin{document}
 \begin{tikzpicture}[mqtt mobile]
-\tikzset{wide/.style={minimum width=72mm,text width=64mm}}
+\tikzset{
+  boundary/.style={minimum width=72mm,text width=66mm},
+  qualifier/.style={mqtt note,minimum width=72mm,text width=66mm}
+}
 
-\node[mqtt control,wide] (pass)
-  {\textbf{1. Immediate source exclusion}\\\texttt{Bridge::publish()} forwards to destinations other than the origin member.};
-\node[mqtt note,wide,below=\MQGapS of pass] (example)
-  {A → Bridge → B / C; A is excluded only from this forwarding pass.};
+\node[mqtt control,boundary] (pass)
+  {{\MQAnnotationFont\bfseries forwarding pass}\\[1mm]
+   \textbf{Immediate source exclusion}\\[2mm]
+   \texttt{Bridge::publish()} excludes the origin member from its destination loop.};
+\node[qualifier,below=\MQGapS of pass] (passnote)
+  {Scope: one forwarding pass. The origin member is not a destination in that pass.};
 
-\node[mqtt warning,wide,below=\MQMobileLaneGap of example] (cycle)
-  {\textbf{2. Topology / subscription design}\\A later A → B → A cycle is still possible when forwarded topics match another member's input subscriptions.};
-\node[mqtt note,wide,below=\MQGapS of cycle] (operator)
+\node[mqtt warning,boundary,below=\MQMobileLaneGap of passnote] (topology)
+  {{\MQAnnotationFont\bfseries topology}\\[1mm]
+   \textbf{Topology / subscription design}\\[2mm]
+   A later A $\rightarrow$ B $\rightarrow$ A cycle can still occur when forwarded topics match another member's input subscriptions.};
+\node[qualifier,below=\MQGapS of topology] (topologynote)
   {Operator controls: subscription partitioning, prefix design, and topology.};
 
-\node[mqtt control,wide,below=\MQMobileLaneGap of operator] (private)
-  {\textbf{3. Private reflection suppression}\\\texttt{loop\_prevention=true} requests the SNode.C private CONNECT protocol-level MSB.};
-\node[mqtt note,wide,below=\MQGapS of private] (limit)
-  {Non-standard MQTT extension; not a general loop-proofing guarantee for arbitrary or third-party topologies.};
+\node[mqtt control,boundary,below=\MQMobileLaneGap of topologynote] (private)
+  {{\MQAnnotationFont\bfseries broker reflection}\\[1mm]
+   \textbf{Private SNode.C suppression}\\[2mm]
+   \texttt{loop\_prevention=true} sets private \texttt{0x80} in the MQTT CONNECT protocol-level byte.};
+\node[qualifier,below=\MQGapS of private] (privatenote)
+  {An SNode.C broker reads the bit as \texttt{reflect=false} and suppresses delivery back to that origin client ID.};
 
+\node[mqtt note,minimum width=72mm,text width=66mm,below=\MQMobileLaneGap of privatenote] (limit)
+  {\textbf{Independent, not sequential.}\\[1mm]The private CONNECT bit is non-standard MQTT and depends on broker support; no single boundary makes arbitrary cyclic or third-party topologies loop-safe.};
+
+\coordinate (titleGuard) at ($(pass.north)+(0,8mm)$);
 \begin{pgfonlayer}{background}
-  \node[mqtt figure frame,fit=(pass)(example)(cycle)(operator)(private)(limit)] (frame) {};
+  \node[mqtt figure frame,fit=(titleGuard)(pass)(passnote)(topology)(topologynote)(private)(privatenote)(limit)] (frame) {};
 \end{pgfonlayer}
 \node[mqtt section title] at ($(frame.north west)+(\MQTitleGap,-\MQTitleGap)$)
-  {Loop boundaries};
-\node[mqtt annotation,anchor=east] at ($(frame.north east)+(-\MQTitleGap,-\MQTitleGap)$)
-  {independent safeguards and limits};
+  {Independent loop safeguards and limits};
 
 \end{tikzpicture}
 \end{document}

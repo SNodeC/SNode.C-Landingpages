@@ -58,4 +58,8 @@ bridge-definition-hierarchy-mobile
 bridge-prefix-construction
 bridge-prefix-construction-mobile
 
-# Figure 15 and later stay disabled until their individual refinement round starts.
+# Figure 15 — Loop boundaries
+loop-boundaries
+loop-boundaries-mobile
+
+# Figure 16 and later stay disabled until their individual refinement round starts.
