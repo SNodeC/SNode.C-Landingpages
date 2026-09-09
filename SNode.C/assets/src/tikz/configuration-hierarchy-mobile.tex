@@ -8,28 +8,36 @@
 \node[mqtt config,minimum width=64mm] (root) {\texttt{ConfigRoot}\\application configuration root};
 \node[mqtt section title,below=\MQGapXL of root] (namedtitle) {Named root children};
 \node[mqtt application,below=\MQGapS of namedtitle,minimum width=66mm] (app) {application-owned \texttt{SubCommand}};
-\node[mqtt config,below=\MQGapM of app,minimum width=66mm] (instanceb) {named endpoint instance B};
-\node[mqtt config,below=\MQGapM of instanceb,minimum width=66mm] (instancea) {named endpoint instance A};
+\path (app.south) ++(0,-\MQGapM) coordinate (instancesrow);
+\node[mqtt config,left=\MQGapXS of instancesrow,anchor=east,minimum width=30mm,text width=24mm] (instancea) {named endpoint\\instance A};
+\node[mqtt config,right=\MQGapXS of instancesrow,anchor=west,minimum width=30mm,text width=24mm] (instanceb) {named endpoint\\instance B};
 
-\node[mqtt section title,below=\MQGapXL of instancea] (sectionstitle) {Instance A sections};
-\node[mqtt config,below=\MQGapS of sectionstitle,minimum width=56mm] (local) {\texttt{local} / \texttt{remote}};
-\node[mqtt config,below=\MQGapS of local,minimum width=56mm] (connection) {\texttt{connection}};
-\node[mqtt config,below=\MQGapS of connection,minimum width=56mm] (socket) {\texttt{socket}};
-\node[mqtt config,below=\MQGapS of socket,minimum width=56mm] (tls) {\texttt{tls} when selected};
+\path (instancea.south) -- (instanceb.south) coordinate[midway] (instancesbottom);
+\node[mqtt section title,below=\MQGapXL of instancesbottom] (sectionstitle) {Instance A sections};
+\path (sectionstitle.south) ++(0,-\MQGapS) coordinate (firstrow);
+\node[mqtt config,left=\MQGapXS of firstrow,anchor=east,minimum width=30mm] (local) {\texttt{local}};
+\node[mqtt config,right=\MQGapXS of firstrow,anchor=west,minimum width=30mm] (remote) {\texttt{remote}};
+\path (local.south) -- (remote.south) coordinate[midway] (firstbottom);
+\node[mqtt config,below=\MQGapS of firstbottom,minimum width=56mm] (connection) {\texttt{connection}};
+\path (connection.south) ++(0,-\MQGapS) coordinate (lastrow);
+\node[mqtt config,left=\MQGapXS of lastrow,anchor=east,minimum width=30mm,minimum height=14mm] (socket) {\texttt{socket}};
+\node[mqtt config,right=\MQGapXS of lastrow,anchor=west,minimum width=30mm,minimum height=14mm] (tls) {\texttt{tls}\\when selected};
 
-\node[mqtt note,below=\MQGapXL of tls,minimum width=76mm,text width=66mm] (dependent)
+\path (socket.south) -- (tls.south) coordinate[midway] (sectionsbottom);
+\node[mqtt note,below=\MQGapXL of sectionsbottom,minimum width=72mm,text width=62mm] (dependent)
   {Section availability is role/mode dependent; the figure shows the reusable section vocabulary.};
-\node[mqtt note,below=\MQGapM of dependent,minimum width=80mm,text width=70mm] (anonymous)
-  {Anonymous endpoint: API-configurable only; it is not a named root child and has no named CLI/config-file address.};
+\node[mqtt note,below=\MQGapM of dependent,minimum width=76mm,text width=66mm] (anonymous)
+  {Anonymous endpoint: API-configurable only; it is not a named \texttt{ConfigRoot} child and has no named CLI/config-file address.};
 
 \begin{scope}[on background layer]
-  \node[mqtt figure frame,fit=(root)(namedtitle)(app)(instanceb)(instancea)(sectionstitle)(local)(connection)(socket)(tls)(dependent)(anonymous)] {};
-  \node[mqtt group,fit=(namedtitle)(app)(instanceb)(instancea)] (children) {};
-  \node[mqtt group,fit=(sectionstitle)(local)(connection)(socket)(tls)] (sections) {};
+  \node[mqtt figure frame,fit=(root)(namedtitle)(app)(instancea)(instanceb)(sectionstitle)(local)(remote)(connection)(socket)(tls)(dependent)(anonymous)] {};
+  \node[mqtt group,fit=(namedtitle)(app)(instancea)(instanceb)] (children) {};
+  \node[mqtt group,fit=(sectionstitle)(local)(remote)(connection)(socket)(tls)] (sections) {};
 \end{scope}
 
 \draw[mqtt contains] (root.south) -- node[mqtt edge label,right] {contains} (children.north);
-\draw[mqtt contains] (instancea.south) -- node[mqtt edge label,right,pos=.76] {assembles} (sections.north);
+\path (instancea.south) -- (sections.north) coordinate[midway] (assemblemid);
+\draw[mqtt contains] (instancea.south) -- (instancea.south |- assemblemid) -- node[mqtt edge label,above] {assembles} (sections.north |- assemblemid) -- (sections.north);
 
 \end{tikzpicture}
 \end{document}
