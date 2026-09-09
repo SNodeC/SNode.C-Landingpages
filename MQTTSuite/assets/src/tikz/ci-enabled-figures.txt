@@ -1,0 +1,45 @@
+# MQTTSuite technical figures enabled in CI.
+#
+# Only figures that have completed the canonical refinement round are kept
+# enabled. Figure 2 is real runtime evidence and therefore has no TikZ source.
+#
+# When refining the next figure, add only that figure's desktop/mobile pair.
+# Do not enable later unrefined figures early.
+
+# Figure 1 — Five applications, five responsibilities
+application-message-flow
+application-message-flow-mobile
+
+# Figure 3 — Configuration hierarchy and persistence
+configuration-hierarchy-persistence
+configuration-hierarchy-persistence-mobile
+
+# Figure 4 — Logical bridge forwarding
+logical-bridge-forwarding
+logical-bridge-forwarding-mobile
+
+# Figure 5 — Raw envelope and optional projections
+raw-envelope-projections
+raw-envelope-projections-mobile
+
+# Figure 6 — Listener families around one broker core
+broker-listener-families
+broker-listener-families-mobile
+
+# Figure 7 — Dashboard, SSE, API, and MQTT WebSocket relationship
+broker-http-surfaces
+broker-http-surfaces-mobile
+
+# Figure 8 — Optional embedded mapper
+broker-embedded-mapper
+broker-embedded-mapper-mobile
+
+# Figure 9 — MQTTIntegrator mapping pipeline
+integrator-mapping-pipeline
+integrator-mapping-pipeline-mobile
+
+# Figure 10 — Topic-tree matching
+integrator-topic-tree-matching
+integrator-topic-tree-matching-mobile
+
+# Figure 11 and later stay disabled until their individual refinement round starts.
