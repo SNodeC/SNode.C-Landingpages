@@ -8,7 +8,7 @@ SNode.C figures consume the shared cross-project system from
 path:
 
 ```tex
-\input{mqttsystem-figure-system.tex}
+\input{landingpages-figure-system.tex}
 \input{snodec-canonical-figure-system.tex}
 ```
 
