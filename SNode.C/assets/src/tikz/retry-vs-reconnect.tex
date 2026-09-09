@@ -11,7 +11,7 @@
 \node[mqtt decision,below=\MQGapM of failed,minimum width=30mm,text width=24mm] (retrypolicy) {retry allowed?};
 \node[mqtt process,below=\MQGapM of retrypolicy,minimum width=34mm] (backoff) {wait / backoff};
 \node[mqtt process,below=\MQGapM of backoff,minimum width=34mm] (newattempt) {new listen / connect attempt};
-\node[mqtt process,left=\MQGapM of retrypolicy,minimum width=14mm,text width=8mm] (retryend) {flow ends};
+\node[mqtt process,left=\MQGapM of retrypolicy,minimum width=12mm,text width=6mm] (retryend) {flow\\ends};
 \path (retryend.west) ++(-\MQGapS,0) coordinate (retryx);
 \path (retryx |- newattempt.west) coordinate (retryrail);
 
@@ -28,7 +28,7 @@
 \node[mqtt decision,below=\MQGapM of interrupted,minimum width=30mm,text width=24mm] (reconnectpolicy) {reconnect enabled?};
 \node[mqtt process,below=\MQGapM of reconnectpolicy,minimum width=34mm] (delay) {reconnect delay};
 \node[mqtt process,below=\MQGapM of delay,minimum width=34mm] (newcycle) {new connect cycle};
-\node[mqtt process,right=\MQGapM of reconnectpolicy,minimum width=14mm,text width=8mm] (reconnectend) {flow ends};
+\node[mqtt process,right=\MQGapM of reconnectpolicy,minimum width=12mm,text width=6mm] (reconnectend) {flow\\ends};
 
 \draw[mqtt control flow] (connected.south) -- (interrupted.north);
 \draw[mqtt control flow] (interrupted.south) -- (reconnectpolicy.north);
