@@ -809,12 +809,12 @@
 <use x="187.642578" y="481.059178" xlink:href="#ai"/>
 <use x="192.391065" y="481.059178" xlink:href="#bs"/>
 </g>
-<path transform="matrix(.998 0 0 -.998 70.3 42.1)" d="m64.2-303-8.5-30.9" fill="none" stroke="#849298" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" stroke-width=".578"/>
-<path d="m130 363h17.9v-5.93h-17.9z" fill="#fff"/>
+<path transform="matrix(.998 0 0 -.998 70.3 42.1)" d="m55.7-303v-30.9" fill="none" stroke="#849298" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" stroke-width=".578"/>
+<path d="m126 363h17.9v-5.93h-17.9z" fill="#fff"/>
 <g fill="#4b5f67">
-<use x="131.421919" y="362.030866" xlink:href="#ac"/>
-<use x="136.170405" y="362.030866" xlink:href="#m"/>
-<use x="139.695092" y="362.030866" xlink:href="#f"/>
-<use x="143.781582" y="362.030866" xlink:href="#m"/>
+<use x="127.179638" y="362.030866" xlink:href="#ac"/>
+<use x="131.928124" y="362.030866" xlink:href="#m"/>
+<use x="135.452811" y="362.030866" xlink:href="#f"/>
+<use x="139.539301" y="362.030866" xlink:href="#m"/>
 </g>
 </svg>
