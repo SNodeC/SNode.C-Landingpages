@@ -1,6 +1,7 @@
 name: MQTTSuite figure validation
-# CI compiles the canonical TikZ sources, publishes their generated SVGs on
-# main so README figures are immediately visible, and uploads review artifacts.
+# CI builds only figures admitted by the refinement gate, publishes their
+# generated SVGs on main so README figures are immediately visible, and uploads
+# review artifacts. Unrefined figures stay completely outside this CI run.
 
 on:
   push:
@@ -49,12 +50,32 @@ jobs:
           test -n "$(kpsewhich lmsans10-regular.otf)"
           test -n "$(kpsewhich lmsans10-bold.otf)"
 
-      - name: Generate technical figures
+      - name: Generate refined technical figures
         shell: bash
         run: |
-          set -o pipefail
+          set -euo pipefail
+          manifest="MQTTSuite/assets/src/tikz/ci-enabled-figures.txt"
+          mapfile -t stems < <(grep -Ev '^[[:space:]]*(#|$)' "$manifest")
+
+          if (( ${#stems[@]} == 0 )); then
+            echo "No MQTTSuite figures are enabled by the refinement gate." >&2
+            exit 1
+          fi
+
+          targets=()
+          for stem in "${stems[@]}"; do
+            source="MQTTSuite/assets/src/tikz/${stem}.tex"
+            if [[ ! -f "$source" ]]; then
+              echo "Refinement gate references missing source: $source" >&2
+              exit 1
+            fi
+            target="tikz_MQTTSuite_${stem//-/_}"
+            targets+=("$target")
+            echo "CI-enabled figure: $stem -> $target"
+          done
+
           cmake -S . -B cmake-build-figures
-          cmake --build cmake-build-figures --target figures --parallel 8 2>&1 | tee figure-build.log
+          cmake --build cmake-build-figures --target "${targets[@]}" --parallel 8 2>&1 | tee figure-build.log
 
       - name: Generate first-success runtime evidence
         run: python3 MQTTSuite/assets/src/first-success/compose.py
@@ -63,10 +84,17 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          manifest="MQTTSuite/assets/src/tikz/ci-enabled-figures.txt"
+          mapfile -t stems < <(grep -Ev '^[[:space:]]*(#|$)' "$manifest")
+
           mkdir -p figure-review/generated figure-review/generated-svg figure-review/runtime-publication figure-review/runtime-source
-          for svg in MQTTSuite/assets/*.svg; do
-            name="$(basename "${svg%.svg}")"
-            if [[ "$name" == *-mobile ]]; then
+          for stem in "${stems[@]}"; do
+            svg="MQTTSuite/assets/${stem}.svg"
+            if [[ ! -f "$svg" ]]; then
+              echo "Expected generated SVG is missing: $svg" >&2
+              exit 1
+            fi
+            if [[ "$stem" == *-mobile ]]; then
               width=350
             else
               width=830
@@ -74,9 +102,10 @@ jobs:
             inkscape "$svg" \
               --export-type=png \
               --export-width="$width" \
-              --export-filename="figure-review/generated/${name}.png"
+              --export-filename="figure-review/generated/${stem}.png"
+            cp "$svg" figure-review/generated-svg/
           done
-          cp MQTTSuite/assets/*.svg figure-review/generated-svg/
+
           cp MQTTSuite/assets/*.png figure-review/runtime-publication/
           cp MQTTSuite/assets/src/first-success/*.png figure-review/runtime-source/
           cp figure-build.log figure-review/
@@ -86,30 +115,17 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          manifest="MQTTSuite/assets/src/tikz/ci-enabled-figures.txt"
+          mapfile -t stems < <(grep -Ev '^[[:space:]]*(#|$)' "$manifest")
 
           files=()
-          while IFS= read -r source; do
-            stem="$(basename "${source%.tex}")"
-            files+=("MQTTSuite/assets/${stem}.svg")
-          done < <(
-            find MQTTSuite/assets/src/tikz \
-              -maxdepth 1 \
-              -type f \
-              -name '*.tex' \
-              ! -name '*-figure-system.tex' \
-              -print | sort
-          )
-
-          if (( ${#files[@]} == 0 )); then
-            echo "No MQTTSuite TikZ figure sources found."
-            exit 1
-          fi
-
-          for file in "${files[@]}"; do
+          for stem in "${stems[@]}"; do
+            file="MQTTSuite/assets/${stem}.svg"
             if [[ ! -f "$file" ]]; then
               echo "Expected generated SVG is missing: $file" >&2
               exit 1
             fi
+            files+=("$file")
           done
 
           git config user.name "github-actions[bot]"
@@ -117,9 +133,9 @@ jobs:
           git add -f -- "${files[@]}"
 
           if git diff --cached --quiet; then
-            echo "Generated MQTTSuite SVGs already match the committed publication outputs."
+            echo "Generated refined MQTTSuite SVGs already match the committed publication outputs."
           else
-            git commit -m "Regenerate MQTTSuite figures"
+            git commit -m "Regenerate refined MQTTSuite figures"
             git push origin HEAD:main
           fi
 
