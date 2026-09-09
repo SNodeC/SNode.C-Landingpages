@@ -9,6 +9,7 @@ on:
       - .github/workflows/publish-snodec-figures.yml
       - shared/assets/src/tikz/**
       - SNode.C/assets/src/tikz/**
+      - SNode.C/assets/*.svg
   workflow_dispatch:
 
 permissions:
