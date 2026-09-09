@@ -17,13 +17,15 @@
 \node[mqtt config,below=\MQGapS of sectionstitle,minimum width=26mm] (local) {\texttt{local}};
 \node[mqtt config,left=\MQGapS of local,minimum width=26mm] (remote) {\texttt{remote}};
 \node[mqtt config,right=\MQGapS of local,minimum width=26mm] (connection) {\texttt{connection}};
-\node[mqtt config,below left=\MQGapS and \MQGapS of local,minimum width=26mm] (socket) {\texttt{socket}};
-\node[mqtt config,below right=\MQGapS and \MQGapS of local,minimum width=26mm] (tls) {\texttt{tls}\\when selected};
+\path (remote.south) -- (local.south) coordinate[midway] (leftbottom);
+\path (local.south) -- (connection.south) coordinate[midway] (rightbottom);
+\node[mqtt config,below=\MQGapS of leftbottom,minimum width=30mm,minimum height=14mm] (socket) {\texttt{socket}};
+\node[mqtt config,below=\MQGapS of rightbottom,minimum width=30mm,minimum height=14mm] (tls) {\texttt{tls}\\when selected};
 
 \path (socket.south) -- (tls.south) coordinate[midway] (sectionsbottom);
-\node[mqtt note,below=\MQGapXL of sectionsbottom,minimum width=82mm,text width=72mm] (dependent)
+\node[mqtt note,below=\MQGapXL of sectionsbottom,minimum width=76mm,text width=66mm] (dependent)
   {Section availability is role/mode dependent; the figure shows the reusable section vocabulary.};
-\node[mqtt note,below=\MQGapM of dependent,minimum width=104mm,text width=94mm] (anonymous)
+\node[mqtt note,below=\MQGapM of dependent,minimum width=92mm,text width=82mm] (anonymous)
   {Anonymous endpoint instance: configurable through the C++ API, but not a named \texttt{ConfigRoot} child and therefore not addressable by instance name from CLI or configuration file.};
 
 \path (app.west) ++(-\MQGroupPad,0) coordinate (outerleft);
