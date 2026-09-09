@@ -33,10 +33,10 @@
 \node[model,below=8.3mm of mqtt,xshift=31mm] (model)
   {\texttt{MqttModel}\\observable/admin model\\updated from connection events};
 
-\coordinate (mqttInLeft) at \MQPortNorth{mqtt}{.333333};
-\coordinate (mqttInRight) at \MQPortNorth{mqtt}{.666667};
-\coordinate (mqttOutLeft) at \MQPortSouth{mqtt}{.333333};
-\coordinate (mqttOutRight) at \MQPortSouth{mqtt}{.666667};
+\coordinate (mqttInLeft) at ($(mqtt.north west)!.333333!(mqtt.north east)$);
+\coordinate (mqttInRight) at ($(mqtt.north west)!.666667!(mqtt.north east)$);
+\coordinate (mqttOutLeft) at ($(mqtt.south west)!.333333!(mqtt.south east)$);
+\coordinate (mqttOutRight) at ($(mqtt.south west)!.666667!(mqtt.south east)$);
 
 \draw[mqtt data flow] (direct.south) -- (directfactory.north);
 \draw[mqtt data flow] (http.south) -- (wsfactory.north);
