@@ -54,4 +54,8 @@ bridge-runtime-clients-mobile
 bridge-definition-hierarchy
 bridge-definition-hierarchy-mobile
 
-# Figure 14 and later stay disabled until their individual refinement round starts.
+# Figure 14 — Prefix and forwarding construction
+bridge-prefix-construction
+bridge-prefix-construction-mobile
+
+# Figure 15 and later stay disabled until their individual refinement round starts.
