@@ -14,10 +14,12 @@ The framework is general-purpose, with a strong machine-to-machine and IoT focus
 
 A `SocketServer` follows the listen/accept path and a `SocketClient` follows the connect path. Each endpoint flow retains its own `SocketContextFactory`. When a transport connection becomes usable, its `SocketConnection` invokes that retained factory with `create(this)` and installs the returned `SocketContext` as the connection-local protocol/application behavior. One context is active for a connection at a time.
 
+<p align="center">
 <picture>
   <source media="(max-width: 600px)" srcset="assets/programming-model-mobile.svg">
   <img src="assets/programming-model.svg" width="809" alt="SNode.C programming model with separate server and client endpoint flows. Each flow establishes its own SocketConnection, the connection calls the retained SocketContextFactory with create(this), and the returned SocketContext becomes the one active context for that connection. The event loop dispatches descriptor, timer, lifecycle, and data callbacks on the caller thread.">
 </picture>
+</p>
 
 <sub>Server and client flows use the same connection-local model while retaining independent factories and connections.</sub>
 
@@ -148,10 +150,12 @@ A concrete endpoint combines compatible choices for address family, endpoint rol
 
 The connection/context split also allows a protocol transition without opening a second transport connection. HTTP-to-WebSocket upgrade is the clearest example:
 
+<p align="center">
 <picture>
   <source media="(max-width: 600px)" srcset="assets/http-websocket-context-switch-mobile.svg">
   <img src="assets/http-websocket-context-switch.svg" width="809" alt="HTTP-to-WebSocket context replacement inside the same established SocketConnection. The HTTP context remains active while the WebSocket replacement is staged; after the current HTTP read callback returns, the HTTP context detaches with ContextSwitch, the staged context is selected and attached, and WebSocket becomes active without replacing the transport connection.">
 </picture>
+</p>
 
 <sub>The replacement is staged first; the active context changes only after the current HTTP read callback returns.</sub>
 
