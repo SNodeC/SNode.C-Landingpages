@@ -1,0 +1,23 @@
+\documentclass[tikz,border=8pt]{standalone}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\input{landingpages-figure-system.tex}
+\begin{document}
+\begin{tikzpicture}[mqtt desktop]
+
+\node[mqtt state,minimum width=34mm] (runtime) {Runtime state};
+\node[mqtt process,left=\MQGapM of runtime,minimum width=34mm] (input) {Input event};
+\node[mqtt application,right=\MQGapM of runtime,minimum width=34mm] (callback) {Application callback};
+\node[mqtt control,below=\MQGapM of runtime,minimum width=34mm] (control) {Control step};
+\node[mqtt section title,above=\MQGapL of runtime] (title) {Canonical 160 mm GitHub scale test};
+
+\draw[mqtt data flow] (input.east) -- node[mqtt edge label above] {8 mm data flow} (runtime.west);
+\draw[mqtt flow] (runtime.east) -- node[mqtt edge label above] {8 mm dispatch} (callback.west);
+\draw[mqtt control flow] (runtime.south) -- node[mqtt edge label right] {8 mm control} (control.north);
+
+\begin{scope}[on background layer]
+  \node[mqtt figure frame,fit=(title)(input)(runtime)(callback)(control)] {};
+\end{scope}
+
+\end{tikzpicture}
+\end{document}
