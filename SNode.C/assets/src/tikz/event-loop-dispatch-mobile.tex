@@ -9,9 +9,12 @@
   {selected backend at configure time\\\texttt{epoll} · \texttt{poll} · \texttt{select}};
 \node[mqtt control,below=\MQGapM of backend,minimum width=54mm] (start) {\texttt{SNodeC::start()}\\caller thread};
 \node[mqtt control,below=\MQGapM of start,minimum width=54mm] (wait) {wait for work};
-\node[mqtt process,below left=\MQGapM and \MQGapXS of wait,minimum width=30mm,minimum height=16mm,text width=24mm] (descriptors)
+\path (wait.south) ++(0,-\MQGapM) coordinate (sourcetop);
+\path (sourcetop) ++(-0.5\MQGapS,0) coordinate (desctop);
+\path (sourcetop) ++(0.5\MQGapS,0) coordinate (timertop);
+\node[mqtt process,left=0mm of desctop,anchor=north east,minimum width=30mm,minimum height=16mm,text width=24mm] (descriptors)
   {descriptor\\readiness};
-\node[mqtt process,below right=\MQGapM and \MQGapXS of wait,minimum width=30mm,minimum height=16mm,text width=24mm] (timers)
+\node[mqtt process,right=0mm of timertop,anchor=north west,minimum width=30mm,minimum height=16mm,text width=24mm] (timers)
   {timer\\activity};
 \path (descriptors.south) -- (timers.south) coordinate[midway] (sourcesmid);
 \node[mqtt state,below=\MQGapM of sourcesmid,minimum width=54mm] (queue) {event queue};
