@@ -8,7 +8,7 @@ The result is a **typed composition model**, not an arbitrary “mix every layer
 
 <picture>
   <source media="(max-width: 600px)" srcset="../assets/endpoint-composition-mobile.svg">
-  <img src="../assets/endpoint-composition.svg" width="605" alt="Typed SNode.C endpoint composition. One concrete endpoint selects an address family, server or client role, plain or OpenSSL-backed TLS connection mode, and a compatible SocketContext or framework protocol context, then uses the shared event runtime. RFCOMM and L2CAP are marked source-verified rather than runtime-qualified, and the figure explicitly rejects arbitrary cross-product assumptions.">
+  <img src="../assets/endpoint-composition.svg" width="809" alt="Typed SNode.C endpoint composition. One concrete endpoint selects an address family, server or client role, plain or OpenSSL-backed TLS connection mode, and a compatible SocketContext or framework protocol context, then uses the shared event runtime. RFCOMM and L2CAP are marked source-verified rather than runtime-qualified, and the figure explicitly rejects arbitrary cross-product assumptions.">
 </picture>
 
 <sub>Component presence is not a compatibility or qualification matrix; concrete compositions remain typed and evidence-scoped.</sub>
@@ -21,7 +21,7 @@ A normal loop iteration waits for work, spans descriptor readiness into active e
 
 <picture>
   <source media="(max-width: 600px)" srcset="../assets/event-loop-dispatch-mobile.svg">
-  <img src="../assets/event-loop-dispatch.svg" width="605" alt="SNode.C event-loop dispatch cycle. A selected epoll, poll, or select backend is chosen at configure time. SNodeC start runs on the caller thread, waits for descriptor or timer work, places resulting work into the event queue, dispatches events to endpoint, connection, and context callbacks, completes the tick, and repeats while running.">
+  <img src="../assets/event-loop-dispatch.svg" width="809" alt="SNode.C event-loop dispatch cycle. A selected epoll, poll, or select backend is chosen at configure time. SNodeC start runs on the caller thread, waits for descriptor or timer work, places resulting work into the event queue, dispatches events to endpoint, connection, and context callbacks, completes the tick, and repeats while running.">
 </picture>
 
 <sub>`start()` drives the loop on its caller thread; the figure does not imply a worker pool, fairness guarantee, or real-time scheduling.</sub>
@@ -64,7 +64,7 @@ A `SocketConnection` can stage a replacement context while the current context i
 
 <picture>
   <source media="(max-width: 600px)" srcset="../assets/http-websocket-context-switch-mobile.svg">
-  <img src="../assets/http-websocket-context-switch.svg" width="605" alt="HTTP-to-WebSocket context replacement inside one established SocketConnection. HTTP is active while an accepted Upgrade stages a WebSocket replacement. After the current HTTP read callback returns, the HTTP context detaches with ContextSwitch, the staged context is selected and attached, and WebSocket becomes active without replacing the transport connection.">
+  <img src="../assets/http-websocket-context-switch.svg" width="809" alt="HTTP-to-WebSocket context replacement inside one established SocketConnection. HTTP is active while an accepted Upgrade stages a WebSocket replacement. After the current HTTP read callback returns, the HTTP context detaches with ContextSwitch, the staged context is selected and attached, and WebSocket becomes active without replacing the transport connection.">
 </picture>
 
 <sub>The old and replacement contexts are not simultaneously active; replacement is staged until the current HTTP read callback completes.</sub>
@@ -79,7 +79,7 @@ SNode.C supplies several higher-level protocol/application components, but they 
 
 <picture>
   <source media="(max-width: 600px)" srcset="../assets/protocol-relationships-mobile.svg">
-  <img src="../assets/protocol-relationships.svg" width="605" alt="Relationship map for SNode.C protocol contexts. A custom byte-protocol SocketContext and direct MQTT 3.1.1 can attach directly to an established stream. In the HTTP family, Express-style routing and middleware sit above HTTP, SSE/EventSource remains within HTTP, WebSocket is reached through HTTP Upgrade, and MQTT can compose as a WebSocket subprotocol. All paths ultimately use an established stream connection.">
+  <img src="../assets/protocol-relationships.svg" width="809" alt="Relationship map for SNode.C protocol contexts. A custom byte-protocol SocketContext and direct MQTT 3.1.1 can attach directly to an established stream. In the HTTP family, Express-style routing and middleware sit above HTTP, SSE/EventSource remains within HTTP, WebSocket is reached through HTTP Upgrade, and MQTT can compose as a WebSocket subprotocol. All paths ultimately use an established stream connection.">
 </picture>
 
 <sub>Express, SSE, WebSocket, and MQTT are related by different semantics; the figure deliberately avoids presenting them as one flat stack.</sub>
