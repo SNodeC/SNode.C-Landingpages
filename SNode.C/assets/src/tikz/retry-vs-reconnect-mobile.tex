@@ -6,11 +6,11 @@
 \begin{tikzpicture}[mqtt mobile]
 
 \node[mqtt section title] (retrytitle) {Retry};
-\node[mqtt process,below=\MQGapS of retrytitle,minimum width=48mm] (attempt) {listen / connect attempt};
+\node[mqtt process,below=\MQGapS of retrytitle,minimum width=48mm] (attempt) {listen / connect\\attempt};
 \node[mqtt error,below=\MQGapM of attempt,minimum width=48mm] (failed) {establishment fails};
 \node[mqtt decision,below=\MQGapM of failed,minimum width=36mm,text width=28mm] (retrypolicy) {retry allowed?};
 \node[mqtt process,below=\MQGapM of retrypolicy,minimum width=48mm] (backoff) {wait / backoff};
-\node[mqtt process,below=\MQGapM of backoff,minimum width=48mm] (newattempt) {new listen / connect attempt};
+\node[mqtt process,below=\MQGapM of backoff,minimum width=48mm] (newattempt) {new listen / connect\\attempt};
 \node[mqtt process,left=\MQGapM of retrypolicy,minimum width=14mm,text width=8mm] (retryend) {flow\\ends};
 \path (newattempt.east) ++(\MQGapM,0) coordinate (retryrail);
 
