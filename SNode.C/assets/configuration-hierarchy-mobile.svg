@@ -716,17 +716,17 @@
 <use x="153.154251" y="72.60977" xlink:href="#b"/>
 <use x="157.895994" y="72.60977" xlink:href="#f"/>
 </g>
-<path transform="matrix(.996 0 0 -.996 129 39.1)" d="m-59.9-157v-21.8h59.9v-21.8" fill="none" stroke="#849298" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" stroke-width=".578"/>
-<path d="m129 232h39.3v-8.19h-39.3z" fill="#fff"/>
+<path transform="matrix(.996 0 0 -.996 129 39.1)" d="m-59.9-157-0.333-43.6" fill="none" stroke="#849298" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" stroke-width=".578"/>
+<path d="m68.9 232h39.3v-8.19h-39.3z" fill="#fff"/>
 <g fill="#4b5f67">
-<use x="129.822519" y="230.861633" xlink:href="#d"/>
-<use x="134.233734" y="230.861633" xlink:href="#f"/>
-<use x="137.753414" y="230.861633" xlink:href="#f"/>
-<use x="141.273095" y="230.861633" xlink:href="#a"/>
-<use x="145.353781" y="230.861633" xlink:href="#x"/>
-<use x="152.645952" y="230.861633" xlink:href="#y"/>
-<use x="157.387695" y="230.861633" xlink:href="#i"/>
-<use x="159.579902" y="230.861633" xlink:href="#a"/>
-<use x="163.660588" y="230.861633" xlink:href="#f"/>
+<use x="69.916159" y="231.296019" xlink:href="#d"/>
+<use x="74.327373" y="231.296019" xlink:href="#f"/>
+<use x="77.847054" y="231.296019" xlink:href="#f"/>
+<use x="81.366735" y="231.296019" xlink:href="#a"/>
+<use x="85.447421" y="231.296019" xlink:href="#x"/>
+<use x="92.739592" y="231.296019" xlink:href="#y"/>
+<use x="97.481335" y="231.296019" xlink:href="#i"/>
+<use x="99.673542" y="231.296019" xlink:href="#a"/>
+<use x="103.754228" y="231.296019" xlink:href="#f"/>
 </g>
 </svg>
