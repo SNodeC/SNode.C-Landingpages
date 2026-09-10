@@ -16,6 +16,19 @@ and every repository README will become a professional GitHub-native landing
 page, backed by qualified releases, a coherent visual identity, reproducible
 demos, trustworthy project infrastructure, and a responsible launch campaign.
 
+## GitHub figure-width rendering probe
+
+The figure below is intentionally embedded with ordinary GitHub Markdown and no
+HTML width override. Its generated SVG uses the canonical **160 mm desktop
+canvas** so its apparent scale can be compared directly with figures in the
+product READMEs.
+
+![Canonical 160 mm GitHub scale test](README-Rendering-Test/assets/github-readme-width-test.svg)
+
+*Rendering probe only: the process, state, application, and control boxes use the
+shared canonical TikZ system, with 8 mm edge-to-edge connectors and 2 mm label
+clearance.*
+
 ## Success criteria
 
 A technically qualified visitor should be able to answer these questions within
