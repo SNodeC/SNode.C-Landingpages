@@ -1,34 +1,41 @@
-\documentclass[tikz,border=8pt]{standalone}
+\documentclass[tikz,border=0pt]{standalone}
 \usepackage[T1]{fontenc}
 \usepackage{lmodern}
 \input{mqttsystem-figure-system.tex}
+\input{snodec-canonical-figure-system.tex}
 \begin{document}
 \begin{tikzpicture}[mqtt mobile]
 \tikzset{
-  half/.style={minimum width=32mm,text width=27mm},
-  wide/.style={minimum width=72mm,text width=64mm}
+  choice/.style={minimum width=37mm,text width=31mm,minimum height=20mm},
+  example/.style={mqtt config,minimum width=37mm,text width=31mm,minimum height=25mm},
+  summary/.style={mqtt note,minimum width=80mm,text width=72mm,minimum height=17mm}
 }
 
-\node[mqtt control,half] (sub)
-  {SUBSCRIBE QoS\\requested delivery ceiling\\for a topic filter};
-\node[mqtt process,half,right=8mm of sub] (pub)
-  {PUBLISH QoS\\QoS carried by an\\outgoing message};
+\node[mqtt control,choice] (subscribe)
+  {\textbf{Subscription QoS}\\requested delivery\\ceiling per filter};
+\node[mqtt data,choice,right=\MQHorizontalGapTight of subscribe] (publish)
+  {\textbf{Publish QoS}\\QoS on an outgoing\\PUBLISH};
 
-\node[mqtt note,half,below=\MQGapS of sub] (subex)
-  {Integrator: \texttt{subscription.qos}\\CLI / Store: default or \texttt{\#\#<qos>} override};
-\node[mqtt note,half,below=\MQGapS of pub] (pubex)
-  {Integrator: output \texttt{qos}\\MQTTCli publish topic may use \texttt{\#\#<qos>}};
-\draw[mqtt association] (sub.south) -- (subex.north);
-\draw[mqtt association] (pub.south) -- (pubex.north);
+\node[example,below=\MQGapS of subscribe] (integratorSub)
+  {\textbf{MQTTIntegrator}\\\texttt{subscription.qos}\\requested SUBSCRIBE QoS};
+\node[example,below=\MQGapS of publish] (integratorPub)
+  {\textbf{MQTTIntegrator}\\output \texttt{qos}\\mapped PUBLISH QoS};
 
-\node[mqtt note,wide,below=\MQGapM of $(subex.south)!0.5!(pubex.south)$] (distinct)
-  {Independent decisions even when the numeric values happen to be equal.};
+\node[example,below=\MQGapS of integratorSub] (cliSub)
+  {\textbf{MQTTCli}\\\texttt{-{}-qos} default\\filter \texttt{\#\#<qos>} override};
+\node[example,below=\MQGapS of integratorPub] (cliPub)
+  {\textbf{MQTTCli}\\\texttt{-{}-qos} default\\topic \texttt{\#\#<qos>} override};
+
+\node[summary,below=\MQGapM of $(cliSub.south)!0.5!(cliPub.south)$] (note)
+  {Without an override, both MQTTCli operations use the session default. Each \texttt{\#\#<qos>} suffix overrides only its own filter or publish topic; the decisions remain independent.};
+
+\node[fit=(subscribe)(publish)(integratorSub)(integratorPub)(cliSub)(cliPub)(note)] (contentBounds) {};
+\coordinate (titleY) at ($(subscribe.north)+(0,\MQTitleGap)$);
+\node[mqtt section title,anchor=south west] (figureTitle)
+  at (contentBounds.west |- titleY) {Subscription QoS versus publish QoS};
 
 \begin{pgfonlayer}{background}
-  \node[mqtt figure frame,fit=(sub)(pub)(subex)(pubex)(distinct)] (frame) {};
+  \node[mqtt figure frame,fit=(figureTitle)(contentBounds)] {};
 \end{pgfonlayer}
-\node[mqtt section title] at ($(frame.north west)+(\MQTitleGap,-\MQTitleGap)$)
-  {Subscribe QoS $\neq$ publish QoS};
-
 \end{tikzpicture}
 \end{document}

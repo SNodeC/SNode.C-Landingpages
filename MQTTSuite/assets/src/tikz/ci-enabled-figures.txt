@@ -74,4 +74,8 @@ json-topic-projection-extraction-mobile
 mqttsuite-configuration-hierarchy
 mqttsuite-configuration-hierarchy-mobile
 
-# Figure 19 and later stay disabled until their individual refinement round starts.
+# Figure 19 — Subscription QoS versus publish QoS
+qos-subscribe-vs-publish
+qos-subscribe-vs-publish-mobile
+
+# Figure 20 and later stay disabled until their individual refinement round starts.
