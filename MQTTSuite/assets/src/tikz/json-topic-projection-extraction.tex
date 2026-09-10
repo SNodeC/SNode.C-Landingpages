@@ -1,62 +1,81 @@
-\documentclass[tikz,border=8pt]{standalone}
+\documentclass[tikz,border=0pt]{standalone}
 \usepackage[T1]{fontenc}
 \usepackage{lmodern}
 \input{mqttsystem-figure-system.tex}
+\input{snodec-canonical-figure-system.tex}
 \begin{document}
 \begin{tikzpicture}[mqtt desktop]
-\tikzset{box/.style={mqtt process,minimum width=42mm,text width=37mm}}
+\tikzset{
+  main/.style={mqtt process,minimum width=36mm,text width=31mm,minimum height=14mm},
+  source/.style={mqtt config,minimum width=25mm,text width=21mm,minimum height=16mm},
+  endnote/.style={mqtt note,minimum width=24mm,text width=20mm,minimum height=11mm},
+  qualifier/.style={mqtt note,minimum width=36mm,text width=31mm,minimum height=14mm}
+}
+\def\MQFlowSpan{8.3mm}
+\def\MQHalfFlow{4.15mm}
+\def\MQGroupLead{12.8mm}
 
-\node[mqtt data,box] (publish) {MQTT PUBLISH\\topic + payload + metadata};
-\node[mqtt control,box,right=\MQHorizontalGap of publish] (store)
-  {MQTTStore\\receive / store step};
+\node[mqtt data,main] (publish) at (-22.15mm,0)
+  {\textbf{MQTT PUBLISH}\\topic + payload + metadata};
+\node[mqtt control,main] (store) at (22.15mm,0)
+  {\textbf{MQTTStore}\\\texttt{store(message)}};
 \draw[mqtt data flow] (publish.east) -- (store.west);
 
-\node[mqtt database,minimum width=44mm,right=32mm of store,yshift=20mm] (raw)
-  {raw-table INSERT attempt\\independent outcome};
-\node[mqtt decision,minimum width=34mm,right=32mm of store,yshift=-20mm] (eligible)
-  {valid JSON\\+ topic match?};
-\draw[mqtt data flow] \MQPortEast{store}{.70} -- ++(8mm,0) |- (raw.west);
-\draw[mqtt control flow] \MQPortEast{store}{.30} -- ++(8mm,0) |- (eligible.west);
+% Two independent paths leave store(message): raw INSERT and projection work.
+\node[mqtt database,minimum width=36mm,below=\MQFlowSpan of store,xshift=-57mm] (raw)
+  {raw-table\\INSERT attempt};
+\node[mqtt decision,minimum width=31mm,below=\MQFlowSpan of store,xshift=3mm] (json)
+  {valid JSON\\payload?};
 
-\node[mqtt config,box,right=34mm of eligible,yshift=24mm] (topic)
-  {\texttt{topic\_level}\\one topic segment};
-\node[mqtt config,box,right=34mm of eligible] (pointer)
-  {\texttt{json\_pointer}\\value from parsed JSON};
-\node[mqtt config,box,right=34mm of eligible,yshift=-24mm] (literal)
-  {\texttt{literal}\\configured constant};
+\draw[mqtt data flow] \MQPortSouth{store}{.30}
+  -- ++(0,-\MQHalfFlow) -| (raw.north);
+\draw[mqtt control flow] \MQPortSouth{store}{.70}
+  -- ++(0,-\MQHalfFlow) -| (json.north);
 
-\coordinate (source-top) at ($(topic.west)+(-8mm,0)$);
-\coordinate (source-mid) at ($(pointer.west)+(-8mm,0)$);
-\coordinate (source-bottom) at ($(literal.west)+(-8mm,0)$);
-\draw[mqtt association] (source-top) -- (source-bottom);
-\draw[mqtt control flow] (eligible.east) -- node[mqtt branch label,above]{YES} (source-mid);
-\draw[mqtt association] (source-top) -- (topic.west);
-\draw[mqtt association] (source-mid) -- (pointer.west);
-\draw[mqtt association] (source-bottom) -- (literal.west);
+\node[qualifier,below=\MQGapS of raw] (rawNote)
+  {Queued first. Raw completion does not gate projection processing.};
+\draw[mqtt association] (raw.south) -- (rawNote.north);
 
-\node[mqtt database,minimum width=48mm,right=34mm of pointer] (typed)
-  {typed projection INSERT attempt(s)\\for the matching projection};
-\coordinate (out-top) at ($(topic.east)+(8mm,0)$);
-\coordinate (out-mid) at ($(pointer.east)+(8mm,0)$);
-\coordinate (out-bottom) at ($(literal.east)+(8mm,0)$);
-\draw[mqtt association] (topic.east) -- (out-top);
-\draw[mqtt association] (pointer.east) -- (out-mid);
-\draw[mqtt association] (literal.east) -- (out-bottom);
-\draw[mqtt association] (out-top) -- (out-bottom);
-\draw[mqtt data flow] (out-mid) -- (typed.west);
+\node[endnote,right=\MQFlowSpan of json] (notJson)
+  {NO\\projection path ends};
+\draw[mqtt control flow] (json.east) -- node[mqtt branch label,above]{NO} (notJson.west);
 
-\node[mqtt note,minimum width=46mm,text width=41mm,below=\MQGapM of eligible] (no)
-  {NO: no typed projection insert};
-\draw[mqtt association] (eligible.south) -- node[mqtt branch label,right]{NO} (no.north);
+\node[mqtt decision,minimum width=34mm,below=\MQFlowSpan of json] (match)
+  {any matching\\projection?};
+\draw[mqtt control flow] (json.south) -- node[mqtt branch label,right]{YES} (match.north);
 
-\node[mqtt note,minimum width=72mm,text width=66mm,below=\MQGapM of raw,xshift=50mm] (note)
-  {Raw persistence and projection processing are independent. Invalid JSON or a nonmatching topic produces no typed projection insert.};
+\node[endnote,right=\MQFlowSpan of match] (noMatch)
+  {NO\\no typed INSERT};
+\draw[mqtt control flow] (match.east) -- node[mqtt branch label,above]{NO} (noMatch.west);
+
+% Exactly one configured source per SQL column; all three source forms are peers.
+\node[source,below=\MQGroupLead of match] (pointer)
+  {\texttt{json\_pointer}\\parsed JSON\\value};
+\node[source,left=\MQHorizontalGapTight of pointer] (topic)
+  {\texttt{topic\_level}\\zero-based\\topic segment};
+\node[source,right=\MQHorizontalGapTight of pointer] (literal)
+  {\texttt{literal}\\configured\\constant};
+
+\node[fit=(topic)(pointer)(literal),inner sep=4.5mm] (sourceBounds) {};
+\draw[mqtt control flow] (match.south)
+  -- node[mqtt branch label,right]{YES · each match} (sourceBounds.north);
+
+\node[mqtt database,minimum width=50mm,text width=44mm,below=\MQFlowSpan of sourceBounds] (typed)
+  {typed projection INSERT attempt(s)\\one per matching projection};
+\draw[mqtt data flow] (sourceBounds.south)
+  -- node[mqtt edge label,right]{typed SQL column values} (typed.north);
+
+\coordinate (leftEdge) at (publish.west);
+\coordinate (titleY) at ($(publish.north)+(0,\MQTitleGap)$);
+\node[mqtt section title,anchor=south west] (figureTitle)
+  at (leftEdge |- titleY) {JSON/topic projection extraction};
 
 \begin{pgfonlayer}{background}
-  \node[mqtt figure frame,fit=(publish)(store)(raw)(eligible)(topic)(pointer)(literal)(typed)(no)(note)] (frame) {};
+  \node[mqtt figure frame,fit=(figureTitle)(publish)(store)(raw)(rawNote)(json)(notJson)(match)(noMatch)(sourceBounds)(typed)] {};
+  \node[mqtt group,fit=(topic)(pointer)(literal),inner sep=4.5mm] (sources) {};
 \end{pgfonlayer}
-\node[mqtt section title] at ($(frame.north west)+(\MQTitleGap,-\MQTitleGap)$)
-  {JSON/topic projection extraction};
+\node[mqtt edge label,anchor=west]
+  at ($(sources.north west)+(3mm,0)$) {configured source for each SQL column};
 
 \end{tikzpicture}
 \end{document}

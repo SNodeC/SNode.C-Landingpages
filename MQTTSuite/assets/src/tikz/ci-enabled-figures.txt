@@ -66,4 +66,8 @@ loop-boundaries-mobile
 mqttcli-command-hierarchy
 mqttcli-command-hierarchy-mobile
 
-# Figure 17 and later stay disabled until their individual refinement round starts.
+# Figure 17 — JSON/topic projection extraction
+json-topic-projection-extraction
+json-topic-projection-extraction-mobile
+
+# Figure 18 and later stay disabled until their individual refinement round starts.
