@@ -9,11 +9,12 @@
   {selected backend at configure time\\\texttt{epoll} · \texttt{poll} · \texttt{select}};
 \node[mqtt control,below=\MQGapM of backend,minimum width=44mm] (start) {\texttt{SNodeC::start()}\\caller thread};
 \node[mqtt control,below=\MQGapM of start,minimum width=44mm] (wait) {wait for work};
-\path (wait.south) ++(0,-\MQGapXL) coordinate (sourcesrow);
-\node[mqtt process,left=\MQGapS of sourcesrow,anchor=east,minimum width=30mm,text width=24mm] (descriptors) {descriptor readiness};
-\node[mqtt process,right=\MQGapS of sourcesrow,anchor=west,minimum width=30mm,text width=24mm] (timers) {timer activity};
+\node[mqtt process,below left=\MQGapM and \MQGapS of wait,minimum width=30mm,minimum height=14mm,text width=24mm] (descriptors)
+  {descriptor\\readiness};
+\node[mqtt process,below right=\MQGapM and \MQGapS of wait,minimum width=30mm,minimum height=14mm,text width=24mm] (timers)
+  {timer\\activity};
 \path (descriptors.south) -- (timers.south) coordinate[midway] (sourcesmid);
-\node[mqtt state,below=\MQGapXL of sourcesmid,minimum width=44mm] (queue) {event queue};
+\node[mqtt state,below=\MQGapM of sourcesmid,minimum width=44mm] (queue) {event queue};
 \node[mqtt control,below=\MQGapM of queue,minimum width=44mm] (dispatch) {dispatch events};
 \node[mqtt application,below=\MQGapM of dispatch,minimum width=60mm] (callbacks)
   {endpoint / connection / context callbacks};
@@ -40,7 +41,7 @@
 \draw[mqtt control flow] (queue.south) -- (dispatch.north);
 \draw[mqtt control flow] (dispatch.south) -- (callbacks.north);
 \draw[mqtt control flow] (callbacks.south) -- (next.north);
-\path (callbacks.east) ++(\MQGapM,0) coordinate (repeatx);
+\path (timers.east) ++(\MQGapXS,0) coordinate (repeatx);
 \path (repeatx |- next.east) coordinate (repeatrail);
 \draw[mqtt control flow] (next.east) -- (repeatrail) |- node[mqtt edge label,near end,right] {repeat} (wait.east);
 
