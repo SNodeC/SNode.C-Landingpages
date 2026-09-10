@@ -1,0 +1,137 @@
+name: README rendering test figure
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - CMakeLists.txt
+      - .github/workflows/publish-readme-rendering-test.yml
+      - shared/assets/src/tikz/**
+      - README-Rendering-Test/assets/src/tikz/**
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: readme-rendering-test-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate-and-publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install figure toolchain
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            texlive-latex-extra \
+            texlive-fonts-recommended \
+            lmodern \
+            fonts-lmodern \
+            poppler-utils \
+            scour
+
+      - name: Generate canonical README rendering test
+        shell: bash
+        run: |
+          set -euo pipefail
+          cmake -S . -B cmake-build-figures
+          cmake --build cmake-build-figures \
+            --target tikz_README_Rendering_Test_github_readme_width_test \
+            --parallel 8
+
+      - name: Verify fixed 160 mm SVG canvas
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          svg = Path("README-Rendering-Test/assets/github-readme-width-test.svg").read_text(encoding="utf-8")
+          root = svg.split(">", 1)[0]
+          if 'width="454pt"' not in root:
+              raise SystemExit(f"unexpected SVG width: {root}")
+          match = re.search(r'viewBox="0 0 ([0-9.]+) ([0-9.]+)"', root)
+          if not match or float(match.group(1)) != 454.0:
+              raise SystemExit(f"unexpected SVG viewBox: {root}")
+          print("verified canonical desktop canvas: 454pt / 160 mm")
+          PY
+
+      - name: Add rendering probe to root README
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+
+          path = Path("README.md")
+          text = path.read_text(encoding="utf-8")
+          heading = "## GitHub figure-width rendering probe"
+          if heading not in text:
+              marker = "trustworthy project infrastructure, and a responsible launch campaign.\n"
+              block = """
+
+## GitHub figure-width rendering probe
+
+The figure below is intentionally embedded with ordinary GitHub Markdown and no
+HTML width override. Its generated SVG uses the canonical **160 mm desktop
+canvas** so its apparent scale can be compared directly with figures in the
+product READMEs.
+
+![Canonical 160 mm GitHub scale test](README-Rendering-Test/assets/github-readme-width-test.svg)
+
+*Rendering probe only: the process, state, application, and control boxes use the
+shared canonical TikZ system, with 8 mm edge-to-edge connectors and 2 mm label
+clearance.*
+"""
+              if marker not in text:
+                  raise SystemExit("README insertion marker not found")
+              text = text.replace(marker, marker + block, 1)
+              path.write_text(text, encoding="utf-8")
+          PY
+
+      - name: Publish generated SVG and README probe
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        shell: bash
+        run: |
+          set -euo pipefail
+          source_inputs=(
+            CMakeLists.txt
+            .github/workflows/publish-readme-rendering-test.yml
+            shared/assets/src/tikz
+            README-Rendering-Test/assets/src/tikz
+          )
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -f README-Rendering-Test/assets/github-readme-width-test.svg README.md
+          if git diff --cached --quiet; then
+            echo "README rendering probe already published."
+            exit 0
+          fi
+
+          git commit -m "Publish canonical README rendering probe"
+
+          for attempt in 1 2 3; do
+            git fetch origin main
+            if ! git diff --quiet "${GITHUB_SHA}"..origin/main -- "${source_inputs[@]}"; then
+              echo "Newer rendering-test inputs exist on main; skip stale publication."
+              exit 0
+            fi
+            git rebase origin/main
+            if git push origin HEAD:main; then
+              exit 0
+            fi
+            echo "main moved during publication; retrying (${attempt}/3)."
+          done
+
+          echo "Unable to publish README rendering probe after retries."
+          exit 1
