@@ -34,9 +34,40 @@ jobs:
           cmake --build cmake-build-figures --target tikz_README_Rendering_Test_github_readme_width_test --parallel 8
 
       - name: Verify fixed canvas
+        shell: bash
         run: |
-          grep -q 'width="454pt"' README-Rendering-Test/assets/github-readme-width-test.svg
-          grep -q 'viewBox="0 0 454 ' README-Rendering-Test/assets/github-readme-width-test.svg
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          def canvas(path):
+              text = Path(path).read_text(encoding="utf-8")
+              root = text.split(">", 1)[0]
+              width = re.search(r'\bwidth="([0-9.]+)pt"', root)
+              viewbox = re.search(r'\bviewBox="([^\"]+)"', root)
+              if not width or not viewbox:
+                  raise SystemExit(f"cannot read SVG canvas from {path}: {root}")
+              values = [float(v) for v in viewbox.group(1).split()]
+              if len(values) != 4:
+                  raise SystemExit(f"invalid viewBox in {path}: {viewbox.group(1)}")
+              return float(width.group(1)), values[2], root + ">"
+
+          test_width, test_viewbox, test_root = canvas(
+              "README-Rendering-Test/assets/github-readme-width-test.svg"
+          )
+          ref_width, ref_viewbox, ref_root = canvas(
+              "SNode.C/assets/programming-model.svg"
+          )
+          print("test:", test_root)
+          print("reference:", ref_root)
+          if abs(test_width - ref_width) > 0.001 or abs(test_viewbox - ref_viewbox) > 0.001:
+              raise SystemExit(
+                  f"canvas mismatch: test={test_width}pt/{test_viewbox}, "
+                  f"reference={ref_width}pt/{ref_viewbox}"
+              )
+          print(f"canvas matches canonical desktop SVG: {test_width}pt / viewBox width {test_viewbox}")
+          PY
 
       - name: Publish generated SVG
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
