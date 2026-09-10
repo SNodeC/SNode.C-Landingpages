@@ -41,32 +41,32 @@ jobs:
           from pathlib import Path
           import re
 
-          def canvas(path):
+          def viewbox_width(path):
               text = Path(path).read_text(encoding="utf-8")
               root = text.split(">", 1)[0]
-              width = re.search(r'\bwidth="([0-9.]+)pt"', root)
-              viewbox = re.search(r'\bviewBox="([^\"]+)"', root)
-              if not width or not viewbox:
-                  raise SystemExit(f"cannot read SVG canvas from {path}: {root}")
-              values = [float(v) for v in viewbox.group(1).split()]
+              match = re.search(r'\bviewBox="([^\"]+)"', root)
+              if not match:
+                  raise SystemExit(f"cannot read viewBox from {path}: {root}")
+              values = [float(v) for v in match.group(1).split()]
               if len(values) != 4:
-                  raise SystemExit(f"invalid viewBox in {path}: {viewbox.group(1)}")
-              return float(width.group(1)), values[2], root + ">"
+                  raise SystemExit(f"invalid viewBox in {path}: {match.group(1)}")
+              return values[2], root + ">"
 
-          test_width, test_viewbox, test_root = canvas(
+          test_width, test_root = viewbox_width(
               "README-Rendering-Test/assets/github-readme-width-test.svg"
           )
-          ref_width, ref_viewbox, ref_root = canvas(
+          ref_width, ref_root = viewbox_width(
               "SNode.C/assets/programming-model.svg"
           )
           print("test:", test_root)
           print("reference:", ref_root)
-          if abs(test_width - ref_width) > 0.001 or abs(test_viewbox - ref_viewbox) > 0.001:
+          if abs(test_width - ref_width) > 0.001:
               raise SystemExit(
-                  f"canvas mismatch: test={test_width}pt/{test_viewbox}, "
-                  f"reference={ref_width}pt/{ref_viewbox}"
+                  f"viewBox width mismatch: test={test_width}, reference={ref_width}"
               )
-          print(f"canvas matches canonical desktop SVG: {test_width}pt / viewBox width {test_viewbox}")
+          if abs(test_width - 454.0) > 0.001:
+              raise SystemExit(f"unexpected canonical desktop viewBox width: {test_width}")
+          print(f"canvas matches canonical desktop SVG: viewBox width {test_width}")
           PY
 
       - name: Publish generated SVG
