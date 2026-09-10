@@ -78,4 +78,8 @@ mqttsuite-configuration-hierarchy-mobile
 qos-subscribe-vs-publish
 qos-subscribe-vs-publish-mobile
 
-# Figure 20 and later stay disabled until their individual refinement round starts.
+# Figure 20 — Broker trust boundary
+broker-trust-boundary
+broker-trust-boundary-mobile
+
+# Figure 21 and later stay disabled until their individual refinement round starts.

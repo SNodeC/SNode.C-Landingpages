@@ -1,48 +1,59 @@
-\documentclass[tikz,border=8pt]{standalone}
+\documentclass[tikz,border=0pt]{standalone}
 \usepackage[T1]{fontenc}
 \usepackage{lmodern}
 \input{mqttsystem-figure-system.tex}
+\input{snodec-canonical-figure-system.tex}
+\pgfdeclarelayer{framebackground}
+\pgfsetlayers{framebackground,background,main}
 \begin{document}
 \begin{tikzpicture}[mqtt desktop]
-\tikzset{box/.style={mqtt process,minimum width=42mm,text width=37mm}}
+\newcommand{\MQArrowRun}{8.3mm}
+\tikzset{
+  client/.style={mqtt external,minimum width=72mm,text width=66mm,minimum height=13mm},
+  ingress/.style={mqtt process,minimum width=82mm,text width=76mm,minimum height=16mm},
+  surface/.style={minimum width=54mm,text width=48mm,minimum height=25mm},
+  security/.style={minimum width=62mm,text width=56mm,minimum height=29mm}
+}
 
-\node[mqtt external,box] (mqttclients) {direct MQTT clients};
-\node[mqtt data,box,right=\MQHorizontalGap of mqttclients] (direct) {direct MQTT listeners};
-\node[mqtt application,minimum width=46mm,text width=41mm,right=\MQHorizontalGap of direct] (core)
-  {MQTTBroker\\shared Broker / session state};
-\draw[mqtt data flow] (mqttclients.east) -- (direct.west);
-\draw[mqtt data flow] (direct.east) -- ++(8mm,0) |- \MQPortWest{core}{.70};
+\node[client] (client)
+  {browser / HTTP client or MQTT-WebSocket client};
+\node[ingress,below=\MQArrowRun of client] (router)
+  {\textbf{shared Broker HTTP / HTTPS listener + Express router}\\one ingress for browser, administration, SSE, and MQTT WebSocket};
+\draw[mqtt flow] (client.south) -- (router.north);
 
-\node[mqtt external,box,below=30mm of mqttclients] (httpclients)
-  {browser / HTTP or MQTT-WebSocket client};
-\node[mqtt control,minimum width=52mm,text width=47mm,right=\MQHorizontalGap of httpclients] (router)
-  {shared HTTP / HTTPS listener + Express router};
-\draw[mqtt control flow] (httpclients.east) -- (router.west);
-
-\node[mqtt data,box,right=30mm of router,yshift=15mm] (ws)
-  {MQTT WebSocket\\\texttt{/}, \texttt{/ws}, \texttt{/mqtt}};
-\node[mqtt control,box,right=30mm of router,yshift=-15mm] (admin)
-  {dashboard + JSON admin API + SSE};
-\draw[mqtt data flow] \MQPortEast{router}{.68} -- ++(8mm,0) |- (ws.west);
-\draw[mqtt control flow] \MQPortEast{router}{.32} -- ++(8mm,0) |- (admin.west);
-\draw[mqtt data flow] (ws.east) -- ++(8mm,0) |- \MQPortSouth{core}{.70};
-\draw[mqtt control flow] \MQPortNorth{admin}{.70} -- ++(0,8mm) -| \MQPortSouth{core}{.30};
-
-\node[mqtt warning,minimum width=66mm,text width=60mm,below=\MQGapM of admin] (risk)
-  {No application authentication on the Broker operator routes. API/event CORS is wildcard. Client event representation can include the supplied MQTT password.};
-\node[mqtt note,minimum width=66mm,text width=60mm,below=\MQGapS of risk] (tls)
-  {HTTPS protects transport only. Protect the shared HTTP exposure with a trusted network policy or path-aware external access control.};
-\draw[mqtt association] (admin.south) -- (risk.north);
-\draw[mqtt association] (risk.south) -- (tls.north);
+\matrix (surfaces) [matrix of nodes,below=\MQArrowRun of router,column sep=\MQHorizontalGap,inner sep=0pt,outer sep=0pt,
+  nodes={surface,anchor=center}] {
+  \node[mqtt data] (ws) {\textbf{MQTT WebSocket data route}\\\texttt{/ · /ws · /mqtt}\\subprotocol \texttt{mqtt}}; &
+  \node[mqtt control] (admin) {\textbf{Operator / browser routes}\\dashboard \texttt{/clients/*}\\JSON \texttt{/api/mqtt/*} · SSE}; \\
+};
+\coordinate (routerWsPort) at ($(router.south west)!.35!(router.south east)$);
+\coordinate (routerAdminPort) at ($(router.south west)!.65!(router.south east)$);
+\coordinate (wsMid) at ($(routerWsPort)!0.5!(ws.north)$);
+\coordinate (adminMid) at ($(routerAdminPort)!0.5!(admin.north)$);
+\draw[mqtt data flow]
+  (routerWsPort) -- (routerWsPort |- wsMid) -| (ws.north);
+\draw[mqtt control flow]
+  (routerAdminPort) -- (routerAdminPort |- adminMid) -| (admin.north);
 
 \begin{pgfonlayer}{background}
-  \node[mqtt figure frame,fit=(mqttclients)(direct)(core)(httpclients)(router)(ws)(admin)(risk)(tls)] (frame) {};
-  \node[mqtt trust boundary,fit=(router)(ws)(admin)(risk)(tls)] (trust) {};
+  \node[mqtt trust boundary,fit=(router)(ws)(admin)] (trust) {};
 \end{pgfonlayer}
-\node[mqtt section title] at ($(frame.north west)+(\MQTitleGap,-\MQTitleGap)$)
-  {MQTTBroker exposure and required trust boundary};
-\node[mqtt annotation,anchor=west,fill=MQSurface] at ($(trust.north west)+(\MQTitleGap,0)$)
-  {required external / trusted deployment boundary — not enforced by MQTTBroker};
+\node[mqtt annotation,text width=112mm,align=center,below=\MQLabelGap of trust] (trustLabel)
+  {Dashed region: required external / trusted deployment boundary — not enforced by MQTTBroker};
 
+\matrix (securityRow) [matrix of nodes,below=\MQGapM of trustLabel,column sep=\MQHorizontalGap,inner sep=0pt,outer sep=0pt,
+  nodes={security,anchor=center}] {
+  \node[mqtt warning] (risk) {\textbf{Current Broker exposure}\\No application authentication on operator routes. Wildcard CORS: \texttt{/api/mqtt/*} and \texttt{/api/mqtt/events}. Client-event JSON/logging can include the supplied MQTT password.}; &
+  \node[mqtt note] (tls) {\textbf{Deployment control}\\HTTPS protects transport, not route authorization. Use loopback/private binding, firewall policy, or authenticated path-aware external access control.}; \\
+};
+
+\node[fit=(client)(trust)(trustLabel)(securityRow)] (contentBounds) {};
+\coordinate (titleY) at ($(client.north)+(0,\MQTitleGap)$);
+\node[mqtt section title,anchor=south west] (figureTitle)
+  at (contentBounds.west |- titleY) {MQTTBroker HTTP exposure and required trust boundary};
+
+\begin{pgfonlayer}{framebackground}
+  \node[mqtt figure frame,fit=(figureTitle)(contentBounds)] {};
+\end{pgfonlayer}
 \end{tikzpicture}
 \end{document}
