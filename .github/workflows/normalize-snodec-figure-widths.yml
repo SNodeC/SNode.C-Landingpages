@@ -1,0 +1,78 @@
+name: Normalize SNode.C figure widths
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/normalize-snodec-figure-widths.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  normalize:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Normalize SNode.C Markdown figure widths
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          paths = [
+              Path("SNode.C/README.md"),
+              Path("SNode.C/docs/architecture.md"),
+              Path("SNode.C/docs/configuration.md"),
+          ]
+
+          total = 0
+          for path in paths:
+              text = path.read_text(encoding="utf-8")
+              updated, count = re.subn(
+                  r'<img src="([^"]+)" alt="',
+                  r'<img src="\1" width="605" alt="',
+                  text,
+              )
+              if count == 0:
+                  raise SystemExit(f"no figure img tags updated in {path}")
+              path.write_text(updated, encoding="utf-8")
+              total += count
+              print(f"{path}: {count} figure(s)")
+
+          if total != 9:
+              raise SystemExit(f"expected 9 SNode.C figure placements, updated {total}")
+
+          for path in paths:
+              text = path.read_text(encoding="utf-8")
+              tags = re.findall(r'<img\b[^>]*>', text)
+              for tag in tags:
+                  if 'width="605"' not in tag:
+                      raise SystemExit(f"missing width in {path}: {tag}")
+                  if 'alt="' not in tag:
+                      raise SystemExit(f"missing alt in {path}: {tag}")
+          PY
+
+      - name: Commit normalized widths
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add SNode.C/README.md SNode.C/docs/architecture.md SNode.C/docs/configuration.md
+          git diff --cached --check
+          if git diff --cached --quiet; then
+            exit 0
+          fi
+          git commit -m "Normalize SNode.C figure display widths"
+          git fetch origin main
+          git rebase origin/main
+          git push origin HEAD:main
