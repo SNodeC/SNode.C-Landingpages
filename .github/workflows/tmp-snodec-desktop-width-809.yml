@@ -1,0 +1,68 @@
+name: Temporary SNode.C desktop width 809
+
+on:
+  push:
+    branches:
+      - tmp-snodec-desktop-width-809
+    paths:
+      - .github/workflows/tmp-snodec-desktop-width-809.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  normalize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set desktop figure width to 809 only
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          paths = [
+              Path('SNode.C/README.md'),
+              Path('SNode.C/docs/architecture.md'),
+              Path('SNode.C/docs/configuration.md'),
+          ]
+
+          total = 0
+          for path in paths:
+              text = path.read_text(encoding='utf-8')
+              before_sources = re.findall(r'<source\b[^>]*>', text)
+              updated, count = re.subn(r'(<img\b[^>]*?)width="605"([^>]*>)', r'\1width="809"\2', text)
+              if count == 0:
+                  raise SystemExit(f'no desktop width=605 img tags found in {path}')
+              after_sources = re.findall(r'<source\b[^>]*>', updated)
+              if before_sources != after_sources:
+                  raise SystemExit(f'mobile <source> changed unexpectedly in {path}')
+              for tag in re.findall(r'<img\b[^>]*>', updated):
+                  if 'width="809"' not in tag:
+                      raise SystemExit(f'desktop img missing width=809 in {path}: {tag}')
+                  if 'alt="' not in tag:
+                      raise SystemExit(f'alt missing in {path}: {tag}')
+              path.write_text(updated, encoding='utf-8')
+              total += count
+              print(f'{path}: {count}')
+
+          if total != 9:
+              raise SystemExit(f'expected 9 desktop figure placements, changed {total}')
+          PY
+
+      - name: Commit staged desktop widths
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add SNode.C/README.md SNode.C/docs/architecture.md SNode.C/docs/configuration.md
+          git diff --cached --check
+          git commit -m "Set SNode.C desktop figure width to 809"
+          git push origin HEAD:tmp-snodec-desktop-width-809
