@@ -25,9 +25,9 @@
 \draw[mqtt control flow] (resolve.south) -- (effective.north);
 
 \node[mqtt section title,below=\MQGapXL of effective] (outputstitle) {Effective-value inspection / persistence};
-\node[mqtt process,below=\MQGapS of outputstitle,minimum width=34mm] (cmd) {\texttt{--command-line=...}};
-\node[mqtt process,left=\MQGapS of cmd,minimum width=34mm] (show) {\texttt{--show-config}};
-\node[mqtt process,right=\MQGapS of cmd,minimum width=34mm] (write) {\texttt{--write-config}\\persistent values};
+\node[mqtt process,below=\MQGapS of outputstitle,minimum width=34mm,minimum height=14mm] (cmd) {\texttt{--command-line=...}};
+\node[mqtt process,left=\MQGapS of cmd,minimum width=34mm,minimum height=14mm] (show) {\texttt{--show-config}};
+\node[mqtt process,right=\MQGapS of cmd,minimum width=34mm,minimum height=14mm] (write) {\texttt{--write-config}\\persistent values};
 \node[mqtt note,below=\MQGapL of cmd,minimum width=88mm] (help) {\texttt{--help=expanded} inspects the hierarchy};
 \path (show.west) ++(-\MQGroupPad,0) coordinate (outerleft);
 \path (write.east) ++(\MQGroupPad,0) coordinate (outerright);
