@@ -16,7 +16,7 @@ A `SocketServer` follows the listen/accept path and a `SocketClient` follows the
 
 <picture>
   <source media="(max-width: 600px)" srcset="assets/programming-model-mobile.svg">
-  <img src="assets/programming-model.svg" alt="SNode.C programming model with separate server and client endpoint flows. Each flow establishes its own SocketConnection, the connection calls the retained SocketContextFactory with create(this), and the returned SocketContext becomes the one active context for that connection. The event loop dispatches descriptor, timer, lifecycle, and data callbacks on the caller thread.">
+  <img src="assets/programming-model.svg" width="605" alt="SNode.C programming model with separate server and client endpoint flows. Each flow establishes its own SocketConnection, the connection calls the retained SocketContextFactory with create(this), and the returned SocketContext becomes the one active context for that connection. The event loop dispatches descriptor, timer, lifecycle, and data callbacks on the caller thread.">
 </picture>
 
 <sub>Server and client flows use the same connection-local model while retaining independent factories and connections.</sub>
@@ -150,7 +150,7 @@ The connection/context split also allows a protocol transition without opening a
 
 <picture>
   <source media="(max-width: 600px)" srcset="assets/http-websocket-context-switch-mobile.svg">
-  <img src="assets/http-websocket-context-switch.svg" alt="HTTP-to-WebSocket context replacement inside the same established SocketConnection. The HTTP context remains active while the WebSocket replacement is staged; after the current HTTP read callback returns, the HTTP context detaches with ContextSwitch, the staged context is selected and attached, and WebSocket becomes active without replacing the transport connection.">
+  <img src="assets/http-websocket-context-switch.svg" width="605" alt="HTTP-to-WebSocket context replacement inside the same established SocketConnection. The HTTP context remains active while the WebSocket replacement is staged; after the current HTTP read callback returns, the HTTP context detaches with ContextSwitch, the staged context is selected and attached, and WebSocket becomes active without replacing the transport connection.">
 </picture>
 
 <sub>The replacement is staged first; the active context changes only after the current HTTP read callback returns.</sub>

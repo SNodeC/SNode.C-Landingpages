@@ -6,7 +6,7 @@ SNode.C applications use one typed configuration hierarchy for framework endpoin
 
 <picture>
   <source media="(max-width: 600px)" srcset="../assets/configuration-hierarchy-mobile.svg">
-  <img src="../assets/configuration-hierarchy.svg" alt="SNode.C configuration ownership hierarchy. ConfigRoot contains named children including application-owned SubCommand branches and named endpoint instances. One endpoint instance assembles local, remote, connection, socket, and optional TLS sections according to its concrete role and mode. An anonymous endpoint is shown outside the named tree because it is API-configurable but has no named CLI or configuration-file address.">
+  <img src="../assets/configuration-hierarchy.svg" width="605" alt="SNode.C configuration ownership hierarchy. ConfigRoot contains named children including application-owned SubCommand branches and named endpoint instances. One endpoint instance assembles local, remote, connection, socket, and optional TLS sections according to its concrete role and mode. An anonymous endpoint is shown outside the named tree because it is API-configurable but has no named CLI or configuration-file address.">
 </picture>
 
 <sub>One root owns named application and endpoint branches; section availability depends on the concrete endpoint role, family, and connection mode.</sub>
@@ -57,7 +57,7 @@ The effective value resolves with the command line at the highest precedence.
 
 <picture>
   <source media="(max-width: 600px)" srcset="../assets/configuration-resolution-mobile.svg">
-  <img src="../assets/configuration-resolution.svg" alt="SNode.C configuration resolution. API/default values have lowest precedence, configuration-file values override them, and command-line values have highest precedence. Resolution produces the effective configuration, which can be inspected through show-config and command-line output or serialized as persistent values through write-config. help=expanded is shown separately as hierarchy inspection rather than effective-value output.">
+  <img src="../assets/configuration-resolution.svg" width="605" alt="SNode.C configuration resolution. API/default values have lowest precedence, configuration-file values override them, and command-line values have highest precedence. Resolution produces the effective configuration, which can be inspected through show-config and command-line output or serialized as persistent values through write-config. help=expanded is shown separately as hierarchy inspection rather than effective-value output.">
 </picture>
 
 <sub>Precedence is API/default &lt; configuration file &lt; command line; hierarchy inspection is distinct from effective-value inspection and persistence.</sub>
@@ -120,7 +120,7 @@ Retry and reconnect solve different lifecycle failures.
 
 <picture>
   <source media="(max-width: 600px)" srcset="../assets/retry-vs-reconnect-mobile.svg">
-  <img src="../assets/retry-vs-reconnect.svg" alt="Two SNode.C lifecycle state machines. Retry handles listen or connect establishment failure by evaluating retry policy, waiting or backing off, and starting a new listen/connect attempt. Reconnect is client-only policy after a previously established connection is interrupted; when enabled it waits for the reconnect delay and starts a new connect cycle. If that new cycle then fails to establish, retry policy can apply.">
+  <img src="../assets/retry-vs-reconnect.svg" width="605" alt="Two SNode.C lifecycle state machines. Retry handles listen or connect establishment failure by evaluating retry policy, waiting or backing off, and starting a new listen/connect attempt. Reconnect is client-only policy after a previously established connection is interrupted; when enabled it waits for the reconnect delay and starts a new connect cycle. If that new cycle then fails to establish, retry policy can apply.">
 </picture>
 
 <sub>Retry applies during establishment; reconnect begins only after a client connection was established and later interrupted.</sub>
