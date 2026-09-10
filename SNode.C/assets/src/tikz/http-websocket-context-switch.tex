@@ -6,15 +6,15 @@
 \begin{tikzpicture}[mqtt desktop]
 
 \node[mqtt section title] (title) {Same established \texttt{SocketConnection}};
-\node[mqtt state,below=\MQGapM of title,minimum width=42mm] (http) {HTTP context\\ACTIVE};
-\node[mqtt process,right=\MQGapL of http,minimum width=48mm,text width=42mm] (staged)
+\node[mqtt state,below=\MQGapM of title,minimum width=42mm,minimum height=18mm] (http) {HTTP context\\ACTIVE};
+\node[mqtt process,right=\MQGapM of http,minimum width=48mm,minimum height=18mm,text width=42mm] (staged)
   {WebSocket replacement\\STAGED, not active};
-\path (http.east) -- (staged.west) coordinate[midway] (handoffmid);
+\path (http.north) -- (staged.north) coordinate[midway] (handofflabelrow);
 \draw[mqtt handoff] (http.east) -- (staged.west);
-\node[mqtt annotation,above=\MQGapS of handoffmid] (handofflabel) {Upgrade accepted};
+\node[mqtt annotation,above=\MQLabelGap of handofflabelrow] (handofflabel) {Upgrade accepted};
 
 \path (http.south) -- (staged.south) coordinate[midway] (topmid);
-\node[mqtt process,below=\MQGapXL of topmid,minimum width=48mm,text width=42mm] (return)
+\node[mqtt process,below=\MQGapM of topmid,minimum width=48mm,text width=42mm] (return)
   {current HTTP read callback returns};
 \path (http.south) -- (return.north) coordinate[midway] (returnmid);
 \draw[mqtt control flow] (http.south) -- (http.south |- returnmid) -- (return.north |- returnmid) -- (return.north);
