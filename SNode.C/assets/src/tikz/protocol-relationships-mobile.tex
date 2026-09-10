@@ -31,7 +31,7 @@
 \node[mqtt process,right=\MQGapXS of directrow,anchor=west,minimum width=30mm,minimum height=22mm,text width=24mm] (mqttdirect)
   {direct\\MQTT 3.1.1};
 \path (custom.south) -- (mqttdirect.south) coordinate[midway] (directbottom);
-\node[mqtt state,below={\MQGapM+2*\MQNodePadY} of directbottom,minimum width=70mm,text width=60mm] (stream)
+\node[mqtt state,below=\MQGapM of directbottom,minimum width=70mm,text width=60mm] (stream)
   {established stream connection};
 \node[mqtt note,below=\MQGapM of stream,minimum width=72mm,text width=62mm] (note)
   {Express is above HTTP; SSE remains HTTP; WebSocket replaces HTTP after Upgrade; MQTT has direct and WebSocket-composed paths.};
