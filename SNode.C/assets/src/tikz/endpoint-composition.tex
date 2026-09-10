@@ -6,11 +6,12 @@
 \begin{tikzpicture}[mqtt desktop]
 
 \node[mqtt section title] (title) {One concrete endpoint};
-\node[mqtt config,below=\MQGapS of title,minimum width=92mm,text width=82mm] (address)
-  {\textbf{Address family}\\IPv4 · IPv6 · Unix domain · RFCOMM · L2CAP};
-\node[mqtt evidence source,below=\MQLabelGap of address.south east,anchor=north east] (bluetooth)
+\node[mqtt evidence source,right=\MQGapS of title] (bluetooth)
   {\shortstack{RFCOMM / L2CAP\\source-verified}};
-\node[mqtt config,below=\MQGapL of address,minimum width=92mm,text width=82mm] (role)
+\path (title.south) -- (bluetooth.south) coordinate[midway] (headerbottom);
+\node[mqtt config,below=\MQGapS of headerbottom,minimum width=92mm,text width=82mm] (address)
+  {\textbf{Address family}\\IPv4 · IPv6 · Unix domain · RFCOMM · L2CAP};
+\node[mqtt config,below=\MQGapM of address,minimum width=92mm,text width=82mm] (role)
   {\textbf{Endpoint role}\\\texttt{SocketServer} · \texttt{SocketClient}};
 \node[mqtt config,below=\MQGapM of role,minimum width=92mm,text width=82mm] (mode)
   {\textbf{Connection mode}\\plain stream · OpenSSL-backed TLS};
@@ -18,12 +19,13 @@
   {\textbf{Protocol / application context}\\custom \texttt{SocketContext} or compatible framework protocol context};
 
 \draw[mqtt association] (address.south) -- (role.north);
-\path (address.east) ++(\MQGapXS,0) coordinate (evidencerail);
-\draw[mqtt observation] (address.east) -- (evidencerail) |- (bluetooth.east);
 \draw[mqtt association] (role.south) -- (mode.north);
 \draw[mqtt association] (mode.south) -- (context.north);
+\path (bluetooth.east) ++(\MQGapXS,0) coordinate (evidencerail);
+\path (evidencerail |- address.east) coordinate (evidencefrom);
+\draw[mqtt observation] (address.east) -- (evidencefrom) -- (evidencerail) -- (bluetooth.east);
 
-\node[mqtt control,below={\MQGapL+\MQGroupPad} of context,minimum width=92mm,text width=82mm] (runtime)
+\node[mqtt control,below={\MQGapM+\MQGroupPad} of context,minimum width=92mm,text width=82mm] (runtime)
   {\textbf{Shared event runtime}\\one selected multiplexer drives endpoint and connection work};
 \node[mqtt note,below=\MQGapM of runtime,minimum width=96mm,text width=86mm] (qualification)
   {Compatible typed compositions only. Component presence does not imply that every cross-product is built, tested, or runtime-qualified.};
@@ -31,8 +33,8 @@
 \path (evidencerail) ++(\MQGroupPad,0) coordinate (outerright);
 
 \begin{scope}[on background layer]
-  \node[mqtt figure frame,fit=(outertop)(outerright)(title)(address)(bluetooth)(evidencerail)(role)(mode)(context)(runtime)(qualification)] {};
-  \node[mqtt group,fit=(title)(address)(bluetooth)(evidencerail)(role)(mode)(context)] (endpoint) {};
+  \node[mqtt figure frame,fit=(outertop)(outerright)(title)(bluetooth)(address)(evidencerail)(role)(mode)(context)(runtime)(qualification)] {};
+  \node[mqtt group,fit=(title)(bluetooth)(address)(evidencerail)(role)(mode)(context)] (endpoint) {};
 \end{scope}
 
 \path (endpoint.south -| context.center) coordinate (endpoint-south-axis);
