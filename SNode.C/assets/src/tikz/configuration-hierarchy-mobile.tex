@@ -37,8 +37,7 @@
 \end{scope}
 
 \draw[mqtt contains] (root.south) -- node[mqtt edge label,right] {contains} (children.north);
-\path (instancea.south) -- (sections.north) coordinate[midway] (assemblemid);
-\draw[mqtt contains] (instancea.south) -- (instancea.south |- assemblemid) -- (sections.north |- assemblemid) -- node[mqtt edge label,right] {assembles} (sections.north);
+\draw[mqtt contains] (instancea.south) -- node[mqtt edge label,right,pos=.76] {assembles} \MQPortNorth{sections}{.24};
 
 \end{tikzpicture}
 \end{document}
