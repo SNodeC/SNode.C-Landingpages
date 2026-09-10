@@ -1,0 +1,92 @@
+name: Temporary center SNode.C figures
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/tmp-center-snodec-figures.yml
+
+permissions:
+  contents: write
+
+jobs:
+  center:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Center SNode.C figure blocks
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          paths = [
+              Path('SNode.C/README.md'),
+              Path('SNode.C/docs/architecture.md'),
+              Path('SNode.C/docs/configuration.md'),
+          ]
+
+          total = 0
+          for path in paths:
+              text = path.read_text(encoding='utf-8')
+              before_sources = re.findall(r'<source\b[^>]*>', text)
+              before_imgs = re.findall(r'<img\b[^>]*>', text)
+
+              pattern = re.compile(r'(?ms)^<picture>\n.*?^</picture>$')
+              def wrap(match):
+                  return '<p align="center">\n' + match.group(0) + '\n</p>'
+              updated, count = pattern.subn(wrap, text)
+
+              if count == 0:
+                  raise SystemExit(f'no uncentered picture blocks found in {path}')
+
+              after_sources = re.findall(r'<source\b[^>]*>', updated)
+              after_imgs = re.findall(r'<img\b[^>]*>', updated)
+              if before_sources != after_sources:
+                  raise SystemExit(f'mobile source changed in {path}')
+              if before_imgs != after_imgs:
+                  raise SystemExit(f'img tag changed in {path}')
+
+              path.write_text(updated, encoding='utf-8')
+              total += count
+              print(f'{path}: centered {count}')
+
+          if total != 9:
+              raise SystemExit(f'expected 9 figure placements, centered {total}')
+
+          combined = '\n'.join(path.read_text(encoding='utf-8') for path in paths)
+          if combined.count('<p align="center">\n<picture>') != 9:
+              raise SystemExit('not all figure blocks are centered')
+          if combined.count('width="809"') != 9:
+              raise SystemExit('desktop width=809 count changed')
+          for tag in re.findall(r'<source\b[^>]*>', combined):
+              if 'width=' in tag:
+                  raise SystemExit(f'mobile source unexpectedly has width: {tag}')
+          for tag in re.findall(r'<img\b[^>]*>', combined):
+              if 'alt="' not in tag:
+                  raise SystemExit(f'alt missing: {tag}')
+          PY
+
+      - name: Commit centered figure blocks
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add SNode.C/README.md SNode.C/docs/architecture.md SNode.C/docs/configuration.md
+          git diff --cached --check
+          git commit -m "Center SNode.C figures in staging pages"
+          for attempt in 1 2 3; do
+            git fetch origin main
+            git rebase origin/main
+            if git push origin HEAD:main; then
+              exit 0
+            fi
+          done
+          exit 1
