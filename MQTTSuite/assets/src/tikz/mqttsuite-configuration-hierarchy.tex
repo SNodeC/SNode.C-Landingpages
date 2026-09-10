@@ -1,51 +1,57 @@
-\documentclass[tikz,border=8pt]{standalone}
+\documentclass[tikz,border=0pt]{standalone}
 \usepackage[T1]{fontenc}
 \usepackage{lmodern}
 \input{mqttsystem-figure-system.tex}
+\input{snodec-canonical-figure-system.tex}
 \begin{document}
 \begin{tikzpicture}[mqtt desktop]
 \tikzset{
-  box/.style={mqtt config,minimum width=39mm,text width=34mm},
-  section/.style={mqtt config,minimum width=45mm,text width=40mm}
+  root/.style={minimum width=38mm,text width=32mm,minimum height=13mm},
+  inst/.style={minimum width=42mm,text width=36mm,minimum height=13mm},
+  peer/.style={mqtt config,minimum width=41mm,text width=35mm,minimum height=19mm},
+  side/.style={mqtt note,minimum width=41mm,text width=35mm,minimum height=17mm}
 }
+\def\OwnGap{8.3mm}
 
-\node[mqtt application,box] (app) {application root\\e.g. \texttt{mqttcli}};
-\node[mqtt control,box,right=\MQHorizontalGapLoose of app] (instance)
-  {named connection / listener instance\\e.g. \texttt{in-mqtt}};
-\draw[mqtt contains] (app.east) -- (instance.west);
+% Ownership: application root -> selected instance; section families inside are peers.
+\node[mqtt application,root] (app) at (-25mm,0)
+  {\textbf{application root}\\e.g. \texttt{mqttcli}};
+\node[mqtt control,inst,below=\OwnGap of app] (instance)
+  {\textbf{named connection / listener instance}\\e.g. \texttt{in-mqtt}};
+\draw[mqtt contains] (app.south) -- (instance.north);
 
-\node[section,right=37mm of instance,yshift=32mm] (network)
-  {network / endpoint sections\\remote or local address\\transport options};
-\node[section,below=\MQBranchGapTight of network] (http)
-  {optional HTTP / WebSocket\\or TLS-related sections\\when that instance type uses them};
-\node[section,below=\MQBranchGapTight of http] (session)
-  {MQTT session section\\CONNECT settings\\where the application uses MQTT};
-\node[section,below=\MQBranchGapTight of session] (appsection)
-  {application-specific section(s)\\e.g. \texttt{sub}, \texttt{pub}, storage, mapper options};
+\node[peer,below=10mm of instance,xshift=-23.5mm] (endpoint)
+  {\textbf{endpoint + transport}\\\texttt{remote} / \texttt{local}\\address, socket / TLS options};
+\node[peer,right=6mm of endpoint] (web)
+  {\textbf{HTTP / WebSocket}\\optional section(s)\\for instance families that provide them};
+\node[peer,below=6mm of endpoint] (session)
+  {\textbf{MQTT session}\\CONNECT / session settings\\where MQTT is used};
+\node[peer,right=6mm of session] (appspecific)
+  {\textbf{application-specific}\\e.g. \texttt{sub}, \texttt{pub}\\or \texttt{db} with nested \texttt{storage}};
+\node[fit=(instance)(endpoint)(web)(session)(appspecific),inner sep=4.5mm] (instanceBounds) {};
 
-\coordinate (bus-network) at ($(network.west)+(-8mm,0)$);
-\coordinate (bus-http) at ($(http.west)+(-8mm,0)$);
-\coordinate (bus-session) at ($(session.west)+(-8mm,0)$);
-\coordinate (bus-app) at ($(appsection.west)+(-8mm,0)$);
-\draw[mqtt contains] (bus-network) -- (bus-app);
-\draw[mqtt contains] (instance.east) -- ++(8mm,0) |- (bus-session);
-\draw[mqtt contains] (bus-network) -- (network.west);
-\draw[mqtt contains] (bus-http) -- (http.west);
-\draw[mqtt contains] (bus-session) -- (session.west);
-\draw[mqtt contains] (bus-app) -- (appsection.west);
+% Configuration surfaces are deliberately separate from the ownership diagram.
+\node[side,anchor=north west] (ownership) at ($(instanceBounds.north east)+(5mm,0)$)
+  {\textbf{ownership rule}\\Peer section families belong to the selected instance. Exact sets vary by application and instance family. This is configuration ownership, not runtime protocol layering or execution order.};
+\node[side,below=6mm of ownership] (values)
+  {\textbf{value precedence}\\API / defaults\\$<$ configuration file\\$<$ command line};
+\node[side,below=6mm of values] (inspect)
+  {\textbf{introspection}\\tree: \texttt{--help=expanded}\\state: \texttt{--show-config}\\\texttt{--command-line=...}};
+\node[fit=(values)(inspect),inner sep=4.5mm] (surfaceBounds) {};
 
-\node[mqtt note,minimum width=62mm,text width=56mm,below=\MQGapM of instance,xshift=-4mm] (ownership)
-  {These are instance-owned peer sections. Their runtime protocol layering or execution order is a separate concept. Exact section sets differ by application and instance family.};
-\node[mqtt note,minimum width=62mm,text width=56mm,below=\MQGapS of ownership] (surfaces)
-  {The same parsed hierarchy is populated from API/default values, configuration files, and command-line input and can be inspected through the supported configuration surfaces.};
+\coordinate (leftEdge) at (instanceBounds.west);
+\coordinate (titleY) at ($(app.north)+(0,\MQTitleGap)$);
+\node[mqtt section title,anchor=south west] (figureTitle)
+  at (leftEdge |- titleY) {MQTTSuite configuration ownership hierarchy};
 
 \begin{pgfonlayer}{background}
-  \node[mqtt figure frame,fit=(app)(instance)(network)(http)(session)(appsection)(ownership)(surfaces)] (frame) {};
+  \node[mqtt figure frame,fit=(figureTitle)(app)(instanceBounds)(ownership)(surfaceBounds)] {};
+  \node[mqtt group,fit=(instance)(endpoint)(web)(session)(appspecific),inner sep=4.5mm] (instanceGroup) {};
+  \node[mqtt group,fit=(values)(inspect),inner sep=4.5mm] (surfaceGroup) {};
 \end{pgfonlayer}
-\node[mqtt section title] at ($(frame.north west)+(\MQTitleGap,-\MQTitleGap)$)
-  {MQTTSuite configuration ownership hierarchy};
-\node[mqtt annotation,anchor=east] at ($(frame.north east)+(-\MQTitleGap,-\MQTitleGap)$)
-  {value precedence: API/default $<$ config file $<$ command line};
-
+\node[mqtt edge label,anchor=west] at ($(instanceGroup.north west)+(3mm,0)$)
+  {selected instance — peer configuration sections};
+\node[mqtt edge label,anchor=west] at ($(surfaceGroup.north west)+(3mm,0)$)
+  {configuration surfaces};
 \end{tikzpicture}
 \end{document}

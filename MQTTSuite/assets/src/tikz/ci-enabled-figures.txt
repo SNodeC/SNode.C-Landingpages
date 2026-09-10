@@ -70,4 +70,8 @@ mqttcli-command-hierarchy-mobile
 json-topic-projection-extraction
 json-topic-projection-extraction-mobile
 
-# Figure 18 and later stay disabled until their individual refinement round starts.
+# Figure 18 — MQTTSuite configuration hierarchy
+mqttsuite-configuration-hierarchy
+mqttsuite-configuration-hierarchy-mobile
+
+# Figure 19 and later stay disabled until their individual refinement round starts.
