@@ -23,7 +23,7 @@
 \node[mqtt config,below=\MQGapS of rightbottom,minimum width=30mm,minimum height=14mm] (tls) {\texttt{tls}\\when selected};
 
 \path (socket.south) -- (tls.south) coordinate[midway] (sectionsbottom);
-\node[mqtt note,below=\MQGapXL of sectionsbottom,minimum width=76mm,text width=66mm] (dependent)
+\node[mqtt note,below=\MQGapL of sectionsbottom,minimum width=76mm,text width=66mm] (dependent)
   {Section availability is role/mode dependent; the figure shows the reusable section vocabulary.};
 \node[mqtt note,below=\MQGapM of dependent,minimum width=92mm,text width=82mm] (anonymous)
   {Anonymous endpoint instance: configurable through the C++ API, but not a named \texttt{ConfigRoot} child and therefore not addressable by instance name from CLI or configuration file.};
