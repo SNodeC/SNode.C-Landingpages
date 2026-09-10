@@ -2,45 +2,45 @@
 \usepackage[T1]{fontenc}
 \usepackage{lmodern}
 \input{mqttsystem-figure-system.tex}
+\input{snodec-canonical-figure-system.tex}
 \begin{document}
 \begin{tikzpicture}[mqtt mobile]
-\tikzset{wide/.style={minimum width=72mm,text width=64mm}}
+\tikzset{
+  rootbox/.style={mqtt application,minimum width=72mm,text width=64mm,minimum height=14mm},
+  section/.style={mqtt config,minimum width=35mm,text width=29mm,minimum height=20mm},
+  foot/.style={mqtt note,minimum width=78mm,text width=70mm,minimum height=18mm}
+}
 
-\node[mqtt application,wide] (root) {\texttt{mqttcli}};
-\node[mqtt control,wide,below=\MQGapS of root] (instance)
-  {enabled connection instance};
-\draw[mqtt contains] (root.south) -- (instance.north);
+\node[rootbox] (root) {\texttt{mqttcli}\\application root};
 
-\node[mqtt config,wide,below=\MQGapM of instance] (remote)
-  {\texttt{remote}: address / host + port / Unix path};
-\node[mqtt config,wide,below=\MQGapS of remote] (http)
-  {\texttt{http}: WebSocket target only};
-\node[mqtt config,wide,below=\MQGapS of http] (session)
-  {\texttt{session}: client / CONNECT fields + default QoS};
-\node[mqtt config,wide,below=\MQGapS of session] (sub)
-  {\texttt{sub}: one or more topic filters};
-\node[mqtt config,wide,below=\MQGapS of sub] (pub)
-  {\texttt{pub}: topic + message + retain};
+\node[mqtt annotation,font=\MQAnnotationFont\bfseries,below=12.8mm of root] (instance-label)
+  {enabled connection instance\\sibling sections — no nesting};
 
-\coordinate (bus-remote) at ($(remote.west)+(-7mm,0)$);
-\coordinate (bus-http) at ($(http.west)+(-7mm,0)$);
-\coordinate (bus-session) at ($(session.west)+(-7mm,0)$);
-\coordinate (bus-sub) at ($(sub.west)+(-7mm,0)$);
-\coordinate (bus-pub) at ($(pub.west)+(-7mm,0)$);
-\draw[mqtt contains] (bus-remote) -- (bus-pub);
-\draw[mqtt contains] (instance.west) -- ++(-7mm,0) |- (bus-session);
-\draw[mqtt contains] (bus-remote) -- (remote.west);
-\draw[mqtt contains] (bus-http) -- (http.west);
-\draw[mqtt contains] (bus-session) -- (session.west);
-\draw[mqtt contains] (bus-sub) -- (sub.west);
-\draw[mqtt contains] (bus-pub) -- (pub.west);
+\node[section,below=\MQGapS of instance-label,xshift=-20.5mm] (remote)
+  {\texttt{remote}\\host + port\\or Unix path};
+\node[section,right=\MQHorizontalGapTight of remote] (session)
+  {\texttt{session}\\CONNECT fields\\+ default QoS};
 
-\node[mqtt note,wide,below=\MQGapM of pub] (note)
-  {These are sibling sections under the same instance. \texttt{sub} and \texttt{pub} may share one connection; WebSocket instances add \texttt{http}.};
+\node[section,below=\MQGapS of remote] (http)
+  {\texttt{http}\\WebSocket\\target only};
+\node[section,right=\MQHorizontalGapTight of http] (sub)
+  {\texttt{sub}\\one or more\\topic filters};
+
+\node[section,below=\MQGapS of http,xshift=20.5mm] (pub)
+  {\texttt{pub}\\topic + message\\+ retain};
+
+\node[foot,below=9mm of pub] (note)
+  {\texttt{sub} and \texttt{pub} may coexist. \texttt{http} is WebSocket-only. This shows configuration ownership, not runtime order.};
+
+\coordinate (titlepad) at ($(root.north)+(0,8mm)$);
 
 \begin{pgfonlayer}{background}
-  \node[mqtt figure frame,fit=(root)(instance)(remote)(http)(session)(sub)(pub)(note)] (frame) {};
+  \node[mqtt figure frame,fit=(titlepad)(root)(instance-label)(remote)(session)(http)(sub)(pub)(note)] (frame) {};
+  \node[mqtt group,fit=(instance-label)(remote)(session)(http)(sub)(pub)] (instance) {};
 \end{pgfonlayer}
+
+\draw[mqtt contains] (root.south) -- (instance.north);
+
 \node[mqtt section title] at ($(frame.north west)+(\MQTitleGap,-\MQTitleGap)$)
   {MQTTCli connection-instance configuration};
 

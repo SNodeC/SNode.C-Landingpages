@@ -62,4 +62,8 @@ bridge-prefix-construction-mobile
 loop-boundaries
 loop-boundaries-mobile
 
-# Figure 16 and later stay disabled until their individual refinement round starts.
+# Figure 16 — MQTTCli command/configuration hierarchy
+mqttcli-command-hierarchy
+mqttcli-command-hierarchy-mobile
+
+# Figure 17 and later stay disabled until their individual refinement round starts.
