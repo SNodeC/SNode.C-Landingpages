@@ -14,19 +14,19 @@ mqttcli
     sub --topic sensors/#
 ```
 
-Read this as:
+Read this as an ownership tree, not as a universal runtime pipeline:
 
-1. `mqttcli` — application root;
-2. `in-mqtt` — named connection instance;
-3. `remote` — peer address for that instance;
-4. `session` — MQTT CONNECT/session behavior;
-5. `sub` — application action after the MQTT session is established.
+1. `mqttcli` is the application root;
+2. `in-mqtt` is one named connection instance owned by that application;
+3. `remote`, `session`, and `sub` are sibling sections owned by that selected instance.
+
+Those sibling sections configure different concerns. Their command-line presentation does not mean that `remote` owns `session`, or that `session` owns `sub`; runtime connection, MQTT-session, and application-action ordering is a separate concept.
 
 Server applications use analogous `local` address sections. WebSocket clients add an HTTP section. MQTTStore adds `db` and nested `storage`; MQTTBroker and MQTTIntegrator add application options; MQTTBridge builds its outbound client instances from a separate bridge-definition document.
 
 <picture>
   <source media="(max-width: 600px)" srcset="../assets/mqttsuite-configuration-hierarchy-mobile.svg">
-  <img src="../assets/mqttsuite-configuration-hierarchy.svg" alt="MQTTSuite command and configuration hierarchy showing application root, named connection instance selecting address family and stream, TLS or WebSocket transport, remote or Unix address and optional WebSocket HTTP target, MQTT session, subscribe or publish actions, and the same tree exposed through CLI, configuration files, and inspection.">
+  <img src="../assets/mqttsuite-configuration-hierarchy.svg" alt="MQTTSuite configuration ownership hierarchy showing an application root owning a selected named instance whose endpoint or transport, optional HTTP or WebSocket, MQTT session, and application-specific configuration sections are peers; configuration values come from defaults or API, configuration files, and command-line overrides, with command-tree and effective-state introspection shown separately from runtime protocol layering.">
 </picture>
 
 ## Values and precedence
