@@ -13,9 +13,9 @@
 \path (custom.south) -- (mqttdirect.south) coordinate[midway] (directbottom);
 \path (custom.north) -- (mqttdirect.north) coordinate[midway] (directtop);
 
-% HTTP-family branch above the matching direct row. Equal branch widths keep
-% the HTTP-family visual bounds symmetric while WebSocket owns MQTT-over-WS.
-\node[mqtt process,above={\MQLaneGap+\MQGroupPad} of mqttdirect,minimum width=36mm,minimum height=16mm,text width=30mm] (mqttws)
+% HTTP-family branch above the matching direct row. The visible group-to-row gap
+% uses the canonical loose 11 mm relationship spacing, not a separate lane gap.
+\node[mqtt process,above={\MQGapL+\MQGroupPad} of mqttdirect,minimum width=36mm,minimum height=16mm,text width=30mm] (mqttws)
   {MQTT over WebSocket\\subprotocol};
 \node[mqtt process,above=\MQGapM of mqttws,minimum width=36mm,minimum height=16mm,text width=30mm] (ws)
   {WebSocket\\via HTTP Upgrade};
@@ -26,17 +26,18 @@
 \node[mqtt state,above=\MQGapM of branchmid,minimum width=36mm] (http) {HTTP context};
 \node[mqtt application,above=\MQGapM of http,minimum width=44mm,text width=38mm] (express)
   {Express-style routing\\and middleware};
-\node[mqtt section title,above=\MQGapS of express] (httptitle) {HTTP family};
-\node[mqtt section title,above={\MQGapS+\MQGroupPad} of httptitle] (title)
+\node[mqtt section title,above=\MQTitleGap of express] (httptitle) {HTTP family};
+\node[mqtt section title,above={\MQTitleGap+\MQGroupPad} of httptitle] (title)
   {Protocol / application contexts};
 
 \draw[mqtt association] (express.south) -- (http.north);
-\path \MQPortSouth{http}{.32} coordinate (http-s32);
-\path \MQPortSouth{http}{.68} coordinate (http-s68);
-\path (http-s32) -- (sse.north) coordinate[midway] (ssemid);
-\draw[mqtt association] (http-s32) -- (http-s32 |- ssemid) -- (sse.north |- ssemid) -- (sse.north);
-\path (http-s68) -- (ws.north) coordinate[midway] (wsmid);
-\draw[mqtt handoff] (http-s68) -- (http-s68 |- wsmid) -- (ws.north |- wsmid) -- (ws.north);
+\path \MQPortSouth{http}{.20} coordinate (http-s20);
+\path \MQPortSouth{http}{.50} coordinate (http-s50);
+\path \MQPortSouth{http}{.80} coordinate (http-s80);
+\path (http-s20) -- (sse.north) coordinate[midway] (ssemid);
+\draw[mqtt association] (http-s20) -- (http-s20 |- ssemid) -- (sse.north |- ssemid) -- (sse.north);
+\path (http-s80) -- (ws.north) coordinate[midway] (wsmid);
+\draw[mqtt handoff] (http-s80) -- (http-s80 |- wsmid) -- (ws.north |- wsmid) -- (ws.north);
 \draw[mqtt association] (ws.south) -- (mqttws.north);
 
 \node[mqtt state,below=\MQGapM of directbottom,minimum width=90mm,text width=80mm] (stream)
@@ -44,10 +45,8 @@
 \node[mqtt note,below=\MQGapM of stream,minimum width=96mm,text width=86mm] (note)
   {Express is above HTTP. SSE/EventSource remains in HTTP. WebSocket replaces the HTTP context after Upgrade. MQTT can attach directly or compose as a WebSocket subprotocol.};
 
-\path (title.north) ++(0,\MQGroupPad) coordinate (outertop);
-
 \begin{scope}[on background layer]
-  \node[mqtt figure frame,fit=(outertop)(title)(httptitle)(express)(http)(sse)(ws)(mqttws)(custom)(mqttdirect)(stream)(note)] {};
+  \node[mqtt figure frame,fit=(title)(httptitle)(express)(http)(sse)(ws)(mqttws)(custom)(mqttdirect)(stream)(note)] {};
   \node[mqtt group,fit=(httptitle)(express)(http)(sse)(ws)(mqttws)] (httpgroup) {};
 \end{scope}
 
@@ -56,8 +55,7 @@
 \path \MQPortNorth{stream}{.82} coordinate (stream-n82);
 \path (custom.south) -- (stream-n18) coordinate[midway] (custommid);
 \draw[mqtt association] (custom.south) -- (custom.south |- custommid) -- (stream-n18 |- custommid) -- (stream-n18);
-\path (httpgroup.south -| http.center) coordinate (httpgroup-s);
-\draw[mqtt association] (httpgroup-s) -- (stream-n50);
+\draw[mqtt association] (http-s50) -- (stream-n50);
 \path (mqttdirect.south) -- (stream-n82) coordinate[midway] (mqttmid);
 \draw[mqtt association] (mqttdirect.south) -- (mqttdirect.south |- mqttmid) -- (stream-n82 |- mqttmid) -- (stream-n82);
 
