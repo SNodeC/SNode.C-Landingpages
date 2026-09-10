@@ -12,9 +12,9 @@
 \node[mqtt application,below=\MQGapM of serverfactory,minimum width=48mm] (serverctx) {\texttt{SocketContext}\\one active per connection};
 \path (serverconn.west) ++(-\MQGapS,0) coordinate (serverrail);
 
-\draw[mqtt flow] (server.south) -- node[mqtt edge label,right] {listen $\rightarrow$ accept} (serverconn.north);
-\draw[mqtt flow] (serverconn.south) -- node[mqtt edge label,right] {\texttt{create(this)}} (serverfactory.north);
-\draw[mqtt flow] (serverfactory.south) -- node[mqtt edge label,right] {returns new} (serverctx.north);
+\draw[mqtt flow] (server.south) -- node[mqtt edge label right] {listen $\rightarrow$ accept} (serverconn.north);
+\draw[mqtt flow] (serverconn.south) -- node[mqtt edge label right] {\texttt{create(this)}} (serverfactory.north);
+\draw[mqtt flow] (serverfactory.south) -- node[mqtt edge label right] {returns new} (serverctx.north);
 \draw[mqtt association] (serverconn.west) -- (serverrail) |- (serverctx.west);
 
 \node[mqtt process,right={\MQLaneGap+2*\MQGroupPad} of server,minimum width=48mm] (client) {\texttt{SocketClient}\\client endpoint};
@@ -24,9 +24,9 @@
 \node[mqtt application,below=\MQGapM of clientfactory,minimum width=48mm] (clientctx) {\texttt{SocketContext}\\one active per connection};
 \path (clientconn.east) ++(\MQGapS,0) coordinate (clientrail);
 
-\draw[mqtt flow] (client.south) -- node[mqtt edge label,left] {connect completes} (clientconn.north);
-\draw[mqtt flow] (clientconn.south) -- node[mqtt edge label,left] {\texttt{create(this)}} (clientfactory.north);
-\draw[mqtt flow] (clientfactory.south) -- node[mqtt edge label,left] {returns new} (clientctx.north);
+\draw[mqtt flow] (client.south) -- node[mqtt edge label left] {connect completes} (clientconn.north);
+\draw[mqtt flow] (clientconn.south) -- node[mqtt edge label left] {\texttt{create(this)}} (clientfactory.north);
+\draw[mqtt flow] (clientfactory.south) -- node[mqtt edge label left] {returns new} (clientctx.north);
 \draw[mqtt association] (clientconn.east) -- (clientrail) |- (clientctx.east);
 
 \path (serverctx.south) -- (clientctx.south) coordinate[midway] (lanemid);

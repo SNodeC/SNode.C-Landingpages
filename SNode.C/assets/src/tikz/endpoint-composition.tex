@@ -6,10 +6,11 @@
 \begin{tikzpicture}[mqtt desktop]
 
 \node[mqtt section title] (title) {One concrete endpoint};
-\node[mqtt evidence source,right=\MQGapS of title] (bluetooth)
+\node[mqtt evidence source,right=\MQGapS of title.south east,anchor=south west] (bluetooth)
   {\shortstack{RFCOMM / L2CAP\\source-verified}};
-\path (title.south) -- (bluetooth.south) coordinate[midway] (headerbottom);
-\node[mqtt config,below=\MQGapS of headerbottom,minimum width=92mm,text width=82mm] (address)
+\node[mqtt layout fit,fit=(title)(bluetooth)] (headerrow) {};
+
+\node[mqtt config,below=\MQGapS of headerrow,minimum width=92mm,text width=82mm] (address)
   {\textbf{Address family}\\IPv4 · IPv6 · Unix domain · RFCOMM · L2CAP};
 \node[mqtt config,below=\MQGapM of address,minimum width=92mm,text width=82mm] (role)
   {\textbf{Endpoint role}\\\texttt{SocketServer} · \texttt{SocketClient}};
@@ -21,24 +22,24 @@
 \draw[mqtt association] (address.south) -- (role.north);
 \draw[mqtt association] (role.south) -- (mode.north);
 \draw[mqtt association] (mode.south) -- (context.north);
-\path (bluetooth.east) ++(\MQGapXS,0) coordinate (evidencerail);
-\path (evidencerail |- address.east) coordinate (evidencefrom);
-\draw[mqtt observation] (address.east) -- (evidencefrom) -- (evidencerail) -- (bluetooth.east);
+\path (bluetooth.south |- address.north) coordinate (evidencestart);
+\draw[mqtt observation] (evidencestart) -- (bluetooth.south);
 
 \node[mqtt control,below={\MQGapM+\MQGroupPad} of context,minimum width=92mm,text width=82mm] (runtime)
   {\textbf{Shared event runtime}\\one selected multiplexer drives endpoint and connection work};
 \node[mqtt note,below=\MQGapM of runtime,minimum width=96mm,text width=86mm] (qualification)
   {Compatible typed compositions only. Component presence does not imply that every cross-product is built, tested, or runtime-qualified.};
-\path (title.north) ++(0,\MQGroupPad) coordinate (outertop);
-\path (evidencerail) ++(\MQGroupPad,0) coordinate (outerright);
 
+\path (headerrow.north) ++(0,\MQGroupPad) coordinate (outertop);
+\path (address.west) ++(-\MQGroupPad,0) coordinate (outerleft);
+\path (address.east) ++(\MQGroupPad,0) coordinate (outerright);
 \begin{scope}[on background layer]
-  \node[mqtt figure frame,fit=(outertop)(outerright)(title)(bluetooth)(address)(evidencerail)(role)(mode)(context)(runtime)(qualification)] {};
-  \node[mqtt group,fit=(title)(bluetooth)(address)(evidencerail)(role)(mode)(context)] (endpoint) {};
+  \node[mqtt figure frame,fit=(outertop)(outerleft)(outerright)(title)(bluetooth)(address)(role)(mode)(context)(runtime)(qualification)] {};
+  \node[mqtt group,fit=(title)(bluetooth)(address)(role)(mode)(context)] (endpoint) {};
 \end{scope}
 
 \path (endpoint.south -| context.center) coordinate (endpoint-south-axis);
-\draw[mqtt association] (endpoint-south-axis) -- node[mqtt edge label,right] {uses} (runtime.north);
+\draw[mqtt association] (endpoint-south-axis) -- node[mqtt edge label right] {uses} (runtime.north);
 
 \end{tikzpicture}
 \end{document}

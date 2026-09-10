@@ -83,7 +83,7 @@
 \newcommand{\MQRadiusXL}{3pt}
 
 % ---------------------------------------------------------------------------
-% Canonical spacing and responsive budgets
+% Canonical spacing and responsive publication widths
 % ---------------------------------------------------------------------------
 
 \newcommand{\MQU}{2mm}
@@ -122,17 +122,26 @@
 \newcommand{\MQMobileHorizontalGap}{8mm}
 \newcommand{\MQMobileLaneGap}{11mm}
 
-% Review budgets. These are composition limits, not scaling instructions.
+% Every figure in one responsive class uses the same publication width so that
+% GitHub applies the same physical scale to typography, boxes, lines and arrows.
+% These are fixed canvas widths and hard composition limits, never scale factors.
 \newcommand{\MQDesktopMaxWidth}{160mm}
 \newcommand{\MQMobileMaxWidth}{100mm}
+
+% standalone is canonical at border=8pt. The internal canvas is therefore the
+% publication width minus 16pt. The helper only enlarges a narrower bounding box;
+% an oversized figure remains oversized and consequently fails review visibly.
+\newcommand{\MQCanonicalCanvas}[1]{%
+  \path (current bounding box.center) coordinate (mqcanvascenter);
+  \pgfmathsetlengthmacro{\mqcanvashalf}{0.5*(#1-16pt)}%
+  \path ([xshift=-\mqcanvashalf]mqcanvascenter) -- ([xshift=\mqcanvashalf]mqcanvascenter);
+}
+\newcommand{\MQDesktopCanvas}{\MQCanonicalCanvas{\MQDesktopMaxWidth}}
+\newcommand{\MQMobileCanvas}{\MQCanonicalCanvas{\MQMobileMaxWidth}}
 
 % ---------------------------------------------------------------------------
 % Canonical connector ports
 % ---------------------------------------------------------------------------
-%
-% Directional connectors attach to node borders orthogonally. Use the middle
-% of the relevant border by default (fraction .5). If several connectors share
-% one border, distribute the fractions evenly, e.g. .25/.5/.75 for three.
 
 \newcommand{\MQPortNorth}[2]{($(#1.north west)!#2!(#1.north east)$)}
 \newcommand{\MQPortSouth}[2]{($(#1.south west)!#2!(#1.south east)$)}
@@ -142,9 +151,6 @@
 % ---------------------------------------------------------------------------
 % Canonical rendering / elevation
 % ---------------------------------------------------------------------------
-%
-% Flat rendering is authoritative. Keep the elevation vocabulary available as
-% no-ops so figures cannot silently introduce decorative shadows.
 
 \newcommand{\MQShadowXSubtle}{0.7pt}
 \newcommand{\MQShadowYSubtle}{-0.7pt}
@@ -193,9 +199,7 @@
 }
 
 \tikzset{
-  mqtt no hyphenation/.style={
-    execute at begin node={\hyphenpenalty=10000\exhyphenpenalty=10000\relax}
-  },
+  mqtt no hyphenation/.style={execute at begin node={\hyphenpenalty=10000\exhyphenpenalty=10000\relax}},
   mqtt text/.style={mqtt no hyphenation,font=\MQBodyFont,text=snodecInk,align=center},
   mqtt text left/.style={mqtt text,align=left},
   mqtt title/.style={mqtt no hyphenation,font=\MQTitleFont,text=snodecInk,align=left},
@@ -213,11 +217,13 @@
   mqtt desktop/.style={
     x=1cm,y=1cm,
     execute at begin picture={\MQDesktopTypography},
+    execute at end picture={\MQDesktopCanvas},
     every node/.append style={transform shape=false}
   },
   mqtt mobile/.style={
     x=1cm,y=1cm,
     execute at begin picture={\MQMobileTypography},
+    execute at end picture={\MQMobileCanvas},
     every node/.append style={transform shape=false}
   }
 }
@@ -225,9 +231,6 @@
 % ---------------------------------------------------------------------------
 % Core node families
 % ---------------------------------------------------------------------------
-%
-% Keep this key list paragraph-free: pgfkeys does not accept \par tokens inside
-% \tikzset.
 
 \tikzset{
   mqtt process/.style={mqtt text,draw=snodecRule!85,fill=white,rounded corners=2.5pt,line width=.70pt,minimum height=10mm,minimum width=25mm,inner xsep=3mm,inner ysep=2.5mm},
@@ -255,15 +258,13 @@
   mqtt group/.style={draw=snodecRule!82,fill=none,rounded corners=3pt,line width=.58pt,inner sep=4.5mm},
   mqtt data plane/.style={draw=snodecBlue!78,fill=snodecBlueSoft,rounded corners=3pt,line width=.58pt,inner sep=4.5mm},
   mqtt admin plane/.style={draw=snodecRule!85,fill=snodecGraySoft,rounded corners=3pt,line width=.58pt,inner sep=4.5mm},
-  mqtt trust boundary/.style={draw=snodecRule!82,fill=none,dashed,rounded corners=3pt,line width=.58pt,inner sep=4.5mm}
+  mqtt trust boundary/.style={draw=snodecRule!82,fill=none,dashed,rounded corners=3pt,line width=.58pt,inner sep=4.5mm},
+  mqtt layout fit/.style={inner sep=0pt,outer sep=0pt}
 }
 
 % ---------------------------------------------------------------------------
 % Arrow and connector semantics
 % ---------------------------------------------------------------------------
-%
-% Every directional connector is one continuous TikZ path whose arrowhead is
-% attached to that same path. Off-axis routing is orthogonal by default.
 
 \tikzset{
   mqtt connector/.style={line cap=round,line join=round},
@@ -284,6 +285,14 @@
 \tikzset{
   mqtt branch label/.style={mqtt no hyphenation,font=\MQAnnotationFont\bfseries,text=snodecInk,fill=white,inner sep=1pt},
   mqtt edge label/.style={mqtt no hyphenation,font=\MQAnnotationFont,text=snodecMuted,fill=white,inner sep=1pt},
+  mqtt edge label above/.style={mqtt edge label,above=\MQLabelGap},
+  mqtt edge label below/.style={mqtt edge label,below=\MQLabelGap},
+  mqtt edge label left/.style={mqtt edge label,left=\MQLabelGap},
+  mqtt edge label right/.style={mqtt edge label,right=\MQLabelGap},
+  mqtt branch label above/.style={mqtt branch label,above=\MQLabelGap},
+  mqtt branch label below/.style={mqtt branch label,below=\MQLabelGap},
+  mqtt branch label left/.style={mqtt branch label,left=\MQLabelGap},
+  mqtt branch label right/.style={mqtt branch label,right=\MQLabelGap},
   mqtt topic label/.style={mqtt no hyphenation,font=\MQCodeSmallFont,text=snodecInk,fill=white,inner sep=1pt},
   mqtt route label/.style={mqtt no hyphenation,font=\MQCodeSmallFont,text=snodecInk,fill=white,inner sep=1pt},
   mqtt evidence runtime/.style={mqtt no hyphenation,font=\MQAnnotationFont\bfseries,text=snodecGreen!78,draw=snodecGreen!78,fill=snodecGreenSoft,rounded corners=2.5pt,line width=.58pt,inner xsep=4pt,inner ysep=2pt},
@@ -314,7 +323,8 @@
 % 18. Do not use unmotivated diagonal connectors. Use orthogonal Manhattan routing between ports unless a diagonal has a specific semantic or geometric justification.
 % 19. Use mqtt figure frame for the neutral whole-figure surface; draw it before semantic lanes/groups/planes. Never let an enclosing fill overpaint inner semantics.
 % 20. Desktop and mobile typography are selected by their presets; do not override shared font sizes ad hoc to compensate for an oversized composition.
-% 21. Treat \MQDesktopMaxWidth and \MQMobileMaxWidth as hard review budgets. Recompose a figure that exceeds them instead of scaling it down.
+% 21. \MQDesktopMaxWidth and \MQMobileMaxWidth are fixed publication canvas widths and hard composition limits. Recompose a figure that exceeds them instead of scaling it down.
 % 22. Automatic word hyphenation is forbidden in diagram labels, notes, routes, and code tokens.
 % 23. mqtt success is reserved for a real successful outcome. Do not use green merely for a destination, final stage, action, or emphasis.
 % 24. Ownership/containment uses mqtt contains or mqtt association, never a flow arrow unless real directional flow also exists.
+% 25. Repeated label placement uses the canonical \MQLabelGap through shared directional label styles; labels do not sit directly on connector shafts.
