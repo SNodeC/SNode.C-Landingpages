@@ -5,9 +5,12 @@
 \begin{document}
 \begin{tikzpicture}[mqtt mobile]
 
-\node[mqtt config,minimum width=22mm,minimum height=20mm,text width=18mm] (api) {1\\API / default\\lowest};
-\node[mqtt config,right=\MQGapS of api,minimum width=22mm,minimum height=20mm,text width=18mm] (file) {2\\config file\\middle};
-\node[mqtt config,right=\MQGapS of file,minimum width=22mm,minimum height=20mm,text width=18mm] (cli) {3\\CLI\\highest};
+\node[mqtt config,minimum width=24mm,minimum height=24mm,text width=18mm] (api)
+  {1\\API and\\defaults\\lowest};
+\node[mqtt config,right=\MQGapS of api,minimum width=24mm,minimum height=24mm,text width=18mm] (file)
+  {2\\config\\file\\middle};
+\node[mqtt config,right=\MQGapS of file,minimum width=24mm,minimum height=24mm,text width=18mm] (cli)
+  {3\\command\\line\\highest};
 \node[mqtt control,below=\MQGapM of file,minimum width=52mm] (resolve) {value resolution};
 \node[mqtt state,below=\MQGapM of resolve,minimum width=58mm] (effective) {effective configuration};
 
@@ -21,18 +24,23 @@
 \draw[mqtt flow] (cli.south) -- (cli.south |- climid) -- (resolve-n82 |- climid) -- (resolve-n82);
 \draw[mqtt control flow] (resolve.south) -- (effective.north);
 
-\node[mqtt section title,below=\MQGapXL of effective] (outputstitle) {Effective-value outputs};
-\node[mqtt process,below=\MQGapS of outputstitle,minimum width=66mm,minimum height=14mm] (show) {\texttt{--show-config}};
-\node[mqtt process,below=\MQGapS of show,minimum width=66mm,minimum height=14mm] (cmd) {\texttt{--command-line=...}};
-\node[mqtt process,below=\MQGapS of cmd,minimum width=66mm,minimum height=14mm] (write) {\texttt{--write-config}\\persistent values};
-\node[mqtt note,below=\MQGapL of write,minimum width=70mm] (help) {\texttt{--help=expanded} inspects hierarchy};
+\node[mqtt section title,below={\MQGapXL+\MQGroupPad} of effective] (outputstitle)
+  {Effective-value outputs};
+\node[mqtt process,below=\MQGapS of outputstitle,minimum width=66mm,minimum height=14mm] (show)
+  {\texttt{--show-config}};
+\node[mqtt process,below=\MQGapS of show,minimum width=66mm,minimum height=14mm] (cmd)
+  {\texttt{--command-line=...}};
+\node[mqtt process,below=\MQGapS of cmd,minimum width=66mm,minimum height=14mm] (write)
+  {\texttt{--write-config}\\persistent values};
+\node[mqtt note,below={\MQGapL+\MQGroupPad} of write,minimum width=70mm] (help)
+  {\texttt{--help=expanded} inspects hierarchy};
 
 \begin{scope}[on background layer]
   \node[mqtt figure frame,fit=(api)(file)(cli)(resolve)(effective)(outputstitle)(show)(cmd)(write)(help)] {};
   \node[mqtt group,fit=(outputstitle)(show)(cmd)(write)] (outputs) {};
 \end{scope}
 
-\draw[mqtt observation] (effective.south) -- node[mqtt edge label,right] {inspect / serialize} (outputs.north);
+\draw[mqtt observation] (effective.south) -- node[mqtt edge label right] {inspect / persist} (outputs.north);
 
 \end{tikzpicture}
 \end{document}

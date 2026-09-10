@@ -6,26 +6,33 @@
 \begin{tikzpicture}[mqtt mobile]
 
 \node[mqtt config,minimum width=64mm] (root) {\texttt{ConfigRoot}\\application configuration root};
-\node[mqtt section title,below=\MQGapXL of root] (namedtitle) {Named root children};
-\node[mqtt application,below=\MQGapS of namedtitle,minimum width=66mm] (app) {application-owned \texttt{SubCommand}};
-\path (app.south) ++(0,-\MQGapM) coordinate (instancesrow);
-\node[mqtt config,left=\MQGapXS of instancesrow,anchor=east,minimum width=30mm,text width=24mm] (instancea) {named endpoint\\instance A};
-\node[mqtt config,right=\MQGapXS of instancesrow,anchor=west,minimum width=30mm,text width=24mm] (instanceb) {named endpoint\\instance B};
+\node[mqtt section title,below={\MQGapXL+\MQGroupPad} of root] (namedtitle) {Named root children};
+\node[mqtt application,below=\MQGapS of namedtitle,minimum width=66mm] (app)
+  {application-owned \texttt{SubCommand}};
+
+\node[mqtt layout fit,below=\MQGapM of app,minimum width={2*30mm+\MQGapM},minimum height=14mm] (instancesrow) {};
+\node[mqtt config,right=0mm of instancesrow.west,anchor=west,minimum width=30mm,text width=24mm] (instancea)
+  {named endpoint\\instance A};
+\node[mqtt config,left=0mm of instancesrow.east,anchor=east,minimum width=30mm,text width=24mm] (instanceb)
+  {named endpoint\\instance B};
 
 \path (instancea.south) -- (instanceb.south) coordinate[midway] (instancesbottom);
-\node[mqtt section title,below={\MQGapXL+\MQGapS} of instancesbottom] (sectionstitle) {Instance A sections};
-\path (sectionstitle.south) ++(0,-\MQGapS) coordinate (firstrow);
-\node[mqtt config,left=\MQGapXS of firstrow,anchor=east,minimum width=30mm] (local) {\texttt{local}};
-\node[mqtt config,right=\MQGapXS of firstrow,anchor=west,minimum width=30mm] (remote) {\texttt{remote}};
+\node[mqtt section title,below={\MQGapXL+\MQGapS} of instancesbottom] (sectionstitle)
+  {Instance A sections};
+\node[mqtt layout fit,below=\MQGapS of sectionstitle,minimum width={2*30mm+\MQGapM},minimum height=10mm] (firstrow) {};
+\node[mqtt config,right=0mm of firstrow.west,anchor=west,minimum width=30mm] (local) {\texttt{local}};
+\node[mqtt config,left=0mm of firstrow.east,anchor=east,minimum width=30mm] (remote) {\texttt{remote}};
+
 \path (local.south) -- (remote.south) coordinate[midway] (firstbottom);
 \node[mqtt config,below=\MQGapS of firstbottom,minimum width=56mm] (connection) {\texttt{connection}};
-\path ($(connection.south west)!.20!(connection.south east)$) ++(0,-\MQGapS) coordinate (sockettop);
-\path ($(connection.south west)!.80!(connection.south east)$) ++(0,-\MQGapS) coordinate (tlstop);
-\node[mqtt config,below=0mm of sockettop,minimum width=26mm,minimum height=14mm] (socket) {\texttt{socket}};
-\node[mqtt config,below=0mm of tlstop,minimum width=26mm,minimum height=14mm] (tls) {\texttt{tls}\\when selected};
+\node[mqtt layout fit,below=\MQGapS of connection,minimum width={2*26mm+\MQGapM},minimum height=14mm] (lowerrow) {};
+\node[mqtt config,right=0mm of lowerrow.west,anchor=west,minimum width=26mm,minimum height=14mm] (socket)
+  {\texttt{socket}};
+\node[mqtt config,left=0mm of lowerrow.east,anchor=east,minimum width=26mm,minimum height=14mm] (tls)
+  {\texttt{tls}\\when selected};
 
 \path (socket.south) -- (tls.south) coordinate[midway] (sectionsbottom);
-\node[mqtt note,below=\MQGapL of sectionsbottom,minimum width=72mm,text width=62mm] (dependent)
+\node[mqtt note,below={\MQGapL+\MQGroupPad} of sectionsbottom,minimum width=72mm,text width=62mm] (dependent)
   {Section availability is role/mode dependent; the figure shows the reusable section vocabulary.};
 \node[mqtt note,below=\MQGapM of dependent,minimum width=76mm,text width=66mm] (anonymous)
   {Anonymous endpoint: API-configurable only; it is not a named \texttt{ConfigRoot} child and has no named CLI/config-file address.};
@@ -36,8 +43,9 @@
   \node[mqtt group,fit=(sectionstitle)(local)(remote)(connection)(socket)(tls)] (sections) {};
 \end{scope}
 
-\draw[mqtt contains] (root.south) -- node[mqtt edge label,right] {contains} (children.north);
-\draw[mqtt contains] (instancea.south) -- node[mqtt edge label,right,pos=.76] {assembles} \MQPortNorth{sections}{.24};
+\draw[mqtt contains] (root.south) -- node[mqtt edge label right] {contains} (children.north);
+\path (sections.north -| instancea.center) coordinate (sections-instancea-north);
+\draw[mqtt contains] (instancea.south) -- node[mqtt edge label right,pos=.76] {assembles} (sections-instancea-north);
 
 \end{tikzpicture}
 \end{document}

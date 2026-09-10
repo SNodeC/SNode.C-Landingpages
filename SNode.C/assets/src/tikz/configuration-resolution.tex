@@ -6,7 +6,7 @@
 \begin{tikzpicture}[mqtt desktop]
 
 \node[mqtt config,minimum width=34mm,minimum height=18mm,text width=28mm] (api)
-  {1 --- API / defaults\\lowest precedence};
+  {1 --- API and defaults\\lowest precedence};
 \node[mqtt config,right=\MQGapM of api,minimum width=34mm,minimum height=18mm,text width=28mm] (file)
   {2 --- configuration file\\middle precedence};
 \node[mqtt config,right=\MQGapM of file,minimum width=34mm,minimum height=18mm,text width=28mm] (cli)
@@ -24,11 +24,16 @@
 \draw[mqtt flow] (cli.south) -- (cli.south |- climid) -- (resolve-n82 |- climid) -- (resolve-n82);
 \draw[mqtt control flow] (resolve.south) -- (effective.north);
 
-\node[mqtt section title,below=\MQGapXL of effective] (outputstitle) {Effective-value inspection / persistence};
-\node[mqtt process,below=\MQGapS of outputstitle,minimum width=34mm,minimum height=14mm] (cmd) {\texttt{--command-line=...}};
-\node[mqtt process,left=\MQGapS of cmd,minimum width=34mm,minimum height=14mm] (show) {\texttt{--show-config}};
-\node[mqtt process,right=\MQGapS of cmd,minimum width=34mm,minimum height=14mm] (write) {\texttt{--write-config}\\persistent values};
-\node[mqtt note,below=\MQGapL of cmd,minimum width=88mm] (help) {\texttt{--help=expanded} inspects the hierarchy};
+\node[mqtt section title,below={\MQGapXL+\MQGroupPad} of effective] (outputstitle)
+  {Effective-value inspection / persistence};
+\node[mqtt process,below=\MQGapS of outputstitle,minimum width=34mm,minimum height=14mm] (cmd)
+  {\texttt{--command-line=...}};
+\node[mqtt process,left=\MQGapS of cmd,minimum width=34mm,minimum height=14mm] (show)
+  {\texttt{--show-config}};
+\node[mqtt process,right=\MQGapS of cmd,minimum width=34mm,minimum height=14mm] (write)
+  {\texttt{--write-config}\\persistent values};
+\node[mqtt note,below={\MQGapL+\MQGroupPad} of cmd,minimum width=88mm] (help)
+  {\texttt{--help=expanded} inspects the hierarchy};
 \path (show.west) ++(-\MQGroupPad,0) coordinate (outerleft);
 \path (write.east) ++(\MQGroupPad,0) coordinate (outerright);
 
@@ -37,7 +42,7 @@
   \node[mqtt group,fit=(outputstitle)(show)(cmd)(write)] (outputs) {};
 \end{scope}
 
-\draw[mqtt observation] (effective.south) -- node[mqtt edge label,right] {inspect / serialize} (outputs.north);
+\draw[mqtt observation] (effective.south) -- node[mqtt edge label right] {inspect / persist} (outputs.north);
 
 \end{tikzpicture}
 \end{document}
