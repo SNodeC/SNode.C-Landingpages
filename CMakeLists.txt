@@ -37,21 +37,56 @@ project(SNodeCLandingpagesFigures NONE)
 
 find_program(PDFLATEX_EXECUTABLE NAMES pdflatex REQUIRED)
 find_program(PDFTOCAIRO_EXECUTABLE NAMES pdftocairo REQUIRED)
+find_program(PDFINFO_EXECUTABLE NAMES pdfinfo REQUIRED)
 find_program(SCOUR_EXECUTABLE NAMES scour REQUIRED)
 find_package(Python3 COMPONENTS Interpreter REQUIRED)
 
 # Cairo serializes SVG viewport dimensions as integer PostScript points. Canonical
 # technical figures, however, have exact physical publication widths (160 mm desktop,
-# 100 mm mobile). Normalize only the root SVG physical viewport after scour while
-# preserving the generated viewBox coordinate system and therefore all vector geometry.
+# 100 mm mobile). First prove that the TeX/PDF source already has the canonical
+# physical width; a noncanonical composition must fail instead of being scaled to fit.
+# Only then normalize the root SVG physical viewport after scour while preserving
+# the generated viewBox coordinate system and therefore all vector geometry.
 set(TIKZ_SVG_CANVAS_NORMALIZER "${CMAKE_BINARY_DIR}/normalize-tikz-svg-canvas.py")
 file(WRITE "${TIKZ_SVG_CANVAS_NORMALIZER}" [=[
 from pathlib import Path
+import os
 import re
+import subprocess
 import sys
 
 svg_path = Path(sys.argv[1])
-canvas_width_mm = sys.argv[2]
+pdf_path = Path(sys.argv[2])
+pdfinfo_executable = sys.argv[3]
+canvas_width_mm = sys.argv[4]
+
+pdfinfo = subprocess.check_output(
+    [pdfinfo_executable, str(pdf_path)],
+    text=True,
+    env={**os.environ, "LC_ALL": "C"},
+)
+page_size = re.search(
+    r"^Page size:\s+([0-9.]+)\s+x\s+([0-9.]+)\s+pts",
+    pdfinfo,
+    re.MULTILINE,
+)
+if page_size is None:
+    raise SystemExit(f"Unable to read PDF page size from {pdf_path}")
+
+source_width_pt = float(page_size.group(1))
+target_width_pt = float(canvas_width_mm) * 72.0 / 25.4
+# pdfinfo reports page dimensions to three decimal places. One millipoint is the
+# smallest tolerance that covers that serialization precision without becoming a
+# visual/layout allowance.
+width_tolerance_pt = 0.001
+if abs(source_width_pt - target_width_pt) > width_tolerance_pt:
+    raise SystemExit(
+        f"Noncanonical technical-figure canvas in {pdf_path}: "
+        f"source width {source_width_pt:.3f}pt, expected "
+        f"{target_width_pt:.6f}pt ({canvas_width_mm}mm). "
+        "Recompose the TikZ source; scaling to the publication width is forbidden."
+    )
+
 svg = svg_path.read_text(encoding="utf-8")
 match = re.search(
     r'<svg width="[^"]+" height="[^"]+" viewBox="0 0 ([0-9.]+) ([0-9.]+)"',
@@ -193,6 +228,8 @@ foreach(TIKZ_SOURCE_REL IN LISTS TIKZ_TEX_SOURCES)
             "${Python3_EXECUTABLE}"
             "${TIKZ_SVG_CANVAS_NORMALIZER}"
             "${TIKZ_OUTPUT}"
+            "${TIKZ_PDF}"
+            "${PDFINFO_EXECUTABLE}"
             "${TIKZ_PUBLICATION_WIDTH_MM}"
         BYPRODUCTS
             "${TIKZ_PDF}"
