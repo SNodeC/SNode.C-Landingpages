@@ -27,13 +27,13 @@
   {Protocol / application contexts};
 
 \draw[mqtt association] (express.south) -- (http.north);
-\path \MQPortSouth{http}{.20} coordinate (http-s20);
-\path \MQPortSouth{http}{.50} coordinate (http-s50);
-\path \MQPortSouth{http}{.80} coordinate (http-s80);
-\path (http-s20) -- (sse.north) coordinate[midway] (ssemid);
-\draw[mqtt association] (http-s20) -- (http-s20 |- ssemid) -- (sse.north |- ssemid) -- (sse.north);
-\path (http-s80) -- (ws.north) coordinate[midway] (wsmid);
-\draw[mqtt handoff] (http-s80) -- (http-s80 |- wsmid) -- (ws.north |- wsmid) -- (ws.north);
+\MQDistributedPortSouth{http}{http-s1}{1}{3}
+\MQDistributedPortSouth{http}{http-s2}{2}{3}
+\MQDistributedPortSouth{http}{http-s3}{3}{3}
+\path (http-s1) -- (sse.north) coordinate[midway] (ssemid);
+\draw[mqtt association] (http-s1) -- (http-s1 |- ssemid) -- (sse.north |- ssemid) -- (sse.north);
+\path (http-s3) -- (ws.north) coordinate[midway] (wsmid);
+\draw[mqtt handoff] (http-s3) -- (http-s3 |- wsmid) -- (ws.north |- wsmid) -- (ws.north);
 \draw[mqtt association] (ws.south) -- (mqttws.north);
 
 \node[mqtt state,below=\MQGapM of directbottom,minimum width=70mm,text width=60mm] (stream)
@@ -46,14 +46,14 @@
   \node[mqtt group,fit=(httptitle)(express)(http)(sse)(ws)(mqttws)] (httpgroup) {};
 \end{scope}
 
-\path \MQPortNorth{stream}{.18} coordinate (stream-n18);
-\path \MQPortNorth{stream}{.50} coordinate (stream-n50);
-\path \MQPortNorth{stream}{.82} coordinate (stream-n82);
-\path (custom.south) -- (stream-n18) coordinate[midway] (custommid);
-\draw[mqtt association] (custom.south) -- (custom.south |- custommid) -- (stream-n18 |- custommid) -- (stream-n18);
-\draw[mqtt association] (http-s50) -- (stream-n50);
-\path (mqttdirect.south) -- (stream-n82) coordinate[midway] (mqttmid);
-\draw[mqtt association] (mqttdirect.south) -- (mqttdirect.south |- mqttmid) -- (stream-n82 |- mqttmid) -- (stream-n82);
+\MQDistributedPortNorth{stream}{stream-n1}{1}{3}
+\MQDistributedPortNorth{stream}{stream-n2}{2}{3}
+\MQDistributedPortNorth{stream}{stream-n3}{3}{3}
+\path (custom.south) -- (stream-n1) coordinate[midway] (custommid);
+\draw[mqtt association] (custom.south) -- (custom.south |- custommid) -- (stream-n1 |- custommid) -- (stream-n1);
+\draw[mqtt association] (http-s2) -- (stream-n2);
+\path (mqttdirect.south) -- (stream-n3) coordinate[midway] (mqttmid);
+\draw[mqtt association] (mqttdirect.south) -- (mqttdirect.south |- mqttmid) -- (stream-n3 |- mqttmid) -- (stream-n3);
 
 \end{tikzpicture}
 \end{document}
