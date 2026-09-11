@@ -15,26 +15,28 @@
   {application-owned\\\texttt{SubCommand}};
 \node[mqtt config,right=\MQHorizontalGapTight of instancea,mqtt node compact] (instanceb)
   {named endpoint\\instance B};
+\node[mqtt layout fit,fit=(namedtitle)(app)(instancea)(instanceb)] (childrenfit) {};
 
-\node[mqtt config,below=\MQSectionSeparation of instancea,mqtt node compact] (local) {\texttt{local}};
+\node[mqtt section title,below=\MQSectionSeparation of childrenfit,anchor=north] (sectionstitle)
+  {Instance A sections};
+\node[mqtt config,below=\MQGapS of sectionstitle,mqtt node compact] (local) {\texttt{local}};
 \node[mqtt config,left=\MQHorizontalGapTight of local,mqtt node compact] (remote) {\texttt{remote}};
 \node[mqtt config,right=\MQHorizontalGapTight of local,mqtt node compact] (connection) {\texttt{connection}};
-\node[mqtt section title,above=\MQGapS of local] (sectionstitle) {Instance A sections};
 
 \path (remote.south) -- (local.south) coordinate[midway] (lowerleftaxis);
 \path (local.south) -- (connection.south) coordinate[midway] (lowerrightaxis);
 \node[mqtt config,below=\MQGapS of lowerleftaxis,mqtt node compact] (socket) {\texttt{socket}};
 \node[mqtt config,below=\MQGapS of lowerrightaxis,mqtt node compact] (tls)
   {\texttt{tls}\\when selected};
+\node[mqtt layout fit,fit=(sectionstitle)(remote)(local)(connection)(socket)(tls)] (sectionsfit) {};
 
-\path (socket.south) -- (tls.south) coordinate[midway] (sectionsbottom);
-\node[mqtt note,below=\MQGapXL of sectionsbottom,mqtt node extra wide] (dependent)
+\node[mqtt note,below=\MQGapXL of sectionsfit,mqtt node extra wide] (dependent)
   {Section availability is role/family/mode dependent;\\the figure shows the reusable\\section vocabulary.};
 \node[mqtt note,below=\MQGapM of dependent,mqtt node hero] (anonymous)
   {Anonymous endpoint instance: configurable through the C++ API,\\but not a named \texttt{ConfigRoot} child and therefore not addressable\\by instance name from CLI or configuration file.};
 
 \begin{scope}[on background layer]
-  \node[mqtt figure frame,fit=(root)(namedtitle)(app)(instancea)(instanceb)(sectionstitle)(remote)(local)(connection)(socket)(tls)(dependent)(anonymous)] {};
+  \node[mqtt figure frame,fit=(root)(childrenfit)(sectionsfit)(dependent)(anonymous)] {};
   \node[mqtt group,fit=(namedtitle)(app)(instancea)(instanceb)] (children) {};
   \node[mqtt group,fit=(sectionstitle)(remote)(local)(connection)(socket)(tls)] (sections) {};
 \end{scope}

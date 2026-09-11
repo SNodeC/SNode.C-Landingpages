@@ -14,24 +14,30 @@
 \node[mqtt section title,above=\MQGapS of app] (namedtitle) {Named root children};
 \node[mqtt config,above=\MQSectionSeparation of namedtitle,mqtt node extra wide] (root)
   {\texttt{ConfigRoot}\\application configuration root};
+\node[mqtt layout fit,fit=(namedtitle)(app)(instancea)(instanceb)] (childrenfit) {};
 
-\node[mqtt config,below=\MQSectionSeparation of instancea,mqtt node compact] (local) {\texttt{local}};
-\node[mqtt config,below=\MQSectionSeparation of instanceb,mqtt node compact] (remote) {\texttt{remote}};
+\node[mqtt section title,below=\MQSectionSeparation of childrenfit,anchor=north] (sectionstitle)
+  {Instance A sections};
+\path (instancea.center |- sectionstitle.south) coordinate (localaxis);
+\path (instanceb.center |- sectionstitle.south) coordinate (remoteaxis);
+\node[mqtt config,below=\MQGapS of localaxis,mqtt node compact] (local) {\texttt{local}};
+\node[mqtt config,below=\MQGapS of remoteaxis,mqtt node compact] (remote) {\texttt{remote}};
 \path (local.south) -- (remote.south) coordinate[midway] (firstbottom);
-\node[mqtt section title,above=\MQGapS of firstbottom] (sectionstitle) {Instance A sections};
 \node[mqtt config,below=\MQGapS of firstbottom,mqtt node extra wide] (connection) {\texttt{connection}};
-\node[mqtt config,below=\MQSectionSeparation of local,mqtt node compact] (socket) {\texttt{socket}};
-\node[mqtt config,below=\MQSectionSeparation of remote,mqtt node compact] (tls)
+\path (local.center |- connection.south) coordinate (socketaxis);
+\path (remote.center |- connection.south) coordinate (tlsaxis);
+\node[mqtt config,below=\MQGapS of socketaxis,mqtt node compact] (socket) {\texttt{socket}};
+\node[mqtt config,below=\MQGapS of tlsaxis,mqtt node compact] (tls)
   {\texttt{tls}\\when selected};
+\node[mqtt layout fit,fit=(sectionstitle)(local)(remote)(connection)(socket)(tls)] (sectionsfit) {};
 
-\path (socket.south) -- (tls.south) coordinate[midway] (sectionsbottom);
-\node[mqtt note,below=\MQGapXL of sectionsbottom,mqtt node extra wide] (dependent)
+\node[mqtt note,below=\MQGapXL of sectionsfit,mqtt node extra wide] (dependent)
   {Section availability is role/family/mode dependent;\\the figure shows the reusable\\section vocabulary.};
 \node[mqtt note,below=\MQGapM of dependent,mqtt node extra wide] (anonymous)
   {Anonymous endpoint: API-configurable only;\\it is not a named \texttt{ConfigRoot} child\\and has no named CLI/config-file\\address.};
 
 \begin{scope}[on background layer]
-  \node[mqtt figure frame,fit=(root)(namedtitle)(app)(instancea)(instanceb)(sectionstitle)(local)(remote)(connection)(socket)(tls)(dependent)(anonymous)] {};
+  \node[mqtt figure frame,fit=(root)(childrenfit)(sectionsfit)(dependent)(anonymous)] {};
   \node[mqtt group,fit=(namedtitle)(app)(instancea)(instanceb)] (children) {};
   \node[mqtt group,fit=(sectionstitle)(local)(remote)(connection)(socket)(tls)] (sections) {};
 \end{scope}
