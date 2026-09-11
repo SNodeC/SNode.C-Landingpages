@@ -12,11 +12,12 @@
 \node[mqtt process,right=\MQHorizontalGapTight of sse] (ws)
   {WebSocket\\via HTTP\\Upgrade};
 \path (sse.south) -- (ws.south) coordinate[midway] (branchbottom);
+\path (sse.north) -- (ws.north) coordinate[midway] (branchtop);
 
 \node[mqtt state,below=\MQConnectorSpan of branchbottom] (http) {HTTP context};
-\node[mqtt application,above=\MQSectionSeparation of http,mqtt node compact] (express)
+\node[mqtt application,above=\MQSectionSeparation of branchtop,mqtt node compact] (express)
   {Express-style routing\\and middleware};
-\node[mqtt process,above=\MQSectionSeparation of ws,mqtt node compact] (mqttws)
+\node[mqtt process,above=\MQConnectorSpan of ws,mqtt node compact] (mqttws)
   {MQTT over\\WebSocket\\subprotocol};
 
 \MQDistributedPortNorth{http}{http-n1}{1}{3}
