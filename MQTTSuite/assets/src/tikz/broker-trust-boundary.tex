@@ -11,21 +11,22 @@
 \tikzset{
   client/.style={mqtt external,minimum width=72mm,text width=66mm,minimum height=13mm},
   ingress/.style={mqtt process,minimum width=82mm,text width=76mm,minimum height=16mm},
-  surface/.style={minimum width=54mm,text width=48mm,minimum height=25mm},
-  security/.style={minimum width=62mm,text width=56mm,minimum height=29mm}
+  wssurface/.style={mqtt data,minimum width=54mm,text width=48mm,minimum height=18mm},
+  adminsurface/.style={mqtt control,minimum width=54mm,text width=48mm,minimum height=18mm},
+  riskcard/.style={mqtt warning,minimum width=62mm,text width=56mm,minimum height=29mm},
+  deploymentcard/.style={mqtt note,minimum width=62mm,text width=56mm,minimum height=29mm}
 }
 
-\node[client] (client)
-  {browser / HTTP client or MQTT-WebSocket client};
-\node[ingress,below=\MQArrowRun of client] (router)
-  {\textbf{shared Broker HTTP / HTTPS listener + Express router}\\one ingress for browser, administration, SSE, and MQTT WebSocket};
-\draw[mqtt flow] (client.south) -- (router.north);
+% Establish the two equal sibling surfaces first; all ingress placement derives
+% from their real common top edge, so the branch span is exactly \MQArrowRun.
+\node[wssurface] (ws)
+  {\textbf{MQTT WebSocket data route}\\\texttt{/ · /ws · /mqtt}\\subprotocol \texttt{mqtt}};
+\node[adminsurface,right=\MQHorizontalGap of ws] (admin)
+  {\textbf{Operator / browser routes}\\dashboard \texttt{/clients/*}\\JSON \texttt{/api/mqtt/*} · SSE};
+\coordinate (surfacesTopMid) at ($(ws.north)!0.5!(admin.north)$);
 
-\matrix (surfaces) [matrix of nodes,below=\MQArrowRun of router,column sep=\MQHorizontalGap,inner sep=0pt,outer sep=0pt,
-  nodes={surface,anchor=center}] {
-  \node[mqtt data] (ws) {\textbf{MQTT WebSocket data route}\\\texttt{/ · /ws · /mqtt}\\subprotocol \texttt{mqtt}}; &
-  \node[mqtt control] (admin) {\textbf{Operator / browser routes}\\dashboard \texttt{/clients/*}\\JSON \texttt{/api/mqtt/*} · SSE}; \\
-};
+\node[ingress,above=\MQArrowRun of surfacesTopMid] (router)
+  {\textbf{shared Broker HTTP / HTTPS listener + Express router}\\one ingress for browser, administration, SSE, and MQTT WebSocket};
 \coordinate (routerWsPort) at ($(router.south west)!.35!(router.south east)$);
 \coordinate (routerAdminPort) at ($(router.south west)!.65!(router.south east)$);
 \coordinate (wsMid) at ($(routerWsPort)!0.5!(ws.north)$);
@@ -35,19 +36,22 @@
 \draw[mqtt control flow]
   (routerAdminPort) -- (routerAdminPort |- adminMid) -| (admin.north);
 
+\node[client,above=\MQArrowRun of router] (client)
+  {browser / HTTP client or MQTT-WebSocket client};
+\draw[mqtt flow] (client.south) -- (router.north);
+
 \begin{pgfonlayer}{background}
   \node[mqtt trust boundary,fit=(router)(ws)(admin)] (trust) {};
 \end{pgfonlayer}
 \node[mqtt annotation,text width=112mm,align=center,below=\MQLabelGap of trust] (trustLabel)
   {Dashed region: required external / trusted deployment boundary — not enforced by MQTTBroker};
 
-\matrix (securityRow) [matrix of nodes,below=\MQGapM of trustLabel,column sep=\MQHorizontalGap,inner sep=0pt,outer sep=0pt,
-  nodes={security,anchor=center}] {
-  \node[mqtt warning] (risk) {\textbf{Current Broker exposure}\\No application authentication on operator routes. Wildcard CORS: \texttt{/api/mqtt/*} and \texttt{/api/mqtt/events}. Client-event JSON/logging can include the supplied MQTT password.}; &
-  \node[mqtt note] (tls) {\textbf{Deployment control}\\HTTPS protects transport, not route authorization. Use loopback/private binding, firewall policy, or authenticated path-aware external access control.}; \\
+\matrix (securityRow) [matrix of nodes,below=\MQGapM of trustLabel,column sep=\MQHorizontalGap,inner sep=0pt,outer sep=0pt] {
+  \node[riskcard] (risk) {\textbf{Current Broker exposure}\\No application authentication on operator routes. Wildcard CORS: \texttt{/api/mqtt/*} and \texttt{/api/mqtt/events}. Client-event JSON/logging can include the supplied MQTT password.}; &
+  \node[deploymentcard] (tls) {\textbf{Deployment control}\\HTTPS protects transport, not route authorization. Use loopback/private binding, firewall policy, or authenticated path-aware external access control.}; \\
 };
 
-\node[fit=(client)(trust)(trustLabel)(securityRow)] (contentBounds) {};
+\node[inner sep=0pt,fit=(client)(trust)(trustLabel)(securityRow)] (contentBounds) {};
 \coordinate (titleY) at ($(client.north)+(0,\MQTitleGap)$);
 \node[mqtt section title,anchor=south west] (figureTitle)
   at (contentBounds.west |- titleY) {MQTTBroker HTTP exposure and required trust boundary};
