@@ -666,32 +666,55 @@ short, or hide beneath a node.
 Connectors leave and enter box borders orthogonally at 90 degrees, using the center of
 the relevant border by default.
 
-When several connectors share one border, distribute source and destination ports
-evenly using canonical shared port primitives rather than stacking them at one point.
-Do not invent fractional attachment positions. If the shared system cannot express the
-required distribution, invoke the mandatory hard stop.
+**Connector simplicity takes precedence over mechanically enforcing an even port
+formula.** When source and destination are aligned so that a single straight horizontal
+or vertical border-to-border connector expresses the relationship without crossing,
+overlap, or ambiguity, use that straight connector. Do not introduce a bend or dogleg
+merely to reach an evenly distributed port.
 
-**Distributed ports are relative to the current border geometry.** For `n` connectors
-sharing one border, canonical port `i` (1-based, `1 <= i <= n`) is placed at the
-fraction `i/(n+1)` of that border's current length. A single connector therefore uses
-the center (`1/2`), two connectors use `1/3` and `2/3`, three connectors use `1/4`,
-`2/4`, and `3/4`, and so on.
+When several connectors genuinely need distinct attachment positions on one border,
+distribute source and destination ports evenly using canonical shared port primitives by
+default rather than stacking them at one point. The canonical `i/(n+1)` distribution is
+a default, not an absolute requirement when it would force an otherwise unnecessary
+bend. It may be broken to preserve a cleaner straight connector, provided the attachment
+still lies exactly on the border, remains orthogonal, uses a canonical center/anchor or
+other canonical relative port relationship, and creates no crossing, overlap, or
+ambiguous merge.
 
-Figure sources specify only the node, border side, ordinal port index, and total port
-count through canonical distributed-port primitives. Figure sources must never provide
-a literal attachment fraction such as `.18`, `.333`, `.50`, `.667`, `.82`, or an
-absolute border distance. Changing canonical node width, height, padding, typography,
-or other shared geometry must automatically move these ports with the border while
-preserving the same even relative distribution.
+This straight-connector exception never permits a figure-local literal attachment
+fraction or absolute border distance. If preserving the straight connector would require
+an arbitrary `.18`, `.333`, `.50`, `.667`, `.82`, or similar literal fraction, or any
+other non-canonical attachment value, invoke the mandatory hard stop instead.
 
-If a real semantic relationship requires a non-even port distribution, that is not
-permission to choose figure-local fractions. Invoke the mandatory hard stop until the
-required relationship is represented by a canonical shared primitive.
+**Distributed ports are relative to the current border geometry.** When the distributed
+port primitive is used for `n` connectors sharing one border, canonical port `i`
+(1-based, `1 <= i <= n`) is placed at the fraction `i/(n+1)` of that border's current
+length. A single distributed connector therefore uses the center (`1/2`), two use `1/3`
+and `2/3`, three use `1/4`, `2/4`, and `3/4`, and so on.
+
+Figure sources using distributed ports specify only the node, border side, ordinal port
+index, and total port count through canonical distributed-port primitives. Changing
+canonical node width, height, padding, typography, or other shared geometry must
+automatically move those distributed ports with the border while preserving the same
+even relative distribution.
+
+If neither a canonical straight center/anchor attachment nor the canonical distributed
+ports can express the required relationship cleanly, that is not permission to invent a
+non-even figure-local fraction. Invoke the mandatory hard stop until the required
+relative attachment relationship is represented by a canonical shared primitive.
 
 ## 14.3 Routing
 
-Off-axis connectors use orthogonal/Manhattan routing. Unmotivated diagonal connectors
-are forbidden.
+**Straight connectors are preferred over bent connectors whenever they can express the
+same relationship cleanly.** Do not introduce a bend, dogleg, or detour when a straight
+horizontal or vertical border-to-border connector can carry the same semantics without a
+crossing, overlap, or ambiguous merge. Every bend must therefore have a genuine
+geometric or semantic reason such as non-aligned endpoints, obstacle avoidance, branch
+structure, or relationship semantics. Satisfying an even-port formula, creating visual
+symmetry, or decorative routing is not by itself a valid reason to bend a connector.
+
+Off-axis connectors that genuinely require a bend use orthogonal/Manhattan routing.
+Unmotivated diagonal connectors are forbidden.
 
 Parallel related connectors use harmonious repeatable geometry. Avoid tiny hooks,
 accidental tangencies, arbitrary doglegs, or inconsistent bend positions.
@@ -740,6 +763,9 @@ rasterization resolution must never change the required source geometry. If no s
 shared derived token exists, invoke the mandatory hard stop.
 
 ## 15.1 Canonical bent-arrow primary-axis span
+
+This section applies only after §14.3 establishes that a bend is genuinely required. It
+does not authorize bending a connector that can remain straight.
 
 An ordinary multi-segment bent process/data/control connector consumes the same total
 primary-axis span as an ordinary straight arrow: **`1 × R`**. Bending a connector must
@@ -880,7 +906,8 @@ Review every applicable rule, including:
 - arrowheads attached to their paths;
 - exact border attachment;
 - 90-degree entry/exit;
-- port distribution;
+- straight-connector preference and bend necessity;
+- port distribution and any justified straight-connector exception;
 - Manhattan routing;
 - straight-arrow rhythm;
 - centered-dogleg symmetry;
@@ -968,7 +995,9 @@ A technical figure is complete only when all applicable checks are proved, inclu
 - connectors attach exactly at box borders;
 - 90-degree entry/exit satisfied;
 - correct connector semantics used;
-- ports distributed correctly;
+- straight connectors used whenever they can express the relationship cleanly;
+- bends justified by actual geometry or semantics;
+- ports distributed correctly, or a §14.2 straight-connector exception is justified;
 - Manhattan routing used where applicable;
 - centered doglegs exactly symmetric where applicable;
 - alignment/visual balance satisfactory;
@@ -1184,19 +1213,25 @@ For every canonical technical TikZ figure:
 14. Labels must never hide lines, bends, arrowheads, borders, or other graphic
     structures.
 15. Connectors attach exactly to box borders and enter/leave orthogonally.
-16. Use canonical port distribution and Manhattan routing.
-17. Preserve the canonical `R`-derived connector rhythm and exact centered-dogleg
-    symmetry.
-18. Use only shared `R`-derived spatial layout tokens; no independent or figure-local
+16. Prefer straight connectors whenever they can express the relationship cleanly; a
+    bend requires a genuine geometric or semantic reason and must never be introduced
+    merely to satisfy even port distribution.
+17. Use canonical port distribution by default; the §14.2 straight-connector exception
+    may break even `i/(n+1)` distribution only through canonical relative attachment,
+    never arbitrary literal fractions or offsets.
+18. Use Manhattan routing for connectors that genuinely require bends.
+19. Preserve the canonical `R`-derived connector rhythm and exact centered-dogleg
+    symmetry for bends that are actually required.
+20. Use only shared `R`-derived spatial layout tokens; no independent or figure-local
     physical layout distances are permitted.
-19. Use canonical node/container/typography/palette semantics.
-20. Preserve desktop/mobile semantic equivalence.
-21. Report all findings in chat before each refinement edit.
-22. Refine → build → render PNG → inspect → repeat until every rule passes.
-23. When satisfied, report every applicable contract category, its compliance status,
+21. Use canonical node/container/typography/palette semantics.
+22. Preserve desktop/mobile semantic equivalence.
+23. Report all findings in chat before each refinement edit.
+24. Refine → build → render PNG → inspect → repeat until every rule passes.
+25. When satisfied, report every applicable contract category, its compliance status,
     the rendered evidence, and why the result is visually satisfactory and free of
     unresolved uncertainty.
-24. Only then stop/freeze the figure.
+26. Only then stop/freeze the figure.
 
 ---
 
@@ -1339,8 +1374,9 @@ reason; symmetric semantics must not be rendered with accidental hierarchy.
 Every connector receives two independent reviews:
 
 - **geometric review:** semantic style, correct source/destination, border attachment,
-  direction, orthogonal entry/exit, routing, crossings, port distribution, rhythm, and
-  dogleg symmetry;
+  direction, orthogonal entry/exit, whether a straight connector was used whenever
+  possible, whether every bend is genuinely necessary, routing, crossings, port
+  distribution or justified §14.2 exception, rhythm, and dogleg symmetry;
 - **perceptual review:** what relationship the line actually looks like, whether it
   resembles an unintended bypass or alternate path, whether association looks like flow,
   whether it creates a false stack/layer interpretation, whether it merges with another
