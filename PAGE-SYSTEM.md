@@ -606,6 +606,23 @@ evenly using canonical shared port primitives rather than stacking them at one p
 Do not invent fractional attachment positions. If the shared system cannot express the
 required distribution, invoke the mandatory hard stop.
 
+**Distributed ports are relative to the current border geometry.** For `n` connectors
+sharing one border, canonical port `i` (1-based, `1 <= i <= n`) is placed at the
+fraction `i/(n+1)` of that border's current length. A single connector therefore uses
+the center (`1/2`), two connectors use `1/3` and `2/3`, three connectors use `1/4`,
+`2/4`, and `3/4`, and so on.
+
+Figure sources specify only the node, border side, ordinal port index, and total port
+count through canonical distributed-port primitives. Figure sources must never provide
+a literal attachment fraction such as `.18`, `.333`, `.50`, `.667`, `.82`, or an
+absolute border distance. Changing canonical node width, height, padding, typography,
+or other shared geometry must automatically move these ports with the border while
+preserving the same even relative distribution.
+
+If a real semantic relationship requires a non-even port distribution, that is not
+permission to choose figure-local fractions. Invoke the mandatory hard stop until the
+required relationship is represented by a canonical shared primitive.
+
 ## 14.3 Routing
 
 Off-axis connectors use orthogonal/Manhattan routing. Unmotivated diagonal connectors
