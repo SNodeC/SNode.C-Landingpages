@@ -43,7 +43,7 @@
 \draw[mqtt control flow] (dispatch.south) -- (callbacks.north);
 \draw[mqtt control flow] (callbacks.south) -- (next.north);
 
-\path (wait.east) ++(\MQLaneGap,0) coordinate (repeatrail);
+\path (wait.east) ++(\MQHorizontalMilestoneGap,0) coordinate (repeatrail);
 \path (repeatrail |- next.east) coordinate (repeatbottom);
 \path (repeatrail |- wait.east) coordinate (repeattop);
 \path (repeatrail |- callbacks.north) coordinate (repeatlabelbottom);
