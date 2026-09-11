@@ -32,7 +32,7 @@
 \path (servergroupedge) -- (clientgroupedge) coordinate[midway] (flowmid);
 
 \node[mqtt control,right=\MQHorizontalGapTight of flowmid] (loop)
-  {\textbf{Shared}\\\textbf{event loop}\\\texttt{start()}\\both flows\\callbacks on\\caller thread};
+  {\textbf{Shared}\\\textbf{event loop}\\\texttt{start()}\\server/client\\callbacks run\\on caller thread};
 
 \path (serverfit.north) ++(0,\MQGroupPad) coordinate (servertop);
 \path (clientfit.south) ++(0,-\MQGroupPad) coordinate (clientbottom);
