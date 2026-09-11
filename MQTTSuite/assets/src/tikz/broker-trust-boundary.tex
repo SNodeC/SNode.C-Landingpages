@@ -46,7 +46,7 @@
 \node[mqtt annotation,text width=112mm,align=center,below=\MQLabelGap of trust] (trustLabel)
   {Dashed region: required external / trusted deployment boundary — not enforced by MQTTBroker};
 
-\matrix (securityRow) [matrix of nodes,below=\MQGapM of trustLabel,column sep=\MQHorizontalGap,inner sep=0pt,outer sep=0pt] {
+\matrix (securityRow) [matrix of nodes,nodes={anchor=north},below=\MQGapM of trustLabel,column sep=\MQHorizontalGap,inner sep=0pt,outer sep=0pt] {
   \node[riskcard] (risk) {\textbf{Current Broker exposure}\\No application authentication on operator routes. Wildcard CORS: \texttt{/api/mqtt/*} and \texttt{/api/mqtt/events}. Client-event JSON/logging can include the supplied MQTT password.}; &
   \node[deploymentcard] (tls) {\textbf{Deployment control}\\HTTPS protects transport, not route authorization. Use loopback/private binding, firewall policy, or authenticated path-aware external access control.}; \\
 };
