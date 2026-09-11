@@ -15,7 +15,7 @@
 \path (sse.north) -- (ws.north) coordinate[midway] (branchtop);
 
 \node[mqtt state,below=\MQConnectorSpan of branchbottom] (http) {HTTP context};
-\node[mqtt process,above=\MQConnectorSpan of ws,mqtt node compact] (mqttws)
+\node[mqtt process,above=\MQConnectorSpan of ws] (mqttws)
   {MQTT over\\WebSocket\\subprotocol};
 \path (branchtop |- mqttws.north) coordinate (expressbase);
 \node[mqtt application,above=\MQConnectorSpan of expressbase,mqtt node compact] (express)
