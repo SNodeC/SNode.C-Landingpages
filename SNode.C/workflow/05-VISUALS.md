@@ -3,7 +3,7 @@
 **Status:** IMPLEMENTED AND REVIEWED  
 **Landing-pages baseline:** `bdb3a35ae8b67e730281b050951eca9e27a9df3e` plus this change  
 **Reviewed SNode.C source:** `SNodeC/snode.c` `master` at `1f0f728fc9b3b45174f2cd790d83b2f493e58af1`  
-**Review date:** 2026-09-09
+**Review date:** 2026-09-11
 
 This artifact supersedes the earlier three-visual/Figma-era SNode.C inventory for the current landing-page implementation. Existing SVGs were treated as historical evidence, not design authority. Current source and adjacent documentation control semantics; `shared/assets/src/tikz/landingpages-figure-system.tex` controls presentation.
 
@@ -16,22 +16,22 @@ This artifact supersedes the earlier three-visual/Figma-era SNode.C inventory fo
 5. Ownership/containment uses association/containment semantics, not flow arrows.
 6. Green/success styling is reserved for actual successful states/outcomes.
 7. Desktop and mobile variants are independently composed but semantically equivalent.
-8. Desktop width budget: 160 mm. Mobile width budget: 100 mm. Oversized figures are recomposed, not scaled down by shrinking type.
+8. Desktop uses the fixed 160 mm publication canvas and mobile the fixed 100 mm publication canvas. Oversized figures are recomposed, not scaled down by shrinking type.
 9. Generated SVGs are derived publication output. CI regenerates and publishes them; TikZ source plus the shared system file remain authoritative.
 10. Genuine runtime/UI evidence remains genuine raster capture and is never reconstructed in TikZ.
 
 ## Implemented inventory
 
-| ID | Figure | Primary placement | Reader question | Final width desktop / mobile |
+| ID | Figure | Primary placement | Reader question | Publication canvas desktop / mobile |
 | --- | --- | --- | --- | --- |
-| S1 | `programming-model` | README programming model | Which objects participate in one connection and who creates the context? | 137.9 / 89.9 mm |
-| S2 | `event-loop-dispatch` | Architecture §1 | What does event-driven mean at runtime? | 139.6 / 88.4 mm |
-| S3 | `endpoint-composition` | Architecture introduction | Which choices compose one endpoint without implying an arbitrary cross-product? | 125.8 / 93.1 mm |
-| S4 | `protocol-relationships` | Architecture §6 | How do custom contexts, HTTP, Express, SSE, WebSocket, and MQTT actually relate? | 131.6 / 95.9 mm |
-| S5 | `http-websocket-context-switch` | README + Architecture §5 | How can HTTP become WebSocket without replacing the connection? | 154.7 / 93.0 mm |
-| S6 | `configuration-hierarchy` | Configuration opening | Where do named endpoints, application configuration, sections, and anonymous instances live? | 129.6 / 85.8 mm |
-| S7 | `configuration-resolution` | Configuration surfaces/precedence | How do API, file, and CLI values resolve and how is effective state inspected? | 131.4 / 93.6 mm |
-| S8 | `retry-vs-reconnect` | Configuration retry/reconnect | Which failures use retry and which use reconnect? | 159.8 / 97.0 mm |
+| S1 | `programming-model` | README programming model | Which objects participate in one connection and who creates the context? | 160 / 100 mm |
+| S2 | `event-loop-dispatch` | Architecture §1 | What does event-driven mean at runtime? | 160 / 100 mm |
+| S3 | `endpoint-composition` | Architecture introduction | Which choices compose one endpoint without implying an arbitrary cross-product? | 160 / 100 mm |
+| S4 | `protocol-relationships` | Architecture §6 | How do custom contexts, HTTP, Express, SSE, WebSocket, and MQTT actually relate? | 160 / 100 mm |
+| S5 | `http-websocket-context-switch` | README + Architecture §5 | How can HTTP become WebSocket without replacing the connection? | 160 / 100 mm |
+| S6 | `configuration-hierarchy` | Configuration opening | Where do named endpoints, application configuration, sections, and anonymous instances live? | 160 / 100 mm |
+| S7 | `configuration-resolution` | Configuration surfaces/precedence | How do API, file, and CLI values resolve and how is effective state inspected? | 160 / 100 mm |
+| S8 | `retry-vs-reconnect` | Configuration retry/reconnect | Which failures use retry and which use reconnect? | 160 / 100 mm |
 
 Each figure has a desktop and `-mobile` TikZ source under `SNode.C/assets/src/tikz/`.
 
@@ -112,9 +112,13 @@ The 16 final sources were checked for:
 - no figure-local visual overrides (`draw`, `fill`, line width, radii, font, text color, opacity, shadows, or arrowhead definitions);
 - canonical node/container/connector styles for every constructed element;
 - relative positioning through `positioning`, `fit`, anchors, canonical spacing tokens, and relative `calc`/midpoint coordinates;
+- spatial layout expressed through shared tokens derived from the single canonical rhythm `R`, with no independent figure-local physical layout dimensions;
+- canonical relative distributed ports where several connectors share a border;
 - successful LaTeX compilation;
-- desktop/mobile width-budget compliance;
-- visual inspection at GitHub-like desktop/mobile render widths.
+- exact fixed-canvas compliance at 160 mm desktop and 100 mm mobile for all 16 generated SVGs;
+- visual inspection at GitHub-like desktop/mobile render widths;
+- whole-family contact-sheet review for presentation consistency;
+- deterministic output: a repeated final CI build produced byte-identical 16 SVG and 16 PNG review outputs.
 
 ## Deliberately rejected figure candidates
 
