@@ -5,56 +5,52 @@
 \begin{document}
 \begin{tikzpicture}[mqtt mobile]
 
-\node[mqtt process,mqtt node compact] (custom)
+% Keep the HTTP-specific relationships compact while avoiding any semantic
+% container that could imply persistent HTTP containment after upgrade.
+\node[mqtt process] (sse)
+  {SSE\\EventSource\\within HTTP};
+\node[mqtt process,right=\MQHorizontalGapTight of sse] (ws)
+  {WebSocket\\via HTTP\\Upgrade};
+\path (sse.south) -- (ws.south) coordinate[midway] (branchbottom);
+
+\node[mqtt state,below=\MQConnectorSpan of branchbottom] (http) {HTTP context};
+\node[mqtt application,above=\MQSectionSeparation of http,mqtt node compact] (express)
+  {Express-style routing\\and middleware};
+\node[mqtt process,above=\MQSectionSeparation of ws,mqtt node compact] (mqttws)
+  {MQTT over\\WebSocket\\subprotocol};
+
+\MQDistributedPortNorth{http}{http-n1}{1}{3}
+\MQDistributedPortNorth{http}{http-n2}{2}{3}
+\MQDistributedPortNorth{http}{http-n3}{3}{3}
+\draw[mqtt association] (express.south) -- (http-n2);
+\path (http-n1) -- (sse.south) coordinate[midway] (ssemid);
+\draw[mqtt association] (http-n1) -- (http-n1 |- ssemid) -- (sse.south |- ssemid) -- (sse.south);
+\path (http-n3) -- (ws.south) coordinate[midway] (wsmid);
+\draw[mqtt handoff] (http-n3) -- (http-n3 |- wsmid) -- (ws.south |- wsmid) -- (ws.south);
+\draw[mqtt association] (ws.north) -- (mqttws.south);
+
+% The two other direct stream roots form a balanced pair below the expanded HTTP
+% relationship hub. The HTTP-to-stream association passes between them.
+\path (http.south) ++(0,-\MQSectionSeparation) coordinate (directmid);
+\node[mqtt process,left=\MQHorizontalGapTight of directmid,mqtt node compact] (custom)
   {custom byte protocol\\\texttt{SocketContext}};
-\node[mqtt process,right=\MQHorizontalGapTight of custom,mqtt node compact] (mqttdirect)
+\node[mqtt process,right=\MQHorizontalGapTight of directmid,mqtt node compact] (mqttdirect)
   {direct\\MQTT 3.1.1};
 \path (custom.south) -- (mqttdirect.south) coordinate[midway] (directbottom);
 
-\node[mqtt process,above=\MQGapM of mqttdirect,mqtt node compact] (mqttws)
-  {MQTT over\\WebSocket\\subprotocol};
-\node[mqtt process,above=\MQConnectorSpan of mqttws,mqtt node compact] (ws)
-  {WebSocket\\via HTTP\\Upgrade};
-\node[mqtt process,left=\MQHorizontalGapTight of ws,mqtt node compact] (sse)
-  {SSE\\EventSource\\within HTTP};
-\path (sse.north) -- (ws.north) coordinate[midway] (branchmid);
+\node[mqtt state,below=\MQSectionToControlGap of directbottom,mqtt node extra wide] (stream)
+  {established stream connection};
+\draw[mqtt association] (custom.south) -- (stream.north -| custom.south);
+\draw[mqtt association] (http.south) -- (stream.north);
+\draw[mqtt association] (mqttdirect.south) -- (stream.north -| mqttdirect.south);
 
-\node[mqtt state,above=\MQConnectorSpan of branchmid,mqtt node wide] (http) {HTTP context};
-\node[mqtt application,above=\MQConnectorSpan of http,mqtt node extra wide] (express)
-  {Express-style routing\\and middleware};
-\node[mqtt section title,above=\MQTitleGap of express] (httptitle) {HTTP family};
-\node[mqtt section title,above=\MQGapM of httptitle] (title)
+\node[mqtt layout fit,fit=(express)(mqttws)] (topfit) {};
+\node[mqtt section title,above=\MQTitleGap of topfit] (title)
   {Protocol / application\\relationships};
 
-\draw[mqtt association] (express.south) -- (http.north);
-\MQDistributedPortSouth{http}{http-s1}{1}{2}
-\MQDistributedPortSouth{http}{http-s2}{2}{2}
-\path (http-s1) -- (sse.north) coordinate[midway] (ssemid);
-\draw[mqtt association] (http-s1) -- (http-s1 |- ssemid) -- (sse.north |- ssemid) -- (sse.north);
-\path (http-s2) -- (ws.north) coordinate[midway] (wsmid);
-\draw[mqtt handoff] (http-s2) -- (http-s2 |- wsmid) -- (ws.north |- wsmid) -- (ws.north);
-\draw[mqtt association] (ws.south) -- (mqttws.north);
-
-\node[mqtt layout fit,fit=(httptitle)(express)(http)(sse)(ws)(mqttws)] (httpfit) {};
-\path (httpfit.south |- directbottom) coordinate (streamanchor);
-\node[mqtt state,below=\MQConnectorSpan of streamanchor,mqtt node extra wide] (stream)
-  {established stream connection};
-\node[mqtt note,below=\MQGapS of stream,mqtt node extra wide] (note)
-  {Relationship map; not a flat\\protocol stack.};
-
 \begin{scope}[on background layer]
-  \node[mqtt figure frame,fit=(title)(httptitle)(express)(http)(sse)(ws)(mqttws)(custom)(mqttdirect)(stream)(note)] {};
-  \node[mqtt group,fit=(httptitle)(express)(http)(sse)(ws)(mqttws)] (httpgroup) {};
+  \node[mqtt figure frame,fit=(title)(express)(mqttws)(sse)(ws)(http)(custom)(mqttdirect)(stream)] {};
 \end{scope}
-
-\MQDistributedPortNorth{stream}{stream-n1}{1}{3}
-\MQDistributedPortNorth{stream}{stream-n2}{2}{3}
-\MQDistributedPortNorth{stream}{stream-n3}{3}{3}
-\path (custom.south) -- (stream-n1) coordinate[midway] (custommid);
-\draw[mqtt association] (custom.south) -- (custom.south |- custommid) -- (stream-n1 |- custommid) -- (stream-n1);
-\draw[mqtt association] (httpgroup.south) -- (stream-n2);
-\path (mqttdirect.south) -- (stream-n3) coordinate[midway] (mqttmid);
-\draw[mqtt association] (mqttdirect.south) -- (mqttdirect.south |- mqttmid) -- (stream-n3 |- mqttmid) -- (stream-n3);
 
 \end{tikzpicture}
 \end{document}
