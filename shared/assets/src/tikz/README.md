@@ -6,9 +6,14 @@ technical-figure presentation system used by the landing-page subprojects.
 The shared system is intentionally a **single-file style authority**:
 
 - `landingpages-figure-system.tex` — complete reusable TikZ vocabulary plus the
-  canonical landing-page presentation contract for palette, typography, spacing,
-  node/container grammar, connector semantics, responsive budgets, and
-  publication rules.
+  canonical landing-page presentation system for palette, typography, spacing,
+  node/container grammar, connector semantics, responsive budgets, canvas helpers,
+  and publication rules.
+
+The repository-wide Markdown authority is the root-level `PAGE-SYSTEM.md`. It
+combines and supersedes the former `PAGE-SYSTEM.md` page guidance and the former
+`shared/assets/src/tikz/FIGURE-contract.md`; the stricter former figure-contract
+rules win wherever the two predecessors conflicted.
 
 New technical figures should load only:
 
@@ -16,24 +21,29 @@ New technical figures should load only:
 \input{landingpages-figure-system.tex}
 ```
 
-Before fixing both,
-* landingpages-figure-system.tex and
-* FIGURE-contract.md must be read in detail and are the only source of truth.
+Before creating, reviewing, fixing, or refining technical figures, both of these
+must be read in detail:
+
+- root `PAGE-SYSTEM.md`;
+- `landingpages-figure-system.tex`.
+
+They are the presentation source of truth together with the figure-specific
+semantic contract and current implementation evidence.
 
 The repository-level CMake build searches a figure's own source directory first
-and this shared directory second. This supports a staged migration:
+and this shared directory second. This supports staged migration:
 
-- **SNode.C** starts consuming the shared one-file system directly for new TikZ
+- **SNode.C** consumes the shared one-file system directly for migrated/new TikZ
   figures.
-- **MQTTSuite** remains unchanged for now and continues to resolve its existing
-  local `mqttsystem-figure-system.tex` and
-  `snodec-canonical-figure-system.tex` copies under
-  `MQTTSuite/assets/src/tikz/`.
-- MQTTSuite can be migrated to this shared one-file system in a later dedicated
-  pass; only then should its duplicate local system files be removed or renamed.
+- **MQTTSuite** may still resolve existing local system copies while migration is
+  incomplete; those copies do not authorize divergence from the repository-wide
+  combined contract.
+- duplicate local system files should be removed or renamed only in the dedicated
+  migration pass that makes the shared system the resolved implementation.
 
 Do not fork or restyle the shared presentation system per subproject. Project
-figures may differ in semantic content and composition, but the shared visual
-system is the common style authority.
+figures may differ in semantic content and relative composition, but the shared
+visual system and root combined contract are common authority.
 
-Generated SVGs remain per-project build outputs and are not canonical sources.
+Generated SVGs remain derived per-project build outputs and are not canonical
+editable sources.
