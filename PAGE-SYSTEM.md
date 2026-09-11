@@ -575,18 +575,7 @@ other nontechnical/non-TikZ artwork are not forced onto the 160 mm/100 mm techni
 canvas.
 
 This does **not** create permission for arbitrary or casually “dynamic” dimensions.
-Their dimensions/aspect ratios must come from a prescribed asset class, approved
-composition, or qualified source capture.
-
-Practical page-system defaults remain:
-
-- screenshots and hero composites: about 1600×900 or 1600×800 where suitable;
-- social preview: 1280×640 PNG;
-- general/non-TikZ wide vector artwork: a view box appropriate to its approved GitHub
-  composition;
-- all content images: readable at GitHub content width and on mobile.
-
-If no prescribed dimension/aspect-ratio rule exists for an asset and a new arbitrary
+Their dimensions/aspect-ratio rule exists for an asset and a new arbitrary
 value would be required, do not invent one; invoke the hard stop from §1.1.
 
 SVG is preferred for diagrams. PNG is preferred for sharp UI/terminal/runtime captures
@@ -1450,6 +1439,14 @@ For every figure concept, execute and visibly report this state machine in the c
 3. **Produce a conformance report as a table.** The table must contain the applicable
    checks/categories with explicit **✓ / ✗** status and concrete evidence/findings. Do
    not replace this table with prose or a vague “looks good” statement.
+
+**Hard write barrier before any figure-source edit:** the complete visible conformance
+table for the exact current rendered desktop/mobile figure pair is a precondition for
+any source-changing tool call that edits the current figure or a shared figure-system
+primitive affecting it. If that table is absent, incomplete, refers to a stale render or
+source state, or omits any applicable `PAGE-SYSTEM.md` category, **do not edit or write
+the figure source**.
+
 4. **Satisfied?** Satisfaction means every applicable check is ✓, there is no unresolved
    uncertainty, exact vector/canvas checks pass, and the mandatory second-pass review in
    §30.5 has also passed.
@@ -1461,6 +1458,14 @@ For every figure concept, execute and visibly report this state machine in the c
    PNG(s) visibly in the chat.** For responsive concepts show both desktop and mobile
    previews. Merely saying that an artifact exists, giving a path, or reporting CI is
    not sufficient visual progress.
+
+**Hard write barrier after any figure-source edit:** after a source-changing tool call,
+no second source-changing tool call for that figure is permitted until the edited source
+has been canonically built, fresh desktop/mobile PNGs have been shown visibly in chat,
+and the complete analysis has restarted from step 2 for those exact fresh renders. The
+previous defect list, successful compilation/CI, source inspection, or evidence that the
+requested defect was fixed cannot satisfy this barrier.
+
 6. **Go back to “Start the analysis of Figure X”.** Re-analyze the complete figure from
    scratch against all applicable rules, not only the defect just fixed. Repeat the
    conformance-table → fix → visible-preview loop until satisfaction.
