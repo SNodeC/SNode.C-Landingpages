@@ -6,17 +6,17 @@
 \begin{tikzpicture}[mqtt desktop]
 
 \node[mqtt section title] (title) {Same established \texttt{SocketConnection}};
-\node[mqtt state,below=\MQGapM of title,minimum width=42mm,minimum height=18mm] (http)
+\node[mqtt state,below=\MQConnectorSpan of title,mqtt node wide] (http)
   {HTTP context\\ACTIVE};
-\node[mqtt process,right=\MQGapM of http,minimum width=48mm,minimum height=18mm,text width=42mm] (staged)
+\node[mqtt process,right=\MQConnectorSpan of http,mqtt node wide] (staged)
   {WebSocket replacement\\STAGED after Upgrade\\not active};
 \draw[mqtt handoff] (http.east) -- (staged.west);
 
-\node[mqtt process,below=\MQGapM of http,minimum width=48mm,text width=42mm] (return)
-  {current HTTP read callback returns};
-\node[mqtt control,below=\MQGapM of return,minimum width=50mm,text width=44mm] (switch)
+\node[mqtt process,below=\MQConnectorSpan of http,mqtt node wide] (return)
+  {current HTTP read\\callback returns};
+\node[mqtt control,below=\MQConnectorSpan of return,mqtt node wide] (switch)
   {\texttt{detach(ContextSwitch)}\\select staged context\\\texttt{attach()}};
-\node[mqtt state,below=\MQGapM of switch,minimum width=42mm] (websocket)
+\node[mqtt state,below=\MQConnectorSpan of switch,mqtt node wide] (websocket)
   {WebSocket context\\ACTIVE};
 
 \draw[mqtt control flow] (http.south) -- (return.north);
@@ -24,8 +24,8 @@
 \draw[mqtt dependency] (staged.south) |- (switch.east);
 \draw[mqtt control flow] (switch.south) -- (websocket.north);
 
-\node[mqtt note,below=\MQGapM of websocket,minimum width=88mm,text width=78mm] (note)
-  {HTTP remains active until its current read callback returns. The same connection and transport continue through the switch. SSE/EventSource does not use this replacement path.};
+\node[mqtt note,below=\MQConnectorSpan of websocket,mqtt node hero] (note)
+  {HTTP remains active until its current read callback returns.\\The same connection and transport continue through the switch.\\SSE/EventSource does not use this replacement path.};
 
 \begin{scope}[on background layer]
   \node[mqtt figure frame,fit=(title)(http)(staged)(return)(switch)(websocket)(note)] {};
