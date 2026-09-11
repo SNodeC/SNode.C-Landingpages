@@ -19,9 +19,6 @@
 \node[mqtt config,below=\MQGapM of mode,mqtt node hero] (context)
   {\textbf{Protocol / application context}\\custom \texttt{SocketContext} or compatible framework protocol context};
 
-\draw[mqtt association] (address.south) -- (role.north);
-\draw[mqtt association] (role.south) -- (mode.north);
-\draw[mqtt association] (mode.south) -- (context.north);
 \path (bluetooth.south |- address.north) coordinate (evidencestart);
 \draw[mqtt observation] (evidencestart) -- (bluetooth.south);
 
