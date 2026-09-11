@@ -12,12 +12,11 @@
 \node[mqtt process,right=\MQHorizontalGapTight of sse] (ws)
   {WebSocket\\via HTTP\\Upgrade};
 \path (sse.south) -- (ws.south) coordinate[midway] (branchbottom);
-\path (sse.north) -- (ws.north) coordinate[midway] (branchtop);
 
 \node[mqtt state,below=\MQConnectorSpan of branchbottom] (http) {HTTP context};
-\node[mqtt application,above=\MQConnectorSpan of branchtop,mqtt node compact] (express)
+\node[mqtt application,above=\MQSectionSeparation of http,mqtt node compact] (express)
   {Express-style routing\\and middleware};
-\node[mqtt process,right=\MQHorizontalGapTight of express,mqtt node compact] (mqttws)
+\node[mqtt process,above=\MQSectionSeparation of ws,mqtt node compact] (mqttws)
   {MQTT over\\WebSocket\\subprotocol};
 
 \MQDistributedPortNorth{http}{http-n1}{1}{3}
@@ -28,9 +27,7 @@
 \draw[mqtt association] (http-n1) -- (http-n1 |- ssemid) -- (sse.south |- ssemid) -- (sse.south);
 \path (http-n3) -- (ws.south) coordinate[midway] (wsmid);
 \draw[mqtt handoff] (http-n3) -- (http-n3 |- wsmid) -- (ws.south |- wsmid) -- (ws.south);
-\path (ws.north) -- (mqttws.south) coordinate[midway] (mqttwsmid);
-\draw[mqtt association]
-  (ws.north) -- (ws.north |- mqttwsmid) -- (mqttws.south |- mqttwsmid) -- (mqttws.south);
+\draw[mqtt association] (ws.north) -- (mqttws.south);
 
 % The two other direct stream roots form a balanced pair below the expanded HTTP
 % relationship hub. The HTTP-to-stream association passes between them.
