@@ -1218,3 +1218,304 @@ For every public landing-page text change or text review:
    evidence, stop the turn and report it rather than guessing;
 8. do not declare the text publication-ready while any material technical statement is
    stale, unsupported, broader than its evidence, contradictory, or unresolved.
+
+---
+
+# 30. Hard adversarial visual acceptance and visible-progress protocol
+
+This section is **global and project-independent**. It applies to every canonical
+technical figure, regardless of subject, topology, number of nodes, project, or
+responsive composition.
+
+This section is semantically merged with the hard rules in §§3, 9–18, and 28. Where a
+circumstance is already governed elsewhere in this contract, the requirements are one
+cumulative hard gate; this section strengthens the review and execution protocol and
+never creates an alternative or weaker acceptance path. **No earlier instruction is
+weakened, replaced, or made optional by this section.**
+
+## 30.1 Adversarial acceptance doctrine
+
+Technical-figure review is **disproval-driven, not confirmation-driven**.
+
+The reviewer must actively search for reasons to reject the figure before searching for
+reasons to accept it. The review question is never merely “can this be called good?” but
+**“can any semantic, geometric, structural, perceptual, responsive, source, or
+implementation reason be found why this figure must not pass?”**
+
+A figure is not accepted because its implementation is correct. It is accepted only
+when an adversarial, full-contract review proves that its final rendered appearance
+communicates the intended semantics clearly, correctly, harmoniously, and without any
+known defect.
+
+Acceptance always has independent gates:
+
+1. **construction/source correctness** — implementation truth, canonical primitives,
+   relative positioning, shared `R`-derived geometry, connector construction, canvas
+   mechanics, build, and CI;
+2. **rendered human correctness** — perceived hierarchy, grouping, containment,
+   relationships, sequence, balance, negative space, emphasis, typography, and
+   responsive composition;
+3. **reproduction/family correctness** — final clean family build, exact vector bounds,
+   deterministic output, full-size regression, family/contact-sheet review, and final CI
+   where applicable.
+
+Passing any one gate provides **zero permission** to infer that another gate passes.
+In particular, none of the following proves rendered visual acceptance: canonical
+styles, shared tokens, absence of forbidden literals, mathematically correct border
+attachments, successful compilation, green CI, generated SVGs, correct canvas numbers,
+deterministic output, or technically correct semantics in source.
+
+Human visual interpretation is a hard semantic gate. Judge what the final geometry
+actually communicates to a technically competent reader, not what the author intended
+or what a TikZ style happens to be named. If the render reasonably suggests a materially
+different hierarchy, ownership, sequence, causality, grouping, containment, precedence,
+association, flow, optionality, peer relationship, or importance than the accepted
+semantic contract, the figure fails.
+
+The reviewer who created or edited the figure must perform a stricter, not weaker,
+review: discard implementation intent mentally and inspect the render as if encountering
+it for the first time. Knowledge of how the source was constructed must never be used to
+excuse misleading rendered geometry.
+
+Completion requires **zero known applicable defects**, not merely zero blockers. Do not
+reclassify a known contract violation as “minor”, “polish”, or “acceptable” in order to
+finish the workflow.
+
+If the user identifies one defect, that finding never narrows the review scope. After
+fixing it, the entire figure is reviewed again against the complete contract, including
+unrelated pre-existing and newly exposed defects.
+
+Any later screenshot, vector-bound check, family review, user inspection, or other
+current evidence that reveals a violation automatically invalidates the affected
+figure's prior PASS status and every family/completion PASS that depended on it. The
+full applicable refinement loop resumes; an earlier PASS verdict has no authority
+against contradictory current evidence.
+
+If a defect originates in a shared primitive, style, color rule, spacing/padding rule,
+connector treatment, typography rule, or canvas helper, treat it as a shared-system
+defect. Correct it centrally, identify every affected consumer, invalidate their prior
+acceptance, and rerun the complete refinement loop for all affected figures. Never hide
+or compensate for a shared-system defect locally.
+
+## 30.2 Mandatory visual analysis order
+
+Every rendered review must inspect global structure before local details, in this order:
+
+1. whole-figure silhouette, reading order, overall balance, and visual mass;
+2. major hierarchy, parent/child relationships, semantic grouping, and containment;
+3. negative-space distribution and spacing rhythm;
+4. peer relationships, alignment, symmetry/asymmetry, and comparative visual status;
+5. connectors, branch structure, directional meaning, and perceptual dominance;
+6. node/container geometry, padding, and final rendered boundaries;
+7. typography, labels, color semantics, notes, and text density;
+8. local details such as arrowheads, attachment points, bends, clipping, and micro
+   alignment.
+
+Perfect local details never rescue a broken global composition.
+
+For every visible structural level, identify the parent, children, and siblings from the
+render alone. Verify that containment and nesting depth are visually unambiguous, sibling
+boundaries do not accidentally merge, no child appears to belong to the wrong parent,
+and a neutral/decorative enclosure is not mistaken for semantic containment. If the
+rendered hierarchy cannot be described unambiguously without relying on source knowledge
+or surrounding prose, the figure fails.
+
+Whitespace is an active layout element. Explicitly inspect negative space for balance,
+intentionality, rhythm, and semantic justification. Reject accidental large voids,
+squeezed structural gaps, unexplained empty bands, detached islands, routing-created
+cavities, or whitespace that makes the wrong element appear dominant.
+
+For every major element or group, inspect visual weight from area, border strength,
+color/fill, text density, connector density, position, and surrounding whitespace. The
+most visually dominant elements must deserve that dominance semantically.
+
+Whenever elements are semantic peers, compare them directly for dimensions, alignment,
+spacing, border/color treatment, typography, whitespace, connector density, and
+perceived importance. Any asymmetry requires a real semantic or unavoidable geometric
+reason; symmetric semantics must not be rendered with accidental hierarchy.
+
+## 30.3 Mandatory perceptual tests
+
+Every connector receives two independent reviews:
+
+- **geometric review:** semantic style, correct source/destination, border attachment,
+  direction, orthogonal entry/exit, routing, crossings, port distribution, rhythm, and
+  dogleg symmetry;
+- **perceptual review:** what relationship the line actually looks like, whether it
+  resembles an unintended bypass or alternate path, whether association looks like flow,
+  whether it creates a false stack/layer interpretation, whether it merges with another
+  path, and whether its length/placement makes it more important than intended.
+
+A connector passes only when both reviews pass. A technically correct style name is not
+sufficient if the rendered line communicates the wrong thing.
+
+Long connectors are reviewed for perceptual dominance. A long route fails when it
+becomes one of the strongest visual elements without semantic justification, creates a
+false stack or hierarchy, makes a peer path look secondary without reason, or creates a
+large empty region merely to accommodate routing.
+
+Every visible enclosure must pass a **container-legitimacy test**: identify the real
+semantic boundary it communicates. A semantic container may represent only a proven
+process/runtime/configuration/lifecycle/data/control/trust or other explicitly accepted
+semantic boundary. If its only purpose is presentation grouping, alignment, or layout,
+use an approved non-semantic grouping treatment instead; if none exists, invoke the hard
+stop.
+
+Enclosing geometry is judged from the **final padded/styled rendered boundary**, not
+from an internal content-fit/helper node. A parent frame or container must actually
+contain its final child containers with deliberate clearance, must not touch or visually
+merge with them or with siblings, and must remain correct when shared padding changes.
+Helper geometry is never sufficient proof of final containment.
+
+Every colored node, border, connector, or fill passes a **color-semantics test**:
+identify the canonical semantic meaning of the color and the semantic meaning of the
+object, then verify that they agree. Style names grant no exemption. If a shared style
+assigns a semantic color incorrectly, the shared system is defective and affected
+figures cannot pass until it is corrected centrally.
+
+Text is reviewed for visual mass as well as legibility. Notes, qualifications, and prose
+must remain subordinate to the technical structure and must not dominate the figure,
+repeat most relationships already encoded graphically, or turn the figure into a text
+panel with decorative graphics.
+
+Every figure receives an explicit **ambiguity test**: ask whether a technically
+competent reader could reasonably infer a materially different relationship from the
+render. Deliberately test, where applicable, parent vs peer, containment vs flow,
+sequence vs ownership, association vs causality, optional branch vs normal progression,
+shared resource vs independent resource, grouping vs boundary, and precedence vs
+ordinary input flow. Any materially different reasonable interpretation fails the
+figure.
+
+Figure-specific semantics must be visually encoded, not merely written somewhere. Text,
+style names, source comments, captions, or surrounding prose may clarify an already
+correct render but must never repair a misleading visual structure.
+
+## 30.4 Responsive, vector, and family review
+
+Desktop approval provides zero evidence for mobile approval, and mobile approval
+provides zero evidence for desktop approval. Each variant independently passes the full
+semantic, structural, perceptual, typography, color, connector, negative-space, canvas,
+and visual-balance review. Responsive review asks whether the variant is itself a good
+composition, not merely whether all content survived.
+
+PNG inspection and vector-bound inspection are independent hard gates. For every
+technical figure inspect the actual generated vector bounds/viewBox and prove the exact
+canonical physical canvas. A PNG that looks as if it fits does not prove canvas
+compliance, and content must not silently enlarge the vector output.
+
+Review order is mandatory:
+
+1. full-size desktop render;
+2. full-size mobile render;
+3. individual figure acceptance;
+4. only then family/contact-sheet review.
+
+A contact sheet is a secondary family-consistency gate and never substitutes for
+full-size individual review. At family level actively search for inconsistent visual
+density, hierarchy, border treatment, whitespace rhythm, title treatment, color
+semantics, visual weight, connector language, and responsive behavior.
+
+After the last concept in a family is refined, rebuild the final family and reinspect
+all earlier accepted figures from that final build before family acceptance. Earlier
+individual acceptance remains provisional until this final-family regression passes.
+
+## 30.5 Mandatory second-pass review
+
+The first apparently successful render is **not sufficient to freeze a figure**.
+
+When an analysis first appears to produce all-pass results, perform one additional
+full review from scratch before satisfaction. Do not rely on previous findings or on the
+fact that the requested defects were fixed. Reassess the complete render and complete
+contract as though it had not been reviewed before.
+
+Immediately before any PASS, ask:
+
+> **What could still be wrong with this figure even though the source, build, and
+> previous fixes look correct?**
+
+Perform a fresh inspection specifically to answer that question. Only when no concrete
+applicable defect remains may PASS be issued.
+
+## 30.6 Progress must be visual — mandatory visible state machine
+
+**Progress must be visual. This workflow is a hard must and is not optional.**
+
+For every figure concept, execute and visibly report this state machine in the chat:
+
+1. **Switch to Figure X.** Explicitly state which figure concept is now current. For a
+   responsive concept, desktop and mobile are one concept but both variants are reviewed.
+2. **Start the analysis of Figure X.** Analyze the current generated render(s), source,
+   semantic contract, implementation evidence, and **every applicable PAGE-SYSTEM.md
+   styling/technical-figure item**, including the adversarial protocol in this section.
+3. **Produce a conformance report as a table.** The table must contain the applicable
+   checks/categories with explicit **✓ / ✗** status and concrete evidence/findings. Do
+   not replace this table with prose or a vague “looks good” statement.
+4. **Satisfied?** Satisfaction means every applicable check is ✓, there is no unresolved
+   uncertainty, exact vector/canvas checks pass, and the mandatory second-pass review in
+   §30.5 has also passed.
+   - **YES:** report the **final conformance report as a ✓ / ✗ table** with concrete
+     evidence. All applicable rows must be ✓. Stop/freeze this figure concept only then.
+   - **NO:** report **all currently identified findings** in the conformance table; every
+     failed row is ✗ and states the concrete violation. Then fix the canonical source.
+5. **After every fix, build and render fresh preview PNG(s), and SHOW those preview
+   PNG(s) visibly in the chat.** For responsive concepts show both desktop and mobile
+   previews. Merely saying that an artifact exists, giving a path, or reporting CI is
+   not sufficient visual progress.
+6. **Go back to “Start the analysis of Figure X”.** Re-analyze the complete figure from
+   scratch against all applicable rules, not only the defect just fixed. Repeat the
+   conformance-table → fix → visible-preview loop until satisfaction.
+
+The loop is therefore exactly:
+
+```text
+Switch to Figure X
+        ↓
+Start full analysis using every applicable contract item
+        ↓
+Conformance table with ✓ / ✗ and concrete evidence
+        ↓
+Satisfied? ── YES ──→ final ✓ / ✗ conformance table → freeze/stop figure
+    │
+    NO
+    ↓
+Report all findings in the table
+    ↓
+Fix canonical source
+    ↓
+Build + render fresh PNG(s)
+    ↓
+SHOW preview PNG(s) in chat
+    ↓
+return to Start full analysis
+```
+
+No hidden multi-round refinement is permitted. The visible chat progression must make
+clear which concept is active, what currently fails, what was changed, what the actual
+new render looks like, and why the next analysis passes or fails.
+
+When multiple figure concepts are requested, complete this visible state machine for
+one concept before switching to the next. Do not batch later-figure findings in advance.
+
+## 30.7 Concrete acceptance evidence and prohibition on premature completion
+
+PASS evidence must be concrete. Statements such as “looks clean”, “looks balanced”,
+“visually harmonious”, “no obvious issue”, “CI is green”, “the contact sheet looks
+coherent”, “source rules pass”, “all arrows are connected”, or “canvas dimensions pass”
+are insufficient by themselves.
+
+A final conformance report must state concrete evidence for applicable categories such
+as hierarchy/nesting, negative space, peer balance, visual weight, connector meaning,
+container legitimacy and final padded extents, color semantics, text-to-diagram balance,
+typography, crossings, border attachment, routing/doglegs, responsive equivalence,
+vector bounds, source alignment, layout resilience, and actual rendered inspection.
+
+The assistant must never declare a figure or family complete merely because the
+requested edit is finished, CI became green, no source violation is obvious, the latest
+PNG looks better, every previously listed defect was addressed, or the user has not
+identified another problem. Completion is based exclusively on a fresh full-contract
+acceptance review with zero known applicable defects.
+
+Every figure checklist in §28 is incomplete unless this section also passes. Every
+family completion in §17/§18 is incomplete unless the three independent proof classes in
+§30.1, the full-size/family regression in §30.4, the second-pass review in §30.5, and the
+visible-progress protocol in §30.6 have all been satisfied.
