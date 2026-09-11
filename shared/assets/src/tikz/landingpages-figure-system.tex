@@ -148,6 +148,31 @@
 \newcommand{\MQPortWest}[2]{($(#1.south west)!#2!(#1.north west)$)}
 \newcommand{\MQPortEast}[2]{($(#1.south east)!#2!(#1.north east)$)}
 
+% Distributed ports are derived from the current border length. For port i of n,
+% the canonical relative attachment fraction is i/(n+1). Figure sources provide
+% only the node, coordinate name, ordinal index and total count; they never own a
+% fractional attachment value.
+\newcommand{\MQDistributedPortNorth}[4]{%
+  \pgfmathparse{#3/(#4+1)}%
+  \edef\MQDistributedPortFraction{\pgfmathresult}%
+  \path ($(#1.north west)!\MQDistributedPortFraction!(#1.north east)$) coordinate (#2);%
+}
+\newcommand{\MQDistributedPortSouth}[4]{%
+  \pgfmathparse{#3/(#4+1)}%
+  \edef\MQDistributedPortFraction{\pgfmathresult}%
+  \path ($(#1.south west)!\MQDistributedPortFraction!(#1.south east)$) coordinate (#2);%
+}
+\newcommand{\MQDistributedPortWest}[4]{%
+  \pgfmathparse{#3/(#4+1)}%
+  \edef\MQDistributedPortFraction{\pgfmathresult}%
+  \path ($(#1.south west)!\MQDistributedPortFraction!(#1.north west)$) coordinate (#2);%
+}
+\newcommand{\MQDistributedPortEast}[4]{%
+  \pgfmathparse{#3/(#4+1)}%
+  \edef\MQDistributedPortFraction{\pgfmathresult}%
+  \path ($(#1.south east)!\MQDistributedPortFraction!(#1.north east)$) coordinate (#2);%
+}
+
 % ---------------------------------------------------------------------------
 % Canonical rendering / elevation
 % ---------------------------------------------------------------------------
@@ -319,7 +344,7 @@
 % 14. Preserve readable text size at actual GitHub desktop/mobile rendering widths.
 % 15. Every directional connector is a single path with its arrowhead attached to that path; detached or separately placed arrowheads are forbidden.
 % 16. Connectors leave and enter box borders orthogonally at 90 degrees. Use the middle of the relevant border by default.
-% 17. If several connectors share one border, distribute their attachment ports evenly across that border on both source and destination sides.
+% 17. If several connectors share one border, use the canonical distributed-port primitives. Port i of n is derived from the current border geometry at i/(n+1); figure sources never own attachment fractions or distances.
 % 18. Do not use unmotivated diagonal connectors. Use orthogonal Manhattan routing between ports unless a diagonal has a specific semantic or geometric justification.
 % 19. Use mqtt figure frame for the neutral whole-figure surface; draw it before semantic lanes/groups/planes. Never let an enclosing fill overpaint inner semantics.
 % 20. Desktop and mobile typography are selected by their presets; do not override shared font sizes ad hoc to compensate for an oversized composition.
