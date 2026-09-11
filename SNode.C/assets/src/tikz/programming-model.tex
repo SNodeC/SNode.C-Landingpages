@@ -28,12 +28,6 @@
 \path (serverctx.south) -- (clientctx.south) coordinate[midway] (lanemid);
 \node[mqtt control,below=\MQSectionToControlGap of lanemid,mqtt node hero,mqtt text wide] (loop)
   {\textbf{Shared event loop --- \texttt{start()}}\\descriptor readiness, timers, lifecycle and data callbacks run on the caller thread};
-\MQDistributedPortNorth{loop}{loop-n1}{1}{2}
-\MQDistributedPortNorth{loop}{loop-n2}{2}{2}
-\path (serverctx.south) -- (loop-n1) coordinate[midway] (serverloopmid);
-\path (clientctx.south) -- (loop-n2) coordinate[midway] (clientloopmid);
-\draw[mqtt association] (serverctx.south) -- (serverctx.south |- serverloopmid) -- (loop-n1 |- serverloopmid) -- (loop-n1);
-\draw[mqtt association] (clientctx.south) -- (clientctx.south |- clientloopmid) -- (loop-n2 |- clientloopmid) -- (loop-n2);
 
 \path (servertitle.north) ++(0,\MQGroupPad) coordinate (outertop);
 \path (server.west) ++(-\MQGroupPad,0) coordinate (outerleft);
@@ -44,6 +38,11 @@
   \node[mqtt group,fit=(servertitle)(server)(serverconn)(serverfactory)(serverctx)] (servergroup) {};
   \node[mqtt group,fit=(clienttitle)(client)(clientconn)(clientfactory)(clientctx)] (clientgroup) {};
 \end{scope}
+
+\path (servergroup.south |- loop.north) coordinate (loop-server);
+\path (clientgroup.south |- loop.north) coordinate (loop-client);
+\draw[mqtt association] (servergroup.south) -- (loop-server);
+\draw[mqtt association] (clientgroup.south) -- (loop-client);
 
 \end{tikzpicture}
 \end{document}
