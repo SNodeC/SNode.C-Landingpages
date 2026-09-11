@@ -21,7 +21,7 @@
 \node[mqtt process,below=\MQConnectorSpan of clientconn,mqtt node compact] (clientfactory) {\texttt{SocketContextFactory}\\retained by endpoint flow};
 \node[mqtt state,below=\MQConnectorSpan of clientfactory,mqtt node compact] (clientctx) {\texttt{SocketContext}\\one active per connection};
 
-\draw[mqtt flow] (client.south) -- node[mqtt edge label right] {connect completes} (clientconn.north);
+\draw[mqtt flow] (client.south) -- node[mqtt edge label right] {connected} (clientconn.north);
 \draw[mqtt flow] (clientconn.south) -- node[mqtt edge label left] {\texttt{create(this)}} (clientfactory.north);
 \draw[mqtt flow] (clientfactory.south) -- node[mqtt edge label left] {returns new} (clientctx.north);
 
