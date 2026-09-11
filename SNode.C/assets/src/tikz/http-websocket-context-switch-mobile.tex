@@ -6,9 +6,9 @@
 \begin{tikzpicture}[mqtt mobile]
 
 \node[mqtt section title] (title) {Same established\\\texttt{SocketConnection}};
-\node[mqtt state,below=\MQConnectorSpan of title,mqtt node compact] (http)
+\node[mqtt state,below=\MQConnectorSpan of title] (http)
   {HTTP context\\ACTIVE};
-\node[mqtt process,right=\MQConnectorSpan of http,mqtt node compact] (staged)
+\node[mqtt process,right=\MQConnectorSpan of http] (staged)
   {WebSocket\\replacement\\STAGED\\after Upgrade\\not active};
 \draw[mqtt handoff] (http.east) -- (staged.west);
 
