@@ -5,21 +5,21 @@
 \begin{document}
 \begin{tikzpicture}[mqtt desktop]
 
-\node[mqtt process,minimum width=34mm] (descriptors) {descriptor readiness};
-\node[mqtt process,right=\MQHorizontalGapTight of descriptors,minimum width=34mm] (timers) {timer activity};
+\node[mqtt process,mqtt node compact] (descriptors) {descriptor readiness};
+\node[mqtt process,right=\MQHorizontalGapTight of descriptors,mqtt node compact] (timers) {timer activity};
 \path (descriptors.north) -- (timers.north) coordinate[midway] (sourcestop);
 \path (descriptors.south) -- (timers.south) coordinate[midway] (sourcesbottom);
 
-\node[mqtt control,above=\MQGapM of sourcestop,minimum width=50mm] (wait) {wait for work};
-\node[mqtt control,above=\MQGapM of wait,minimum width=44mm] (start) {\texttt{SNodeC::start()}\\caller thread};
-\node[mqtt config,above=\MQGapM of start,minimum width=58mm] (backend)
+\node[mqtt control,above=\MQConnectorSpan of sourcestop,mqtt node wide] (wait) {wait for work};
+\node[mqtt control,above=\MQConnectorSpan of wait,mqtt node wide] (start) {\texttt{SNodeC::start()}\\caller thread};
+\node[mqtt config,above=\MQConnectorSpan of start,mqtt node extra wide] (backend)
   {Select backend at configure time\\\texttt{epoll} · \texttt{poll} · \texttt{select}};
 
-\node[mqtt state,below=\MQGapM of sourcesbottom,minimum width=50mm] (queue) {event queue};
-\node[mqtt control,below=\MQGapM of queue,minimum width=44mm] (dispatch) {dispatch events};
-\node[mqtt application,below=\MQGapM of dispatch,minimum width=60mm,text width=52mm] (callbacks)
+\node[mqtt state,below=\MQConnectorSpan of sourcesbottom,mqtt node wide] (queue) {event queue};
+\node[mqtt control,below=\MQConnectorSpan of queue,mqtt node wide] (dispatch) {dispatch events};
+\node[mqtt application,below=\MQConnectorSpan of dispatch,mqtt node extra wide] (callbacks)
   {endpoint / connection / context\\callbacks};
-\node[mqtt process,below=\MQGapM of callbacks,minimum width=50mm] (next) {next tick};
+\node[mqtt process,below=\MQConnectorSpan of callbacks,mqtt node wide] (next) {next tick};
 
 \draw[mqtt association] (backend.south) -- (start.north);
 \draw[mqtt flow] (start.south) -- (wait.north);
