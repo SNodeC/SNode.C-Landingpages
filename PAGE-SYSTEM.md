@@ -906,6 +906,19 @@ to **LOOP START**.
 Do not merely report the next failure and stop. Do not stop because compilation passes.
 Do not freeze after one refinement round while visible defects remain.
 
+### 17.5.1 Sequential family reporting
+
+When a requested refinement covers multiple figure concepts, process them **one concept
+at a time**. Before the first edit to the current figure concept, list all currently
+identified contract violations for that concept in the chat. For responsive concepts,
+treat the desktop/mobile pair as that one concept.
+
+Do **not** pre-list or batch findings for later figure concepts. Complete the current
+concept's refine → build → render → inspect loop until it passes or reaches the mandatory
+hard stop before moving to the next concept. If a later iteration exposes additional
+violations in the current concept, report those newly identified findings before the
+next edit to that same concept.
+
 ### 17.6 If satisfied
 
 Before stopping, report every applicable style-guide/contract category and its status.
