@@ -10,7 +10,7 @@
   {HTTP context\\ACTIVE};
 \node[mqtt process,right=\MQConnectorSpan of http,mqtt node wide] (staged)
   {WebSocket replacement\\STAGED after Upgrade\\not active};
-\draw[mqtt handoff] (http.east) -- (staged.west);
+\draw[mqtt handoff] (http.east) -- node[mqtt edge label above] {stage} (staged.west);
 
 \node[mqtt process,below=\MQConnectorSpan of http,mqtt node wide] (return)
   {current HTTP read\\callback returns};
@@ -24,11 +24,13 @@
 \draw[mqtt dependency] (staged.south) |- (switch.east);
 \draw[mqtt control flow] (switch.south) -- (websocket.north);
 
-\node[mqtt note,below=\MQConnectorSpan of websocket,mqtt node hero] (note)
-  {HTTP remains active until its current read callback returns.\\The same connection and transport continue through the switch.\\SSE/EventSource does not use this replacement path.};
+\node[mqtt note,below=\MQConnectorSpan of websocket,mqtt node wide] (note)
+  {SSE/EventSource does not use context replacement.};
 
+% The semantic group is the persistent SocketConnection lifecycle boundary.
+\node[mqtt group,fit=(title)(http)(staged)(return)(switch)(websocket)] (connectiongroup) {};
 \begin{scope}[on background layer]
-  \node[mqtt figure frame,fit=(title)(http)(staged)(return)(switch)(websocket)(note)] {};
+  \node[mqtt figure frame,fit=(connectiongroup)(note)] {};
 \end{scope}
 
 \end{tikzpicture}
