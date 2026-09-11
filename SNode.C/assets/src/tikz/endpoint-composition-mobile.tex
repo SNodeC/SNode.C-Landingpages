@@ -10,14 +10,14 @@
   {\shortstack{RFCOMM / L2CAP\\source-verified}};
 \node[mqtt layout fit,fit=(title)(bluetooth)] (headerrow) {};
 
-\node[mqtt config,below=\MQGapS of headerrow,minimum width=72mm,text width=62mm] (address)
+\node[mqtt config,below=\MQGapS of headerrow,mqtt node extra wide] (address)
   {\textbf{Address family}\\IPv4 · IPv6 · Unix domain\\RFCOMM · L2CAP};
-\node[mqtt config,below=\MQGapM of address,minimum width=72mm,text width=62mm] (role)
+\node[mqtt config,below=\MQGapM of address,mqtt node extra wide] (role)
   {\textbf{Endpoint role}\\\texttt{SocketServer} · \texttt{SocketClient}};
-\node[mqtt config,below=\MQGapM of role,minimum width=72mm,text width=62mm] (mode)
+\node[mqtt config,below=\MQGapM of role,mqtt node extra wide] (mode)
   {\textbf{Connection mode}\\plain stream · OpenSSL-backed TLS};
-\node[mqtt config,below=\MQGapM of mode,minimum width=72mm,text width=62mm] (context)
-  {\textbf{Protocol / application context}\\custom \texttt{SocketContext} or compatible protocol context};
+\node[mqtt config,below=\MQGapM of mode,mqtt node extra wide] (context)
+  {\textbf{Protocol / application context}\\custom \texttt{SocketContext} or\\compatible protocol context};
 
 \draw[mqtt association] (address.south) -- (role.north);
 \draw[mqtt association] (role.south) -- (mode.north);
@@ -25,10 +25,10 @@
 \path (bluetooth.south |- address.north) coordinate (evidencestart);
 \draw[mqtt observation] (evidencestart) -- (bluetooth.south);
 
-\node[mqtt control,below={\MQGapM+\MQGroupPad} of context,minimum width=72mm,text width=62mm] (runtime)
-  {\textbf{Shared event runtime}\\selected multiplexer drives endpoint and connection work};
-\node[mqtt note,below=\MQGapM of runtime,minimum width=74mm,text width=64mm] (qualification)
-  {Compatible typed compositions only; not every theoretical cross-product is built, tested, or runtime-qualified.};
+\node[mqtt control,below=\MQSectionToControlGap of context,mqtt node extra wide] (runtime)
+  {\textbf{Shared event runtime}\\selected multiplexer drives\\endpoint and connection work};
+\node[mqtt note,below=\MQGapM of runtime,mqtt node extra wide] (qualification)
+  {Compatible typed compositions only;\\not every theoretical cross-product is\\built, tested, or runtime-qualified.};
 
 \path (headerrow.north) ++(0,\MQGroupPad) coordinate (outertop);
 \path (address.west) ++(-\MQGroupPad,0) coordinate (outerleft);

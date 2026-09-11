@@ -10,13 +10,13 @@
   {\shortstack{RFCOMM / L2CAP\\source-verified}};
 \node[mqtt layout fit,fit=(title)(bluetooth)] (headerrow) {};
 
-\node[mqtt config,below=\MQGapS of headerrow,minimum width=92mm,text width=82mm] (address)
+\node[mqtt config,below=\MQGapS of headerrow,mqtt node hero] (address)
   {\textbf{Address family}\\IPv4 · IPv6 · Unix domain · RFCOMM · L2CAP};
-\node[mqtt config,below=\MQGapM of address,minimum width=92mm,text width=82mm] (role)
+\node[mqtt config,below=\MQGapM of address,mqtt node hero] (role)
   {\textbf{Endpoint role}\\\texttt{SocketServer} · \texttt{SocketClient}};
-\node[mqtt config,below=\MQGapM of role,minimum width=92mm,text width=82mm] (mode)
+\node[mqtt config,below=\MQGapM of role,mqtt node hero] (mode)
   {\textbf{Connection mode}\\plain stream · OpenSSL-backed TLS};
-\node[mqtt config,below=\MQGapM of mode,minimum width=92mm,text width=82mm] (context)
+\node[mqtt config,below=\MQGapM of mode,mqtt node hero] (context)
   {\textbf{Protocol / application context}\\custom \texttt{SocketContext} or compatible framework protocol context};
 
 \draw[mqtt association] (address.south) -- (role.north);
@@ -25,10 +25,10 @@
 \path (bluetooth.south |- address.north) coordinate (evidencestart);
 \draw[mqtt observation] (evidencestart) -- (bluetooth.south);
 
-\node[mqtt control,below={\MQGapM+\MQGroupPad} of context,minimum width=92mm,text width=82mm] (runtime)
+\node[mqtt control,below=\MQSectionToControlGap of context,mqtt node hero] (runtime)
   {\textbf{Shared event runtime}\\one selected multiplexer drives endpoint and connection work};
-\node[mqtt note,below=\MQGapM of runtime,minimum width=96mm,text width=86mm] (qualification)
-  {Compatible typed compositions only. Component presence does not imply that every cross-product is built, tested, or runtime-qualified.};
+\node[mqtt note,below=\MQGapM of runtime,mqtt node hero] (qualification)
+  {Compatible typed compositions only. Component presence does not\\imply that every cross-product is built, tested, or runtime-qualified.};
 
 \path (headerrow.north) ++(0,\MQGroupPad) coordinate (outertop);
 \path (address.west) ++(-\MQGroupPad,0) coordinate (outerleft);
