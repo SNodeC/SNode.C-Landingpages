@@ -24,7 +24,7 @@ Practical deployment controls can include loopback/private binding, firewall pol
 
 <picture>
   <source media="(max-width: 600px)" srcset="../assets/broker-trust-boundary-mobile.svg">
-  <img src="../assets/broker-trust-boundary.svg" alt="MQTTBroker trust-boundary diagram separating MQTT data-plane listeners from the dashboard, administration API, and SSE operator plane, showing no application authentication, wildcard API/event CORS, credential-sensitive events, and the need for a trusted deployment boundary.">
+  <img src="../assets/broker-trust-boundary.svg" alt="MQTTBroker HTTP exposure: browser/HTTP and MQTT-WebSocket clients share a Broker HTTP/HTTPS + Express ingress that splits into MQTT-WebSocket data routes and operator/browser routes; a required external/trusted deployment boundary must provide access control because HTTPS protects transport, not route authorization.">
 </picture>
 
 ## Dashboard relationship
