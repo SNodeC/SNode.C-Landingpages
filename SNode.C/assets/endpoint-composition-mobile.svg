@@ -632,9 +632,6 @@
 <use x="191.431084" y="299.199055" xlink:href="#au"/>
 <use x="196.016186" y="299.199055" xlink:href="#j"/>
 </g>
-<path transform="matrix(.998 0 0 -.998 52.9 44.9)" d="m88.7-76.2v-23.5" fill="none" stroke="#849298" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" stroke-width=".578"/>
-<path transform="matrix(.998 0 0 -.998 52.9 44.9)" d="m88.7-133v-23.5" fill="none" stroke="#849298" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" stroke-width=".578"/>
-<path transform="matrix(.998 0 0 -.998 52.9 44.9)" d="m88.7-193v-23.5" fill="none" stroke="#849298" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" stroke-width=".578"/>
 <path transform="matrix(.998 0 0 -.998 52.9 44.9)" d="m132-30.5v12.3" fill="none" stroke="#7d8b92" stroke-dasharray="2.98883 2.98883" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" stroke-width=".578"/>
 <path transform="matrix(0 -.998 -.998 0 184 63.2)" d="m4.11-1.17e-4c-0.505 0.117-2.72 0.779-4.11 1.5v-3c1.39 0.72 3.6 1.38 4.11 1.5zm0 0" fill="#7d8b92" stroke="#7d8b92" stroke-linecap="round" stroke-miterlimit="10" stroke-width=".578"/>
 <path transform="matrix(.998 0 0 -.998 52.9 44.9)" d="m174-300h-171c-1.38 0-2.49-1.12-2.49-2.49v-41.9c0-1.38 1.12-2.49 2.49-2.49h171c1.38 0 2.49 1.12 2.49 2.49v41.9c0 1.38-1.12 2.49-2.49 2.49z" fill="#e3f1f8" stroke="#40758c" stroke-miterlimit="10" stroke-width=".697"/>
