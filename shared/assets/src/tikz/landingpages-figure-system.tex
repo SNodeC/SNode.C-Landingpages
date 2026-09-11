@@ -73,8 +73,11 @@
 \colorlet{MQEvidenceSourceLine}{snodecBlue!78}
 
 % ---------------------------------------------------------------------------
-% Canonical radius system
+% Canonical optical systems
 % ---------------------------------------------------------------------------
+% These values are deliberately independent of the spatial layout rhythm. The
+% root PAGE-SYSTEM.md keeps typography, strokes, arrowheads and radii in separate
+% canonical optical systems.
 
 \newcommand{\MQRadiusXS}{2.5pt}
 \newcommand{\MQRadiusS}{2.5pt}
@@ -82,49 +85,98 @@
 \newcommand{\MQRadiusL}{3pt}
 \newcommand{\MQRadiusXL}{3pt}
 
+\newcommand{\MQLineWidthPrimary}{.70pt}
+\newcommand{\MQLineWidthSecondary}{.58pt}
+\newcommand{\MQArrowPrimaryLength}{2.2mm}
+\newcommand{\MQArrowPrimaryWidth}{1.6mm}
+\newcommand{\MQArrowSecondaryLength}{2.0mm}
+\newcommand{\MQArrowSecondaryWidth}{1.4mm}
+
 % ---------------------------------------------------------------------------
-% Canonical spacing and responsive publication widths
+% Canonical spatial layout rhythm
 % ---------------------------------------------------------------------------
+% R is the one independently specified technical-figure layout distance.
+% Every other spatial value below is calculated from R. Figure sources consume
+% semantic tokens; they do not own millimetre values or local multipliers.
 
-\newcommand{\MQU}{2mm}
+\newcommand{\MQLayoutRhythm}{8.3mm}
 
-% Generic scale.
-\newcommand{\MQGapXS}{6mm}
-\newcommand{\MQGapS}{6mm}
-\newcommand{\MQGapM}{8mm}
-\newcommand{\MQGapL}{11mm}
-\newcommand{\MQGapXL}{14mm}
+% Default rational rhythm scale from PAGE-SYSTEM.md.
+\pgfmathsetlengthmacro{\MQRhythmMicro}{1/4*\MQLayoutRhythm}
+\pgfmathsetlengthmacro{\MQRhythmCompact}{1/2*\MQLayoutRhythm}
+\pgfmathsetlengthmacro{\MQRhythmTight}{3/4*\MQLayoutRhythm}
+\pgfmathsetlengthmacro{\MQRhythmNormal}{\MQLayoutRhythm}
+\pgfmathsetlengthmacro{\MQRhythmLoose}{4/3*\MQLayoutRhythm}
+\pgfmathsetlengthmacro{\MQRhythmLarge}{5/3*\MQLayoutRhythm}
 
-% Node interior.
-\newcommand{\MQNodePadX}{3mm}
-\newcommand{\MQNodePadY}{2.5mm}
+% Generic spacing compatibility names.
+\newcommand{\MQU}{\MQRhythmMicro}
+\newcommand{\MQGapXS}{\MQRhythmTight}
+\newcommand{\MQGapS}{\MQRhythmTight}
+\newcommand{\MQGapM}{\MQRhythmNormal}
+\newcommand{\MQGapL}{\MQRhythmLoose}
+\newcommand{\MQGapXL}{\MQRhythmLarge}
+
+% Node interior and small label/evidence padding.
+\pgfmathsetlengthmacro{\MQNodePadX}{3/8*\MQLayoutRhythm}
+\pgfmathsetlengthmacro{\MQNodePadY}{3/10*\MQLayoutRhythm}
+\pgfmathsetlengthmacro{\MQDecisionInnerPad}{1/20*\MQLayoutRhythm}
+\pgfmathsetlengthmacro{\MQLabelInnerPad}{1/24*\MQLayoutRhythm}
+\pgfmathsetlengthmacro{\MQEvidencePadX}{1/6*\MQLayoutRhythm}
+\pgfmathsetlengthmacro{\MQEvidencePadY}{1/12*\MQLayoutRhythm}
 
 % Canonical horizontal rhythm -- edge-to-edge gaps.
-\newcommand{\MQHorizontalGapTight}{6mm}
-\newcommand{\MQHorizontalGap}{8mm}
-\newcommand{\MQHorizontalGapLoose}{11mm}
-\newcommand{\MQHorizontalMilestoneGap}{14mm}
+\newcommand{\MQHorizontalGapTight}{\MQRhythmTight}
+\newcommand{\MQHorizontalGap}{\MQRhythmNormal}
+\newcommand{\MQHorizontalGapLoose}{\MQRhythmLoose}
+\newcommand{\MQHorizontalMilestoneGap}{\MQRhythmLarge}
 
-% Vertical / branch rhythm.
-\newcommand{\MQBranchGapTight}{6mm}
-\newcommand{\MQBranchGap}{8mm}
-\newcommand{\MQLaneGap}{14mm}
-\newcommand{\MQLanePadX}{4.5mm}
-\newcommand{\MQLanePadY}{4.5mm}
-\newcommand{\MQGroupPad}{4.5mm}
-\newcommand{\MQTrustPad}{4.5mm}
-\newcommand{\MQTitleGap}{4mm}
-\newcommand{\MQLabelGap}{2mm}
-\newcommand{\MQFigureSafeX}{10mm}
-\newcommand{\MQFigureSafeY}{10mm}
-\newcommand{\MQDesktopSafe}{8mm}
-\newcommand{\MQMobileSafe}{8mm}
-\newcommand{\MQMobileHorizontalGap}{8mm}
-\newcommand{\MQMobileLaneGap}{11mm}
+% Vertical / branch rhythm and structural padding.
+\newcommand{\MQBranchGapTight}{\MQRhythmTight}
+\newcommand{\MQBranchGap}{\MQRhythmNormal}
+\newcommand{\MQLaneGap}{\MQRhythmLarge}
+\newcommand{\MQLanePadX}{\MQRhythmCompact}
+\newcommand{\MQLanePadY}{\MQRhythmCompact}
+\newcommand{\MQGroupPad}{\MQRhythmCompact}
+\newcommand{\MQTrustPad}{\MQRhythmCompact}
+\newcommand{\MQTitleGap}{\MQRhythmCompact}
+\newcommand{\MQLabelGap}{\MQRhythmMicro}
+\pgfmathsetlengthmacro{\MQFigureSafeX}{5/4*\MQLayoutRhythm}
+\pgfmathsetlengthmacro{\MQFigureSafeY}{5/4*\MQLayoutRhythm}
+\newcommand{\MQDesktopSafe}{\MQRhythmNormal}
+\newcommand{\MQMobileSafe}{\MQRhythmNormal}
+\newcommand{\MQMobileHorizontalGap}{\MQRhythmNormal}
+\newcommand{\MQMobileLaneGap}{\MQRhythmLoose}
+
+% Shared structural relationships used instead of figure-local arithmetic.
+\pgfmathsetlengthmacro{\MQSectionSeparation}{8/3*\MQLayoutRhythm}
+\pgfmathsetlengthmacro{\MQSectionToControlGap}{3/2*\MQLayoutRhythm}
+
+% Canonical connector geometry. The half-span is calculated, never stored as an
+% independent physical constant.
+\newcommand{\MQConnectorSpan}{\MQRhythmNormal}
+\pgfmathsetlengthmacro{\MQConnectorHalfSpan}{1/2*\MQLayoutRhythm}
+
+% Base node dimensions are layout geometry and therefore derive from R.
+\pgfmathsetlengthmacro{\MQProcessMinHeight}{6/5*\MQLayoutRhythm}
+\pgfmathsetlengthmacro{\MQProcessMinWidth}{3*\MQLayoutRhythm}
+\pgfmathsetlengthmacro{\MQDecisionMinWidth}{13/4*\MQLayoutRhythm}
+\pgfmathsetlengthmacro{\MQDecisionMinHeight}{5/3*\MQLayoutRhythm}
+\newcommand{\MQNoteMinHeight}{\MQRhythmNormal}
+\pgfmathsetlengthmacro{\MQDatabaseMinWidth}{3*\MQLayoutRhythm}
+\pgfmathsetlengthmacro{\MQDatabaseMinHeight}{3/2*\MQLayoutRhythm}
+
+% Semantic reusable size classes. These are centrally derived relationships,
+% not aliases for historical millimetre literals in individual figures.
+\pgfmathsetlengthmacro{\MQNodeWidthCompact}{4*\MQLayoutRhythm}
+\pgfmathsetlengthmacro{\MQNodeWidthWide}{6*\MQLayoutRhythm}
+\pgfmathsetlengthmacro{\MQNodeWidthExtraWide}{15/2*\MQLayoutRhythm}
+\pgfmathsetlengthmacro{\MQNodeWidthHero}{13*\MQLayoutRhythm}
+\pgfmathsetlengthmacro{\MQTextWidthWide}{23/2*\MQLayoutRhythm}
 
 % Every figure in one responsive class uses the same publication width so that
 % GitHub applies the same physical scale to typography, boxes, lines and arrows.
-% These are fixed canvas widths and hard composition limits, never scale factors.
+% These fixed canvas widths are independent hard output constraints, not R-derived.
 \newcommand{\MQDesktopMaxWidth}{160mm}
 \newcommand{\MQMobileMaxWidth}{100mm}
 
@@ -143,6 +195,9 @@
 % Canonical connector ports
 % ---------------------------------------------------------------------------
 
+% Low-level interpolation helpers are retained for shared-system implementation
+% compatibility only. Figure sources must not supply literal attachment fractions;
+% use the distributed-port primitives below when several connectors share a border.
 \newcommand{\MQPortNorth}[2]{($(#1.north west)!#2!(#1.north east)$)}
 \newcommand{\MQPortSouth}[2]{($(#1.south west)!#2!(#1.south east)$)}
 \newcommand{\MQPortWest}[2]{($(#1.south west)!#2!(#1.north west)$)}
@@ -240,13 +295,13 @@
 
 \tikzset{
   mqtt desktop/.style={
-    x=1cm,y=1cm,
+    x=\MQLayoutRhythm,y=\MQLayoutRhythm,
     execute at begin picture={\MQDesktopTypography},
     execute at end picture={\MQDesktopCanvas},
     every node/.append style={transform shape=false}
   },
   mqtt mobile/.style={
-    x=1cm,y=1cm,
+    x=\MQLayoutRhythm,y=\MQLayoutRhythm,
     execute at begin picture={\MQMobileTypography},
     execute at end picture={\MQMobileCanvas},
     every node/.append style={transform shape=false}
@@ -258,19 +313,24 @@
 % ---------------------------------------------------------------------------
 
 \tikzset{
-  mqtt process/.style={mqtt text,draw=snodecRule!85,fill=white,rounded corners=2.5pt,line width=.70pt,minimum height=10mm,minimum width=25mm,inner xsep=3mm,inner ysep=2.5mm},
-  mqtt application/.style={mqtt text,draw=snodecGreen!78,fill=snodecGreenSoft,rounded corners=2.5pt,line width=.70pt,minimum height=10mm,minimum width=25mm,inner xsep=3mm,inner ysep=2.5mm},
+  mqtt node compact/.style={minimum width=\MQNodeWidthCompact},
+  mqtt node wide/.style={minimum width=\MQNodeWidthWide},
+  mqtt node extra wide/.style={minimum width=\MQNodeWidthExtraWide},
+  mqtt node hero/.style={minimum width=\MQNodeWidthHero},
+  mqtt text wide/.style={text width=\MQTextWidthWide},
+  mqtt process/.style={mqtt text,draw=snodecRule!85,fill=white,rounded corners=\MQRadiusM,line width=\MQLineWidthPrimary,minimum height=\MQProcessMinHeight,minimum width=\MQProcessMinWidth,inner xsep=\MQNodePadX,inner ysep=\MQNodePadY},
+  mqtt application/.style={mqtt text,draw=snodecGreen!78,fill=snodecGreenSoft,rounded corners=\MQRadiusM,line width=\MQLineWidthPrimary,minimum height=\MQProcessMinHeight,minimum width=\MQProcessMinWidth,inner xsep=\MQNodePadX,inner ysep=\MQNodePadY},
   mqtt external/.style={mqtt process,fill=snodecGraySoft,draw=snodecRule!85},
   mqtt state/.style={mqtt process,fill=snodecBlueSoft,draw=snodecBlue!78},
-  mqtt decision/.style={mqtt text,diamond,aspect=1.75,draw=snodecOrange!80,fill=snodecOrangeSoft,line width=.70pt,inner sep=1.2pt,minimum width=27mm,minimum height=14mm},
+  mqtt decision/.style={mqtt text,diamond,aspect=1.75,draw=snodecOrange!80,fill=snodecOrangeSoft,line width=\MQLineWidthPrimary,inner sep=\MQDecisionInnerPad,minimum width=\MQDecisionMinWidth,minimum height=\MQDecisionMinHeight},
   mqtt success/.style={mqtt process,fill=snodecGreenSoft,draw=snodecGreen!78},
   mqtt error/.style={mqtt process,fill=snodecRedSoft,draw=snodecRed!82},
   mqtt control/.style={mqtt process,fill=snodecBlueSoft,draw=snodecBlue!78},
   mqtt warning/.style={mqtt process,fill=snodecOrangeSoft,draw=snodecOrange!80},
-  mqtt note/.style={mqtt text,draw=snodecRule!85,fill=snodecGraySoft,rounded corners=2.5pt,line width=.58pt,font=\MQAnnotationFont,minimum height=8mm,inner xsep=3mm,inner ysep=2.5mm},
+  mqtt note/.style={mqtt text,draw=snodecRule!85,fill=snodecGraySoft,rounded corners=\MQRadiusM,line width=\MQLineWidthSecondary,font=\MQAnnotationFont,minimum height=\MQNoteMinHeight,inner xsep=\MQNodePadX,inner ysep=\MQNodePadY},
   mqtt config/.style={mqtt process,fill=snodecGraySoft,draw=snodecRule!85},
   mqtt data/.style={mqtt process,fill=white,draw=snodecRule!85},
-  mqtt database/.style={mqtt text,cylinder,shape border rotate=90,aspect=.25,draw=snodecRule!85,fill=snodecGraySoft,line width=.70pt,minimum width=24mm,minimum height=13mm,inner xsep=3mm,inner ysep=2.5mm}
+  mqtt database/.style={mqtt text,cylinder,shape border rotate=90,aspect=.25,draw=snodecRule!85,fill=snodecGraySoft,line width=\MQLineWidthPrimary,minimum width=\MQDatabaseMinWidth,minimum height=\MQDatabaseMinHeight,inner xsep=\MQNodePadX,inner ysep=\MQNodePadY}
 }
 
 % ---------------------------------------------------------------------------
@@ -278,12 +338,12 @@
 % ---------------------------------------------------------------------------
 
 \tikzset{
-  mqtt figure frame/.style={draw=snodecRule!82,fill=white,rounded corners=3pt,line width=.58pt,inner xsep=4.5mm,inner ysep=4.5mm},
-  mqtt lane/.style={draw=snodecRule!82,fill=none,dashed,rounded corners=3pt,line width=.58pt,inner xsep=4.5mm,inner ysep=4.5mm},
-  mqtt group/.style={draw=snodecRule!82,fill=none,rounded corners=3pt,line width=.58pt,inner sep=4.5mm},
-  mqtt data plane/.style={draw=snodecBlue!78,fill=snodecBlueSoft,rounded corners=3pt,line width=.58pt,inner sep=4.5mm},
-  mqtt admin plane/.style={draw=snodecRule!85,fill=snodecGraySoft,rounded corners=3pt,line width=.58pt,inner sep=4.5mm},
-  mqtt trust boundary/.style={draw=snodecRule!82,fill=none,dashed,rounded corners=3pt,line width=.58pt,inner sep=4.5mm},
+  mqtt figure frame/.style={draw=snodecRule!82,fill=white,rounded corners=\MQRadiusL,line width=\MQLineWidthSecondary,inner xsep=\MQGroupPad,inner ysep=\MQGroupPad},
+  mqtt lane/.style={draw=snodecRule!82,fill=none,dashed,rounded corners=\MQRadiusL,line width=\MQLineWidthSecondary,inner xsep=\MQLanePadX,inner ysep=\MQLanePadY},
+  mqtt group/.style={draw=snodecRule!82,fill=none,rounded corners=\MQRadiusL,line width=\MQLineWidthSecondary,inner sep=\MQGroupPad},
+  mqtt data plane/.style={draw=snodecBlue!78,fill=snodecBlueSoft,rounded corners=\MQRadiusL,line width=\MQLineWidthSecondary,inner sep=\MQGroupPad},
+  mqtt admin plane/.style={draw=snodecRule!85,fill=snodecGraySoft,rounded corners=\MQRadiusL,line width=\MQLineWidthSecondary,inner sep=\MQGroupPad},
+  mqtt trust boundary/.style={draw=snodecRule!82,fill=none,dashed,rounded corners=\MQRadiusL,line width=\MQLineWidthSecondary,inner sep=\MQTrustPad},
   mqtt layout fit/.style={inner sep=0pt,outer sep=0pt}
 }
 
@@ -293,14 +353,14 @@
 
 \tikzset{
   mqtt connector/.style={line cap=round,line join=round},
-  mqtt flow/.style={mqtt connector,-{Latex[length=2.2mm,width=1.6mm]},draw=snodecMuted!76,line width=.70pt},
-  mqtt data flow/.style={mqtt connector,-{Latex[length=2.2mm,width=1.6mm]},draw=snodecBlue!70,line width=.70pt},
-  mqtt control flow/.style={mqtt connector,-{Latex[length=2.2mm,width=1.6mm]},draw=snodecBlue!70,line width=.70pt},
-  mqtt observation/.style={mqtt connector,-{Latex[length=2.0mm,width=1.4mm]},draw=snodecMuted!72,line width=.58pt,dashed},
-  mqtt handoff/.style={mqtt connector,-{Latex[length=2.2mm,width=1.6mm]},draw=snodecBlue!70,line width=.70pt},
-  mqtt association/.style={mqtt connector,draw=snodecMuted!68,line width=.58pt},
-  mqtt contains/.style={mqtt connector,draw=snodecMuted!68,line width=.58pt},
-  mqtt dependency/.style={mqtt connector,-{Latex[length=2.0mm,width=1.4mm]},draw=snodecMuted!68,line width=.58pt,densely dotted}
+  mqtt flow/.style={mqtt connector,-{Latex[length=\MQArrowPrimaryLength,width=\MQArrowPrimaryWidth]},draw=snodecMuted!76,line width=\MQLineWidthPrimary},
+  mqtt data flow/.style={mqtt connector,-{Latex[length=\MQArrowPrimaryLength,width=\MQArrowPrimaryWidth]},draw=snodecBlue!70,line width=\MQLineWidthPrimary},
+  mqtt control flow/.style={mqtt connector,-{Latex[length=\MQArrowPrimaryLength,width=\MQArrowPrimaryWidth]},draw=snodecBlue!70,line width=\MQLineWidthPrimary},
+  mqtt observation/.style={mqtt connector,-{Latex[length=\MQArrowSecondaryLength,width=\MQArrowSecondaryWidth]},draw=snodecMuted!72,line width=\MQLineWidthSecondary,dashed},
+  mqtt handoff/.style={mqtt connector,-{Latex[length=\MQArrowPrimaryLength,width=\MQArrowPrimaryWidth]},draw=snodecBlue!70,line width=\MQLineWidthPrimary},
+  mqtt association/.style={mqtt connector,draw=snodecMuted!68,line width=\MQLineWidthSecondary},
+  mqtt contains/.style={mqtt connector,draw=snodecMuted!68,line width=\MQLineWidthSecondary},
+  mqtt dependency/.style={mqtt connector,-{Latex[length=\MQArrowSecondaryLength,width=\MQArrowSecondaryWidth]},draw=snodecMuted!68,line width=\MQLineWidthSecondary,densely dotted}
 }
 
 % ---------------------------------------------------------------------------
@@ -308,8 +368,8 @@
 % ---------------------------------------------------------------------------
 
 \tikzset{
-  mqtt branch label/.style={mqtt no hyphenation,font=\MQAnnotationFont\bfseries,text=snodecInk,fill=white,inner sep=1pt},
-  mqtt edge label/.style={mqtt no hyphenation,font=\MQAnnotationFont,text=snodecMuted,fill=white,inner sep=1pt},
+  mqtt branch label/.style={mqtt no hyphenation,font=\MQAnnotationFont\bfseries,text=snodecInk,fill=white,inner sep=\MQLabelInnerPad},
+  mqtt edge label/.style={mqtt no hyphenation,font=\MQAnnotationFont,text=snodecMuted,fill=white,inner sep=\MQLabelInnerPad},
   mqtt edge label above/.style={mqtt edge label,above=\MQLabelGap},
   mqtt edge label below/.style={mqtt edge label,below=\MQLabelGap},
   mqtt edge label left/.style={mqtt edge label,left=\MQLabelGap},
@@ -318,10 +378,10 @@
   mqtt branch label below/.style={mqtt branch label,below=\MQLabelGap},
   mqtt branch label left/.style={mqtt branch label,left=\MQLabelGap},
   mqtt branch label right/.style={mqtt branch label,right=\MQLabelGap},
-  mqtt topic label/.style={mqtt no hyphenation,font=\MQCodeSmallFont,text=snodecInk,fill=white,inner sep=1pt},
-  mqtt route label/.style={mqtt no hyphenation,font=\MQCodeSmallFont,text=snodecInk,fill=white,inner sep=1pt},
-  mqtt evidence runtime/.style={mqtt no hyphenation,font=\MQAnnotationFont\bfseries,text=snodecGreen!78,draw=snodecGreen!78,fill=snodecGreenSoft,rounded corners=2.5pt,line width=.58pt,inner xsep=4pt,inner ysep=2pt},
-  mqtt evidence source/.style={mqtt no hyphenation,font=\MQAnnotationFont\bfseries,text=snodecBlue!78,draw=snodecBlue!78,fill=snodecBlueSoft,rounded corners=2.5pt,line width=.58pt,inner xsep=4pt,inner ysep=2pt}
+  mqtt topic label/.style={mqtt no hyphenation,font=\MQCodeSmallFont,text=snodecInk,fill=white,inner sep=\MQLabelInnerPad},
+  mqtt route label/.style={mqtt no hyphenation,font=\MQCodeSmallFont,text=snodecInk,fill=white,inner sep=\MQLabelInnerPad},
+  mqtt evidence runtime/.style={mqtt no hyphenation,font=\MQAnnotationFont\bfseries,text=snodecGreen!78,draw=snodecGreen!78,fill=snodecGreenSoft,rounded corners=\MQRadiusM,line width=\MQLineWidthSecondary,inner xsep=\MQEvidencePadX,inner ysep=\MQEvidencePadY},
+  mqtt evidence source/.style={mqtt no hyphenation,font=\MQAnnotationFont\bfseries,text=snodecBlue!78,draw=snodecBlue!78,fill=snodecBlueSoft,rounded corners=\MQRadiusM,line width=\MQLineWidthSecondary,inner xsep=\MQEvidencePadX,inner ysep=\MQEvidencePadY}
 }
 
 % ---------------------------------------------------------------------------
@@ -337,19 +397,20 @@
 % 7. Dashed arrows mean observation/secondary relationship, not primary flow.
 % 8. Containers denote real process/runtime/trust/configuration/lifecycle boundaries.
 % 9. Color never carries the only semantic distinction.
-% 10. Horizontal sequences use the canonical horizontal rhythm; avoid arbitrary x-spacing.
-% 11. Rounded corners follow the semantic radius scale; avoid one-off radii.
-% 12. Flat rendering is authoritative; do not introduce decorative elevation/shadows.
-% 13. Prefer explicit anchors/ports and orthogonal routing wherever boxes are connected.
-% 14. Preserve readable text size at actual GitHub desktop/mobile rendering widths.
-% 15. Every directional connector is a single path with its arrowhead attached to that path; detached or separately placed arrowheads are forbidden.
-% 16. Connectors leave and enter box borders orthogonally at 90 degrees. Use the middle of the relevant border by default.
-% 17. If several connectors share one border, use the canonical distributed-port primitives. Port i of n is derived from the current border geometry at i/(n+1); figure sources never own attachment fractions or distances.
-% 18. Do not use unmotivated diagonal connectors. Use orthogonal Manhattan routing between ports unless a diagonal has a specific semantic or geometric justification.
-% 19. Use mqtt figure frame for the neutral whole-figure surface; draw it before semantic lanes/groups/planes. Never let an enclosing fill overpaint inner semantics.
-% 20. Desktop and mobile typography are selected by their presets; do not override shared font sizes ad hoc to compensate for an oversized composition.
-% 21. \MQDesktopMaxWidth and \MQMobileMaxWidth are fixed publication canvas widths and hard composition limits. Recompose a figure that exceeds them instead of scaling it down.
-% 22. Automatic word hyphenation is forbidden in diagram labels, notes, routes, and code tokens.
-% 23. mqtt success is reserved for a real successful outcome. Do not use green merely for a destination, final stage, action, or emphasis.
-% 24. Ownership/containment uses mqtt contains or mqtt association, never a flow arrow unless real directional flow also exists.
-% 25. Repeated label placement uses the canonical \MQLabelGap through shared directional label styles; labels do not sit directly on connector shafts.
+% 10. All spatial layout tokens derive from the one canonical rhythm R; figure sources never own physical layout values or local multipliers.
+% 11. Horizontal sequences use the canonical horizontal rhythm; avoid arbitrary x-spacing.
+% 12. Rounded corners follow the semantic radius scale; avoid one-off radii.
+% 13. Flat rendering is authoritative; do not introduce decorative elevation/shadows.
+% 14. Prefer explicit anchors/ports and orthogonal routing wherever boxes are connected.
+% 15. Preserve readable text size at actual GitHub desktop/mobile rendering widths.
+% 16. Every directional connector is a single path with its arrowhead attached to that path; detached or separately placed arrowheads are forbidden.
+% 17. Connectors leave and enter box borders orthogonally at 90 degrees. Use the middle of the relevant border by default.
+% 18. If several connectors share one border, use the canonical distributed-port primitives. Port i of n is derived from the current border geometry at i/(n+1); figure sources never own attachment fractions or distances.
+% 19. Do not use unmotivated diagonal connectors. Use orthogonal Manhattan routing between ports unless a diagonal has a specific semantic or geometric justification.
+% 20. Use mqtt figure frame for the neutral whole-figure surface; draw it before semantic lanes/groups/planes. Never let an enclosing fill overpaint inner semantics.
+% 21. Desktop and mobile typography are selected by their presets; do not override shared font sizes ad hoc to compensate for an oversized composition.
+% 22. \MQDesktopMaxWidth and \MQMobileMaxWidth are fixed publication canvas widths and hard composition limits. Recompose a figure that exceeds them instead of scaling it down.
+% 23. Automatic word hyphenation is forbidden in diagram labels, notes, routes, and code tokens.
+% 24. mqtt success is reserved for a real successful outcome. Do not use green merely for a destination, final stage, action, or emphasis.
+% 25. Ownership/containment uses mqtt contains or mqtt association, never a flow arrow unless real directional flow also exists.
+% 26. Repeated label placement uses the canonical \MQLabelGap through shared directional label styles; labels do not sit directly on connector shafts.
