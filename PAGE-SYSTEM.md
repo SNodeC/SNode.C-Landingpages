@@ -197,8 +197,10 @@ the user decides whether the shared system/contract should be extended.
 
 Canonical physical dimensions defined later in this contract are not permission to
 insert raw literal offsets into figure source. Source positioning must use the shared
-system token or relationship that encodes the intended geometry. If no suitable token
-exists, the hard-stop rule applies.
+system token or relationship that encodes the intended geometry. Technical-figure layout
+values other than the canonical layout rhythm unit must be computed from that unit rather
+than stored as independent physical constants. If no suitable derived token exists, the
+hard-stop rule applies.
 
 ## 3.3 No figure-local styling inventions
 
@@ -500,6 +502,61 @@ lengths, spacing, box geometry, routing, or any other technical/vector relations
 Raster pixel dimensions remain valid only for inherently raster assets and raster
 capture/export specifications.
 
+### 11.1.1 One canonical layout rhythm unit
+
+Within the technical-figure composition system, there is exactly one independently
+specified spatial layout distance:
+
+- **canonical layout rhythm unit `R = 8.3 mm`**.
+
+Every other recurring technical-figure layout distance must be **calculated from `R`**
+inside `landingpages-figure-system.tex` as an explicit rational multiple or fraction.
+It must not be stored as another independent millimetre constant. This applies to, among
+other things:
+
+- inter-node and inter-row/inter-column gaps;
+- branch and lane spacing;
+- node, container, group, trust-boundary, and frame padding;
+- title, annotation, and edge-label spacing;
+- safe-area and routing offsets;
+- straight-connector primary-axis spans;
+- centered-dogleg outer legs;
+- canonical minimum/target node and container dimensions and text-width classes where a
+  fixed layout dimension is required.
+
+Content-driven dimensions may expand naturally to fit their content. If a minimum,
+target, or class dimension is required, however, that dimension must still be produced
+by a shared token derived from `R` rather than by a figure-local or independent physical
+value.
+
+The shared system may expose semantic derived tokens such as tight, normal, loose,
+large, padding, label, or node-size relationships, but the underlying physical value of
+each token must be computed from `R`. Figure sources consume those semantic tokens and
+must never introduce their own rational multiplier or derived millimetre value.
+
+The default recurring rhythm scale is rational and derived from `R`:
+
+- micro / label rhythm: `R / 4`;
+- compact / half rhythm: `R / 2`;
+- tight rhythm: `3R / 4`;
+- normal rhythm and ordinary connector span: `R`;
+- loose rhythm: `4R / 3`;
+- large / lane rhythm: `5R / 3`.
+
+Additional layout relationships may use another rational multiple only when that
+relationship is made an explicit canonical shared-system primitive. A figure source may
+never invent such a multiplier locally.
+
+The publication canvases (160 mm desktop and 100 mm mobile) are independent hard output
+constraints, not derived layout rhythm distances. Optical/rendering properties such as
+typography sizes, line widths, arrowhead dimensions, and corner radii are likewise
+separate canonical systems and are not derived from `R` unless this contract explicitly
+changes that policy later.
+
+Changing `R` is therefore a global layout-system change: all derived spatial layout
+tokens change with it, and every affected figure must undergo the full regression and
+rendered-PNG refinement loop from §3.4 and §17.
+
 There is **no dynamically sized canvas mode for canonical technical TikZ figures**.
 
 A narrower technical composition is placed on the canonical canvas by the shared
@@ -662,42 +719,42 @@ the canonical label spacing/styles.
 
 # 15. Canonical connector rhythm
 
-An ordinary straight process/data/control connector run has a canonical
-**8.3 mm edge-to-edge primary-axis span** between the connected box borders.
-This physical source-space value is authoritative and independent of rasterization or
-review-image resolution.
+An ordinary straight process/data/control connector run has an edge-to-edge primary-axis
+span of exactly **`1 × R`** between the connected box borders. The connector rhythm is
+therefore derived from the one canonical layout rhythm unit and owns no independent
+physical distance.
 
 - Recurring ordinary straight arrows preserve this canonical run unless a genuine
-  semantic/geometric constraint requires another shared spacing token.
+  semantic/geometric constraint requires another shared `R`-derived spacing token.
 - Do not shorten arrows merely to reduce figure height or width; recompose the layout.
 - Desktop and mobile are independently art-directed, but preserve the same canonical
   physical connector rhythm.
 - Observation/association/dependency routes may be longer when their real destination
-  requires it, but still use canonical connector grammar and deliberate spacing.
+  requires it, but still use canonical connector grammar and deliberate `R`-derived
+  spacing.
 
-The canonical 8.3 mm span must be encoded once by the shared figure system and consumed
-through that shared token or relationship. Figure sources must not write an arbitrary
-`8.3mm` local offset. Pixel measurements in review PNGs are derived diagnostics only;
-changing rasterization resolution must never change the required source geometry. If no
-suitable shared token exists, invoke the mandatory hard stop.
+The shared figure system must encode the connector span as a direct derivation from `R`.
+Figure sources must not write `8.3mm`, another derived millimetre value, or a local
+multiplier. Pixel measurements in review PNGs are derived diagnostics only; changing
+rasterization resolution must never change the required source geometry. If no suitable
+shared derived token exists, invoke the mandatory hard stop.
 
 ## 15.1 Canonical bent-arrow primary-axis span
 
 An ordinary multi-segment bent process/data/control connector consumes the same total
-primary-axis span as an ordinary straight arrow. Bending a connector must not increase
-or reduce the row/column separation between source and destination.
+primary-axis span as an ordinary straight arrow: **`1 × R`**. Bending a connector must
+not increase or reduce the row/column separation between source and destination.
 
 For a normal vertically progressing `|-|` connector, the source-border-to-destination-
-border height is the canonical connector span. Its two vertical outer legs are exactly
-equal, and **each leg is calculated as one half of the canonical connector span**.
+border height is `1 × R`. Its two vertical outer legs are exactly equal, and **each leg
+is calculated as `R / 2` from the canonical rhythm unit**.
 
 For a normal horizontally progressing `-|-` connector, the total horizontal span is
-likewise the canonical connector span. Its two horizontal outer legs are exactly equal,
-and **each leg is calculated as one half of the canonical connector span**.
+likewise `1 × R`. Its two horizontal outer legs are exactly equal, and **each leg is
+calculated as `R / 2` from the canonical rhythm unit**.
 
-The half-span is derived from the one canonical connector-span token. It must not be
-stored, repeated, or hard-coded as an independent physical value in the contract,
-shared system, or figure sources.
+The half-span is a calculation from `R`; it must not be stored, repeated, or hard-coded
+as an independent physical value in the contract, shared system, or figure sources.
 
 The perpendicular middle segment may be as long as required by the real offset; it does
 not change the canonical primary-axis span.
@@ -705,8 +762,9 @@ not change the canonical primary-axis span.
 Do not add extra height/width merely because a connector bends. Recompose nodes instead.
 
 A genuine semantic bypass such as a long observation/association/dependency route may
-span multiple layout levels and is not forced into the adjacent-level canonical span,
-but it still obeys exact centered-dogleg symmetry where applicable.
+span multiple layout levels and is not forced into the adjacent-level `1 × R` span,
+but every deliberate routing distance still comes from an appropriate shared
+`R`-derived relationship and centered-dogleg symmetry still applies where applicable.
 
 ## 15.2 Hard centered-dogleg symmetry
 
@@ -719,8 +777,8 @@ two parallel outer legs **must have exactly equal length**.
   exactly equal, so the vertical segment is centered between endpoint columns.
 
 For ordinary adjacent-level connectors this exact symmetry rule and the canonical
-8.3 mm primary-axis-span rule apply together. Each outer leg is derived as one half of
-that shared span; no separate half-span constant is authoritative.
+`1 × R` primary-axis-span rule apply together. Each outer leg is calculated as `R / 2`;
+no separate half-span constant is authoritative.
 
 This is an exact geometry requirement, not an approximate aesthetic preference. An
 off-center three-segment dogleg fails the contract even when technically connected and
@@ -730,8 +788,14 @@ otherwise readable.
 
 # 16. Spacing and family consistency
 
+Every recurring technical-figure spatial layout relationship must use a shared semantic
+token calculated from the single canonical layout rhythm unit `R`. Independent
+millimetre constants for layout spacing, padding, routing, or size classes are
+prohibited. Derived values are formulas, not additional authorities.
+
 Use shared spacing/rhythm tokens for every recurring layout relationship. One-off
-spacing values are prohibited by the no-arbitrary-values rule.
+spacing values or figure-local rational multipliers are prohibited by the
+no-arbitrary-values rule.
 
 For the 24-figure MQTTSuite technical family, all figures must read as one family in:
 
@@ -1108,15 +1172,18 @@ For every canonical technical TikZ figure:
     structures.
 15. Connectors attach exactly to box borders and enter/leave orthogonally.
 16. Use canonical port distribution and Manhattan routing.
-17. Preserve canonical connector rhythm and exact centered-dogleg symmetry.
-18. Use canonical node/container/typography/palette semantics.
-19. Preserve desktop/mobile semantic equivalence.
-20. Report all findings in chat before each refinement edit.
-21. Refine → build → render PNG → inspect → repeat until every rule passes.
-22. When satisfied, report every applicable contract category, its compliance status,
+17. Preserve the canonical `R`-derived connector rhythm and exact centered-dogleg
+    symmetry.
+18. Use only shared `R`-derived spatial layout tokens; no independent or figure-local
+    physical layout distances are permitted.
+19. Use canonical node/container/typography/palette semantics.
+20. Preserve desktop/mobile semantic equivalence.
+21. Report all findings in chat before each refinement edit.
+22. Refine → build → render PNG → inspect → repeat until every rule passes.
+23. When satisfied, report every applicable contract category, its compliance status,
     the rendered evidence, and why the result is visually satisfactory and free of
     unresolved uncertainty.
-23. Only then stop/freeze the figure.
+24. Only then stop/freeze the figure.
 
 ---
 
