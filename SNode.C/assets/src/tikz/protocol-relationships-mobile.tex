@@ -5,25 +5,25 @@
 \begin{document}
 \begin{tikzpicture}[mqtt mobile]
 
-\node[mqtt process,minimum width=30mm,minimum height=22mm,text width=24mm] (custom)
+\node[mqtt process,mqtt node compact] (custom)
   {custom byte protocol\\\texttt{SocketContext}};
-\node[mqtt process,right=\MQGapS of custom,minimum width=30mm,minimum height=22mm,text width=24mm] (mqttdirect)
+\node[mqtt process,right=\MQHorizontalGapTight of custom,mqtt node compact] (mqttdirect)
   {direct\\MQTT 3.1.1};
 \path (custom.south) -- (mqttdirect.south) coordinate[midway] (directbottom);
 
-\node[mqtt process,above={\MQMobileLaneGap+\MQGroupPad} of mqttdirect,minimum width=30mm,minimum height=18mm,text width=24mm] (mqttws)
+\node[mqtt process,above=\MQSectionSeparation of mqttdirect,mqtt node compact] (mqttws)
   {MQTT over\\WebSocket\\subprotocol};
-\node[mqtt process,above=\MQGapM of mqttws,minimum width=30mm,minimum height=18mm,text width=24mm] (ws)
+\node[mqtt process,above=\MQConnectorSpan of mqttws,mqtt node compact] (ws)
   {WebSocket\\via HTTP\\Upgrade};
-\node[mqtt process,left=\MQGapS of ws,minimum width=30mm,minimum height=18mm,text width=24mm] (sse)
+\node[mqtt process,left=\MQHorizontalGapTight of ws,mqtt node compact] (sse)
   {SSE\\EventSource\\within HTTP};
 \path (sse.north) -- (ws.north) coordinate[midway] (branchmid);
 
-\node[mqtt state,above=\MQGapM of branchmid,minimum width=46mm] (http) {HTTP context};
-\node[mqtt application,above=\MQGapM of http,minimum width=58mm,text width=50mm] (express)
+\node[mqtt state,above=\MQConnectorSpan of branchmid,mqtt node wide] (http) {HTTP context};
+\node[mqtt application,above=\MQConnectorSpan of http,mqtt node extra wide] (express)
   {Express-style routing\\and middleware};
 \node[mqtt section title,above=\MQTitleGap of express] (httptitle) {HTTP family};
-\node[mqtt section title,above={\MQTitleGap+\MQGroupPad} of httptitle] (title)
+\node[mqtt section title,above=\MQGapM of httptitle] (title)
   {Protocol / application contexts};
 
 \draw[mqtt association] (express.south) -- (http.north);
@@ -36,10 +36,10 @@
 \draw[mqtt handoff] (http-s3) -- (http-s3 |- wsmid) -- (ws.north |- wsmid) -- (ws.north);
 \draw[mqtt association] (ws.south) -- (mqttws.north);
 
-\node[mqtt state,below=\MQGapM of directbottom,minimum width=70mm,text width=60mm] (stream)
+\node[mqtt state,below=\MQConnectorSpan of directbottom,mqtt node extra wide] (stream)
   {established stream connection};
-\node[mqtt note,below=\MQGapM of stream,minimum width=72mm,text width=62mm] (note)
-  {Express is above HTTP; SSE remains HTTP; WebSocket replaces HTTP after Upgrade; MQTT has direct and WebSocket-composed paths.};
+\node[mqtt note,below=\MQConnectorSpan of stream,mqtt node extra wide] (note)
+  {Express is above HTTP; SSE remains\\HTTP; WebSocket replaces HTTP\\after Upgrade; MQTT has direct\\and WebSocket-composed paths.};
 
 \begin{scope}[on background layer]
   \node[mqtt figure frame,fit=(title)(httptitle)(express)(http)(sse)(ws)(mqttws)(custom)(mqttdirect)(stream)(note)] {};

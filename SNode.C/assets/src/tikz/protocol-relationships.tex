@@ -5,29 +5,29 @@
 \begin{document}
 \begin{tikzpicture}[mqtt desktop]
 
-% Lower direct-protocol row: canonical 8 mm sibling gap.
-\node[mqtt process,minimum width=34mm,minimum height=18mm,text width=28mm] (custom)
+% Lower direct-protocol row uses the canonical horizontal rhythm.
+\node[mqtt process,mqtt node compact] (custom)
   {custom byte protocol\\\texttt{SocketContext}};
-\node[mqtt process,right=\MQGapM of custom,minimum width=34mm,minimum height=18mm] (mqttdirect)
+\node[mqtt process,right=\MQHorizontalGap of custom,mqtt node compact] (mqttdirect)
   {direct MQTT 3.1.1};
 \path (custom.south) -- (mqttdirect.south) coordinate[midway] (directbottom);
 \path (custom.north) -- (mqttdirect.north) coordinate[midway] (directtop);
 
-% HTTP-family branch above the matching direct row. The visible group-to-row gap
-% uses the canonical loose 11 mm relationship spacing, not a separate lane gap.
-\node[mqtt process,above={\MQGapL+\MQGroupPad} of mqttdirect,minimum width=36mm,minimum height=16mm,text width=30mm] (mqttws)
+% The HTTP-family branch is separated from the direct row by the shared
+% canonical section relationship rather than figure-local arithmetic.
+\node[mqtt process,above=\MQSectionSeparation of mqttdirect,mqtt node compact] (mqttws)
   {MQTT over WebSocket\\subprotocol};
-\node[mqtt process,above=\MQGapM of mqttws,minimum width=36mm,minimum height=16mm,text width=30mm] (ws)
+\node[mqtt process,above=\MQConnectorSpan of mqttws,mqtt node compact] (ws)
   {WebSocket\\via HTTP Upgrade};
-\node[mqtt process,left=\MQGapS of ws,minimum width=36mm,minimum height=16mm,text width=30mm] (sse)
+\node[mqtt process,left=\MQHorizontalGapTight of ws,mqtt node compact] (sse)
   {SSE / EventSource\\within HTTP};
 \path (sse.north) -- (ws.north) coordinate[midway] (branchmid);
 
-\node[mqtt state,above=\MQGapM of branchmid,minimum width=36mm] (http) {HTTP context};
-\node[mqtt application,above=\MQGapM of http,minimum width=44mm,text width=38mm] (express)
+\node[mqtt state,above=\MQConnectorSpan of branchmid,mqtt node compact] (http) {HTTP context};
+\node[mqtt application,above=\MQConnectorSpan of http,mqtt node wide] (express)
   {Express-style routing\\and middleware};
 \node[mqtt section title,above=\MQTitleGap of express] (httptitle) {HTTP family};
-\node[mqtt section title,above={\MQTitleGap+\MQGroupPad} of httptitle] (title)
+\node[mqtt section title,above=\MQGapM of httptitle] (title)
   {Protocol / application contexts};
 
 \draw[mqtt association] (express.south) -- (http.north);
@@ -40,10 +40,10 @@
 \draw[mqtt handoff] (http-s3) -- (http-s3 |- wsmid) -- (ws.north |- wsmid) -- (ws.north);
 \draw[mqtt association] (ws.south) -- (mqttws.north);
 
-\node[mqtt state,below=\MQGapM of directbottom,minimum width=90mm,text width=80mm] (stream)
+\node[mqtt state,below=\MQConnectorSpan of directbottom,mqtt node hero] (stream)
   {established stream connection};
-\node[mqtt note,below=\MQGapM of stream,minimum width=96mm,text width=86mm] (note)
-  {Express is above HTTP. SSE/EventSource remains in HTTP. WebSocket replaces the HTTP context after Upgrade. MQTT can attach directly or compose as a WebSocket subprotocol.};
+\node[mqtt note,below=\MQConnectorSpan of stream,mqtt node hero] (note)
+  {Express is above HTTP. SSE/EventSource remains in HTTP.\\WebSocket replaces the HTTP context after Upgrade. MQTT\\can attach directly or compose as a WebSocket subprotocol.};
 
 \begin{scope}[on background layer]
   \node[mqtt figure frame,fit=(title)(httptitle)(express)(http)(sse)(ws)(mqttws)(custom)(mqttdirect)(stream)(note)] {};
