@@ -38,7 +38,11 @@
 \draw[mqtt handoff] (http-s2) -- (http-s2 |- wsmid) -- (ws.north |- wsmid) -- (ws.north);
 \draw[mqtt association] (ws.south) -- (mqttws.north);
 
-\node[mqtt state,below=\MQConnectorSpan of directbottom,mqtt node hero] (stream)
+% Align the stream with the live HTTP-family center while retaining the direct
+% attachment row as its vertical reference.
+\node[mqtt layout fit,fit=(httptitle)(express)(http)(sse)(ws)(mqttws)] (httpfit) {};
+\path (httpfit.south |- directbottom) coordinate (streamanchor);
+\node[mqtt state,below=\MQConnectorSpan of streamanchor,mqtt node hero] (stream)
   {established stream connection};
 \node[mqtt note,below=\MQGapS of stream,mqtt node wide] (note)
   {Relationship map --- not a flat protocol stack.};
@@ -53,8 +57,7 @@
 \MQDistributedPortNorth{stream}{stream-n3}{3}{3}
 \path (custom.south) -- (stream-n1) coordinate[midway] (custommid);
 \draw[mqtt association] (custom.south) -- (custom.south |- custommid) -- (stream-n1 |- custommid) -- (stream-n1);
-\path (httpgroup.south) -- (stream-n2) coordinate[midway] (httpstreammid);
-\draw[mqtt association] (httpgroup.south) -- (httpgroup.south |- httpstreammid) -- (stream-n2 |- httpstreammid) -- (stream-n2);
+\draw[mqtt association] (httpgroup.south) -- (stream-n2);
 \path (mqttdirect.south) -- (stream-n3) coordinate[midway] (mqttmid);
 \draw[mqtt association] (mqttdirect.south) -- (mqttdirect.south |- mqttmid) -- (stream-n3 |- mqttmid) -- (stream-n3);
 
