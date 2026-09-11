@@ -53,7 +53,8 @@
 \MQDistributedPortNorth{stream}{stream-n3}{3}{3}
 \path (custom.south) -- (stream-n1) coordinate[midway] (custommid);
 \draw[mqtt association] (custom.south) -- (custom.south |- custommid) -- (stream-n1 |- custommid) -- (stream-n1);
-\draw[mqtt association] (httpgroup.south) -- (stream-n2);
+\path (httpgroup.south) -- (stream-n2) coordinate[midway] (httpstreammid);
+\draw[mqtt association] (httpgroup.south) -- (httpgroup.south |- httpstreammid) -- (stream-n2 |- httpstreammid) -- (stream-n2);
 \path (mqttdirect.south) -- (stream-n3) coordinate[midway] (mqttmid);
 \draw[mqtt association] (mqttdirect.south) -- (mqttdirect.south |- mqttmid) -- (stream-n3 |- mqttmid) -- (stream-n3);
 
