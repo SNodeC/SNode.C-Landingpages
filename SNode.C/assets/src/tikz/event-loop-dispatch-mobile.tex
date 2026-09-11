@@ -5,17 +5,15 @@
 \begin{document}
 \begin{tikzpicture}[mqtt mobile]
 
-\node[mqtt process,minimum width=25mm,minimum height=16mm,text width=19mm] (descriptors)
-  {descriptor\\readiness};
-\node[mqtt process,right=\MQGapS of descriptors,minimum width=25mm,minimum height=16mm,text width=19mm] (timers)
-  {timer\\activity};
+\node[mqtt process,minimum width=38mm] (descriptors) {descriptor readiness};
+\node[mqtt process,right=\MQGapS of descriptors,minimum width=38mm] (timers) {timer activity};
 \path (descriptors.north) -- (timers.north) coordinate[midway] (sourcestop);
 \path (descriptors.south) -- (timers.south) coordinate[midway] (sourcesbottom);
 
 \node[mqtt control,above=\MQGapM of sourcestop,minimum width=50mm] (wait) {wait for work};
 \node[mqtt control,above=\MQGapM of wait,minimum width=54mm] (start) {\texttt{SNodeC::start()}\\caller thread};
-\node[mqtt config,above=\MQGapM of start,minimum width=70mm,text width=60mm] (backend)
-  {selected backend at configure time\\\texttt{epoll} · \texttt{poll} · \texttt{select}};
+\node[mqtt config,above=\MQGapM of start,minimum width=70mm] (backend)
+  {Select backend at configure time\\\texttt{epoll} · \texttt{poll} · \texttt{select}};
 
 \node[mqtt state,below=\MQGapM of sourcesbottom,minimum width=50mm] (queue) {event queue};
 \node[mqtt control,below=\MQGapM of queue,minimum width=54mm] (dispatch) {dispatch events};
