@@ -6,10 +6,10 @@
 \begin{tikzpicture}[mqtt mobile]
 
 \node[mqtt section title] (servertitle) {Server flow};
-\node[mqtt process,below=\MQGapXS of servertitle,minimum width=62mm] (server) {\texttt{SocketServer}\\server endpoint};
-\node[mqtt state,below=\MQGapM of server,minimum width=62mm] (serverconn) {\texttt{SocketConnection}\\established stream};
-\node[mqtt process,below=\MQGapM of serverconn,minimum width=62mm] (serverfactory) {\texttt{SocketContextFactory}\\retained by endpoint flow};
-\node[mqtt application,below=\MQGapM of serverfactory,minimum width=62mm] (serverctx) {\texttt{SocketContext}\\one active per connection};
+\node[mqtt process,below=\MQGapXS of servertitle,mqtt node extra wide] (server) {\texttt{SocketServer}\\server endpoint};
+\node[mqtt state,below=\MQConnectorSpan of server,mqtt node extra wide] (serverconn) {\texttt{SocketConnection}\\established stream};
+\node[mqtt process,below=\MQConnectorSpan of serverconn,mqtt node extra wide] (serverfactory) {\texttt{SocketContextFactory}\\retained by endpoint flow};
+\node[mqtt application,below=\MQConnectorSpan of serverfactory,mqtt node extra wide] (serverctx) {\texttt{SocketContext}\\one active per connection};
 \path (serverconn.west) ++(-\MQGapS,0) coordinate (serverrail);
 
 \draw[mqtt flow] (server.south) -- node[mqtt edge label right] {listen $\rightarrow$ accept} (serverconn.north);
@@ -17,11 +17,11 @@
 \draw[mqtt flow] (serverfactory.south) -- node[mqtt edge label right] {returns new} (serverctx.north);
 \draw[mqtt association] (serverconn.west) -- (serverrail) |- (serverctx.west);
 
-\node[mqtt section title,below={\MQMobileLaneGap+2*\MQGroupPad} of serverctx,anchor=north] (clienttitle) {Client flow};
-\node[mqtt process,below=\MQGapXS of clienttitle,minimum width=62mm] (client) {\texttt{SocketClient}\\client endpoint};
-\node[mqtt state,below=\MQGapM of client,minimum width=62mm] (clientconn) {\texttt{SocketConnection}\\established stream};
-\node[mqtt process,below=\MQGapM of clientconn,minimum width=62mm] (clientfactory) {\texttt{SocketContextFactory}\\retained by endpoint flow};
-\node[mqtt application,below=\MQGapM of clientfactory,minimum width=62mm] (clientctx) {\texttt{SocketContext}\\one active per connection};
+\node[mqtt section title,below=\MQSectionSeparation of serverctx,anchor=north] (clienttitle) {Client flow};
+\node[mqtt process,below=\MQGapXS of clienttitle,mqtt node extra wide] (client) {\texttt{SocketClient}\\client endpoint};
+\node[mqtt state,below=\MQConnectorSpan of client,mqtt node extra wide] (clientconn) {\texttt{SocketConnection}\\established stream};
+\node[mqtt process,below=\MQConnectorSpan of clientconn,mqtt node extra wide] (clientfactory) {\texttt{SocketContextFactory}\\retained by endpoint flow};
+\node[mqtt application,below=\MQConnectorSpan of clientfactory,mqtt node extra wide] (clientctx) {\texttt{SocketContext}\\one active per connection};
 \path (clientconn.east) ++(\MQGapS,0) coordinate (clientrail);
 
 \draw[mqtt flow] (client.south) -- node[mqtt edge label left] {connect completes} (clientconn.north);
@@ -29,7 +29,7 @@
 \draw[mqtt flow] (clientfactory.south) -- node[mqtt edge label left] {returns new} (clientctx.north);
 \draw[mqtt association] (clientconn.east) -- (clientrail) |- (clientctx.east);
 
-\node[mqtt control,below={\MQMobileLaneGap+\MQGroupPad} of clientctx,minimum width=72mm,text width=62mm] (loop)
+\node[mqtt control,below=\MQSectionToControlGap of clientctx,mqtt node extra wide] (loop)
   {\textbf{Event loop --- \texttt{start()}}\\readiness, timers and callbacks\\run on the caller thread};
 
 \path (servertitle.north) ++(0,\MQGroupPad) coordinate (outertop);
