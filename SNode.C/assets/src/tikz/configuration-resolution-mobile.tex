@@ -14,14 +14,14 @@
 \node[mqtt control,below=\MQGapM of file,minimum width=52mm] (resolve) {value resolution};
 \node[mqtt state,below=\MQGapM of resolve,minimum width=58mm] (effective) {effective configuration};
 
-\path \MQPortNorth{resolve}{.18} coordinate (resolve-n18);
-\path \MQPortNorth{resolve}{.50} coordinate (resolve-n50);
-\path \MQPortNorth{resolve}{.82} coordinate (resolve-n82);
-\path (api.south) -- (resolve-n18) coordinate[midway] (apimid);
-\draw[mqtt flow] (api.south) -- (api.south |- apimid) -- (resolve-n18 |- apimid) -- (resolve-n18);
-\draw[mqtt flow] (file.south) -- (resolve-n50);
-\path (cli.south) -- (resolve-n82) coordinate[midway] (climid);
-\draw[mqtt flow] (cli.south) -- (cli.south |- climid) -- (resolve-n82 |- climid) -- (resolve-n82);
+\MQDistributedPortNorth{resolve}{resolve-n1}{1}{3}
+\MQDistributedPortNorth{resolve}{resolve-n2}{2}{3}
+\MQDistributedPortNorth{resolve}{resolve-n3}{3}{3}
+\path (api.south) -- (resolve-n1) coordinate[midway] (apimid);
+\draw[mqtt flow] (api.south) -- (api.south |- apimid) -- (resolve-n1 |- apimid) -- (resolve-n1);
+\draw[mqtt flow] (file.south) -- (resolve-n2);
+\path (cli.south) -- (resolve-n3) coordinate[midway] (climid);
+\draw[mqtt flow] (cli.south) -- (cli.south |- climid) -- (resolve-n3 |- climid) -- (resolve-n3);
 \draw[mqtt control flow] (resolve.south) -- (effective.north);
 
 \node[mqtt section title,below={\MQGapXL+\MQGroupPad} of effective] (outputstitle)
