@@ -13,14 +13,19 @@ preserved here by making the stricter technical-figure rules in this document ov
 general visual guidance whenever both could apply.
 
 This contract applies to the SNode.C organization profile and to SNode.C, MQTTSuite,
-AISuite, CodexUI, future landing-page subprojects, and all corresponding technical
-figures, screenshots, runtime evidence, hero visuals, social previews, and exported
-assets.
+AISuite, CodexUI, future landing-page subprojects, and all corresponding public-facing
+text, technical figures, screenshots, runtime evidence, hero visuals, social previews,
+and exported assets.
 
 A technical figure is compliant only when its technical semantics, composition,
 typography, responsive behavior, node/container grammar, connector geometry, build
 output, and actual rendered appearance all pass. Compilation alone is never
 sufficient.
+
+Public landing-page text is compliant only when its technical statements, commands,
+examples, capability/limitation descriptions, architecture descriptions, and
+cross-project relationships are aligned with current implementation evidence. Good
+prose is never a substitute for technical truth.
 
 ---
 
@@ -36,12 +41,17 @@ Use this authority order for landing-page and visual work:
 4. the canonical workflow and governance artifacts for process/presentation decisions;
 5. the nearest project-specific `AGENTS.md` and accepted project workflow artifacts for
    project facts, terminology, figure-specific semantics, filenames, and placement;
-6. verified current implementation source/tests/runtime evidence for technical truth;
+6. verified current implementation source/tests/runtime/release evidence for technical
+   truth;
 7. older proposals, READMEs, figures, screenshots, and historical planning only as
    research/provenance inputs.
 
 For technical-figure presentation conflicts, the strict figure rules in this document
 win over broader page-level art-direction rules.
+
+For technical claims in text or figures, current implementation evidence wins over old
+README wording, old figures, proposals, schemas, workflow notes, issues, comments, or
+remembered behavior.
 
 The earlier nine-section, fixed word-count, mandatory V1–V4, equal-visual-weight, and
 other rigid README templates are no longer binding. Section count, prose length, table
@@ -49,6 +59,42 @@ count, and visual count are design outcomes, not compliance targets.
 
 Existing proposals, READMEs, figures, screenshots, and social previews remain
 research/provenance inputs until replaced or explicitly approved.
+
+## 1.1 Hard stop for uncovered uncertainty
+
+For both text and figure work, uncertainty must never be resolved by guessing.
+
+First use the sources and rules already required by this contract to resolve the issue.
+If a material question remains unresolved because the contract, shared TikZ system,
+figure-specific contract, current source/tests/runtime/release evidence, or approved
+workflow artifacts do not define or prove the required answer, **stop the current turn
+immediately**.
+
+This hard stop applies to uncertainty about, among other things:
+
+- technical behavior, capability, limitation, ownership, ordering, optionality, or
+  causality;
+- wording or scope of a public technical claim;
+- architecture or cross-project relationships;
+- figure semantics;
+- visual/layout relationships;
+- spacing, typography, node/container geometry, ports, routing, or connector semantics;
+- responsive behavior;
+- asset dimensions or evidence provenance;
+- any other decision whose resolution would require an assumption not authorized by
+  this contract or proven by current evidence.
+
+When the hard stop applies:
+
+1. do not guess or choose the most convenient interpretation;
+2. do not invent a rule, value, relationship, claim, or workaround;
+3. do not make an unauthorized exception to this contract;
+4. report the exact unresolved question and the evidence/rule that is missing;
+5. stop the turn and wait for the user to resolve the ambiguity or authorize an
+   explicit contract/system extension.
+
+A partial result may be reported only for work already proved compliant; unresolved
+material uncertainty blocks the affected text/figure refinement from continuing.
 
 ---
 
@@ -135,12 +181,19 @@ This prohibition includes invented values for:
 - publication/canvas widths;
 - one-off whitespace corrections.
 
-**Mandatory hard stop:** if a required figure relationship, size, spacing, routing
-shape, port distribution, or style cannot be expressed using an existing canonical
-constant/style/primitive, stop the current turn immediately. Do not invent, estimate,
-approximate, or silently introduce a local value or local constant. Report exactly
-which shared token/style is missing, why the figure cannot be made compliant without
-it, and wait for the user to decide whether the shared system should be extended.
+**Mandatory hard stop:** if any required canonical definition is missing, the current
+turn must stop immediately. This includes a missing definition for a relationship,
+layout relationship, size, spacing, routing shape, connector pattern, port distribution,
+node/container primitive, typography treatment, semantic connector, canvas behavior,
+padding rule, or any other geometry/style primitive needed to make the requested work
+contract-compliant.
+
+No unauthorized violation of this contract is permitted. Do not invent, estimate,
+approximate, silently introduce a local value, introduce a local replacement constant,
+copy a one-off literal from another figure, or use a workaround that bypasses the
+missing canonical definition. Report exactly which canonical definition/token/style is
+missing, explain why compliant work cannot continue without it, and stop the turn until
+the user decides whether the shared system/contract should be extended.
 
 The approximate millimetre values mentioned later for approval-space arrow rhythm are
 review metrics, not permission to insert raw literal offsets into figure source. If no
@@ -154,6 +207,45 @@ Use the shared canonical styles and constants.
 
 Do not rescue an oversized composition by shrinking fonts, line widths, arrowheads,
 padding, or spacing locally.
+
+## 3.4 Hard layout resilience under shared-system changes
+
+Technical figure sources must be **layout-resilient by construction**.
+
+Canonical changes made in `landingpages-figure-system.tex` to spacing, typography,
+font sizes, node dimensions, padding, radii, connector geometry, arrowheads, line
+weights, canvas helpers, semantic styles, or other shared presentation parameters must
+propagate through the figure family via relative geometry and shared tokens.
+
+Figure-local code must not neutralize, cancel, pin, or compensate for a shared-system
+change in order to preserve the old appearance. In particular, do not add local literal
+spacing, compensating shifts, counter-scaling, local font sizes, local node dimensions,
+local line widths, local arrow geometry, or one-off routing offsets to defeat the new
+canonical values.
+
+A shared-system parameter change is a **global regression event** for every figure that
+consumes the changed primitive. Previous visual approval of those affected figures is
+invalidated by the system change.
+
+After such a change, every affected desktop/mobile figure must:
+
+1. rebuild from canonical source using the new shared values;
+2. render fresh review PNGs;
+3. undergo the complete mandatory refinement loop in this contract;
+4. still satisfy every semantic, source-alignment, composition, typography, canvas,
+   routing, crossing, accessibility, and human-visual-quality rule;
+5. be refined through relative geometry and canonical shared primitives only where the
+   new values expose a problem.
+
+A shared-system change is not complete or acceptable while any affected figure fails.
+If an affected figure cannot be made compliant using the definitions available in the
+shared system, invoke the mandatory hard stop instead of violating the contract or
+locally restoring the old layout.
+
+The intended result is that the maintainer may deliberately change shared layout
+parameters once in `landingpages-figure-system.tex` and have the entire affected figure
+family reflow according to those values, while all figures are then re-proved correct
+under the same contract.
 
 ---
 
@@ -173,6 +265,52 @@ Write for experienced developers and technical evaluators.
 - Prefer omission over unsupported completeness.
 - Keep all pages useful when images fail to load.
 - State limitations and non-goals with the same precision as capabilities.
+
+## 4.1 Hard source alignment for all public text
+
+Source alignment is mandatory for **all public landing-page text**, not only figures.
+
+This applies to:
+
+- prose paragraphs and headings that make technical claims;
+- capability and limitation descriptions;
+- architecture and ownership descriptions;
+- protocol/version/platform/compatibility statements;
+- security, performance, maturity, support, and availability claims;
+- tables and matrices;
+- quick-start commands and expected results;
+- configuration snippets and code examples;
+- captions and alt text when they describe technical behavior;
+- cross-project relationships and dependency/runtime descriptions;
+- installation/package/release wording;
+- troubleshooting statements and user-visible behavior claims.
+
+Every material technical statement must align with current public implementation truth
+and the level of evidence appropriate to the claim:
+
+- source code proves that an implementation exists;
+- tests qualify behavior covered by those tests;
+- reproducible runtime evidence qualifies user-visible/runtime behavior;
+- release/package metadata proves availability to users;
+- documentation/proposals/old READMEs may identify candidate facts but are not proof by
+  themselves.
+
+No public technical statement may rely solely on an older README, proposal, figure,
+schema, issue, comment, workflow note, or remembered behavior when current source/test/
+runtime/release evidence is available or required.
+
+If source, tests, runtime behavior, maintained documentation, or release metadata
+disagree, do not choose the convenient wording. Resolve the conflict where possible;
+otherwise omit, neutralize, or explicitly qualify the claim until the evidence is
+consistent. If the correct treatment remains uncertain after applying the contract and
+available evidence, invoke the hard stop from §1.1.
+
+A polished paragraph that is stale, broader than the evidence, or inconsistent with the
+current implementation is non-compliant and blocks publication just as a semantically
+wrong figure does.
+
+Figures, captions, tables, examples, commands, and prose must not contradict one
+another. The complete landing page must tell one source-aligned technical story.
 
 ---
 
@@ -313,6 +451,8 @@ description, README, or prior figure disagrees.
   implementation actually enforces it; external deployment boundaries must be labeled
   as external requirements/recommendations.
 - Ownership/containment is not directional runtime flow unless real flow also exists.
+- If the correct semantic interpretation cannot be proved from the contract and current
+  evidence, invoke the hard stop from §1.1 rather than drawing an assumed relationship.
 
 ---
 
@@ -382,7 +522,7 @@ Practical page-system defaults remain:
 - all content images: readable at GitHub content width and on mobile.
 
 If no prescribed dimension/aspect-ratio rule exists for an asset and a new arbitrary
-value would be required, do not invent one; stop and ask for the missing rule.
+value would be required, do not invent one; invoke the hard stop from §1.1.
 
 SVG is preferred for diagrams. PNG is preferred for sharp UI/terminal/runtime captures
 and raster-only source material. Optimize assets without making interface text or
@@ -464,7 +604,7 @@ the relevant border by default.
 When several connectors share one border, distribute source and destination ports
 evenly using canonical shared port primitives rather than stacking them at one point.
 Do not invent fractional attachment positions. If the shared system cannot express the
-required distribution, invoke the hard-stop rule.
+required distribution, invoke the mandatory hard stop.
 
 ## 14.3 Routing
 
@@ -488,8 +628,7 @@ never cover a line, bend, arrowhead, box border, or other graphical structure.
 
 Unrelated line crossings and ambiguous visual merges must be eliminated through
 recomposition/rerouting. If a compliant route requires a missing canonical spacing or
-routing primitive, stop and report the missing primitive rather than inventing a
-workaround.
+routing primitive, invoke the mandatory hard stop rather than inventing a workaround.
 
 Branch/edge labels must be unambiguously attached to the correct segment and placed via
 the canonical label spacing/styles.
@@ -512,7 +651,8 @@ current desktop review scale this is approximately **8.3 mm** in source geometry
 
 The 8.3 mm approximation is a review metric. It is not permission to write an arbitrary
 `8.3mm` figure-local offset. Source positioning must use the shared system token that
-encodes the intended relationship. If no suitable token exists, stop.
+encodes the intended relationship. If no suitable token exists, invoke the mandatory
+hard stop.
 
 ## 15.1 Canonical bent-arrow primary-axis span
 
@@ -597,6 +737,9 @@ Read the shared TikZ README, this contract, `landingpages-figure-system.tex`, th
 current figure sources, the figure-specific accepted contract, and relevant current
 implementation evidence.
 
+If those sources leave any material semantic or presentation uncertainty unresolved,
+invoke the hard stop from §1.1 before editing.
+
 ### 17.2 Build the current figure before editing
 
 Run the canonical CMake figure build for the current source. Do not assess only an old
@@ -636,6 +779,7 @@ Review every applicable rule, including:
 - color semantics;
 - relative positioning only;
 - absence of arbitrary source values;
+- layout resilience against shared-system changes;
 - connector semantics;
 - arrowheads attached to their paths;
 - exact border attachment;
@@ -650,6 +794,9 @@ Review every applicable rule, including:
 - consistent label placement;
 - desktop/mobile semantic equivalence;
 - actual human visual quality.
+
+If the review exposes an issue for which the contract/shared system does not define a
+compliant treatment, invoke the mandatory hard stop rather than improvising one.
 
 ### 17.5 If NOT satisfied
 
@@ -670,8 +817,9 @@ For every category state the concrete evidence for compliance or why it is genui
 applicable.
 
 The final satisfaction report must explicitly include rendered desktop/mobile PNG
-inspection and explain why the figure is visually harmonious, readable, balanced, and
-free from further required refinement.
+inspection and explain why the figure is visually harmonious, readable, balanced,
+source-aligned, layout-resilient, and free from further required refinement or
+unresolved material uncertainty.
 
 Only then stop.
 
@@ -693,11 +841,14 @@ A technical figure is complete only when all applicable checks are proved, inclu
 
 - canonical source/build passes;
 - technical semantics verified against current implementation truth;
+- no material unresolved uncertainty remains;
 - actual rendered PNG inspected;
 - desktop/mobile variants inspected where applicable;
 - fixed canvas contract satisfied;
 - only relative object placement used;
 - no arbitrary local geometry/style values introduced;
+- layout remains driven by shared tokens and relative relationships rather than local
+  compensation;
 - typography compliant and readable;
 - no clipping;
 - no unnecessary/incorrect wrapping;
@@ -718,7 +869,8 @@ A technical figure is complete only when all applicable checks are proved, inclu
 
 Push a compliant source change and verify the CI-generated review artifact when the
 current workflow requires publication/CI verification. Freeze the figure unless a later
-shared-system change requires regression inspection.
+shared-system change requires regression inspection; such a system change invalidates
+prior visual approval for every affected figure as defined in §3.4.
 
 ---
 
@@ -870,7 +1022,9 @@ Before publication, verify or obtain owner approval for:
 - parity claims;
 - final visual identity and freshness against the publication candidate.
 
-Prefer omission or qualification over an unsupported claim.
+Prefer omission or qualification over an unsupported claim only where the evidence
+itself clearly supports that treatment. If a material unresolved fact leaves the correct
+public treatment uncertain, invoke the hard stop from §1.1.
 
 ---
 
@@ -885,8 +1039,10 @@ workspace must not modify live local source repositories directly.
 Preserve unrelated concurrent changes. Never overwrite, revert, or squash unrelated
 work while fixing documentation/figures.
 
-A missing shared token/style is a contract/system issue, not permission for a local
-workaround: invoke the hard-stop rule and notify the user.
+A missing shared token/style/relationship/definition or any other material uncertainty
+not resolved by this contract and current evidence is not permission for a local
+workaround, assumption, or unauthorized contract exception. Invoke the appropriate
+hard stop and notify the user.
 
 ---
 
@@ -896,27 +1052,57 @@ For every canonical technical TikZ figure:
 
 1. Read the shared TikZ README, this contract, the shared figure system, the current
    figure sources, its figure-specific contract, and relevant implementation evidence.
-2. Build the current source before judging it.
-3. Render actual desktop/mobile PNG review images and inspect them.
-4. Use only relative positioning for figure objects.
-5. Use only existing canonical constants/styles/primitives.
-6. If a needed constant/style/primitive does not exist, stop the current turn and
-   report the missing shared-system item; do not invent a value.
-7. Keep desktop at fixed 160 mm and mobile at fixed 100 mm. Technical TikZ never uses
+2. If any material uncertainty remains unresolved after reading the authorities and
+   evidence, stop the turn and report it; never guess.
+3. Build the current source before judging it.
+4. Render actual desktop/mobile PNG review images and inspect them.
+5. Use only relative positioning for figure objects.
+6. Use only existing canonical constants/styles/primitives/relationships.
+7. If any needed definition or primitive does not exist, stop the current turn and
+   report the missing shared-system/contract item; no unauthorized violation or local
+   workaround is allowed.
+8. Keep desktop at fixed 160 mm and mobile at fixed 100 mm. Technical TikZ never uses
    dynamic canvas width.
-8. Do not scale down or shrink typography to make an oversized composition fit.
-9. Arrowheads must be part of their connector path; detached arrowheads are hard
-   prohibited.
-10. Lines/connectors must never cross boxes or labels.
-11. Labels must never hide lines, bends, arrowheads, borders, or other graphic
+9. Do not scale down or shrink typography to make an oversized composition fit.
+10. Keep figure layout resilient: shared-system parameter changes must propagate via
+    relative geometry/shared tokens; local compensation that restores old values is
+    prohibited.
+11. Treat each shared-system parameter change as a regression event for every affected
+    figure and re-run the complete rendered-PNG refinement loop before acceptance.
+12. Arrowheads must be part of their connector path; detached arrowheads are hard
+    prohibited.
+13. Lines/connectors must never cross boxes or labels.
+14. Labels must never hide lines, bends, arrowheads, borders, or other graphic
     structures.
-12. Connectors attach exactly to box borders and enter/leave orthogonally.
-13. Use canonical port distribution and Manhattan routing.
-14. Preserve canonical connector rhythm and exact centered-dogleg symmetry.
-15. Use canonical node/container/typography/palette semantics.
-16. Preserve desktop/mobile semantic equivalence.
-17. Report all findings in chat before each refinement edit.
-18. Refine → build → render PNG → inspect → repeat until every rule passes.
-19. When satisfied, report every applicable contract category, its compliance status,
-    the rendered evidence, and why the result is visually satisfactory.
-20. Only then stop/freeze the figure.
+15. Connectors attach exactly to box borders and enter/leave orthogonally.
+16. Use canonical port distribution and Manhattan routing.
+17. Preserve canonical connector rhythm and exact centered-dogleg symmetry.
+18. Use canonical node/container/typography/palette semantics.
+19. Preserve desktop/mobile semantic equivalence.
+20. Report all findings in chat before each refinement edit.
+21. Refine → build → render PNG → inspect → repeat until every rule passes.
+22. When satisfied, report every applicable contract category, its compliance status,
+    the rendered evidence, and why the result is visually satisfactory and free of
+    unresolved uncertainty.
+23. Only then stop/freeze the figure.
+
+---
+
+# 29. Non-negotiable source-alignment checklist for public text
+
+For every public landing-page text change or text review:
+
+1. identify every material technical claim, command, example, capability, limitation,
+   architecture statement, cross-project relationship, and availability/release claim;
+2. verify each against the appropriate current source/test/runtime/release evidence;
+3. do not treat an older README, proposal, diagram, schema, issue, or remembered behavior
+   as sufficient proof by itself;
+4. ensure prose, tables, captions, examples, commands, and figures agree with one
+   another;
+5. qualify claims only to the level actually proved by the evidence;
+6. if evidence conflicts, resolve the conflict or keep the affected public claim out
+   until its correct treatment is established;
+7. if any material uncertainty remains not covered by this contract or current
+   evidence, stop the turn and report it rather than guessing;
+8. do not declare the text publication-ready while any material technical statement is
+   stale, unsupported, broader than its evidence, contradictory, or unresolved.
