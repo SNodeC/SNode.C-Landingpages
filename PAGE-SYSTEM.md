@@ -195,9 +195,10 @@ missing canonical definition. Report exactly which canonical definition/token/st
 missing, explain why compliant work cannot continue without it, and stop the turn until
 the user decides whether the shared system/contract should be extended.
 
-The approximate millimetre values mentioned later for approval-space arrow rhythm are
-review metrics, not permission to insert raw literal offsets into figure source. If no
-shared source token produces the required rhythm, the hard-stop rule applies.
+Canonical physical dimensions defined later in this contract are not permission to
+insert raw literal offsets into figure source. Source positioning must use the shared
+system token or relationship that encodes the intended geometry. If no suitable token
+exists, the hard-stop rule applies.
 
 ## 3.3 No figure-local styling inventions
 
@@ -492,6 +493,13 @@ Canonical technical TikZ figures use fixed publication canvases:
 These widths are fixed publication canvases and hard composition limits, never scale
 factors and never optional targets.
 
+Canonical technical/vector layout geometry in this contract is specified in physical
+units, with **millimetres as the normative layout unit**. Pixel measurements of rendered
+technical figures are diagnostic only and never define source geometry, connector
+lengths, spacing, box geometry, routing, or any other technical/vector relationship.
+Raster pixel dimensions remain valid only for inherently raster assets and raster
+capture/export specifications.
+
 There is **no dynamically sized canvas mode for canonical technical TikZ figures**.
 
 A narrower technical composition is placed on the canonical canvas by the shared
@@ -654,22 +662,24 @@ the canonical label spacing/styles.
 
 # 15. Canonical connector rhythm
 
-For the canonical review raster used during figure approval, an ordinary straight
-process/data/control connector run has a **75 px** edge-to-edge shaft length. At the
-current desktop review scale this is approximately **8.3 mm** in source geometry.
+An ordinary straight process/data/control connector run has a canonical
+**8.3 mm edge-to-edge primary-axis span** between the connected box borders.
+This physical source-space value is authoritative and independent of rasterization or
+review-image resolution.
 
 - Recurring ordinary straight arrows preserve this canonical run unless a genuine
   semantic/geometric constraint requires another shared spacing token.
 - Do not shorten arrows merely to reduce figure height or width; recompose the layout.
-- Desktop and mobile are independently art-directed, but final review renders preserve
-  the same canonical visual arrow rhythm.
+- Desktop and mobile are independently art-directed, but preserve the same canonical
+  physical connector rhythm.
 - Observation/association/dependency routes may be longer when their real destination
   requires it, but still use canonical connector grammar and deliberate spacing.
 
-The 8.3 mm approximation is a review metric. It is not permission to write an arbitrary
-`8.3mm` figure-local offset. Source positioning must use the shared system token that
-encodes the intended relationship. If no suitable token exists, invoke the mandatory
-hard stop.
+The canonical 8.3 mm span must be encoded once by the shared figure system and consumed
+through that shared token or relationship. Figure sources must not write an arbitrary
+`8.3mm` local offset. Pixel measurements in review PNGs are derived diagnostics only;
+changing rasterization resolution must never change the required source geometry. If no
+suitable shared token exists, invoke the mandatory hard stop.
 
 ## 15.1 Canonical bent-arrow primary-axis span
 
@@ -678,12 +688,16 @@ primary-axis span as an ordinary straight arrow. Bending a connector must not in
 or reduce the row/column separation between source and destination.
 
 For a normal vertically progressing `|-|` connector, the source-border-to-destination-
-border height is 75 px, approximately 8.3 mm at the current approval geometry. Its two
-vertical outer legs are exactly equal: 37.5 px each, approximately 4.15 mm each.
+border height is the canonical connector span. Its two vertical outer legs are exactly
+equal, and **each leg is calculated as one half of the canonical connector span**.
 
 For a normal horizontally progressing `-|-` connector, the total horizontal span is
-likewise 75 px / approximately 8.3 mm and the two horizontal outer legs are exactly
-equal at 37.5 px / approximately 4.15 mm each.
+likewise the canonical connector span. Its two horizontal outer legs are exactly equal,
+and **each leg is calculated as one half of the canonical connector span**.
+
+The half-span is derived from the one canonical connector-span token. It must not be
+stored, repeated, or hard-coded as an independent physical value in the contract,
+shared system, or figure sources.
 
 The perpendicular middle segment may be as long as required by the real offset; it does
 not change the canonical primary-axis span.
@@ -691,8 +705,8 @@ not change the canonical primary-axis span.
 Do not add extra height/width merely because a connector bends. Recompose nodes instead.
 
 A genuine semantic bypass such as a long observation/association/dependency route may
-span multiple layout levels and is not forced into the adjacent-level 75 px span, but it
-still obeys exact centered-dogleg symmetry where applicable.
+span multiple layout levels and is not forced into the adjacent-level canonical span,
+but it still obeys exact centered-dogleg symmetry where applicable.
 
 ## 15.2 Hard centered-dogleg symmetry
 
@@ -704,8 +718,9 @@ two parallel outer legs **must have exactly equal length**.
 - `-|-`: horizontal → vertical → horizontal; first and final horizontal legs are
   exactly equal, so the vertical segment is centered between endpoint columns.
 
-For ordinary adjacent-level connectors this exact symmetry rule and the 75 px primary-
-axis-span rule apply together.
+For ordinary adjacent-level connectors this exact symmetry rule and the canonical
+8.3 mm primary-axis-span rule apply together. Each outer leg is derived as one half of
+that shared span; no separate half-span constant is authoritative.
 
 This is an exact geometry requirement, not an approximate aesthetic preference. An
 off-center three-segment dogleg fails the contract even when technically connected and
