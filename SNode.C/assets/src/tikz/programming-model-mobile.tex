@@ -26,18 +26,13 @@
 \draw[mqtt flow] (clientfactory.south) -- node[mqtt edge label left] {returns new} (clientctx.north);
 
 \node[mqtt control,below=\MQSectionToControlGap of clientctx,mqtt node extra wide] (loop)
-  {\textbf{Shared event loop --- \texttt{start()}}\\both flows use caller-thread\\readiness, timers and callbacks};
-\draw[mqtt association] (clientctx.south) -- (loop.north);
-\path (serverctx.east) ++(\MQHorizontalGapTight,0) coordinate (sharedrailtop);
-\path (sharedrailtop |- loop.east) coordinate (sharedrailbottom);
-\draw[mqtt association] (serverctx.east) -- (sharedrailtop)
-  -- node[mqtt edge label right] {shared dispatch} (sharedrailbottom) -- (loop.east);
+  {\textbf{Shared event loop --- \texttt{start()}}\\server and client callbacks\\run on the caller thread};
 
 \path (servertitle.north) ++(0,\MQGroupPad) coordinate (outertop);
 \path (server.west) ++(-\MQGroupPad,0) coordinate (outerleft);
-\path (sharedrailtop) ++(\MQGroupPad,0) coordinate (outerright);
+\path (client.east) ++(\MQGroupPad,0) coordinate (outerright);
 \begin{scope}[on background layer]
-  \node[mqtt figure frame,fit=(outertop)(outerleft)(outerright)(servertitle)(server)(serverconn)(serverfactory)(serverctx)(clienttitle)(client)(clientconn)(clientfactory)(clientctx)(loop)(sharedrailtop)(sharedrailbottom)] {};
+  \node[mqtt figure frame,fit=(outertop)(outerleft)(outerright)(servertitle)(server)(serverconn)(serverfactory)(serverctx)(clienttitle)(client)(clientconn)(clientfactory)(clientctx)(loop)] {};
   \node[mqtt group,fit=(servertitle)(server)(serverconn)(serverfactory)(serverctx)] (servergroup) {};
   \node[mqtt group,fit=(clienttitle)(client)(clientconn)(clientfactory)(clientctx)] (clientgroup) {};
 \end{scope}
