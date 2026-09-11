@@ -7,9 +7,9 @@
 
 \node[mqtt config] (api)
   {1\\API and\\defaults\\lowest};
-\node[mqtt config,right=\MQHorizontalGapTight of api] (file)
+\node[mqtt config,right=\MQRhythmCompact of api] (file)
   {2\\config\\file\\middle};
-\node[mqtt config,right=\MQHorizontalGapTight of file] (cli)
+\node[mqtt config,right=\MQRhythmCompact of file] (cli)
   {3\\command\\line\\highest};
 \node[mqtt control,below=\MQConnectorSpan of file,mqtt node wide] (resolve) {value resolution};
 \node[mqtt state,below=\MQConnectorSpan of resolve,mqtt node wide] (effective) {effective configuration};
