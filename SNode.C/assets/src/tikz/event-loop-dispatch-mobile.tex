@@ -6,7 +6,7 @@
 \begin{tikzpicture}[mqtt mobile]
 
 \node[mqtt process,minimum width=38mm] (descriptors) {descriptor readiness};
-\node[mqtt process,right=\MQGapS of descriptors,minimum width=38mm] (timers) {timer activity};
+\node[mqtt process,right=\MQHorizontalGapTight of descriptors,minimum width=38mm] (timers) {timer activity};
 \path (descriptors.north) -- (timers.north) coordinate[midway] (sourcestop);
 \path (descriptors.south) -- (timers.south) coordinate[midway] (sourcesbottom);
 
@@ -24,20 +24,20 @@
 \draw[mqtt association] (backend.south) -- (start.north);
 \draw[mqtt flow] (start.south) -- (wait.north);
 
-\path \MQPortSouth{wait}{.32} coordinate (wait-s32);
-\path \MQPortSouth{wait}{.68} coordinate (wait-s68);
-\path \MQPortNorth{queue}{.32} coordinate (queue-n32);
-\path \MQPortNorth{queue}{.68} coordinate (queue-n68);
+\path \MQPortSouth{wait}{.333} coordinate (wait-s333);
+\path \MQPortSouth{wait}{.667} coordinate (wait-s667);
+\path \MQPortNorth{queue}{.333} coordinate (queue-n333);
+\path \MQPortNorth{queue}{.667} coordinate (queue-n667);
 
-\path (wait-s32) -- (descriptors.north) coordinate[midway] (waitdesc-mid);
-\draw[mqtt control flow] (wait-s32) -- (wait-s32 |- waitdesc-mid) -- (descriptors.north |- waitdesc-mid) -- (descriptors.north);
-\path (wait-s68) -- (timers.north) coordinate[midway] (waittimer-mid);
-\draw[mqtt control flow] (wait-s68) -- (wait-s68 |- waittimer-mid) -- (timers.north |- waittimer-mid) -- (timers.north);
+\path (wait-s333) -- (descriptors.north) coordinate[midway] (waitdesc-mid);
+\draw[mqtt control flow] (wait-s333) -- (wait-s333 |- waitdesc-mid) -- (descriptors.north |- waitdesc-mid) -- (descriptors.north);
+\path (wait-s667) -- (timers.north) coordinate[midway] (waittimer-mid);
+\draw[mqtt control flow] (wait-s667) -- (wait-s667 |- waittimer-mid) -- (timers.north |- waittimer-mid) -- (timers.north);
 
-\path (descriptors.south) -- (queue-n32) coordinate[midway] (descqueue-mid);
-\draw[mqtt control flow] (descriptors.south) -- (descriptors.south |- descqueue-mid) -- (queue-n32 |- descqueue-mid) -- (queue-n32);
-\path (timers.south) -- (queue-n68) coordinate[midway] (timerqueue-mid);
-\draw[mqtt control flow] (timers.south) -- (timers.south |- timerqueue-mid) -- (queue-n68 |- timerqueue-mid) -- (queue-n68);
+\path (descriptors.south) -- (queue-n333) coordinate[midway] (descqueue-mid);
+\draw[mqtt control flow] (descriptors.south) -- (descriptors.south |- descqueue-mid) -- (queue-n333 |- descqueue-mid) -- (queue-n333);
+\path (timers.south) -- (queue-n667) coordinate[midway] (timerqueue-mid);
+\draw[mqtt control flow] (timers.south) -- (timers.south |- timerqueue-mid) -- (queue-n667 |- timerqueue-mid) -- (queue-n667);
 
 \draw[mqtt control flow] (queue.south) -- (dispatch.north);
 \draw[mqtt control flow] (dispatch.south) -- (callbacks.north);
@@ -46,9 +46,13 @@
 \path (wait.east) ++(\MQLaneGap,0) coordinate (repeatrail);
 \path (repeatrail |- next.east) coordinate (repeatbottom);
 \path (repeatrail |- wait.east) coordinate (repeattop);
-\draw[mqtt control flow] (next.east) -- (repeatbottom) -- (repeattop) -- (wait.east);
-\path (repeatrail |- dispatch.south) -- (repeatrail |- callbacks.north) coordinate[midway] (repeatlabelanchor);
-\node[mqtt edge label,left=\MQLabelGap of repeatlabelanchor] (repeatlabel) {repeat};
+\path (repeatrail |- callbacks.north) coordinate (repeatlabelbottom);
+\path (repeatrail |- dispatch.south) coordinate (repeatlabeltop);
+\draw[mqtt control flow] (next.east) -- (repeatbottom)
+  -- (repeatlabelbottom)
+  -- node[mqtt edge label left] (repeatlabel) {repeat} (repeatlabeltop)
+  -- (repeattop)
+  -- (wait.east);
 
 \begin{scope}[on background layer]
   \node[mqtt figure frame,fit=(backend)(start)(wait)(descriptors)(timers)(queue)(dispatch)(callbacks)(next)(repeatrail)(repeatlabel)] {};
