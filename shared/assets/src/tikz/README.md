@@ -16,6 +16,10 @@ New technical figures should load only:
 \input{landingpages-figure-system.tex}
 ```
 
+Before fixing both,
+* landingpages-figure-system.tex and
+* FIGURE-contract.md must be read in detail and are the only source of truth.
+
 The repository-level CMake build searches a figure's own source directory first
 and this shared directory second. This supports a staged migration:
 
