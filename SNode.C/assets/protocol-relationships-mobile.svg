@@ -559,6 +559,6 @@
 <use x="170.15541" y="479.339384" xlink:href="#bf"/>
 </g>
 <path transform="matrix(.998 0 0 -.998 85.3 368)" d="m-0.00118-16.8v-11.9h14.8v-11.9" fill="none" stroke="#849298" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" stroke-width=".578"/>
-<path transform="matrix(.998 0 0 -.998 85.3 368)" d="m62 28.9-2.86-69.6" fill="none" stroke="#849298" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" stroke-width=".578"/>
+<path transform="matrix(.998 0 0 -.998 85.3 368)" d="m62 28.9v-34.8h-2.86v-34.8" fill="none" stroke="#849298" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" stroke-width=".578"/>
 <path transform="matrix(.998 0 0 -.998 85.3 368)" d="m118-17.5v-11.6h-14.8v-11.6" fill="none" stroke="#849298" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" stroke-width=".578"/>
 </svg>
