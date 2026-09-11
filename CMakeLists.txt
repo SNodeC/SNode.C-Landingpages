@@ -88,21 +88,29 @@ if abs(source_width_pt - target_width_pt) > width_tolerance_pt:
     )
 
 svg = svg_path.read_text(encoding="utf-8")
-match = re.search(
-    r'<svg width="[^"]+" height="[^"]+" viewBox="0 0 ([0-9.]+) ([0-9.]+)"',
-    svg,
-)
-if match is None:
-    raise SystemExit(f"Unable to locate canonical SVG root viewport in {svg_path}")
+root_match = re.search(r'<svg\b[^>]*>', svg)
+if root_match is None:
+    raise SystemExit(f"Unable to locate SVG root element in {svg_path}")
 
-viewbox_width = float(match.group(1))
-viewbox_height = float(match.group(2))
+root = root_match.group(0)
+viewbox_match = re.search(
+    r'\bviewBox="0 0 ([0-9.]+) ([0-9.]+)"',
+    root,
+)
+if viewbox_match is None:
+    raise SystemExit(f"Unable to locate canonical SVG viewBox in {svg_path}")
+
+viewbox_width = float(viewbox_match.group(1))
+viewbox_height = float(viewbox_match.group(2))
 height_mm = float(canvas_width_mm) * viewbox_height / viewbox_width
 
-root = match.group(0)
-root = re.sub(r'width="[^"]+"', f'width="{canvas_width_mm}mm"', root, count=1)
-root = re.sub(r'height="[^"]+"', f'height="{height_mm:.6f}mm"', root, count=1)
-svg = svg[:match.start()] + root + svg[match.end():]
+# scour versions differ in whether --enable-viewboxing retains width/height and
+# in root-attribute ordering. Remove any existing physical viewport and append the
+# canonical one without depending on either behavior.
+root = re.sub(r'\s+width="[^"]*"', '', root)
+root = re.sub(r'\s+height="[^"]*"', '', root)
+root = root[:-1] + f' width="{canvas_width_mm}mm" height="{height_mm:.6f}mm">'
+svg = svg[:root_match.start()] + root + svg[root_match.end():]
 svg_path.write_text(svg, encoding="utf-8")
 ]=])
 
