@@ -575,7 +575,18 @@ other nontechnical/non-TikZ artwork are not forced onto the 160 mm/100 mm techni
 canvas.
 
 This does **not** create permission for arbitrary or casually “dynamic” dimensions.
-Their dimensions/aspect-ratio rule exists for an asset and a new arbitrary
+Their dimensions/aspect ratios must come from a prescribed asset class, approved
+composition, or qualified source capture.
+
+Practical page-system defaults remain:
+
+- screenshots and hero composites: about 1600×900 or 1600×800 where suitable;
+- social preview: 1280×640 PNG;
+- general/non-TikZ wide vector artwork: a view box appropriate to its approved GitHub
+  composition;
+- all content images: readable at GitHub content width and on mobile.
+
+If no prescribed dimension/aspect-ratio rule exists for an asset and a new arbitrary
 value would be required, do not invent one; invoke the hard stop from §1.1.
 
 SVG is preferred for diagrams. PNG is preferred for sharp UI/terminal/runtime captures
