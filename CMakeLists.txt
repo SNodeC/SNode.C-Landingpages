@@ -38,6 +38,38 @@ project(SNodeCLandingpagesFigures NONE)
 find_program(PDFLATEX_EXECUTABLE NAMES pdflatex REQUIRED)
 find_program(PDFTOCAIRO_EXECUTABLE NAMES pdftocairo REQUIRED)
 find_program(SCOUR_EXECUTABLE NAMES scour REQUIRED)
+find_package(Python3 COMPONENTS Interpreter REQUIRED)
+
+# Cairo serializes SVG viewport dimensions as integer PostScript points. Canonical
+# technical figures, however, have exact physical publication widths (160 mm desktop,
+# 100 mm mobile). Normalize only the root SVG physical viewport after scour while
+# preserving the generated viewBox coordinate system and therefore all vector geometry.
+set(TIKZ_SVG_CANVAS_NORMALIZER "${CMAKE_BINARY_DIR}/normalize-tikz-svg-canvas.py")
+file(WRITE "${TIKZ_SVG_CANVAS_NORMALIZER}" [=[
+from pathlib import Path
+import re
+import sys
+
+svg_path = Path(sys.argv[1])
+canvas_width_mm = sys.argv[2]
+svg = svg_path.read_text(encoding="utf-8")
+match = re.search(
+    r'<svg width="[^"]+" height="[^"]+" viewBox="0 0 ([0-9.]+) ([0-9.]+)"',
+    svg,
+)
+if match is None:
+    raise SystemExit(f"Unable to locate canonical SVG root viewport in {svg_path}")
+
+viewbox_width = float(match.group(1))
+viewbox_height = float(match.group(2))
+height_mm = float(canvas_width_mm) * viewbox_height / viewbox_width
+
+root = match.group(0)
+root = re.sub(r'width="[^"]+"', f'width="{canvas_width_mm}mm"', root, count=1)
+root = re.sub(r'height="[^"]+"', f'height="{height_mm:.6f}mm"', root, count=1)
+svg = svg[:match.start()] + root + svg[match.end():]
+svg_path.write_text(svg, encoding="utf-8")
+]=])
 
 set(TIKZ_SHARED_SYSTEM_DIR "${CMAKE_SOURCE_DIR}/shared/assets/src/tikz")
 file(
@@ -109,6 +141,12 @@ foreach(TIKZ_SOURCE_REL IN LISTS TIKZ_TEX_SOURCES)
         "${TIKZ_WORK_DIR}/${TIKZ_STEM}-raw.svg")
     set(TIKZ_TARGET "tikz_${TIKZ_WORK_ID}")
 
+    if(TIKZ_STEM MATCHES "-mobile$")
+        set(TIKZ_PUBLICATION_WIDTH_MM "100")
+    else()
+        set(TIKZ_PUBLICATION_WIDTH_MM "160")
+    endif()
+
     file(
         GLOB TIKZ_LOCAL_SYSTEM_DEPENDENCIES
         CONFIGURE_DEPENDS
@@ -151,6 +189,11 @@ foreach(TIKZ_SOURCE_REL IN LISTS TIKZ_TEX_SOURCES)
             --indent=none
             --set-precision=3
             --set-c-precision=3
+        COMMAND
+            "${Python3_EXECUTABLE}"
+            "${TIKZ_SVG_CANVAS_NORMALIZER}"
+            "${TIKZ_OUTPUT}"
+            "${TIKZ_PUBLICATION_WIDTH_MM}"
         BYPRODUCTS
             "${TIKZ_PDF}"
             "${TIKZ_RAW_SVG}"
