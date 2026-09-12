@@ -55,6 +55,8 @@
 \path (reconnectnorailx |- reconnectpolicy.east) coordinate (reconnectnorailtop);
 \path (reconnectnorailtop |- reconnectend.east) coordinate (reconnectnorailbottom);
 \path (interrupted.west) ++(-\MQHorizontalGapTight,0) coordinate (reconnectbalanceleft);
+\path (connected.center |- retrytitle.north) coordinate (reconnectgrouptop);
+\path (connected.center |- retryend.south) coordinate (reconnectgroupbottom);
 
 \draw[mqtt control flow] (connected.south) -- (interrupted.north);
 \draw[mqtt control flow] (interrupted.south) -- (reconnectpolicy.north);
@@ -65,7 +67,7 @@
   -- (reconnectend.east);
 \draw[mqtt control flow] (delay.south) -- (newcycle.north);
 
-\node[mqtt group,fit=(reconnecttitle)(connected)(interrupted)(reconnectpolicy)(delay)(newcycle)(reconnectend)(reconnectnorailtop)(reconnectnorailbottom)(reconnectbalanceleft)] (reconnectgroup) {};
+\node[mqtt group,fit=(reconnecttitle)(connected)(interrupted)(reconnectpolicy)(delay)(newcycle)(reconnectend)(reconnectnorailtop)(reconnectnorailbottom)(reconnectbalanceleft)(reconnectgrouptop)(reconnectgroupbottom)] (reconnectgroup) {};
 \node[mqtt layout fit,fit=(retrygroup)(reconnectgroup)] (lanesfit) {};
 \node[mqtt note,mqtt text wide,below=\MQSectionToControlGap of lanesfit] (relationship)
   {Retry applies while establishing listen/connect. Reconnect is client policy after an established connection is lost. Reconnect starts a new connect cycle; establishment failures there can then use retry policy.};
