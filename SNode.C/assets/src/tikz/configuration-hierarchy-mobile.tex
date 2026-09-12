@@ -5,9 +5,9 @@
 \begin{document}
 \begin{tikzpicture}[mqtt mobile]
 
-\node[mqtt config,mqtt node extra wide] (instancea) {named endpoint\\instance A};
+\node[mqtt config,mqtt node extra wide] (instancea) {named endpoint instance A};
 \node[mqtt config,above=\MQGapS of instancea,mqtt node extra wide] (instanceb)
-  {named endpoint\\instance B};
+  {named endpoint instance B};
 \node[mqtt application,above=\MQGapS of instanceb,mqtt node extra wide] (app)
   {application-owned \texttt{SubCommand}};
 \node[mqtt section title,above=\MQGapS of app] (namedtitle) {Named root children};
@@ -22,7 +22,7 @@
 \node[mqtt config,below=\MQGapS of remote,mqtt node extra wide] (connection) {\texttt{connection}};
 \node[mqtt config,below=\MQGapS of connection,mqtt node extra wide] (socket) {\texttt{socket}};
 \node[mqtt config,below=\MQGapS of socket,mqtt node extra wide] (tls)
-  {\texttt{tls}\\when selected};
+  {\texttt{tls} when selected};
 \node[mqtt layout fit,fit=(sectionstitle)(local)(remote)(connection)(socket)(tls)] (sectionsfit) {};
 
 \node[mqtt note,below=\MQGapXL of sectionsfit,mqtt node extra wide] (dependent)
