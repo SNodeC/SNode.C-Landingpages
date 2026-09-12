@@ -9,7 +9,7 @@
 \node[mqtt section title,above=\MQGapS of attempt] (retrytitle) {Retry};
 \node[mqtt error,below=\MQConnectorSpan of attempt,mqtt node compact] (failed)
   {establishment fails};
-\node[mqtt decision,below=\MQConnectorSpan of failed] (retrypolicy) {retry allowed?};
+\node[mqtt decision,mqtt node compact,below=\MQConnectorSpan of failed] (retrypolicy) {retry allowed?};
 \node[mqtt process,below=\MQConnectorSpan of retrypolicy,mqtt node compact] (backoff)
   {wait / backoff};
 \node[mqtt process,below=\MQConnectorSpan of backoff,mqtt node compact] (newattempt)
@@ -41,7 +41,7 @@
 \node[mqtt section title,above=\MQGapS of connected] (reconnecttitle) {Reconnect};
 \node[mqtt error,below=\MQConnectorSpan of connected,mqtt node compact] (interrupted)
   {connection interrupted};
-\node[mqtt decision,below=\MQConnectorSpan of interrupted] (reconnectpolicy)
+\node[mqtt decision,mqtt node compact,below=\MQConnectorSpan of interrupted] (reconnectpolicy)
   {reconnect enabled?};
 \node[mqtt process,below=\MQConnectorSpan of reconnectpolicy,mqtt node compact] (delay)
   {reconnect delay};
