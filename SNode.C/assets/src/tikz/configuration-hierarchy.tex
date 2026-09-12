@@ -9,13 +9,13 @@
 
 \node[mqtt section title,below=\MQSectionSeparation of root] (namedtitle)
   {Named children of \texttt{ConfigRoot}};
-\node[mqtt application,below=\MQGapS of namedtitle,mqtt node wide] (app)
-  {application-owned \texttt{SubCommand}};
-\node[mqtt config,below=\MQGapS of app,mqtt node wide] (instanceb)
-  {named endpoint instance B};
-\node[mqtt config,below=\MQGapS of instanceb,mqtt node wide] (instancea)
+\node[mqtt config,below=\MQGapS of namedtitle,mqtt node compact] (instancea)
   {named endpoint instance A};
-\node[mqtt layout fit,fit=(namedtitle)(app)(instanceb)(instancea)] (childrenfit) {};
+\node[mqtt application,left=\MQHorizontalGapTight of instancea,mqtt node compact] (app)
+  {application-owned \texttt{SubCommand}};
+\node[mqtt config,right=\MQHorizontalGapTight of instancea,mqtt node compact] (instanceb)
+  {named endpoint instance B};
+\node[mqtt layout fit,fit=(namedtitle)(app)(instancea)(instanceb)] (childrenfit) {};
 
 \node[mqtt section title,below=\MQSectionSeparation of childrenfit,anchor=north] (sectionstitle)
   {Instance A sections};
@@ -35,7 +35,7 @@
 \node[mqtt note,below=\MQGapM of dependent,mqtt node hero] (anonymous)
   {Anonymous endpoint instance: configurable through the C++ API,\\but not a named \texttt{ConfigRoot} child and therefore not addressable\\by instance name from CLI or configuration file.};
 
-\node[mqtt group,fit=(namedtitle)(app)(instanceb)(instancea)] (children) {};
+\node[mqtt group,fit=(namedtitle)(app)(instancea)(instanceb)] (children) {};
 \node[mqtt group,fit=(sectionstitle)(remote)(local)(connection)(socket)(tls)] (sections) {};
 \begin{scope}[on background layer]
   \node[mqtt figure frame,fit=(root)(children)(sections)(dependent)(anonymous)] {};
