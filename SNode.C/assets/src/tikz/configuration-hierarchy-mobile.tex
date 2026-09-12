@@ -17,14 +17,11 @@
 
 \node[mqtt section title,below=\MQSectionSeparation of childrenfit,anchor=north] (sectionstitle)
   {Instance A sections};
-\path (instancea.center |- sectionstitle.south) coordinate (localaxis);
-\path (instanceb.center |- sectionstitle.south) coordinate (remoteaxis);
-\node[mqtt config,below=\MQGapS of localaxis,mqtt node compact] (local) {\texttt{local}};
-\node[mqtt config,below=\MQGapS of remoteaxis,mqtt node compact] (remote) {\texttt{remote}};
-\node[mqtt config,below=\MQGapS of local,mqtt node compact] (connection) {\texttt{connection}};
-\node[mqtt config,below=\MQGapS of remote,mqtt node compact] (socket) {\texttt{socket}};
-\path (connection.south) -- (socket.south) coordinate[midway] (secondbottom);
-\node[mqtt config,below=\MQGapS of secondbottom,mqtt node compact] (tls)
+\node[mqtt config,below=\MQGapS of sectionstitle,mqtt node extra wide] (local) {\texttt{local}};
+\node[mqtt config,below=\MQGapS of local,mqtt node extra wide] (remote) {\texttt{remote}};
+\node[mqtt config,below=\MQGapS of remote,mqtt node extra wide] (connection) {\texttt{connection}};
+\node[mqtt config,below=\MQGapS of connection,mqtt node extra wide] (socket) {\texttt{socket}};
+\node[mqtt config,below=\MQGapS of socket,mqtt node extra wide] (tls)
   {\texttt{tls}\\when selected};
 \node[mqtt layout fit,fit=(sectionstitle)(local)(remote)(connection)(socket)(tls)] (sectionsfit) {};
 
