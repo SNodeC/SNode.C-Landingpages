@@ -10,7 +10,7 @@
   {listen / connect attempt};
 \node[mqtt error,below=\MQConnectorSpan of attempt,mqtt node wide] (failed)
   {establishment fails};
-\node[mqtt decision,below=\MQConnectorSpan of failed] (retrypolicy) {retry allowed?};
+\node[mqtt decision,below=\MQConnectorSpan of failed] (retrypolicy) {retry?};
 \node[mqtt process,below=\MQConnectorSpan of retrypolicy,mqtt node wide] (backoff)
   {wait / backoff};
 \node[mqtt process,below=\MQConnectorSpan of backoff,mqtt node wide] (newattempt)
@@ -44,7 +44,7 @@
 \node[mqtt error,below=\MQConnectorSpan of connected,mqtt node wide] (interrupted)
   {connection interrupted};
 \node[mqtt decision,below=\MQConnectorSpan of interrupted] (reconnectpolicy)
-  {reconnect enabled?};
+  {reconnect?};
 \node[mqtt process,below=\MQConnectorSpan of reconnectpolicy,mqtt node wide] (delay)
   {reconnect delay};
 \node[mqtt process,below=\MQConnectorSpan of delay,mqtt node wide] (newcycle)
