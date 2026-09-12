@@ -35,10 +35,10 @@
 \node[mqtt note,below=\MQGapM of dependent,mqtt node hero] (anonymous)
   {Anonymous endpoint instance: configurable through the C++ API,\\but not a named \texttt{ConfigRoot} child and therefore not addressable\\by instance name from CLI or configuration file.};
 
+\node[mqtt group,fit=(namedtitle)(app)(instancea)(instanceb)] (children) {};
+\node[mqtt group,fit=(sectionstitle)(remote)(local)(connection)(socket)(tls)] (sections) {};
 \begin{scope}[on background layer]
-  \node[mqtt figure frame,fit=(root)(childrenfit)(sectionsfit)(dependent)(anonymous)] {};
-  \node[mqtt group,fit=(namedtitle)(app)(instancea)(instanceb)] (children) {};
-  \node[mqtt group,fit=(sectionstitle)(remote)(local)(connection)(socket)(tls)] (sections) {};
+  \node[mqtt figure frame,fit=(root)(children)(sections)(dependent)(anonymous)] {};
 \end{scope}
 
 \draw[mqtt contains] (root.south) -- node[mqtt edge label right] {contains} (children.north);
