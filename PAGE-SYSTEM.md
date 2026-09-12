@@ -1571,3 +1571,150 @@ Every figure checklist in §28 is incomplete unless this section also passes. Ev
 family completion in §17/§18 is incomplete unless the three independent proof classes in
 §30.1, the full-size/family regression in §30.4, the second-pass review in §30.5, and the
 visible-progress protocol in §30.6 have all been satisfied.
+
+---
+
+# 31. Mandatory object-level visual acceptance tests
+
+This section is global and applies to every canonical technical figure. It makes four
+previously implicit review obligations explicit and independently auditable. These tests
+are cumulative with §§10, 12, 14, 17, 18, 28, and 30 and never replace broader visual
+review.
+
+## 31.1 Hard peer-stage alignment test
+
+When two or more lanes, groups, pipelines, state machines, lifecycles, or other
+structures are presented as semantic peers, review must not stop at comparing their
+outer containers.
+
+For every peer structure, identify corresponding semantic stages in the rendered figure
+and compare them directly. Where stages have corresponding semantic roles, their
+rendered horizontal or vertical guides must be deliberately coordinated as appropriate
+to the composition. This includes, where applicable:
+
+- section/lane titles;
+- entry or start states;
+- corresponding normal states;
+- corresponding failure/interruption states;
+- corresponding decisions;
+- corresponding wait/control stages;
+- corresponding next-attempt/next-cycle stages;
+- corresponding termination states.
+
+Different text heights, wrapping, or content-driven node dimensions do not by themselves
+justify visible peer-stage drift. If corresponding stages are deliberately not aligned,
+the conformance report must state the concrete semantic or unavoidable geometric reason.
+“Content-driven”, “different content”, or “the fit node is correct” is not sufficient
+evidence.
+
+Do not manufacture alignment with figure-local shifts or literal geometry. Recompose
+with existing canonical relationships. If the shared system lacks the relationship
+needed for compliant peer alignment, invoke the mandatory hard stop.
+
+## 31.2 Hard primary-skeleton optical-centering test
+
+Every semantic lane, group, or container receives an independent optical-centering test.
+For that test identify:
+
+1. the **primary semantic skeleton** — the main state chain, peer matrix, pipeline, or
+   other principal technical structure;
+2. **secondary geometry** — return rails, bypasses, side branches, terminal branches,
+   labels, notes, and other supporting geometry.
+
+Unless semantics require an offset, the primary semantic skeleton must appear visually
+centered and balanced inside the final padded rendered container. Mathematical
+bounding-box centering, a correct TikZ `fit`, symmetric helper coordinates, or a balanced
+complete bounding box do not prove optical centering.
+
+Secondary geometry must not pull the fitted container so far to one side that the main
+semantic skeleton appears visibly off-center. Inspect the actual negative space around
+the primary skeleton in the rendered PNG, not merely the numerical center of the complete
+TikZ geometry.
+
+Do not introduce a figure-local shift to repair centering. Recompose with existing
+canonical relationships. If the shared system lacks the relationship needed for a
+compliant composition, invoke the mandatory hard stop.
+
+## 31.3 Mandatory explicit-line-break audit
+
+Before every PASS, inspect every explicit manual line break in visible figure text,
+including `\\` and any equivalent manually forced multi-line construction.
+
+For every explicit break, ask whether the same text fits harmonically on one line using
+the canonical node class, canonical typography, and canonical canvas. If it does, the
+forced break is a contract violation.
+
+A manual line break must not be retained merely to:
+
+- make a node artificially taller;
+- equalize heights with another node;
+- manufacture visual symmetry;
+- compensate for surrounding layout;
+- shorten a connector;
+- preserve a previous composition.
+
+Desktop and mobile are audited independently. A break that is necessary in one
+responsive variant is not automatically justified in the other.
+
+The conformance report must explicitly state that all manual line breaks were audited;
+a generic “typography ✓”, “wrapping ✓”, or readability row is insufficient.
+
+## 31.4 Hard full-label-footprint and endpoint-clearance audit
+
+Every edge, branch, route, topic, observation, or other connector label must be reviewed
+using its **complete rendered footprint**, including text, fill/background, inner
+padding, and border where present. Reviewing only the text glyphs, anchor point, or
+nominal connector segment is insufficient.
+
+The complete rendered label footprint must not:
+
+- cover or erase any node border;
+- cover or erase any semantic-container or frame border;
+- hide a connector segment or bend;
+- hide an arrowhead;
+- visually sever the connector it describes;
+- touch a neighboring box;
+- collide with another label or annotation.
+
+For a label placed on or near a terminal connector segment, explicitly inspect its
+clearance from the source/destination box border and arrowhead.
+
+A connector segment is not automatically long enough for a label merely because TikZ
+can place the label there. If the rendered label footprint does not fit cleanly in the
+available segment, move the label to another semantically correct segment using an
+existing canonical placement relationship or recompose the connector/layout.
+
+Do not repair a collision with a manual shift, local font reduction, local padding
+change, or other figure-local compensation. If no canonical placement relationship can
+express a compliant result, invoke the mandatory hard stop.
+
+## 31.5 Mandatory explicit conformance-table rows
+
+The following checks are mandatory explicit rows in **every first-pass conformance table
+and every independent second-pass conformance table**:
+
+1. **Peer-stage alignment** — identify every peer lane/group, identify corresponding
+   semantic stages, and state whether their rendered guides/alignment are correct.
+2. **Primary-skeleton optical centering** — identify the primary semantic skeleton of
+   every semantic lane/group, distinguish secondary geometry, and state whether the
+   skeleton is perceptually centered inside the final padded container.
+3. **Explicit line-break audit** — inspect every manually forced visible line break,
+   justify each retained break, and confirm that no phrase that fits harmonically on one
+   line is forced onto several lines.
+4. **Full label-footprint occlusion audit** — inspect every visible connector/branch/
+   edge label using its complete rendered footprint and confirm clearance from node
+   borders, container borders, connector shafts, bends, arrowheads, and neighboring
+   labels.
+
+These rows may be marked N/A only with a concrete reason. A broad row such as “peer
+balance”, “alignment”, “typography”, “label placement”, “looks centered”, or “human
+visual quality” does **not** satisfy these four object-level tests.
+
+Desktop and mobile are tested independently wherever their responsive compositions
+differ. The mandatory second pass from §30.5 must repeat all four tests from scratch; a
+✓ from the first pass must never be inherited.
+
+If later user inspection, a screenshot, a vector-bound review, or other current evidence
+reveals a failure in any of these tests, the prior figure PASS and every dependent family
+PASS are automatically invalid. Restart the affected figure at §30.6 step 1 and perform
+the complete review again.
