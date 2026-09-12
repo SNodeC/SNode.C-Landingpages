@@ -37,7 +37,7 @@
   -- node[mqtt edge label above] {repeat} (attempt.east);
 \node[mqtt layout fit,fit=(retrytitle)(attempt)(failed)(retrypolicy)(backoff)(newattempt)(retryend)(retrynorailtop)(retrynorailbottom)(repeatrailtop)(repeatrailbottom)] (retryfit) {};
 
-\node[mqtt success,right=\MQHorizontalMilestoneGap of attempt,mqtt node compact] (connected)
+\node[mqtt success,right=\MQSectionSeparation of attempt,mqtt node compact] (connected)
   {connection established};
 \node[mqtt section title,above=\MQGapS of connected] (reconnecttitle) {Reconnect};
 \node[mqtt error,below=\MQConnectorSpan of connected,mqtt node compact] (interrupted)
