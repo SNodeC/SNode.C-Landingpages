@@ -5,30 +5,42 @@
 \begin{document}
 \begin{tikzpicture}[mqtt desktop]
 
-\node[mqtt section title] (title) {Same established \texttt{SocketConnection}};
-\node[mqtt state,below=\MQConnectorSpan of title,mqtt node wide] (http)
+\node[mqtt state,mqtt node wide] (http)
   {HTTP context\\ACTIVE};
 \node[mqtt process,right=\MQConnectorSpan of http,mqtt node wide] (staged)
   {WebSocket replacement\\STAGED after Upgrade\\not active};
+\node[mqtt layout fit,fit=(http)(staged)] (toppair) {};
+\node[mqtt section title,above=\MQGapS of toppair] (title)
+  {Same established \texttt{SocketConnection}};
 \draw[mqtt handoff] (http.east) -- node[mqtt edge label above] {stage} (staged.west);
 
-\node[mqtt process,below=\MQConnectorSpan of http,mqtt node wide] (return)
+\node[mqtt process,below=\MQConnectorSpan of toppair,mqtt node wide] (return)
   {current HTTP read\\callback returns};
 \node[mqtt control,below=\MQConnectorSpan of return,mqtt node wide] (switch)
   {\texttt{detach(ContextSwitch)}\\select staged context\\\texttt{attach()}};
 \node[mqtt state,below=\MQConnectorSpan of switch,mqtt node wide] (websocket)
   {WebSocket context\\ACTIVE};
 
-\draw[mqtt control flow] (http.south) -- (return.north);
+\path (http.south) -- (return.north) coordinate[midway] (httpreturnmid);
+\draw[mqtt control flow] (http.south)
+  -- (http.south |- httpreturnmid)
+  -- (return.north |- httpreturnmid)
+  -- (return.north);
 \draw[mqtt control flow] (return.south) -- (switch.north);
-\draw[mqtt dependency] (staged.south) |- (switch.east);
+\path (staged.east) ++(\MQHorizontalGapTight,0) coordinate (stagedrailx);
+\path (stagedrailx |- switch.east) coordinate (stagedrailbottom);
+\draw[mqtt dependency] (staged.east)
+  -- (stagedrailx)
+  -- (stagedrailbottom)
+  -- (switch.east);
 \draw[mqtt control flow] (switch.south) -- (websocket.north);
 
+\path (http.west) ++(-\MQHorizontalGapTight,0) coordinate (balanceleft);
 \node[mqtt note,below=\MQConnectorSpan of websocket,mqtt node wide] (note)
   {SSE/EventSource does not use context replacement.};
 
 % The semantic group is the persistent SocketConnection lifecycle boundary.
-\node[mqtt group,fit=(title)(http)(staged)(return)(switch)(websocket)] (connectiongroup) {};
+\node[mqtt group,fit=(title)(http)(staged)(return)(switch)(websocket)(balanceleft)(stagedrailx)(stagedrailbottom)] (connectiongroup) {};
 \begin{scope}[on background layer]
   \node[mqtt figure frame,fit=(connectiongroup)(note)] {};
 \end{scope}
