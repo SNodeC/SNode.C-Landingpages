@@ -69,10 +69,10 @@
 \node[mqtt note,mqtt text wide,below=\MQSectionToControlGap of lanesfit] (relationship)
   {Retry applies while establishing listen/connect. Reconnect is client policy after an established connection is lost. Reconnect starts a new connect cycle; establishment failures there can then use retry policy.};
 
+\node[mqtt group,fit=(retrytitle)(attempt)(failed)(retrypolicy)(backoff)(newattempt)(retryend)(retrynorailtop)(retrynorailbottom)(repeatrailtop)(repeatrailbottom)] (retrygroup) {};
+\node[mqtt group,fit=(reconnecttitle)(connected)(interrupted)(reconnectpolicy)(delay)(newcycle)(reconnectend)(reconnectnorailtop)(reconnectnorailbottom)] (reconnectgroup) {};
 \begin{scope}[on background layer]
-  \node[mqtt figure frame,fit=(lanesfit)(relationship)] {};
-  \node[mqtt group,fit=(retrytitle)(attempt)(failed)(retrypolicy)(backoff)(newattempt)(retryend)(retrynorailtop)(retrynorailbottom)(repeatrailtop)(repeatrailbottom)] (retrygroup) {};
-  \node[mqtt group,fit=(reconnecttitle)(connected)(interrupted)(reconnectpolicy)(delay)(newcycle)(reconnectend)(reconnectnorailtop)(reconnectnorailbottom)] (reconnectgroup) {};
+  \node[mqtt figure frame,fit=(retrygroup)(reconnectgroup)(relationship)] {};
 \end{scope}
 
 \end{tikzpicture}
