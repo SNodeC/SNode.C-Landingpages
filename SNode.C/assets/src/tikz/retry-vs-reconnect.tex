@@ -36,7 +36,9 @@
   -- (repeatrailtop)
   -- (attempt.east);
 
-\node[mqtt success,right=\MQSectionSeparation of attempt,mqtt node compact] (connected)
+\node[mqtt group,fit=(retrytitle)(attempt)(failed)(retrypolicy)(backoff)(newattempt)(retryend)(retrynorailtop)(retrynorailbottom)(repeatrailtop)(repeatrailbottom)] (retrygroup) {};
+\path (retrygroup.east |- attempt.center) coordinate (reconnectorigin);
+\node[mqtt success,right=\MQSectionSeparation of reconnectorigin,mqtt node compact] (connected)
   {connection established};
 \node[mqtt section title,above=\MQGapS of connected] (reconnecttitle) {Reconnect};
 \node[mqtt error,below=\MQConnectorSpan of connected,mqtt node compact] (interrupted)
@@ -63,7 +65,6 @@
   -- (reconnectend.east);
 \draw[mqtt control flow] (delay.south) -- (newcycle.north);
 
-\node[mqtt group,fit=(retrytitle)(attempt)(failed)(retrypolicy)(backoff)(newattempt)(retryend)(retrynorailtop)(retrynorailbottom)(repeatrailtop)(repeatrailbottom)] (retrygroup) {};
 \node[mqtt group,fit=(reconnecttitle)(connected)(interrupted)(reconnectpolicy)(delay)(newcycle)(reconnectend)(reconnectnorailtop)(reconnectnorailbottom)(reconnectbalanceleft)] (reconnectgroup) {};
 \node[mqtt layout fit,fit=(retrygroup)(reconnectgroup)] (lanesfit) {};
 \node[mqtt note,mqtt text wide,below=\MQSectionToControlGap of lanesfit] (relationship)
