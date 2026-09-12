@@ -16,10 +16,10 @@
   {new listen / connect attempt};
 
 \node[mqtt process,below=\MQConnectorSpan of newattempt] (retryend) {flow ends};
-\path (newattempt.west) ++(-\MQHorizontalGapTight,0) coordinate (retrynorailx);
+\path (attempt.west) ++(-\MQHorizontalGapTight,0) coordinate (retrynorailx);
 \path (retrynorailx |- retrypolicy.west) coordinate (retrynorailtop);
 \path (retrynorailtop |- retryend.west) coordinate (retrynorailbottom);
-\path (newattempt.east) ++(\MQHorizontalGapTight,0) coordinate (repeatrailx);
+\path (attempt.east) ++(\MQHorizontalGapTight,0) coordinate (repeatrailx);
 \path (repeatrailx |- attempt.east) coordinate (repeatrailtop);
 \path (repeatrailtop |- newattempt.east) coordinate (repeatrailbottom);
 
