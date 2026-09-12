@@ -5,16 +5,15 @@
 \begin{document}
 \begin{tikzpicture}[mqtt mobile]
 
-\node[mqtt config,mqtt node compact] (instancea) {named endpoint\\instance A};
-\node[mqtt config,right=\MQHorizontalGapTight of instancea,mqtt node compact] (instanceb)
+\node[mqtt config,mqtt node extra wide] (instancea) {named endpoint\\instance A};
+\node[mqtt config,above=\MQGapS of instancea,mqtt node extra wide] (instanceb)
   {named endpoint\\instance B};
-\path (instancea.north) -- (instanceb.north) coordinate[midway] (instancesmid);
-\node[mqtt application,above=\MQConnectorSpan of instancesmid,mqtt node extra wide] (app)
+\node[mqtt application,above=\MQGapS of instanceb,mqtt node extra wide] (app)
   {application-owned \texttt{SubCommand}};
 \node[mqtt section title,above=\MQGapS of app] (namedtitle) {Named root children};
 \node[mqtt config,above=\MQSectionSeparation of namedtitle,mqtt node extra wide] (root)
   {\texttt{ConfigRoot}\\application configuration root};
-\node[mqtt layout fit,fit=(namedtitle)(app)(instancea)(instanceb)] (childrenfit) {};
+\node[mqtt layout fit,fit=(namedtitle)(app)(instanceb)(instancea)] (childrenfit) {};
 
 \node[mqtt section title,below=\MQSectionSeparation of childrenfit,anchor=north] (sectionstitle)
   {Instance A sections};
@@ -34,15 +33,14 @@
 \node[mqtt note,below=\MQGapM of dependent,mqtt node extra wide] (anonymous)
   {Anonymous endpoint: API-configurable only;\\it is not a named \texttt{ConfigRoot} child\\and has no named CLI/config-file\\address.};
 
+\node[mqtt group,fit=(namedtitle)(app)(instanceb)(instancea)] (children) {};
+\node[mqtt group,fit=(sectionstitle)(local)(remote)(connection)(socket)(tls)] (sections) {};
 \begin{scope}[on background layer]
-  \node[mqtt figure frame,fit=(root)(childrenfit)(sectionsfit)(dependent)(anonymous)] {};
-  \node[mqtt group,fit=(namedtitle)(app)(instancea)(instanceb)] (children) {};
-  \node[mqtt group,fit=(sectionstitle)(local)(remote)(connection)(socket)(tls)] (sections) {};
+  \node[mqtt figure frame,fit=(root)(children)(sections)(dependent)(anonymous)] {};
 \end{scope}
 
 \draw[mqtt contains] (root.south) -- node[mqtt edge label right] {contains} (children.north);
-\path (sections.north -| instancea.center) coordinate (sections-instancea-north);
-\draw[mqtt contains] (instancea.south) -- node[mqtt edge label right] {assembles} (sections-instancea-north);
+\draw[mqtt contains] (instancea.south) -- node[mqtt edge label right] {assembles} (sections.north);
 
 \end{tikzpicture}
 \end{document}
