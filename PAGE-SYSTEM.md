@@ -1718,3 +1718,86 @@ If later user inspection, a screenshot, a vector-bound review, or other current 
 reveals a failure in any of these tests, the prior figure PASS and every dependent family
 PASS are automatically invalid. Restart the affected figure at §30.6 step 1 and perform
 the complete review again.
+
+---
+
+# 32. Hard peer-container outer-envelope acceptance
+
+This section is global and cumulative with §§10, 17, 18, 28, 30, and 31. It makes the
+final rendered geometry of directly comparable peer containers an independent hard
+acceptance gate. Correct inner content does not excuse incorrect peer-container geometry.
+
+## 32.1 Final rendered peer envelopes are first-class acceptance objects
+
+When two or more semantic containers are presented as directly comparable parallel
+peers on one comparison grid, the **final padded/styled rendered outer containers
+ themselves** must be compared directly. Review of inner stages, helper fits, content
+bounds, or primary skeletons is not a substitute for this test.
+
+For side-by-side peer containers that participate in one horizontal comparison, the
+final rendered outer boundaries must, unless a concrete accepted semantic or unavoidable
+geometric reason requires otherwise:
+
+- share the same top guide;
+- share the same bottom guide;
+- therefore have the same rendered height.
+
+For vertically stacked peer containers that participate in one vertical comparison, the
+final rendered outer boundaries must, unless a concrete accepted semantic or unavoidable
+geometric reason requires otherwise:
+
+- share the same left guide;
+- share the same right guide;
+- therefore have the same rendered width.
+
+If a composition intentionally does not present containers as sharing one comparison
+envelope, this test may be marked N/A only with a concrete explanation of why equal
+outer extents would misrepresent the semantics or violate unavoidable geometry.
+
+The following are **not** evidence that this test passes:
+
+- a mathematically correct TikZ `fit`;
+- aligned corresponding inner stages;
+- correct primary-skeleton centering;
+- correct content bounding boxes;
+- different content or different text lengths;
+- source intent;
+- a statement that the result is “close enough” or merely looks acceptable in source.
+
+An unexplained mismatch of the applicable final peer-container guides or extent is a
+**hard blocker** even when every internal node and connector is correct.
+
+Inspect the actual PNG at full review size and inspect the final vector geometry as
+independent evidence. Where exact vector boundary coordinates are available, use them to
+prove equality rather than relying on visual approximation. PNG inspection remains
+mandatory and vector equality never substitutes for the human-perception gate.
+
+Do not repair peer-container envelope mismatch with figure-local literal heights,
+widths, shifts, padding overrides, or manual nudges. Derive the common envelope through
+existing canonical relative relationships. If the shared system lacks a compliant
+primitive or relationship, invoke the mandatory hard stop.
+
+## 32.2 Mandatory explicit conformance-table row
+
+Every first-pass conformance table and every independent second-pass conformance table
+must contain an explicit **Peer-container outer-envelope alignment** row whenever this
+test applies.
+
+That row must identify the directly comparable peer containers and state concrete
+rendered evidence for:
+
+- top/bottom guide equality and equal height for side-by-side peers; or
+- left/right guide equality and equal width for vertically stacked peers.
+
+The row may be N/A only with the concrete semantic/geometric reason required by §32.1.
+It must not be merged into or replaced by a generic “peer balance”, “alignment”, “outer
+containers look good”, “peer-stage alignment”, “primary-skeleton centering”, or
+“human visual quality” row.
+
+The mandatory second pass must repeat this outer-envelope test from scratch. A ✓ from
+the first pass must not be inherited.
+
+If later PNG inspection, vector-bound inspection, user inspection, or other current
+evidence reveals an applicable outer-envelope mismatch, the prior figure PASS and every
+dependent family PASS are automatically invalid. Restart the affected figure at §30.6
+step 1 and perform the complete refinement loop again.
