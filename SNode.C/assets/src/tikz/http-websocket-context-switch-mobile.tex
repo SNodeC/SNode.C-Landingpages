@@ -6,12 +6,12 @@
 \begin{tikzpicture}[mqtt mobile]
 
 \node[mqtt state] (http)
-  {HTTP context\\ACTIVE};
+  {HTTP context ACTIVE};
 \node[mqtt process,right=\MQConnectorSpan of http] (staged)
   {WebSocket\\replacement\\STAGED\\after Upgrade\\not active};
 \node[mqtt layout fit,fit=(http)(staged)] (toppair) {};
 \node[mqtt section title,above=\MQGapS of toppair] (title)
-  {Same established\\\texttt{SocketConnection}};
+  {Same established \texttt{SocketConnection}};
 \draw[mqtt handoff] (http.east) -- node[mqtt edge label above] {stage} (staged.west);
 
 \node[mqtt process,below=\MQConnectorSpan of toppair,mqtt node wide] (return)
@@ -19,7 +19,7 @@
 \node[mqtt control,below=\MQConnectorSpan of return,mqtt node wide] (switch)
   {\texttt{detach(ContextSwitch)}\\select staged context\\\texttt{attach()}};
 \node[mqtt state,below=\MQConnectorSpan of switch,mqtt node wide] (websocket)
-  {WebSocket context\\ACTIVE};
+  {WebSocket context ACTIVE};
 
 \path (http.south) -- (return.north) coordinate[midway] (httpreturnmid);
 \draw[mqtt control flow] (http.south)
@@ -27,19 +27,19 @@
   -- (return.north |- httpreturnmid)
   -- (return.north);
 \draw[mqtt control flow] (return.south) -- (switch.north);
-\path (staged.east) ++(\MQHorizontalGapTight,0) coordinate (stagedrailx);
-\path (stagedrailx |- switch.east) coordinate (stagedrailbottom);
+\path (staged.east) -- (switch.east) coordinate[midway] (stagedswitchmid);
+\path (staged.east -| stagedswitchmid) coordinate (stagedswitchtop);
+\path (switch.east -| stagedswitchmid) coordinate (stagedswitchbottom);
 \draw[mqtt dependency] (staged.east)
-  -- (stagedrailx)
-  -- (stagedrailbottom)
+  -- (stagedswitchtop)
+  -- (stagedswitchbottom)
   -- (switch.east);
 \draw[mqtt control flow] (switch.south) -- (websocket.north);
 
-\path (http.west) ++(-\MQHorizontalGapTight,0) coordinate (balanceleft);
 \node[mqtt note,below=\MQConnectorSpan of websocket,mqtt node wide] (note)
   {SSE/EventSource does not use\\context replacement.};
 
-\node[mqtt group,fit=(title)(http)(staged)(return)(switch)(websocket)(balanceleft)(stagedrailx)(stagedrailbottom)] (connectiongroup) {};
+\node[mqtt group,fit=(title)(http)(staged)(return)(switch)(websocket)] (connectiongroup) {};
 \begin{scope}[on background layer]
   \node[mqtt figure frame,fit=(connectiongroup)(note)] {};
 \end{scope}
