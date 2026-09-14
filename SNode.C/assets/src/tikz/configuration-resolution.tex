@@ -24,7 +24,7 @@
 \draw[mqtt flow] (cli.south) -- (cli.south |- climid) -- (resolve-n3 |- climid) -- (resolve-n3);
 \draw[mqtt control flow] (resolve.south) -- (effective.north);
 
-\node[mqtt section title,below=\MQSectionSeparation of effective] (outputstitle)
+\node[mqtt section title,below=\MQSectionSeparation of effective,anchor=north] (outputstitle)
   {Effective-value inspection / persistence};
 \node[mqtt layout fit,below=\MQGapS of outputstitle] (inspectaxis) {};
 \node[mqtt process,left=\MQRhythmCompact of inspectaxis,mqtt node compact] (show)
