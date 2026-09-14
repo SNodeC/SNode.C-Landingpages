@@ -16,9 +16,9 @@
 
 \node[mqtt process,below=\MQConnectorSpan of http,mqtt node compact] (return)
   {current HTTP read\\callback returns};
-\node[mqtt control,below=\MQConnectorSpan of return,mqtt node wide] (switch)
+\node[mqtt control,below=\MQConnectorSpan of return,mqtt node compact] (switch)
   {\texttt{detach(ContextSwitch)}\\select staged context\\\texttt{attach()}};
-\node[mqtt state,below=\MQConnectorSpan of switch,mqtt node wide] (websocket)
+\node[mqtt state,below=\MQConnectorSpan of switch,mqtt node compact] (websocket)
   {WebSocket context ACTIVE};
 
 \draw[mqtt control flow] (http.south) -- (return.north);
