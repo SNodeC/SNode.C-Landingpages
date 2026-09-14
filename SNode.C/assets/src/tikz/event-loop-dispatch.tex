@@ -11,17 +11,17 @@
 \path (descriptors.south) -- (timers.south) coordinate[midway] (sourcesbottom);
 
 \node[mqtt control,above=\MQConnectorSpan of sourcestop,mqtt node wide] (wait) {wait for work};
-\node[mqtt control,above=\MQConnectorSpan of wait,mqtt node wide] (start) {\texttt{SNodeC::start()}\\caller thread};
-\node[mqtt config,above=\MQConnectorSpan of start,mqtt node extra wide] (backend)
-  {Select backend at configure time\\\texttt{epoll} · \texttt{poll} · \texttt{select}};
+\node[mqtt control,above=\MQConnectorSpan of wait,mqtt node wide] (start) {\texttt{SNodeC::start()} caller thread};
+\node[mqtt config,left=\MQHorizontalGapTight of start,mqtt node compact] (backend)
+  {Configure-time backend\\\texttt{epoll} · \texttt{poll} · \texttt{select}};
 
 \node[mqtt state,below=\MQConnectorSpan of sourcesbottom,mqtt node wide] (queue) {event queue};
 \node[mqtt control,below=\MQConnectorSpan of queue,mqtt node wide] (dispatch) {dispatch events};
 \node[mqtt application,below=\MQConnectorSpan of dispatch,mqtt node extra wide] (callbacks)
-  {endpoint / connection / context\\callbacks};
-\node[mqtt process,below=\MQConnectorSpan of callbacks,mqtt node wide] (next) {next tick};
+  {endpoint / connection / context callbacks};
+\node[mqtt process,right=\MQHorizontalGapTight of callbacks,mqtt node compact] (next) {next tick};
 
-\draw[mqtt association] (backend.south) -- (start.north);
+\draw[mqtt association] (backend.east) -- (start.west);
 \draw[mqtt flow] (start.south) -- (wait.north);
 
 \MQDistributedPortSouth{wait}{wait-s1}{1}{2}
@@ -41,21 +41,15 @@
 
 \draw[mqtt control flow] (queue.south) -- (dispatch.north);
 \draw[mqtt control flow] (dispatch.south) -- (callbacks.north);
-\draw[mqtt control flow] (callbacks.south) -- (next.north);
+\draw[mqtt control flow] (callbacks.east) -- (next.west);
 
-\path (wait.east) ++(\MQHorizontalMilestoneGap,0) coordinate (repeatrail);
-\path (repeatrail |- next.east) coordinate (repeatbottom);
-\path (repeatrail |- wait.east) coordinate (repeattop);
-\path (repeatrail |- callbacks.north) coordinate (repeatlabelbottom);
-\path (repeatrail |- dispatch.south) coordinate (repeatlabeltop);
-\draw[mqtt control flow] (next.east) -- (repeatbottom)
-  -- (repeatlabelbottom)
-  -- node[mqtt edge label left] (repeatlabel) {repeat} (repeatlabeltop)
-  -- (repeattop)
+\path (next.north |- wait.east) coordinate (repeatcorner);
+\draw[mqtt control flow] (next.north)
+  -- node[mqtt edge label left] (repeatlabel) {repeat} (repeatcorner)
   -- (wait.east);
 
 \begin{scope}[on background layer]
-  \node[mqtt figure frame,fit=(backend)(start)(wait)(descriptors)(timers)(queue)(dispatch)(callbacks)(next)(repeatrail)(repeatlabel)] {};
+  \node[mqtt figure frame,fit=(backend)(start)(wait)(descriptors)(timers)(queue)(dispatch)(callbacks)(next)(repeatcorner)(repeatlabel)] {};
 \end{scope}
 
 \end{tikzpicture}
