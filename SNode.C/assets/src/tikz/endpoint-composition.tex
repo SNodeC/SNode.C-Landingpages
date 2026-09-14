@@ -15,7 +15,7 @@
   {\textbf{Protocol / application context}\\custom \texttt{SocketContext} or compatible\\framework protocol context};
 \node[mqtt layout fit,fit=(address)(role)(mode)(context)] (choices) {};
 
-\node[mqtt section title,above=\MQGapS of address,anchor=south] (title) {One concrete endpoint};
+\node[mqtt section title,above=\MQGapS of choices,anchor=south] (title) {One concrete endpoint};
 
 \node[mqtt control,below=\MQSectionToControlGap of choices,mqtt node hero] (runtime)
   {\textbf{Shared event runtime} one selected multiplexer drives endpoint and connection work};
