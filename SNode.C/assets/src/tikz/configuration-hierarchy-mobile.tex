@@ -5,25 +5,28 @@
 \begin{document}
 \begin{tikzpicture}[mqtt mobile]
 
-\node[mqtt config,mqtt node extra wide] (instancea) {named endpoint instance A};
+\node[mqtt config,mqtt node compact] (local) {\texttt{local}};
+\node[mqtt config,right=\MQHorizontalGapTight of local,mqtt node compact] (remote) {\texttt{remote}};
+\node[mqtt config,below=\MQGapS of local,mqtt node compact] (connection) {\texttt{connection}};
+\node[mqtt config,right=\MQHorizontalGapTight of connection,mqtt node compact] (socket) {\texttt{socket}};
+\node[mqtt layout fit,fit=(connection)(socket)] (sectionrowtwo) {};
+\node[mqtt config,below=\MQGapS of sectionrowtwo,mqtt node compact] (tls)
+  {\texttt{tls} when selected};
+\node[mqtt layout fit,fit=(local)(remote)(connection)(socket)(tls)] (sectionscontent) {};
+\node[mqtt section title,above=\MQGapS of sectionscontent,anchor=south] (sectionstitle)
+  {Instance A sections};
+\node[mqtt layout fit,fit=(sectionstitle)(sectionscontent)] (sectionsfit) {};
+
+\node[mqtt config,above=\MQGapXL of sectionstitle,mqtt node extra wide] (instancea)
+  {named endpoint instance A};
 \node[mqtt config,above=\MQGapS of instancea,mqtt node extra wide] (instanceb)
   {named endpoint instance B};
 \node[mqtt application,above=\MQGapS of instanceb,mqtt node extra wide] (app)
   {application-owned \texttt{SubCommand}};
-\node[mqtt section title,above=\MQGapS of app] (namedtitle) {Named root children};
-\node[mqtt config,above=\MQSectionSeparation of namedtitle,mqtt node extra wide] (root)
-  {\texttt{ConfigRoot}\\application configuration root};
+\node[mqtt section title,above=\MQGapS of app,anchor=south] (namedtitle) {Named root children};
 \node[mqtt layout fit,fit=(namedtitle)(app)(instanceb)(instancea)] (childrenfit) {};
-
-\node[mqtt section title,below=\MQSectionSeparation of childrenfit,anchor=north] (sectionstitle)
-  {Instance A sections};
-\node[mqtt config,below=\MQGapS of sectionstitle,mqtt node extra wide] (local) {\texttt{local}};
-\node[mqtt config,below=\MQGapS of local,mqtt node extra wide] (remote) {\texttt{remote}};
-\node[mqtt config,below=\MQGapS of remote,mqtt node extra wide] (connection) {\texttt{connection}};
-\node[mqtt config,below=\MQGapS of connection,mqtt node extra wide] (socket) {\texttt{socket}};
-\node[mqtt config,below=\MQGapS of socket,mqtt node extra wide] (tls)
-  {\texttt{tls} when selected};
-\node[mqtt layout fit,fit=(sectionstitle)(local)(remote)(connection)(socket)(tls)] (sectionsfit) {};
+\node[mqtt config,above=\MQGapXL of namedtitle,mqtt node extra wide] (root)
+  {\texttt{ConfigRoot}\\application configuration root};
 
 \node[mqtt note,below=\MQGapXL of sectionsfit,mqtt node extra wide] (dependent)
   {Section availability is role/family/mode dependent;\\the figure shows the reusable\\section vocabulary.};
