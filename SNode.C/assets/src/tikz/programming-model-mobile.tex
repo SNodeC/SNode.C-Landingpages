@@ -11,28 +11,28 @@
 \node[mqtt state,below=\MQConnectorSpan of server,mqtt node wide] (serverconn)
   {\texttt{SocketConnection} established stream};
 \node[mqtt state,below=\MQConnectorSpan of serverconn,mqtt node wide] (serverctx)
-  {\texttt{SocketContext}\\one active per connection};
+  {new \texttt{SocketContext}\\one active per connection};
 
 \draw[mqtt flow] (server.south) -- node[mqtt edge label right] {listen $\rightarrow$ accept} (serverconn.north);
 \draw[mqtt flow] (serverconn.south)
-  -- node[mqtt edge label right] {factory \texttt{create(this)}\\returns new} (serverctx.north);
+  -- node[mqtt edge label right] {\texttt{create(this)}} (serverctx.north);
 
 \node[mqtt group,fit=(servertitle)(server)(serverconn)(serverctx)] (servergroup) {};
 
-\node[mqtt control,below=\MQMobileLaneGap of servergroup,mqtt node extra wide] (loop)
+\node[mqtt control,below=\MQRhythmCompact of servergroup,mqtt node extra wide] (loop)
   {\textbf{Shared event loop --- \texttt{start()}}\\both endpoint flows dispatch callbacks on the caller thread};
 
-\node[mqtt section title,below=\MQMobileLaneGap of loop] (clienttitle) {Client flow};
+\node[mqtt section title,below=\MQRhythmCompact of loop] (clienttitle) {Client flow};
 \node[mqtt process,below=\MQGapS of clienttitle,mqtt node wide] (client)
   {\texttt{SocketClient} client endpoint\\retains \texttt{SocketContextFactory}};
 \node[mqtt state,below=\MQConnectorSpan of client,mqtt node wide] (clientconn)
   {\texttt{SocketConnection} established stream};
 \node[mqtt state,below=\MQConnectorSpan of clientconn,mqtt node wide] (clientctx)
-  {\texttt{SocketContext}\\one active per connection};
+  {new \texttt{SocketContext}\\one active per connection};
 
 \draw[mqtt flow] (client.south) -- node[mqtt edge label right] {connect completes} (clientconn.north);
 \draw[mqtt flow] (clientconn.south)
-  -- node[mqtt edge label right] {factory \texttt{create(this)}\\returns new} (clientctx.north);
+  -- node[mqtt edge label right] {\texttt{create(this)}} (clientctx.north);
 
 \node[mqtt group,fit=(clienttitle)(client)(clientconn)(clientctx)] (clientgroup) {};
 \begin{scope}[on background layer]
