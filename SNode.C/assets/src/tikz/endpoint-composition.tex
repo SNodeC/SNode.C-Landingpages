@@ -19,9 +19,6 @@
   {RFCOMM / L2CAP source-verified};
 \node[mqtt section title,above=\MQGapS of bluetooth,anchor=south] (title) {One concrete endpoint};
 
-\path (bluetooth.south |- address.north) coordinate (evidencestart);
-\draw[mqtt observation] (evidencestart) -- (bluetooth.south);
-
 \node[mqtt control,below=\MQSectionToControlGap of choices,mqtt node hero] (runtime)
   {\textbf{Shared event runtime} one selected multiplexer drives endpoint and connection work};
 \node[mqtt note,below=\MQGapM of runtime,mqtt node hero] (qualification)
