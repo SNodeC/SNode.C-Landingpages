@@ -6,70 +6,58 @@
 \begin{tikzpicture}[mqtt mobile]
 
 \node[mqtt section title] (retrytitle) {Retry};
-\node[mqtt process,below=\MQGapS of retrytitle,mqtt node wide] (attempt)
-  {listen / connect attempt};
-\node[mqtt error,below=\MQConnectorSpan of attempt,mqtt node wide] (failed)
-  {establishment fails};
+\node[mqtt error,below=\MQGapS of retrytitle,mqtt node wide] (failed)
+  {listen / connect\\establishment fails};
 \node[mqtt decision,mqtt node compact,below=\MQConnectorSpan of failed] (retrypolicy) {retry?};
-\node[mqtt process,below=\MQConnectorSpan of retrypolicy,mqtt node wide] (backoff)
-  {wait / backoff};
-\node[mqtt process,below=\MQConnectorSpan of backoff,mqtt node wide] (newattempt)
-  {new listen / connect attempt};
+\node[mqtt process,below=\MQConnectorSpan of retrypolicy,mqtt node wide] (retryaction)
+  {wait / backoff, then\\new listen / connect attempt};
+\node[mqtt process,below=\MQConnectorSpan of retryaction,mqtt node compact] (retryend) {flow ends};
 
-\node[mqtt process,below=\MQConnectorSpan of newattempt,mqtt node compact] (retryend) {flow ends};
-\path (newattempt.west) ++(-\MQHorizontalGapTight,0) coordinate (retrynorailx);
+\path (retryaction.west) ++(-\MQHorizontalGapTight,0) coordinate (retrynorailx);
 \path (retrynorailx |- retrypolicy.west) coordinate (retrynorailtop);
 \path (retrynorailtop |- retryend.west) coordinate (retrynorailbottom);
-\path (newattempt.east) ++(\MQHorizontalGapTight,0) coordinate (repeatrailx);
-\path (repeatrailx |- attempt.east) coordinate (repeatrailtop);
-\path (repeatrailtop |- newattempt.east) coordinate (repeatrailbottom);
+\path (retryaction.east) ++(\MQHorizontalGapTight,0) coordinate (repeatrailx);
+\path (repeatrailx |- failed.east) coordinate (repeatrailtop);
+\path (repeatrailtop |- retryaction.east) coordinate (repeatrailbottom);
 
-\draw[mqtt control flow] (attempt.south) -- (failed.north);
 \draw[mqtt control flow] (failed.south) -- (retrypolicy.north);
-\draw[mqtt control flow] (retrypolicy.south) -- node[mqtt branch label right] {yes} (backoff.north);
+\draw[mqtt control flow] (retrypolicy.south) -- node[mqtt branch label right] {yes} (retryaction.north);
 \draw[mqtt control flow] (retrypolicy.west)
   -- node[mqtt branch label above] {no} (retrynorailtop)
   -- (retrynorailbottom)
   -- (retryend.west);
-\draw[mqtt control flow] (backoff.south) -- (newattempt.north);
-\draw[mqtt control flow] (newattempt.east)
+\draw[mqtt control flow] (retryaction.east)
   -- (repeatrailbottom)
   -- (repeatrailtop)
-  -- (attempt.east);
-\node[mqtt layout fit,fit=(retrytitle)(attempt)(failed)(retrypolicy)(backoff)(newattempt)(retryend)(retrynorailtop)(retrynorailbottom)(repeatrailtop)(repeatrailbottom)] (retryfit) {};
+  -- (failed.east);
+\node[mqtt layout fit,fit=(retrytitle)(failed)(retrypolicy)(retryaction)(retryend)(retrynorailtop)(retrynorailbottom)(repeatrailtop)(repeatrailbottom)] (retryfit) {};
 
 \node[mqtt section title,below=\MQMobileLaneGap of retryfit] (reconnecttitle) {Reconnect};
-\node[mqtt success,below=\MQGapS of reconnecttitle,mqtt node wide] (connected)
-  {connection established};
-\node[mqtt error,below=\MQConnectorSpan of connected,mqtt node wide] (interrupted)
-  {connection interrupted};
+\node[mqtt error,below=\MQGapS of reconnecttitle,mqtt node wide] (interrupted)
+  {established connection\\interrupted};
 \node[mqtt decision,mqtt node compact,below=\MQConnectorSpan of interrupted] (reconnectpolicy)
   {reconnect?};
-\node[mqtt process,below=\MQConnectorSpan of reconnectpolicy,mqtt node wide] (delay)
-  {reconnect delay};
-\node[mqtt process,below=\MQConnectorSpan of delay,mqtt node wide] (newcycle)
-  {new connect cycle};
+\node[mqtt process,below=\MQConnectorSpan of reconnectpolicy,mqtt node wide] (reconnectaction)
+  {reconnect delay, then\\new client connect cycle};
+\node[mqtt process,below=\MQConnectorSpan of reconnectaction,mqtt node compact] (reconnectend) {flow ends};
 
-\node[mqtt process,below=\MQConnectorSpan of newcycle,mqtt node compact] (reconnectend) {flow ends};
-\path (interrupted.west) ++(-\MQHorizontalGapTight,0) coordinate (reconnectnorailx);
+\path (reconnectaction.west) ++(-\MQHorizontalGapTight,0) coordinate (reconnectnorailx);
 \path (reconnectnorailx |- reconnectpolicy.west) coordinate (reconnectnorailtop);
 \path (reconnectnorailtop |- reconnectend.west) coordinate (reconnectnorailbottom);
-\path (interrupted.east) ++(\MQHorizontalGapTight,0) coordinate (reconnectbalanceright);
+\path (reconnectaction.east) ++(\MQHorizontalGapTight,0) coordinate (reconnectbalanceright);
 
-\draw[mqtt control flow] (connected.south) -- (interrupted.north);
 \draw[mqtt control flow] (interrupted.south) -- (reconnectpolicy.north);
-\draw[mqtt control flow] (reconnectpolicy.south) -- node[mqtt branch label right] {yes} (delay.north);
+\draw[mqtt control flow] (reconnectpolicy.south) -- node[mqtt branch label right] {yes} (reconnectaction.north);
 \draw[mqtt control flow] (reconnectpolicy.west)
   -- node[mqtt branch label above] {no} (reconnectnorailtop)
   -- (reconnectnorailbottom)
   -- (reconnectend.west);
-\draw[mqtt control flow] (delay.south) -- (newcycle.north);
-\node[mqtt layout fit,fit=(reconnecttitle)(connected)(interrupted)(reconnectpolicy)(delay)(newcycle)(reconnectend)(reconnectnorailtop)(reconnectnorailbottom)] (reconnectfit) {};
+\node[mqtt layout fit,fit=(reconnecttitle)(interrupted)(reconnectpolicy)(reconnectaction)(reconnectend)(reconnectnorailtop)(reconnectnorailbottom)(reconnectbalanceright)] (reconnectfit) {};
 
-\node[mqtt group,fit=(retrytitle)(attempt)(failed)(retrypolicy)(backoff)(newattempt)(retryend)(retrynorailtop)(retrynorailbottom)(repeatrailtop)(repeatrailbottom)] (retrygroup) {};
-\node[mqtt group,fit=(reconnecttitle)(connected)(interrupted)(reconnectpolicy)(delay)(newcycle)(reconnectend)(reconnectnorailtop)(reconnectnorailbottom)(reconnectbalanceright)] (reconnectgroup) {};
+\node[mqtt group,fit=(retrytitle)(failed)(retrypolicy)(retryaction)(retryend)(retrynorailtop)(retrynorailbottom)(repeatrailtop)(repeatrailbottom)] (retrygroup) {};
+\node[mqtt group,fit=(reconnecttitle)(interrupted)(reconnectpolicy)(reconnectaction)(reconnectend)(reconnectnorailtop)(reconnectnorailbottom)(reconnectbalanceright)] (reconnectgroup) {};
 \node[mqtt note,below=\MQSectionToControlGap of reconnectgroup,mqtt node extra wide] (relationship)
-  {Reconnect starts a new client connect cycle.\\If its establishment fails,\\retry policy can apply there.};
+  {If that new connect cycle fails to establish,\\retry policy can apply.};
 
 \begin{scope}[on background layer]
   \node[mqtt figure frame,fit=(retrygroup)(reconnectgroup)(relationship)] {};
