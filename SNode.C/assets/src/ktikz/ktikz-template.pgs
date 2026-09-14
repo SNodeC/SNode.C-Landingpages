@@ -1,0 +1,7 @@
+\documentclass[tikz,border=8pt]{standalone}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\input{landingpages-figure-system.tex}
+\begin{document}
+<>
+\end{document}

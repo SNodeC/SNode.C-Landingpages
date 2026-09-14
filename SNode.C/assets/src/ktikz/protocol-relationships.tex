@@ -1,0 +1,45 @@
+\begin{tikzpicture}[mqtt desktop]
+
+% HTTP-related relationships form a compact hub. SSE remains within HTTP,
+% WebSocket is reached by Upgrade, and MQTT may continue as a WebSocket
+% subprotocol. Only the Upgrade handoff is directional.
+\node[mqtt state,mqtt node compact] (http) {HTTP context};
+\node[mqtt process,left=\MQHorizontalGap of http,mqtt node compact] (sse)
+  {SSE / EventSource\\within HTTP};
+\node[mqtt process,right=\MQHorizontalGap of http,mqtt node compact] (ws)
+  {WebSocket\\via HTTP Upgrade};
+\node[mqtt application,above=\MQConnectorSpan of http,mqtt node compact] (express)
+  {Express-style routing\\and middleware};
+\node[mqtt process,above=\MQConnectorSpan of ws,mqtt node compact] (mqttws)
+  {MQTT over WebSocket\\subprotocol};
+
+\draw[mqtt association] (sse.east) -- (http.west);
+\draw[mqtt association] (express.south) -- (http.north);
+\draw[mqtt handoff] (http.east) -- (ws.west);
+\draw[mqtt association] (ws.north) -- (mqttws.south);
+
+% The two remaining direct stream roots form a balanced peer row below the
+% expanded HTTP relationship hub. HTTP itself remains a direct stream root via
+% the center association.
+\node[mqtt process,below=\MQRhythmLarge of sse,mqtt node compact] (custom)
+  {custom \texttt{SocketContext}};
+\node[mqtt process,below=\MQRhythmLarge of ws,mqtt node compact] (mqttdirect)
+  {MQTT 3.1.1};
+\path (custom.south) -- (mqttdirect.south) coordinate[midway] (directbottom);
+\node[mqtt state,below=\MQConnectorSpan of directbottom,mqtt node hero] (stream)
+  {established stream connection};
+
+\draw[mqtt association] (custom.south) -- (stream.north -| custom.south);
+\draw[mqtt association] (http.south) -- (stream.north);
+\draw[mqtt association] (mqttdirect.south) -- (stream.north -| mqttdirect.south);
+
+\node[mqtt layout fit,fit=(express)(mqttws)] (topfit) {};
+\path (http.center |- topfit.north) coordinate (titlebase);
+\node[mqtt section title,above=\MQTitleGap of titlebase,anchor=south] (title)
+  {Protocol / application relationships};
+
+\begin{scope}[on background layer]
+  \node[mqtt figure frame,fit=(title)(express)(mqttws)(sse)(ws)(custom)(http)(mqttdirect)(stream)] {};
+\end{scope}
+
+\end{tikzpicture}

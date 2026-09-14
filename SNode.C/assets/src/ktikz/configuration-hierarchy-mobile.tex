@@ -1,0 +1,40 @@
+\begin{tikzpicture}[mqtt mobile]
+
+\node[mqtt config,mqtt node compact] (local) {\texttt{local}};
+\node[mqtt config,right=\MQHorizontalGapTight of local,mqtt node compact] (remote) {\texttt{remote}};
+\node[mqtt config,below=\MQGapS of local,mqtt node compact] (connection) {\texttt{connection}};
+\node[mqtt config,right=\MQHorizontalGapTight of connection,mqtt node compact] (socket) {\texttt{socket}};
+\node[mqtt layout fit,fit=(connection)(socket)] (sectionrowtwo) {};
+\node[mqtt config,below=\MQGapS of sectionrowtwo,mqtt node compact] (tls)
+  {\texttt{tls} when selected};
+\node[mqtt layout fit,fit=(local)(remote)(connection)(socket)(tls)] (sectionscontent) {};
+\node[mqtt section title,above=\MQGapS of sectionscontent,anchor=south] (sectionstitle)
+  {Instance A sections};
+\node[mqtt layout fit,fit=(sectionstitle)(sectionscontent)] (sectionsfit) {};
+
+\node[mqtt config,above=\MQGapXL of sectionstitle,mqtt node extra wide] (instancea)
+  {named endpoint instance A};
+\node[mqtt config,above=\MQGapS of instancea,mqtt node extra wide] (instanceb)
+  {named endpoint instance B};
+\node[mqtt application,above=\MQGapS of instanceb,mqtt node extra wide] (app)
+  {application-owned \texttt{SubCommand}};
+\node[mqtt section title,above=\MQGapS of app,anchor=south] (namedtitle) {Named root children};
+\node[mqtt layout fit,fit=(namedtitle)(app)(instanceb)(instancea)] (childrenfit) {};
+\node[mqtt config,above=\MQGapXL of namedtitle,mqtt node extra wide] (root)
+  {\texttt{ConfigRoot}\\application configuration root};
+
+\node[mqtt note,below=\MQGapXL of sectionsfit,mqtt node extra wide] (dependent)
+  {Section availability is role/family/mode dependent;\\the figure shows the reusable\\section vocabulary.};
+\node[mqtt note,below=\MQGapM of dependent,mqtt node extra wide] (anonymous)
+  {Anonymous endpoint: API-configurable only;\\it is not a named \texttt{ConfigRoot} child\\and has no named CLI/config-file\\address.};
+
+\node[mqtt group,fit=(namedtitle)(app)(instanceb)(instancea)] (children) {};
+\node[mqtt group,fit=(sectionstitle)(local)(remote)(connection)(socket)(tls)] (sections) {};
+\begin{scope}[on background layer]
+  \node[mqtt figure frame,fit=(root)(children)(sections)(dependent)(anonymous)] {};
+\end{scope}
+
+\draw[mqtt contains] (root.south) -- node[mqtt edge label right] {contains} (children.north);
+\draw[mqtt contains] (instancea.south) -- node[mqtt edge label right] {assembles} (sections.north);
+
+\end{tikzpicture}

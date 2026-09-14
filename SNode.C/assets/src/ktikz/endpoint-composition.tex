@@ -1,0 +1,31 @@
+\begin{tikzpicture}[mqtt desktop]
+
+\node[mqtt config,mqtt node extra wide] (address)
+  {\textbf{Address family}\\IPv4, IPv6, Unix, RFCOMM, L2CAP};
+\node[mqtt config,right=\MQHorizontalGap of address,mqtt node extra wide] (role)
+  {\textbf{Endpoint role}\\\texttt{SocketServer} · \texttt{SocketClient}};
+\node[mqtt config,below=\MQGapM of address,mqtt node extra wide] (mode)
+  {\textbf{Connection mode}\\plain stream · OpenSSL-backed TLS};
+\node[mqtt config,right=\MQHorizontalGap of mode,mqtt node extra wide] (context)
+  {\textbf{Protocol / app context}\\\texttt{SocketContext} or protocol context};
+\node[mqtt layout fit,fit=(address)(role)(mode)(context)] (choices) {};
+
+\node[mqtt section title,above=\MQGapS of choices,anchor=south] (title) {One concrete endpoint};
+
+\node[mqtt control,below=\MQSectionToControlGap of choices,mqtt node hero] (runtime)
+  {\textbf{Shared event runtime} one selected multiplexer drives endpoint and connection work};
+\node[mqtt note,below=\MQGapM of runtime,mqtt node hero] (qualification)
+  {Compatible typed compositions only. Component presence does not\\imply that every cross-product is built, tested, or runtime-qualified.};
+
+\path (title.north) ++(0,\MQGroupPad) coordinate (outertop);
+\path (choices.west) ++(-\MQGroupPad,0) coordinate (outerleft);
+\path (choices.east) ++(\MQGroupPad,0) coordinate (outerright);
+\begin{scope}[on background layer]
+  \node[mqtt figure frame,fit=(outertop)(outerleft)(outerright)(title)(address)(role)(mode)(context)(runtime)(qualification)] {};
+  \node[mqtt group,fit=(title)(address)(role)(mode)(context)] (endpoint) {};
+\end{scope}
+
+\path (endpoint.south -| choices.center) coordinate (endpoint-south-axis);
+\draw[mqtt association] (endpoint-south-axis) -- node[mqtt edge label right] {uses} (runtime.north);
+
+\end{tikzpicture}

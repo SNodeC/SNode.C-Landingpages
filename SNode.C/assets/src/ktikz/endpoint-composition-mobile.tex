@@ -1,0 +1,29 @@
+\begin{tikzpicture}[mqtt mobile]
+
+\node[mqtt config,mqtt node extra wide] (address)
+  {\textbf{Address family}\\IPv4 · IPv6 · Unix domain\\RFCOMM · L2CAP};
+\node[mqtt section title,above=\MQGapS of address,anchor=south] (title) {One concrete endpoint};
+\node[mqtt config,below=\MQGapM of address,mqtt node extra wide] (role)
+  {\textbf{Endpoint role}\\\texttt{SocketServer} · \texttt{SocketClient}};
+\node[mqtt config,below=\MQGapM of role,mqtt node extra wide] (mode)
+  {\textbf{Connection mode}\\plain stream · OpenSSL-backed TLS};
+\node[mqtt config,below=\MQGapM of mode,mqtt node extra wide] (context)
+  {\textbf{Protocol / application context}\\custom \texttt{SocketContext} or\\compatible protocol context};
+
+\node[mqtt control,below=\MQSectionToControlGap of context,mqtt node extra wide] (runtime)
+  {\textbf{Shared event runtime}\\selected multiplexer drives\\endpoint and connection work};
+\node[mqtt note,below=\MQGapM of runtime,mqtt node extra wide] (qualification)
+  {Compatible typed compositions only;\\not every theoretical cross-product is\\built, tested, or runtime-qualified.};
+
+\path (title.north) ++(0,\MQGroupPad) coordinate (outertop);
+\path (address.west) ++(-\MQGroupPad,0) coordinate (outerleft);
+\path (address.east) ++(\MQGroupPad,0) coordinate (outerright);
+\begin{scope}[on background layer]
+  \node[mqtt figure frame,fit=(outertop)(outerleft)(outerright)(title)(address)(role)(mode)(context)(runtime)(qualification)] {};
+  \node[mqtt group,fit=(title)(address)(role)(mode)(context)] (endpoint) {};
+\end{scope}
+
+\path (endpoint.south -| context.center) coordinate (endpoint-south-axis);
+\draw[mqtt association] (endpoint-south-axis) -- node[mqtt edge label right] {uses} (runtime.north);
+
+\end{tikzpicture}
