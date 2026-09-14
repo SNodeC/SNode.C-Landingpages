@@ -27,9 +27,9 @@
 \node[mqtt section title,below=\MQSectionSeparation of effective,anchor=north] (outputstitle)
   {Effective-value inspection / persistence};
 \node[mqtt layout fit,below=\MQGapS of outputstitle] (inspectaxis) {};
-\node[mqtt process,left=\MQRhythmCompact of inspectaxis,mqtt node compact] (show)
+\node[mqtt process,left=\MQRhythmCompact of inspectaxis,mqtt node wide] (show)
   {\texttt{--show-config}};
-\node[mqtt process,right=\MQRhythmCompact of inspectaxis,mqtt node compact] (cmd)
+\node[mqtt process,right=\MQRhythmCompact of inspectaxis,mqtt node wide] (cmd)
   {\texttt{--command-line=...}};
 \node[mqtt layout fit,fit=(show)(cmd)] (inspectrow) {};
 \node[mqtt process,below=\MQGapS of inspectrow,mqtt node wide] (write)
