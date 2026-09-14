@@ -22,7 +22,7 @@
 \node[mqtt control,below=\MQRhythmCompact of servergroup,mqtt node extra wide] (loop)
   {\textbf{Shared event loop --- \texttt{start()}}\\both endpoint flows dispatch callbacks\\on the caller thread};
 
-\node[mqtt section title,below=\MQRhythmCompact of loop] (clienttitle) {Client flow};
+\node[mqtt section title,below=\MQGapM of loop] (clienttitle) {Client flow};
 \node[mqtt process,below=\MQGapS of clienttitle,mqtt node wide] (client)
   {\texttt{SocketClient} client endpoint\\retains \texttt{SocketContextFactory}};
 \node[mqtt state,below=\MQConnectorSpan of client,mqtt node wide] (clientconn)
