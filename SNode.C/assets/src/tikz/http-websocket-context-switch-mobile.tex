@@ -5,16 +5,16 @@
 \begin{document}
 \begin{tikzpicture}[mqtt mobile]
 
-\node[mqtt state] (http)
+\node[mqtt state,mqtt node compact] (http)
   {HTTP context ACTIVE};
-\node[mqtt process,right=\MQConnectorSpan of http] (staged)
-  {WebSocket\\replacement\\STAGED\\after Upgrade\\not active};
+\node[mqtt process,right=\MQConnectorSpan of http,mqtt node compact] (staged)
+  {WebSocket replacement\\STAGED after Upgrade\\not active};
 \node[mqtt layout fit,fit=(http)(staged)] (toppair) {};
 \node[mqtt section title,above=\MQGapS of toppair] (title)
   {Same established \texttt{SocketConnection}};
 \draw[mqtt handoff] (http.east) -- node[mqtt edge label above] {stage} (staged.west);
 
-\node[mqtt process,below=\MQConnectorSpan of toppair,mqtt node wide] (return)
+\node[mqtt process,below=\MQConnectorSpan of toppair,mqtt node compact] (return)
   {current HTTP read\\callback returns};
 \node[mqtt control,below=\MQConnectorSpan of return,mqtt node wide] (switch)
   {\texttt{detach(ContextSwitch)}\\select staged context\\\texttt{attach()}};
@@ -27,13 +27,7 @@
   -- (return.north |- httpreturnmid)
   -- (return.north);
 \draw[mqtt control flow] (return.south) -- (switch.north);
-\path (staged.east) -- (switch.east) coordinate[midway] (stagedswitchmid);
-\path (staged.east -| stagedswitchmid) coordinate (stagedswitchtop);
-\path (switch.east -| stagedswitchmid) coordinate (stagedswitchbottom);
-\draw[mqtt dependency] (staged.east)
-  -- (stagedswitchtop)
-  -- (stagedswitchbottom)
-  -- (switch.east);
+\draw[mqtt dependency] (staged.south) |- (switch.east);
 \draw[mqtt control flow] (switch.south) -- (websocket.north);
 
 \node[mqtt note,below=\MQConnectorSpan of websocket,mqtt node wide] (note)
