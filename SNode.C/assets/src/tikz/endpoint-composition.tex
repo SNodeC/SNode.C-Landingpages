@@ -15,9 +15,7 @@
   {\textbf{Protocol / application context}\\custom \texttt{SocketContext} or compatible\\framework protocol context};
 \node[mqtt layout fit,fit=(address)(role)(mode)(context)] (choices) {};
 
-\node[mqtt evidence source,above=\MQGapS of address] (bluetooth)
-  {RFCOMM / L2CAP source-verified};
-\node[mqtt section title,above=\MQGapS of bluetooth,anchor=south] (title) {One concrete endpoint};
+\node[mqtt section title,above=\MQGapS of address,anchor=south] (title) {One concrete endpoint};
 
 \node[mqtt control,below=\MQSectionToControlGap of choices,mqtt node hero] (runtime)
   {\textbf{Shared event runtime} one selected multiplexer drives endpoint and connection work};
@@ -28,8 +26,8 @@
 \path (choices.west) ++(-\MQGroupPad,0) coordinate (outerleft);
 \path (choices.east) ++(\MQGroupPad,0) coordinate (outerright);
 \begin{scope}[on background layer]
-  \node[mqtt figure frame,fit=(outertop)(outerleft)(outerright)(title)(bluetooth)(address)(role)(mode)(context)(runtime)(qualification)] {};
-  \node[mqtt group,fit=(title)(bluetooth)(address)(role)(mode)(context)] (endpoint) {};
+  \node[mqtt figure frame,fit=(outertop)(outerleft)(outerright)(title)(address)(role)(mode)(context)(runtime)(qualification)] {};
+  \node[mqtt group,fit=(title)(address)(role)(mode)(context)] (endpoint) {};
 \end{scope}
 
 \path (endpoint.south -| choices.center) coordinate (endpoint-south-axis);
