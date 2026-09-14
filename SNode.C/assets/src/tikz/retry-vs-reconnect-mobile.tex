@@ -10,13 +10,13 @@
   {listen / connect attempt};
 \node[mqtt error,below=\MQConnectorSpan of attempt,mqtt node wide] (failed)
   {establishment fails};
-\node[mqtt decision,below=\MQConnectorSpan of failed] (retrypolicy) {retry?};
+\node[mqtt decision,mqtt node compact,below=\MQConnectorSpan of failed] (retrypolicy) {retry?};
 \node[mqtt process,below=\MQConnectorSpan of retrypolicy,mqtt node wide] (backoff)
   {wait / backoff};
 \node[mqtt process,below=\MQConnectorSpan of backoff,mqtt node wide] (newattempt)
   {new listen / connect attempt};
 
-\node[mqtt process,below=\MQConnectorSpan of newattempt] (retryend) {flow ends};
+\node[mqtt process,below=\MQConnectorSpan of newattempt,mqtt node compact] (retryend) {flow ends};
 \path (newattempt.west) ++(-\MQHorizontalGapTight,0) coordinate (retrynorailx);
 \path (retrynorailx |- retrypolicy.west) coordinate (retrynorailtop);
 \path (retrynorailtop |- retryend.west) coordinate (retrynorailbottom);
@@ -38,19 +38,19 @@
   -- (attempt.east);
 \node[mqtt layout fit,fit=(retrytitle)(attempt)(failed)(retrypolicy)(backoff)(newattempt)(retryend)(retrynorailtop)(retrynorailbottom)(repeatrailtop)(repeatrailbottom)] (retryfit) {};
 
-\node[mqtt section title,below=\MQSectionSeparation of retryfit] (reconnecttitle) {Reconnect};
+\node[mqtt section title,below=\MQMobileLaneGap of retryfit] (reconnecttitle) {Reconnect};
 \node[mqtt success,below=\MQGapS of reconnecttitle,mqtt node wide] (connected)
   {connection established};
 \node[mqtt error,below=\MQConnectorSpan of connected,mqtt node wide] (interrupted)
   {connection interrupted};
-\node[mqtt decision,below=\MQConnectorSpan of interrupted] (reconnectpolicy)
+\node[mqtt decision,mqtt node compact,below=\MQConnectorSpan of interrupted] (reconnectpolicy)
   {reconnect?};
 \node[mqtt process,below=\MQConnectorSpan of reconnectpolicy,mqtt node wide] (delay)
   {reconnect delay};
 \node[mqtt process,below=\MQConnectorSpan of delay,mqtt node wide] (newcycle)
   {new connect cycle};
 
-\node[mqtt process,below=\MQConnectorSpan of newcycle] (reconnectend) {flow ends};
+\node[mqtt process,below=\MQConnectorSpan of newcycle,mqtt node compact] (reconnectend) {flow ends};
 \path (interrupted.west) ++(-\MQHorizontalGapTight,0) coordinate (reconnectnorailx);
 \path (reconnectnorailx |- reconnectpolicy.west) coordinate (reconnectnorailtop);
 \path (reconnectnorailtop |- reconnectend.west) coordinate (reconnectnorailbottom);
