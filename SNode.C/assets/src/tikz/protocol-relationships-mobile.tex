@@ -8,9 +8,9 @@
 % Keep the HTTP-specific relationships compact while avoiding any semantic
 % container that could imply persistent HTTP containment after upgrade.
 \node[mqtt process] (sse)
-  {SSE\\EventSource\\within HTTP};
+  {SSE / EventSource\\within HTTP};
 \node[mqtt process,right=\MQHorizontalGapTight of sse] (ws)
-  {WebSocket\\via HTTP\\Upgrade};
+  {WebSocket\\via HTTP Upgrade};
 \path (sse.south) -- (ws.south) coordinate[midway] (branchbottom);
 \path (sse.north) -- (ws.north) coordinate[midway] (branchtop);
 
@@ -19,7 +19,7 @@
   {MQTT over\\WebSocket\\subprotocol};
 \path (branchtop |- mqttws.north) coordinate (expressbase);
 \node[mqtt application,above=\MQConnectorSpan of expressbase,mqtt node compact] (express)
-  {Express-style routing\\and middleware};
+  {Express-style routing and middleware};
 
 \MQDistributedPortNorth{http}{http-n1}{1}{3}
 \MQDistributedPortNorth{http}{http-n2}{2}{3}
@@ -37,10 +37,11 @@
 \node[mqtt process,left=\MQHorizontalGapTight of directmid,mqtt node compact] (custom)
   {custom byte protocol\\\texttt{SocketContext}};
 \node[mqtt process,right=\MQHorizontalGapTight of directmid,mqtt node compact] (mqttdirect)
-  {direct\\MQTT 3.1.1};
+  {direct MQTT 3.1.1};
 \path (custom.south) -- (mqttdirect.south) coordinate[midway] (directbottom);
+\path (http.south |- directbottom) coordinate (streamaxis);
 
-\node[mqtt state,below=\MQSectionToControlGap of directbottom,mqtt node extra wide] (stream)
+\node[mqtt state,below=\MQSectionToControlGap of streamaxis,mqtt node extra wide] (stream)
   {established stream connection};
 \draw[mqtt association] (custom.south) -- (stream.north -| custom.south);
 \draw[mqtt association] (http.south) -- (stream.north);
@@ -48,7 +49,7 @@
 
 \node[mqtt layout fit,fit=(express)(mqttws)] (topfit) {};
 \node[mqtt section title,above=\MQTitleGap of topfit] (title)
-  {Protocol / application\\relationships};
+  {Protocol / application relationships};
 
 \begin{scope}[on background layer]
   \node[mqtt figure frame,fit=(title)(express)(mqttws)(sse)(ws)(http)(custom)(mqttdirect)(stream)] {};
