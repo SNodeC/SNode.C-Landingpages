@@ -10,12 +10,12 @@
 \path (descriptors.north) -- (timers.north) coordinate[midway] (sourcestop);
 \path (descriptors.south) -- (timers.south) coordinate[midway] (sourcesbottom);
 
-\node[mqtt control,above=\MQConnectorSpan of sourcestop,mqtt node wide] (wait) {wait for work};
+\node[mqtt control,above=\MQRhythmLoose of sourcestop,mqtt node wide] (wait) {wait for work};
 \node[mqtt control,above=\MQConnectorSpan of wait,mqtt node wide] (start) {\texttt{SNodeC::start()} caller thread};
 \node[mqtt config,left=\MQHorizontalGapTight of start,mqtt node compact] (backend)
   {Configure-time backend\\\texttt{epoll} · \texttt{poll} · \texttt{select}};
 
-\node[mqtt state,below=\MQConnectorSpan of sourcesbottom,mqtt node wide] (queue) {event queue};
+\node[mqtt state,below=\MQRhythmLoose of sourcesbottom,mqtt node wide] (queue) {event queue};
 \node[mqtt control,below=\MQConnectorSpan of queue,mqtt node wide] (dispatch) {dispatch events};
 \node[mqtt application,below=\MQConnectorSpan of dispatch,mqtt node extra wide] (callbacks)
   {endpoint / connection / context callbacks};
