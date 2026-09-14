@@ -11,9 +11,9 @@
 \node[mqtt layout fit,fit=(title)(bluetooth)] (headerrow) {};
 
 \node[mqtt config,below=\MQGapS of headerrow,mqtt node extra wide] (address)
-  {\textbf{Address family}\\IPv4 · IPv6 · Unix domain · RFCOMM · L2CAP};
+  {\textbf{Address family} IPv4 · IPv6\\Unix domain · RFCOMM · L2CAP};
 \node[mqtt config,right=\MQHorizontalGap of address,mqtt node extra wide] (role)
-  {\textbf{Endpoint role}\\\texttt{SocketServer} · \texttt{SocketClient}};
+  {\textbf{Endpoint role} \texttt{SocketServer} · \texttt{SocketClient}};
 \node[mqtt config,below=\MQGapM of address,mqtt node extra wide] (mode)
   {\textbf{Connection mode}\\plain stream · OpenSSL-backed TLS};
 \node[mqtt config,right=\MQHorizontalGap of mode,mqtt node extra wide] (context)
