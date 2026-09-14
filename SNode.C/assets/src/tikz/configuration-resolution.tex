@@ -26,12 +26,14 @@
 
 \node[mqtt section title,below=\MQSectionSeparation of effective] (outputstitle)
   {Effective-value inspection / persistence};
-\node[mqtt process,below=\MQGapS of outputstitle,mqtt node compact] (cmd)
-  {\texttt{--command-line=...}};
-\node[mqtt process,left=\MQHorizontalGapTight of cmd,mqtt node compact] (show)
+\node[mqtt layout fit,below=\MQGapS of outputstitle] (inspectaxis) {};
+\node[mqtt process,left=\MQRhythmCompact of inspectaxis,mqtt node compact] (show)
   {\texttt{--show-config}};
-\node[mqtt process,right=\MQHorizontalGapTight of cmd,mqtt node compact] (write)
-  {\texttt{--write-config}\\persistent values};
+\node[mqtt process,right=\MQRhythmCompact of inspectaxis,mqtt node compact] (cmd)
+  {\texttt{--command-line=...}};
+\node[mqtt layout fit,fit=(show)(cmd)] (inspectrow) {};
+\node[mqtt process,below=\MQGapS of inspectrow,mqtt node wide] (write)
+  {\texttt{--write-config} persistent values};
 \node[mqtt layout fit,fit=(outputstitle)(show)(cmd)(write)] (outputsfit) {};
 \node[mqtt note,below=\MQGapXL of outputsfit,mqtt node extra wide] (help)
   {\texttt{--help=expanded} inspects the hierarchy};
