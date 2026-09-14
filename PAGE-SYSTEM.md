@@ -1801,3 +1801,250 @@ If later PNG inspection, vector-bound inspection, user inspection, or other curr
 evidence reveals an applicable outer-envelope mismatch, the prior figure PASS and every
 dependent family PASS are automatically invalid. Restart the affected figure at §30.6
 step 1 and perform the complete refinement loop again.
+
+---
+
+# 33. Hard directional-arrow source and rendered-terminal acceptance
+
+This section is global and cumulative with §§14, 15, 17, 18, 28, 30, 31, and 32. It
+makes directional-arrow construction and rendered arrowhead quality independently
+mandatory hard gates. Passing source construction never implies that the rendered
+arrowhead passes, and passing the rendered appearance never excuses non-canonical source
+construction.
+
+A single failing directional arrow fails the whole responsive figure variant. A single
+failing variant keeps the whole figure concept active.
+
+## 33.1 Mandatory directional-arrow source scan
+
+Before every first-pass review and every independent second-pass review, scan the exact
+current desktop/mobile figure sources and every figure-local definition for all ways an
+arrowhead or directional-arrow glyph could be created outside the shared canonical
+connector style.
+
+The scan must explicitly search for, at minimum:
+
+- raw TikZ arrow syntax such as `->`, `<-`, `<->`, `-{...}`, `<-{...}`, or equivalent;
+- arrow-tip names or definitions such as `Latex`, `Stealth`, `Triangle`, custom arrow
+  tips, `arrows.meta` tip expressions, or figure-local arrow-style definitions;
+- head-only or effectively head-only `\draw`, `\path`, `\node`, marker, decoration, or
+  shape constructions;
+- separately positioned arrowhead nodes, markers, polygons, triangles, or tiny paths;
+- textual directional-arrow glyphs used as diagram semantics, including
+  `\rightarrow`, `\to`, `\longrightarrow`, `\leftarrow`, `\longleftarrow`, Unicode
+  arrows such as `→`, `←`, `↔`, and equivalent visible directional symbols;
+- literal ASCII arrow text such as `->`, `<-`, or `<->` when it is used as graphical
+  directional semantics rather than as a source-language/code token that the figure is
+  explicitly documenting.
+
+Directional semantics in a canonical technical figure must be carried by a real
+connector shaft using one of the shared canonical directional connector styles. A
+standalone arrow glyph in prose, a label, or a node is not a substitute for a connector
+and is prohibited when it communicates diagram direction.
+
+If literal program syntax, an operator, or protocol text genuinely contains an arrow
+character and that literal token itself is the subject being documented, the conformance
+report must identify and justify that exception explicitly. Convenience wording such as
+`listen → accept` is not such an exception.
+
+A generic statement such as “no local arrow style found” does not satisfy this scan. The
+review must report the actual search classes above and their result for both responsive
+sources.
+
+## 33.2 Mandatory per-variant directional-connector inventory
+
+Before a directional figure can pass, enumerate **every directional connector** in the
+current desktop source and every directional connector in the current mobile source.
+The inventory is rebuilt from the exact current source after every edit and is never
+inherited from an older review.
+
+For each connector record at least:
+
+1. source object/border;
+2. destination object/border;
+3. semantic connector style;
+4. path form: straight, two-segment Manhattan, three-segment dogleg, branch rail,
+   bypass, observation/dependency route, or other justified canonical form;
+5. whether the arrowhead is produced solely by that same connector path's shared style;
+6. terminal segment orientation;
+7. whether a label is attached to or near the terminal segment;
+8. rendered terminal-review result from §33.4–§33.6.
+
+The inventory count must match the directional connector paths present in source. A
+figure may not pass while an arrow exists in the render or source that is absent from the
+inventory.
+
+If a variant genuinely contains zero directional connectors, state `0 directional
+connectors` explicitly and still perform the source scan in §33.1 to prove that no
+standalone directional glyph/head exists.
+
+## 33.3 Single-path canonical-construction hard gate
+
+For every directional connector:
+
+- the shaft and arrowhead must be one continuous TikZ path;
+- the arrowhead must be created only by the shared canonical semantic connector style
+  applied to that same path;
+- figure-local arrow-tip syntax, a separate head object, a second tiny draw/path used
+  only for the head, a marker/decorative head, or a textual arrow used to carry the same
+  directional relation is prohibited;
+- the source path must contain the real source and destination relationship; a separate
+  visual head may not be added later to make direction visible.
+
+Canonical style names are necessary but not sufficient evidence. The reviewer must
+inspect the complete path construction and prove that no independent directional object
+exists anywhere along or near the connector.
+
+## 33.4 Mandatory full-size PNG and terminal-zoom inspection
+
+Every directional connector receives rendered inspection at two scales:
+
+1. the complete **full-size desktop/mobile PNG** at the canonical review size;
+2. a **terminal zoom** containing the final shaft segment, arrowhead, destination border,
+   nearby label footprint, and enough surrounding box geometry to judge attachment and
+   clearance.
+
+A contact sheet, thumbnail, downscaled preview, TikZ source, PDF/SVG inspection, exact
+vector coordinates, or successful CI can never substitute for these PNG checks.
+
+For each responsive variant that contains directional arrows, prepare and inspect an
+**arrow-terminal review sheet** made from native-resolution crops of every arrowhead.
+Those crops must not be downscaled before inspection. The sheet may enlarge crops for
+visibility, but enlargement must not alter geometry. Every arrowhead present in the
+inventory from §33.2 must appear on the terminal review sheet.
+
+The full-size desktop/mobile PNGs must still be shown visibly in chat under §30.6. If a
+terminal crop reveals a failure or any uncertainty, the relevant terminal crop or review
+sheet must also be shown visibly before the source is edited.
+
+## 33.5 Hard rendered shaft/head continuity, collinearity, direction, and attachment
+
+Every rendered directional connector must independently pass all of the following:
+
+- **visible shaft continuity** — a clearly visible shaft reaches the arrowhead without a
+  gap, overpaint, clipping, or apparent separation;
+- **terminal-shaft visibility** — the final shaft segment remains visually substantial
+  enough that the head reads as the end of a line rather than as a standalone triangle,
+  marker, or head placed against a box;
+- **shaft/head collinearity** — the arrowhead axis is visually collinear with the final
+  shaft segment;
+- **direction** — the head points in the direction of the final shaft segment and toward
+  the intended destination;
+- **destination-border attachment** — the head terminates exactly at the intended box
+  border without a gap, overshoot, hidden penetration, or floating endpoint;
+- **orthogonal entry/exit** — where §14 requires 90-degree border entry/exit, the actual
+  rendered terminal segment meets the border orthogonally;
+- **clearance** — the terminal shaft/head has deliberate visual clearance from
+  neighboring boxes, bends, labels, borders, and unrelated geometry.
+
+A connector fails when the arrowhead consumes so much of a short terminal leg that the
+render reasonably looks like a solitary/floating head even though the TikZ source is one
+path. Source correctness does not rescue rendered failure.
+
+Tiny terminal hooks are prohibited. A mathematically non-zero terminal segment is not
+sufficient; the terminal shaft must be visually meaningful at the actual desktop/mobile
+publication scale.
+
+Do not repair a failing terminal segment with a figure-local literal offset, a smaller
+arrowhead, local font/line changes, or a detached head. Recompose with existing canonical
+relationships. If the shared system lacks a relationship that can produce a compliant
+terminal shaft, invoke the mandatory hard stop.
+
+## 33.6 Doglegs have two independent hard gates
+
+Every three-segment orthogonal dogleg is reviewed twice and must pass both reviews:
+
+1. **geometric dogleg gate** — exact §15/§15.2 primary-axis span, exact outer-leg
+   symmetry, canonical ports/anchors, Manhattan routing, and valid border attachment;
+2. **rendered dogleg gate** — the terminal zoom proves a visibly substantial terminal
+   shaft, continuous and collinear head, clear destination-border attachment, and no
+   head-dominated tiny hook.
+
+Exact `R/2` outer legs, midpoint construction, correct source anchors, or vector equality
+prove only the geometric gate. They provide **zero evidence** that the rendered dogleg
+passes the perceptual gate.
+
+If a canonical shared dogleg relationship repeatedly creates visually head-dominated
+terminal segments across figures, treat that as a shared-system/contract design defect:
+fix the shared primitive centrally, invalidate every affected figure, and rerun their
+complete refinement loops. Never locally compensate around the shared defect.
+
+## 33.7 Mandatory explicit arrow rows in every conformance table
+
+Every first-pass conformance table and every independent second-pass conformance table
+must contain separate explicit rows for all applicable checks below. They may not be
+collapsed into a generic “arrows ✓”, “connectors ✓”, “routing ✓”, or “looks attached ✓”
+row.
+
+Required rows:
+
+1. **Directional-arrow source scan** — report the §33.1 scan classes and results.
+2. **Directional-connector inventory completeness** — state the desktop/mobile counts
+   and prove every source/rendered arrow is inventoried.
+3. **Canonical single-path arrow construction** — every shaft/head is one path using a
+   shared directional style.
+4. **No standalone/separate directional glyph, head, marker, or head-only path**.
+5. **Arrowhead–shaft rendered continuity**.
+6. **Arrowhead–shaft rendered collinearity**.
+7. **Arrowhead direction vs terminal shaft segment**.
+8. **Destination-border attachment**.
+9. **Terminal-shaft visibility and clearance** — explicitly reject head-dominated tiny
+   hooks.
+10. **Straight-path preference / bend necessity**.
+11. **Manhattan routing** where a bend is required.
+12. **Dogleg geometric symmetry/span** where a three-segment dogleg exists.
+13. **Dogleg rendered/perceptual quality** independently of mathematical symmetry.
+14. **Arrow/label full-footprint clearance** including destination border and head.
+15. **Arrow-terminal review-sheet inspection** — confirm every inventoried arrowhead was
+   inspected at terminal zoom.
+
+For a figure with zero directional connectors, rows 2–15 may be marked N/A only after
+row 1 proves there is no standalone directional glyph/head and row 2 explicitly states
+`0 directional connectors`.
+
+## 33.8 Mandatory second-pass reset and user-found-defect invalidation
+
+The independent second pass from §30.5 must rebuild the directional-connector inventory
+from source **from scratch**, rerun the complete §33.1 source scan, recreate/reinspect the
+full-size renders and arrow-terminal review sheets, and repeat every applicable row in
+§33.7. No arrow-related ✓ from the first pass may be inherited.
+
+Immediately before an arrow-related PASS, ask independently for every connector:
+
+> Does the rendered arrowhead still look like the end of this exact shaft at full-size
+> publication scale, or could it reasonably be perceived as a separate/floating head?
+
+Any later user screenshot, full-size PNG, terminal crop, source inspection, or vector
+inspection that reveals an arrow defect invalidates the prior figure PASS and every
+family PASS that depended on it. Restart the same figure from §30.6 step 1.
+
+A successful build, green CI, canonical style name, exact port mathematics, exact
+centered-dogleg symmetry, or the fact that a previously reported defect was fixed can
+never substitute for this fresh arrow review.
+
+## 33.9 One-arrow-fails-the-figure rule and final family proof
+
+If **any one** directional connector fails any applicable §33 check, the figure is not
+satisfied:
+
+`Satisfied? NO`
+
+and the figure remains active until that connector and the complete fresh figure review
+pass.
+
+After all figure concepts individually pass, the final whole-family regression must
+also:
+
+- rerun the family-wide §33.1 source scan over every current figure source;
+- rebuild the directional-connector inventory for every desktop/mobile variant;
+- inspect fresh full-size PNGs from the final clean family build;
+- create/reinspect final arrow-terminal review sheets for every variant containing
+  directional arrows;
+- prove that no textual arrow glyph, detached head, head-only path, tiny rendered
+  terminal hook, or other arrow failure remains anywhere in the family;
+- repeat the proof on the exact outputs associated with final green CI when CI evidence
+  is part of publication acceptance.
+
+Sections §28, §30, and §31 are incomplete unless this section also passes. A family
+cannot be declared complete while any §33 proof is missing or any directional arrow is
+unreviewed.
