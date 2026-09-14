@@ -29,14 +29,10 @@
 \node[mqtt control,below=\MQSectionToControlGap of lanemid,mqtt node hero,mqtt text wide] (loop)
   {\textbf{Shared event loop --- \texttt{start()}}\\descriptor readiness, timers, lifecycle and data callbacks run on the caller thread};
 
-\path (servertitle.north) ++(0,\MQGroupPad) coordinate (outertop);
-\path (server.west) ++(-\MQGroupPad,0) coordinate (outerleft);
-\path (client.east) ++(\MQGroupPad,0) coordinate (outerright);
-
+\node[mqtt group,fit=(servertitle)(server)(serverconn)(serverfactory)(serverctx)] (servergroup) {};
+\node[mqtt group,fit=(clienttitle)(client)(clientconn)(clientfactory)(clientctx)] (clientgroup) {};
 \begin{scope}[on background layer]
-  \node[mqtt figure frame,fit=(outertop)(outerleft)(outerright)(servertitle)(server)(serverconn)(serverfactory)(serverctx)(clienttitle)(client)(clientconn)(clientfactory)(clientctx)(loop)] {};
-  \node[mqtt group,fit=(servertitle)(server)(serverconn)(serverfactory)(serverctx)] (servergroup) {};
-  \node[mqtt group,fit=(clienttitle)(client)(clientconn)(clientfactory)(clientctx)] (clientgroup) {};
+  \node[mqtt figure frame,fit=(servergroup)(clientgroup)(loop)] {};
 \end{scope}
 
 \path (servergroup.south |- loop.north) coordinate (loop-server);
