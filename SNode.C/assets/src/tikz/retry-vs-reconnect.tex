@@ -16,10 +16,10 @@
   {new listen / connect attempt};
 
 \node[mqtt process,below=\MQConnectorSpan of newattempt,mqtt node compact] (retryend) {flow ends};
-\path (attempt.west) ++(-\MQHorizontalGapTight,0) coordinate (retrynorailx);
+\path (attempt.west) ++(-\MQHorizontalGap,0) coordinate (retrynorailx);
 \path (retrynorailx |- retrypolicy.west) coordinate (retrynorailtop);
 \path (retrynorailtop |- retryend.west) coordinate (retrynorailbottom);
-\path (attempt.east) ++(\MQHorizontalGapTight,0) coordinate (repeatrailx);
+\path (attempt.east) ++(\MQHorizontalGap,0) coordinate (repeatrailx);
 \path (repeatrailx |- attempt.east) coordinate (repeatrailtop);
 \path (repeatrailtop |- newattempt.east) coordinate (repeatrailbottom);
 
@@ -51,10 +51,10 @@
   {new connect cycle};
 
 \node[mqtt process,below=\MQConnectorSpan of newcycle,mqtt node compact] (reconnectend) {flow ends};
-\path (interrupted.east) ++(\MQHorizontalGapTight,0) coordinate (reconnectnorailx);
+\path (interrupted.east) ++(\MQHorizontalGap,0) coordinate (reconnectnorailx);
 \path (reconnectnorailx |- reconnectpolicy.east) coordinate (reconnectnorailtop);
 \path (reconnectnorailtop |- reconnectend.east) coordinate (reconnectnorailbottom);
-\path (interrupted.west) ++(-\MQHorizontalGapTight,0) coordinate (reconnectbalanceleft);
+\path (interrupted.west) ++(-\MQHorizontalGap,0) coordinate (reconnectbalanceleft);
 \path (connected.center |- retrytitle.north) coordinate (reconnectgrouptop);
 \path (connected.center |- retryend.south) coordinate (reconnectgroupbottom);
 
