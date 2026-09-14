@@ -1514,8 +1514,8 @@ previous defect list, successful compilation/CI, source inspection, or evidence 
 requested defect was fixed cannot satisfy this barrier.
 
 6. **Go back to “Start the analysis of Figure X”.** Re-analyze the complete figure from
-   scratch against all applicable rules, not only the defect just fixed. Repeat the
-   conformance-table → fix → visible-preview loop until satisfaction.
+scratch against all applicable rules, not only the defect just fixed. Repeat the
+conformance-table → fix → visible-preview loop until satisfaction.
 
 The loop is therefore exactly:
 
@@ -2048,3 +2048,84 @@ also:
 Sections §28, §30, and §31 are incomplete unless this section also passes. A family
 cannot be declared complete while any §33 proof is missing or any directional arrow is
 unreviewed.
+
+---
+
+# 34. Mandatory full-size visible rendering evidence
+
+This section is global and cumulative with §§17, 18, 28, 30, 31, 32, and 33. It makes
+full-size visual evidence in chat a hard execution and acceptance gate for every
+technical-figure concept and every responsive variant.
+
+## 34.1 Full-size means individually inspectable, never a reduced preview
+
+Whenever a desktop or mobile figure is shown for review, the **entire exact current PNG**
+must be presented individually in chat at its native raster dimensions or enlarged for
+inspection. It must never be downscaled by the assistant before display.
+
+The following do **not** satisfy the full-size evidence requirement:
+
+- a contact sheet;
+- a thumbnail;
+- a paired/composite image in which desktop and mobile are reduced to fit side by side;
+- a montage or overview grid;
+- a manually downscaled PNG;
+- a screenshot of the figure embedded in another page;
+- a textual statement that the full-size file exists;
+- a path/link without visible rendering.
+
+Desktop and mobile must each be shown as their own visible image. If the chat client may
+fit a very tall mobile figure to the viewport, the assistant must still provide the full
+intrinsic-resolution image individually and, when necessary for legible inspection,
+show additional 1:1 or enlarged crops that together cover the complete figure. Those
+crops supplement but never replace the complete figure image.
+
+Enlargement for inspection is permitted only when it preserves geometry. Nearest-neighbor
+or other non-geometric resampling may be used solely to enlarge raster evidence; the
+source/vector geometry must remain unchanged. Enlargement never permits accepting a
+figure that is unreadable at its real publication size.
+
+## 34.2 Required before refinement and after every source edit
+
+For every figure concept, the visible state machine in §30.6 requires full-size evidence
+at all of these points:
+
+1. **before the first refinement edit** — show the exact current desktop and mobile PNGs
+   individually at full/native size or enlarged;
+2. **after every source-changing edit** — canonically build the exact edited source and
+   show the fresh desktop and mobile PNGs individually at full/native size or enlarged
+   before any further source edit;
+3. **before first-pass acceptance** — the conformance table must refer to the exact
+   full-size images just shown;
+4. **before independent second-pass acceptance** — reinspect those exact full-size images
+   from scratch, together with any mandatory terminal/detail crops;
+5. **during final whole-family regression** — every final desktop/mobile variant must be
+   individually reinspected at full size; family/contact sheets are secondary only.
+
+A source edit is **POST_WRITE_UNREVIEWED** until both responsive variants have been shown
+this way and the complete fresh conformance analysis has restarted.
+
+## 34.3 Mandatory conformance-table row
+
+Every first-pass and independent second-pass conformance table must contain an explicit
+**Full-size visible render evidence** row stating:
+
+- the exact desktop PNG reviewed;
+- the exact mobile PNG reviewed;
+- that each was shown individually rather than as a reduced preview/composite;
+- whether native size or enlargement was used;
+- that no assistant-side downscaling was used for the acceptance evidence.
+
+This row is a hard gate. A figure cannot receive `Satisfied? YES` if the full-size render
+evidence is missing, stale, refers to a different source state, or was shown only as a
+preview/contact sheet.
+
+## 34.4 User-found display-evidence failure invalidates the review state
+
+If the user identifies that a shown figure was only a preview, thumbnail, reduced
+composite, or otherwise not inspectable at full size, the corresponding visual review is
+invalid immediately. Re-show the same exact source/render state at full size and restart
+the applicable conformance analysis before continuing refinement.
+
+No prior PASS, green CI, source correctness, or previously shown thumbnail can substitute
+for the required full-size evidence.
