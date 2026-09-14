@@ -5,52 +5,49 @@
 \begin{document}
 \begin{tikzpicture}[mqtt mobile]
 
-\node[mqtt section title] (servertitle) {Server flow};
-\node[mqtt process,below=\MQGapXS of servertitle,mqtt node compact] (server) {\texttt{SocketServer}\\server endpoint};
-\node[mqtt state,below=\MQConnectorSpan of server,mqtt node compact] (serverconn) {\texttt{SocketConnection}\\established stream};
-\node[mqtt process,below=\MQConnectorSpan of serverconn,mqtt node compact] (serverfactory) {\texttt{SocketContextFactory}\\retained by endpoint flow};
-\node[mqtt state,below=\MQConnectorSpan of serverfactory,mqtt node compact] (serverctx) {\texttt{SocketContext}\\one active per connection};
+\node[mqtt process,mqtt node compact] (server)
+  {\texttt{SocketServer}\\server endpoint};
+\node[mqtt state,right=\MQRhythmCompact of server,mqtt node compact] (serverconn)
+  {\texttt{SocketConnection}\\established stream};
+\node[mqtt process,below=\MQConnectorSpan of serverconn,mqtt node compact] (serverfactory)
+  {\texttt{SocketContextFactory}\\retained per flow};
+\node[mqtt state,left=\MQRhythmCompact of serverfactory,mqtt node compact] (serverctx)
+  {\texttt{SocketContext}\\one active\\per connection};
+\node[mqtt layout fit,fit=(server)(serverconn)(serverfactory)(serverctx)] (servercontent) {};
+\node[mqtt section title,above=\MQGapS of servercontent,anchor=south] (servertitle) {Server flow};
+\node[mqtt layout fit,fit=(servertitle)(servercontent)] (serverfit) {};
 
-\draw[mqtt flow] (server.south) -- node[mqtt edge label right] {listen $\rightarrow$ accept} (serverconn.north);
+\draw[mqtt flow] (server.east) -- node[mqtt edge label above] {listen $\rightarrow$ accept} (serverconn.west);
 \draw[mqtt flow] (serverconn.south) -- node[mqtt edge label right] {\texttt{create(this)}} (serverfactory.north);
-\draw[mqtt flow] (serverfactory.south) -- node[mqtt edge label right] {returns new} (serverctx.north);
+\draw[mqtt flow] (serverfactory.west) -- node[mqtt edge label below] {returns new} (serverctx.east);
 
-\node[mqtt section title,below=\MQSectionSeparation of serverctx,anchor=north] (clienttitle) {Client flow};
-\node[mqtt process,below=\MQGapXS of clienttitle,mqtt node compact] (client) {\texttt{SocketClient}\\client endpoint};
-\node[mqtt state,below=\MQConnectorSpan of client,mqtt node compact] (clientconn) {\texttt{SocketConnection}\\established stream};
-\node[mqtt process,below=\MQConnectorSpan of clientconn,mqtt node compact] (clientfactory) {\texttt{SocketContextFactory}\\retained by endpoint flow};
-\node[mqtt state,below=\MQConnectorSpan of clientfactory,mqtt node compact] (clientctx) {\texttt{SocketContext}\\one active per connection};
+\node[mqtt control,below=\MQGapXL of serverfit,mqtt node extra wide] (loop)
+  {\textbf{Shared event loop --- \texttt{start()}}\\server/client callbacks run on caller thread};
 
-\draw[mqtt flow] (client.south) -- node[mqtt edge label right] {connected} (clientconn.north);
-\draw[mqtt flow] (clientconn.south) -- node[mqtt edge label left] {\texttt{create(this)}} (clientfactory.north);
-\draw[mqtt flow] (clientfactory.south) -- node[mqtt edge label left] {returns new} (clientctx.north);
+\node[mqtt process,below=\MQGapXL of loop,mqtt node compact] (client)
+  {\texttt{SocketClient}\\client endpoint};
+\node[mqtt state,right=\MQRhythmCompact of client,mqtt node compact] (clientconn)
+  {\texttt{SocketConnection}\\established stream};
+\node[mqtt process,below=\MQConnectorSpan of clientconn,mqtt node compact] (clientfactory)
+  {\texttt{SocketContextFactory}\\retained per flow};
+\node[mqtt state,left=\MQRhythmCompact of clientfactory,mqtt node compact] (clientctx)
+  {\texttt{SocketContext}\\one active\\per connection};
+\node[mqtt layout fit,fit=(client)(clientconn)(clientfactory)(clientctx)] (clientcontent) {};
+\node[mqtt section title,above=\MQGapS of clientcontent,anchor=south] (clienttitle) {Client flow};
+\node[mqtt layout fit,fit=(clienttitle)(clientcontent)] (clientfit) {};
 
-\node[mqtt layout fit,fit=(servertitle)(server)(serverconn)(serverfactory)(serverctx)] (serverfit) {};
-\node[mqtt layout fit,fit=(clienttitle)(client)(clientconn)(clientfactory)(clientctx)] (clientfit) {};
-\path (serverfit.east) ++(\MQGroupPad,0) coordinate (servergroupedge);
-\path (clientfit.east) ++(\MQGroupPad,0) coordinate (clientgroupedge);
-\path (servergroupedge) -- (clientgroupedge) coordinate[midway] (flowmid);
+\draw[mqtt flow] (client.east) -- node[mqtt edge label above] {connected} (clientconn.west);
+\draw[mqtt flow] (clientconn.south) -- node[mqtt edge label right] {\texttt{create(this)}} (clientfactory.north);
+\draw[mqtt flow] (clientfactory.west) -- node[mqtt edge label below] {returns new} (clientctx.east);
 
-\node[mqtt control,right=\MQHorizontalGapTight of flowmid] (loop)
-  {\textbf{Shared}\\\textbf{event loop}\\\texttt{start()}\\server/client\\callbacks run\\on caller\\thread};
-
-\path (serverfit.north) ++(0,\MQGroupPad) coordinate (servertop);
-\path (clientfit.south) ++(0,-\MQGroupPad) coordinate (clientbottom);
-\path (serverfit.west) ++(-\MQGroupPad,0) coordinate (flowleft);
+\node[mqtt group,fit=(servertitle)(server)(serverconn)(serverfactory)(serverctx)] (servergroup) {};
+\node[mqtt group,fit=(clienttitle)(client)(clientconn)(clientfactory)(clientctx)] (clientgroup) {};
 \begin{scope}[on background layer]
-  \node[mqtt figure frame,fit=(servertop)(clientbottom)(flowleft)(servergroupedge)(clientgroupedge)(loop)] {};
-  \node[mqtt group,fit=(servertitle)(server)(serverconn)(serverfactory)(serverctx)] (servergroup) {};
-  \node[mqtt group,fit=(clienttitle)(client)(clientconn)(clientfactory)(clientctx)] (clientgroup) {};
+  \node[mqtt figure frame,fit=(servergroup)(loop)(clientgroup)] {};
 \end{scope}
 
-\MQDistributedPortWest{loop}{loop-server}{2}{2}
-\MQDistributedPortWest{loop}{loop-client}{1}{2}
-\path (servergroup.east) -- (loop-server) coordinate[midway] (serverloopmid);
-\path (clientgroup.east) -- (loop-client) coordinate[midway] (clientloopmid);
-\draw[mqtt association]
-  (servergroup.east) -- (serverloopmid |- servergroup.east) -- (serverloopmid |- loop-server) -- (loop-server);
-\draw[mqtt association]
-  (clientgroup.east) -- (clientloopmid |- clientgroup.east) -- (clientloopmid |- loop-client) -- (loop-client);
+\draw[mqtt association] (servergroup.south) -- (loop.north);
+\draw[mqtt association] (loop.south) -- (clientgroup.north);
 
 \end{tikzpicture}
 \end{document}
