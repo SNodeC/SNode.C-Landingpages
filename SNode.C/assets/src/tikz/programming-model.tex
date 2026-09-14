@@ -9,7 +9,7 @@
 \node[mqtt section title,above=\MQGapXS of server] (servertitle) {Server flow};
 \node[mqtt state,below=\MQConnectorSpan of server,mqtt node wide] (serverconn) {\texttt{SocketConnection} established stream};
 \node[mqtt process,below=\MQConnectorSpan of serverconn,mqtt node wide] (serverfactory) {\texttt{SocketContextFactory}\\retained by endpoint flow};
-\node[mqtt state,below=\MQConnectorSpan of serverfactory,mqtt node wide] (serverctx) {\texttt{SocketContext} one active per connection};
+\node[mqtt state,below=\MQConnectorSpan of serverfactory,mqtt node wide] (serverctx) {\texttt{SocketContext}\\one active per connection};
 
 \draw[mqtt flow] (server.south) -- node[mqtt edge label right] {listen $\rightarrow$ accept} (serverconn.north);
 \draw[mqtt flow] (serverconn.south) -- node[mqtt edge label right] {\texttt{create(this)}} (serverfactory.north);
@@ -19,7 +19,7 @@
 \node[mqtt section title,above=\MQGapXS of client] (clienttitle) {Client flow};
 \node[mqtt state,below=\MQConnectorSpan of client,mqtt node wide] (clientconn) {\texttt{SocketConnection} established stream};
 \node[mqtt process,below=\MQConnectorSpan of clientconn,mqtt node wide] (clientfactory) {\texttt{SocketContextFactory}\\retained by endpoint flow};
-\node[mqtt state,below=\MQConnectorSpan of clientfactory,mqtt node wide] (clientctx) {\texttt{SocketContext} one active per connection};
+\node[mqtt state,below=\MQConnectorSpan of clientfactory,mqtt node wide] (clientctx) {\texttt{SocketContext}\\one active per connection};
 
 \draw[mqtt flow] (client.south) -- node[mqtt edge label left] {connect completes} (clientconn.north);
 \draw[mqtt flow] (clientconn.south) -- node[mqtt edge label left] {\texttt{create(this)}} (clientfactory.north);
