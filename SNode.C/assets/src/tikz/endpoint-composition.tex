@@ -5,12 +5,7 @@
 \begin{document}
 \begin{tikzpicture}[mqtt desktop]
 
-\node[mqtt section title] (title) {One concrete endpoint};
-\node[mqtt evidence source,right=\MQGapS of title.south east,anchor=south west] (bluetooth)
-  {RFCOMM / L2CAP source-verified};
-\node[mqtt layout fit,fit=(title)(bluetooth)] (headerrow) {};
-
-\node[mqtt config,below=\MQGapS of headerrow,mqtt node wide] (address)
+\node[mqtt config,mqtt node wide] (address)
   {\textbf{Address family} IPv4 · IPv6\\Unix domain · RFCOMM · L2CAP};
 \node[mqtt config,right=\MQHorizontalGap of address,mqtt node wide] (role)
   {\textbf{Endpoint role}\\\texttt{SocketServer} · \texttt{SocketClient}};
@@ -20,6 +15,10 @@
   {\textbf{Protocol / application context}\\custom \texttt{SocketContext} or compatible\\framework protocol context};
 \node[mqtt layout fit,fit=(address)(role)(mode)(context)] (choices) {};
 
+\node[mqtt evidence source,above=\MQGapS of address] (bluetooth)
+  {RFCOMM / L2CAP source-verified};
+\node[mqtt section title,above=\MQGapS of bluetooth,anchor=south] (title) {One concrete endpoint};
+
 \path (bluetooth.south |- address.north) coordinate (evidencestart);
 \draw[mqtt observation] (evidencestart) -- (bluetooth.south);
 
@@ -28,7 +27,7 @@
 \node[mqtt note,below=\MQGapM of runtime,mqtt node hero] (qualification)
   {Compatible typed compositions only. Component presence does not\\imply that every cross-product is built, tested, or runtime-qualified.};
 
-\path (headerrow.north) ++(0,\MQGroupPad) coordinate (outertop);
+\path (title.north) ++(0,\MQGroupPad) coordinate (outertop);
 \path (choices.west) ++(-\MQGroupPad,0) coordinate (outerleft);
 \path (choices.east) ++(\MQGroupPad,0) coordinate (outerright);
 \begin{scope}[on background layer]
