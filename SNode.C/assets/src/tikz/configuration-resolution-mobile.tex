@@ -6,11 +6,11 @@
 \begin{tikzpicture}[mqtt mobile]
 
 \node[mqtt config] (api)
-  {1\\API and\\defaults\\lowest};
+  {1\\API/defaults\\lowest};
 \node[mqtt config,right=\MQRhythmCompact of api] (file)
-  {2\\config\\file\\middle};
+  {2\\config file\\middle};
 \node[mqtt config,right=\MQRhythmCompact of file] (cli)
-  {3\\command\\line\\highest};
+  {3\\CLI\\highest};
 \node[mqtt control,below=\MQConnectorSpan of file,mqtt node wide] (resolve) {value resolution};
 \node[mqtt state,below=\MQConnectorSpan of resolve,mqtt node wide] (effective) {effective configuration};
 
@@ -24,13 +24,13 @@
 \draw[mqtt flow] (cli.south) -- (cli.south |- climid) -- (resolve-n3 |- climid) -- (resolve-n3);
 \draw[mqtt control flow] (resolve.south) -- (effective.north);
 
-\node[mqtt section title,below=\MQSectionSeparation of effective] (outputstitle)
+\node[mqtt section title,below=\MQSectionSeparation of effective,anchor=north] (outputstitle)
   {Effective-value inspection / persistence};
-\node[mqtt process,below=\MQGapS of outputstitle,mqtt node extra wide] (show)
-  {\texttt{--show-config}};
-\node[mqtt process,below=\MQGapS of show,mqtt node extra wide] (cmd)
-  {\texttt{--command-line=...}};
-\node[mqtt process,below=\MQGapS of cmd,mqtt node extra wide] (write)
+\matrix[mqtt layout fit,below=\MQGapS of outputstitle,column sep=\MQHorizontalGapTight] (inspectrow) {
+  \node[mqtt process,mqtt node compact] (show) {\texttt{--show-config}}; &
+  \node[mqtt process,mqtt node compact] (cmd) {\texttt{--command-line=...}}; \\
+};
+\node[mqtt process,below=\MQGapS of inspectrow,mqtt node wide] (write)
   {\texttt{--write-config} persistent values};
 \node[mqtt layout fit,fit=(outputstitle)(show)(cmd)(write)] (outputsfit) {};
 \node[mqtt note,below=\MQGapXL of outputsfit,mqtt node extra wide] (help)
