@@ -6,7 +6,7 @@
 \begin{tikzpicture}[mqtt mobile]
 
 \node[mqtt state] (http)
-  {HTTP context ACTIVE};
+  {HTTP context\\ACTIVE};
 \node[mqtt process,right=\MQConnectorSpan of http] (staged)
   {WebSocket\\replacement\\STAGED\\after Upgrade\\not active};
 \node[mqtt layout fit,fit=(http)(staged)] (toppair) {};
@@ -19,7 +19,7 @@
 \node[mqtt control,below=\MQConnectorSpan of return,mqtt node compact] (switch)
   {\texttt{detach(ContextSwitch)}\\select staged context\\\texttt{attach()}};
 \node[mqtt state,below=\MQConnectorSpan of switch,mqtt node compact] (websocket)
-  {WebSocket context ACTIVE};
+  {WebSocket context\\ACTIVE};
 
 \draw[mqtt control flow] (http.south) -- (return.north);
 \draw[mqtt control flow] (return.south) -- (switch.north);
