@@ -8,7 +8,7 @@
 \node[mqtt state] (http)
   {HTTP context ACTIVE};
 \node[mqtt process,right=\MQConnectorSpan of http] (staged)
-  {WebSocket replacement\\STAGED\\after Upgrade\\not active};
+  {WebSocket\\replacement\\STAGED\\after Upgrade\\not active};
 \node[mqtt layout fit,fit=(http)(staged)] (toppair) {};
 \node[mqtt section title,above=\MQGapS of toppair] (title)
   {Same established \texttt{SocketConnection}};
