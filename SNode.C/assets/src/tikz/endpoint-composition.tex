@@ -7,15 +7,15 @@
 
 \node[mqtt section title] (title) {One concrete endpoint};
 \node[mqtt evidence source,right=\MQGapS of title.south east,anchor=south west] (bluetooth)
-  {\shortstack{RFCOMM / L2CAP\\source-verified}};
+  {RFCOMM / L2CAP source-verified};
 \node[mqtt layout fit,fit=(title)(bluetooth)] (headerrow) {};
 
 \node[mqtt config,below=\MQGapS of headerrow,mqtt node hero] (address)
-  {\textbf{Address family}\\IPv4 · IPv6 · Unix domain · RFCOMM · L2CAP};
+  {\textbf{Address family} IPv4 · IPv6 · Unix domain · RFCOMM · L2CAP};
 \node[mqtt config,below=\MQGapM of address,mqtt node hero] (role)
-  {\textbf{Endpoint role}\\\texttt{SocketServer} · \texttt{SocketClient}};
+  {\textbf{Endpoint role} \texttt{SocketServer} · \texttt{SocketClient}};
 \node[mqtt config,below=\MQGapM of role,mqtt node hero] (mode)
-  {\textbf{Connection mode}\\plain stream · OpenSSL-backed TLS};
+  {\textbf{Connection mode} plain stream · OpenSSL-backed TLS};
 \node[mqtt config,below=\MQGapM of mode,mqtt node hero] (context)
   {\textbf{Protocol / application context}\\custom \texttt{SocketContext} or compatible framework protocol context};
 
@@ -23,7 +23,7 @@
 \draw[mqtt observation] (evidencestart) -- (bluetooth.south);
 
 \node[mqtt control,below=\MQSectionToControlGap of context,mqtt node hero] (runtime)
-  {\textbf{Shared event runtime}\\one selected multiplexer drives endpoint and connection work};
+  {\textbf{Shared event runtime} one selected multiplexer drives endpoint and connection work};
 \node[mqtt note,below=\MQGapM of runtime,mqtt node hero] (qualification)
   {Compatible typed compositions only. Component presence does not\\imply that every cross-product is built, tested, or runtime-qualified.};
 
