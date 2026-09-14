@@ -5,17 +5,17 @@
 \begin{document}
 \begin{tikzpicture}[mqtt desktop]
 
-\node[mqtt process,mqtt node compact] (attempt) {listen / connect attempt};
+\node[mqtt process,mqtt node wide] (attempt) {listen / connect attempt};
 \node[mqtt section title,above=\MQGapS of attempt] (retrytitle) {Retry};
 \node[mqtt error,below=\MQConnectorSpan of attempt,mqtt node compact] (failed)
   {establishment fails};
 \node[mqtt decision,mqtt node compact,below=\MQConnectorSpan of failed] (retrypolicy) {retry?};
 \node[mqtt process,below=\MQConnectorSpan of retrypolicy,mqtt node compact] (backoff)
   {wait / backoff};
-\node[mqtt process,below=\MQConnectorSpan of backoff,mqtt node compact] (newattempt)
+\node[mqtt process,below=\MQConnectorSpan of backoff,mqtt node wide] (newattempt)
   {new listen / connect attempt};
 
-\node[mqtt process,below=\MQConnectorSpan of newattempt] (retryend) {flow ends};
+\node[mqtt process,below=\MQConnectorSpan of newattempt,mqtt node compact] (retryend) {flow ends};
 \path (attempt.west) ++(-\MQHorizontalGapTight,0) coordinate (retrynorailx);
 \path (retrynorailx |- retrypolicy.west) coordinate (retrynorailtop);
 \path (retrynorailtop |- retryend.west) coordinate (retrynorailbottom);
@@ -50,7 +50,7 @@
 \node[mqtt process,below=\MQConnectorSpan of delay,mqtt node compact] (newcycle)
   {new connect cycle};
 
-\node[mqtt process,below=\MQConnectorSpan of newcycle] (reconnectend) {flow ends};
+\node[mqtt process,below=\MQConnectorSpan of newcycle,mqtt node compact] (reconnectend) {flow ends};
 \path (interrupted.east) ++(\MQHorizontalGapTight,0) coordinate (reconnectnorailx);
 \path (reconnectnorailx |- reconnectpolicy.east) coordinate (reconnectnorailtop);
 \path (reconnectnorailtop |- reconnectend.east) coordinate (reconnectnorailbottom);
