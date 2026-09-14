@@ -40,7 +40,8 @@
 \draw[mqtt association] (mqttdirect.south) -- (stream.north -| mqttdirect.south);
 
 \node[mqtt layout fit,fit=(express)(mqttws)] (topfit) {};
-\node[mqtt section title,above=\MQTitleGap of topfit] (title)
+\path (http.center |- topfit.north) coordinate (titlebase);
+\node[mqtt section title,above=\MQTitleGap of titlebase,anchor=south] (title)
   {Protocol / application relationships};
 
 \begin{scope}[on background layer]
